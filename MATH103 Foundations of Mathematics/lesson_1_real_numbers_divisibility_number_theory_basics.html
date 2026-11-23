@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MATH 103 — Lesson 1: Real Numbers, Divisibility & Number Theory Basics</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Respect system theme before first paint -->
+  <script>
+    if (
+      localStorage.getItem('math103-theme') === 'dark' ||
+      (!('math103-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100">
+
+  <!-- ==================== TOP STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Mobile Sidebar Toggle + Brand -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              ISRT, University of Dhaka
+            </p>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+              Foundations of Mathematics
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Lesson Badge + Progress Pill + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/70">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Group A · Lesson 1 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+        </div>
+
+        <button
+          id="theme-toggle"
+          type="button"
+          aria-label="Toggle dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <!-- Sun Icon (shown in dark mode) -->
+          <svg id="icon-sun" class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <!-- Moon Icon (shown in light mode) -->
+          <svg id="icon-moon" class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 sm:w-80 lg:w-72 xl:w-80 bg-white dark:bg-slate-900 lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-2">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white">Lesson Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Lesson Progress Card -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson Progress</span>
+            <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <p id="sidebar-progress-detail" class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            0/6 sections read · 0/5 quiz answered
+          </p>
+        </div>
+
+        <!-- 2. In-Page Table of Contents -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-sm">
+            <li><a href="#sec-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">01</span> Order Properties & Statements</a></li>
+            <li><a href="#sec-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">02</span> Divisibility & Division Alg.</a></li>
+            <li><a href="#sec-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">03</span> GCD, LCM & Euclid's Alg.</a></li>
+            <li><a href="#sec-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">04</span> Primes & Euclid's Lemma</a></li>
+            <li><a href="#sec-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">05</span> Fundamental Theorem (FTA)</a></li>
+            <li><a href="#sec-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">06</span> Divisor Functions d(n) & σₖ(n)</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <span class="px-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">Interactive Tools</span>
+            </li>
+            <li><a href="#lab-division" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Division Algorithm Lab</a></li>
+            <li><a href="#lab-euclidean" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Euclidean & Bézout Solver</a></li>
+            <li><a href="#lab-factor" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Factor Tree & Divisor Lab</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault</a>
+            </li>
+            <li>
+              <a href="#quick-quiz" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. Mini 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-1">Group A: Basic Algebra</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <span class="font-mono">L01</span>
+                <span class="truncate">Real Numbers & Divisibility</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L02</span><span class="truncate">Congruences & Diophantine</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L03</span><span class="truncate">Inequalities & Series</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L04</span><span class="truncate">Complex Numbers & Unity</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L05</span><span class="truncate">Theory of Equations</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L06</span><span class="truncate">Gamma & Beta Functions</span></div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Group B: Differential Equations</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L07</span><span class="truncate">Fundamentals & Formation</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L08</span><span class="truncate">Separable & Homogeneous</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L09</span><span class="truncate">Exact, IF & Bernoulli DEs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L10</span><span class="truncate">Higher-Order Linear DEs</span></div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Group C: Discrete Math & Games</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L11</span><span class="truncate">Logic & Counting Principles</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L12</span><span class="truncate">Recurrences & Gen. Funcs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L13</span><span class="truncate">Graph Theory & Dijkstra</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L14</span><span class="truncate">Game Theory & Minimax</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT ==================== -->
+    <main class="flex-1 min-w-0 space-y-10 pb-20">
+
+      <!-- HERO / ORIENTATION CARD -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              MATH 103 · Group A: Basic Algebra
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              ⏱ Est. Time: 45–60 mins
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30">
+              High Exam Weightage
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+            Lesson 1: Real Numbers, Divisibility &amp; Number Theory Basics
+          </h2>
+
+          <p class="mt-3 text-sm sm:text-base text-indigo-100 leading-relaxed">
+            Master the axiomatic foundations of order on $\mathbb{R}$, integer divisibility, the Division Algorithm (especially negative dividends!), the Euclidean Algorithm, Bézout's Identity, the Fundamental Theorem of Arithmetic, and arithmetic divisor functions $d(n)$ and $\sigma_k(n)$.
+          </p>
+
+          <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div class="p-3 rounded-2xl bg-white/10 border border-white/15">
+              <div class="font-bold text-indigo-200 uppercase tracking-wider mb-1">Core Proofs</div>
+              <div>Order Transitivity, Divisibility Rules, Euclid's Lemma &amp; FTA</div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 border border-white/15">
+              <div class="font-bold text-indigo-200 uppercase tracking-wider mb-1">Interactive Labs</div>
+              <div>Division Number Line, Euclidean/Bézout Solver &amp; Factor Tree</div>
+            </div>
+            <div class="p-3 rounded-2xl bg-white/10 border border-white/15">
+              <div class="font-bold text-indigo-200 uppercase tracking-wider mb-1">Exam Alignment</div>
+              <div>ISRT Incourse &amp; Finals (2017, 2019, 2021, 2023, 2024)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 1: ORDER PROPERTIES OF REAL NUMBERS & MATHEMATICAL STATEMENTS -->
+      <!-- =================================================================== -->
+      <section id="sec-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 01</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Order Properties of Real Numbers &amp; Mathematical Statements
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-1"
+            onclick="toggleSectionRead('sec-1')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+          To prove inequalities rigorously in university mathematics, we do not rely on intuition alone. Instead, we define a nonempty subset $\mathbb{R}^+ \subset \mathbb{R}$ called the set of <strong>strictly positive real numbers</strong>, governed by three fundamental <strong>Order Axioms</strong>:
+        </p>
+
+        <!-- 3 Axioms Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">AXIOM O1 · ADDITIVE CLOSURE</div>
+            <p class="text-sm font-medium text-slate-800 dark:text-slate-100">
+              If $a, b \in \mathbb{R}^+$, then $a + b \in \mathbb{R}^+$.
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">The sum of two positive real numbers is always positive.</p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">AXIOM O2 · MULTIPLICATIVE CLOSURE</div>
+            <p class="text-sm font-medium text-slate-800 dark:text-slate-100">
+              If $a, b \in \mathbb{R}^+$, then $ab \in \mathbb{R}^+$.
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">The product of two positive real numbers is always positive.</p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">AXIOM O3 · TRICHOTOMY LAW</div>
+            <p class="text-sm font-medium text-slate-800 dark:text-slate-100">
+              For every $a \in \mathbb{R}$, <strong>exactly one</strong> holds: $a \in \mathbb{R}^+$, $a = 0$, or $-a \in \mathbb{R}^+$.
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Partitions $\mathbb{R}$ into positive, zero, and negative numbers.</p>
+          </div>
+        </div>
+
+        <!-- Definition of Order -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-l-4 border-indigo-500">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider mb-1">Definition of Order Relations</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            For any $a, b \in \mathbb{R}$, we write $a > b$ (equivalently $b < a$) if and only if $a - b \in \mathbb{R}^+$. Similarly, $a \ge b$ means $a > b$ or $a = b$.
+          </p>
+        </div>
+
+        <!-- Collapsible Proof: Transitivity -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-transitivity')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 1.1 · Transitivity of Order</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                If $a, b, c \in \mathbb{R}$ satisfy $a > b$ and $b > c$, then $a > c$.
+              </p>
+            </div>
+            <span id="icon-proof-transitivity" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-transitivity" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <p><strong>Step 1 (Translate using the definition of order):</strong> Since $a > b$, we have $a - b \in \mathbb{R}^+$. Since $b > c$, we have $b - c \in \mathbb{R}^+$.</p>
+            <p><strong>Step 2 (Apply Axiom O1 — Closure under Addition):</strong> Because both $(a - b)$ and $(b - c)$ belong to $\mathbb{R}^+$, their sum also belongs to $\mathbb{R}^+$:</p>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 font-mono text-center">
+              $$(a - b) + (b - c) \in \mathbb{R}^+$$
+            </div>
+            <p><strong>Step 3 (Simplify algebraically):</strong> Using associativity and additive inverses in $\mathbb{R}$, $(a - b) + (b - c) = a + (-b + b) - c = a - c$.</p>
+            <p><strong>Step 4 (Conclude):</strong> Therefore $a - c \in \mathbb{R}^+$, which by definition means $a > c$. $\blacksquare$</p>
+          </div>
+        </div>
+
+        <!-- Exam Spotlight: Conjecture vs Theorem -->
+        <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100">ISRT Final 2023 Spotlight</span>
+            <h4 class="font-bold text-amber-950 dark:text-amber-200 text-sm">Conjecture vs. Theorem</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-amber-950/90 dark:text-amber-100/90">
+            <div>
+              <p class="font-semibold mb-1">What is a Conjecture?</p>
+              <p class="leading-relaxed">A mathematical statement that is <em>believed to be true</em> based on patterns, numerical evidence, or intuition, but has <strong>not yet been rigorously proven</strong> (e.g., Goldbach's Conjecture: every even integer $> 2$ is the sum of two primes).</p>
+            </div>
+            <div>
+              <p class="font-semibold mb-1">When does a Conjecture become a Theorem?</p>
+              <p class="leading-relaxed">A conjecture becomes a <strong>Theorem</strong> the moment a valid, complete <strong>logical proof</strong> is constructed deriving it from accepted axioms, definitions, and previously established theorems (e.g., Fermat's Last Theorem, proved by Andrew Wiles in 1995).</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 2: DIVISIBILITY & THE DIVISION ALGORITHM                    -->
+      <!-- =================================================================== -->
+      <section id="sec-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 02</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Divisibility &amp; The Division Algorithm
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-2"
+            onclick="toggleSectionRead('sec-2')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <!-- Formal Definition of Divisibility -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-l-4 border-indigo-500">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider mb-1">Definition: Divisibility ($a \mid b$)</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            Let $a, b \in \mathbb{Z}$ with $a \neq 0$. We say that <strong>$a$ divides $b$</strong> (written $a \mid b$) if and only if there exists an integer $k \in \mathbb{Z}$ such that:
+            $$b = ak$$
+            In this case, $a$ is a <em>divisor</em> (or factor) of $b$, and $b$ is a <em>multiple</em> of $a$. If no such integer $k$ exists, we write $a \nmid b$. Note that $a \mid 0$ for every $a \neq 0$ (since $0 = a \cdot 0$), while $0$ never divides any nonzero integer.
+          </p>
+        </div>
+
+        <!-- 3 Core Divisibility Properties (ISRT Incourse-1 2023) -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-divisibility')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 2.1 · Core Divisibility Properties (ISRT Incourse-1 2023)</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Let $p, q, r \in \mathbb{Z}$ with $p \neq 0$. Click to view proofs of (a) Linear Sum, (b) Multiple, and (c) Transitivity.
+              </p>
+            </div>
+            <span id="icon-proof-divisibility" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proofs</span>
+          </button>
+
+          <div id="proof-divisibility" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-4 text-sm text-slate-700 dark:text-slate-300">
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+              <p class="font-bold text-slate-900 dark:text-white mb-1">(a) If $p \mid q$ and $p \mid r$, then $p \mid (q + r)$.</p>
+              <p><strong>Proof:</strong> Since $p \mid q$ and $p \mid r$, there exist integers $k_1, k_2 \in \mathbb{Z}$ such that $q = pk_1$ and $r = pk_2$. Adding these equations yields $q + r = pk_1 + pk_2 = p(k_1 + k_2)$. Since $k_1 + k_2 \in \mathbb{Z}$, we conclude $p \mid (q + r)$. $\blacksquare$</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+              <p class="font-bold text-slate-900 dark:text-white mb-1">(b) If $p \mid q$, then $p \mid qr$ for all integers $r \in \mathbb{Z}$.</p>
+              <p><strong>Proof:</strong> Since $p \mid q$, there exists $k \in \mathbb{Z}$ such that $q = pk$. Multiplying both sides by $r$ gives $qr = (pk)r = p(kr)$. Since $kr \in \mathbb{Z}$, it follows that $p \mid qr$. $\blacksquare$</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+              <p class="font-bold text-slate-900 dark:text-white mb-1">(c) If $p \mid q$ and $q \mid r$, then $p \mid r$ (Transitivity).</p>
+              <p><strong>Proof:</strong> Since $p \mid q$ and $q \mid r$ (with $q \neq 0$), there exist $k_1, k_2 \in \mathbb{Z}$ such that $q = pk_1$ and $r = qk_2$. Substituting $q$ into the second equation gives $r = (pk_1)k_2 = p(k_1 k_2)$. Since $k_1 k_2 \in \mathbb{Z}$, we have $p \mid r$. $\blacksquare$</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- The Division Algorithm -->
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/70">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider mb-1.5">Theorem 2.2 · The Division Algorithm</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            Given any integer $a \in \mathbb{Z}$ (the <strong>dividend</strong>) and any positive integer $b \in \mathbb{Z}^+$ (the <strong>divisor</strong>), there exist <strong>unique</strong> integers $q$ (the <strong>quotient</strong>) and $r$ (the <strong>remainder</strong>) such that:
+          </p>
+          <div class="my-3 py-2.5 px-4 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900 text-center font-semibold">
+            $$a = bq + r \quad \text{and} \quad 0 \le r < b$$
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            In Bengali class notes: $\text{ভাজ্য} = \text{ভাজক} \times \text{ভাগফল} + \text{ভাগশেষ}$, where the remainder $r$ must <strong>never be negative</strong>.
+          </p>
+        </div>
+
+        <!-- Prominent Warning Box: Negative Dividends -->
+        <div class="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 flex gap-3.5">
+          <div class="text-2xl shrink-0">⚠️</div>
+          <div class="space-y-2 text-sm">
+            <h4 class="font-bold text-rose-900 dark:text-rose-200">Exam Trap Alert: Negative Dividends!</h4>
+            <p class="text-rose-800 dark:text-rose-200/90 leading-relaxed">
+              A classic ISRT Incourse question asks: <em>"Find the quotient and remainder when $-110$ is divided by $7$."</em>
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div class="p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-rose-200 dark:border-rose-900">
+                <div class="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase mb-1">❌ Wrong (Negative Remainder)</div>
+                <div class="font-mono text-xs text-slate-700 dark:text-slate-300">-110 = 7(-15) + (-5)</div>
+                <p class="text-xs text-slate-500 mt-1">Violates $0 \le r < 7$ because $r = -5 < 0$.</p>
+              </div>
+              <div class="p-3 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800">
+                <div class="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase mb-1">✅ Correct (Step 1 Lower)</div>
+                <div class="font-mono text-xs text-slate-800 dark:text-slate-100">-110 = 7(-16) + 2</div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 mt-1">Gives $q = -16$ and $r = 2$, satisfying $0 \le 2 < 7$.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== INTERACTIVE LAB 1: DIVISION ALGORITHM ==================== -->
+        <div id="lab-division" class="scroll-mt-24 rounded-2xl bg-slate-50 dark:bg-slate-950 border-2 border-indigo-200 dark:border-indigo-900/80 p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+              </span>
+              <h4 class="text-lg font-bold text-slate-900 dark:text-white">Division Algorithm Visualizer</h4>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="setDivPreset(-110, 7)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">-110 ÷ 7</button>
+              <button type="button" onclick="setDivPreset(-23, 5)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">-23 ÷ 5</button>
+              <button type="button" onclick="setDivPreset(47, 6)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">47 ÷ 6</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+            <div>
+              <label for="div-a" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Dividend ($a \in \mathbb{Z}$)</label>
+              <input id="div-a" type="number" value="-110" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+            <div>
+              <label for="div-b" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Divisor ($b \in \mathbb{Z}^+$)</label>
+              <input id="div-b" type="number" value="7" min="1" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+            <button type="button" onclick="runDivisionLab()" class="w-full px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-xs transition">
+              Compute $q$ &amp; $r$
+            </button>
+          </div>
+
+          <div id="div-error" class="hidden p-3 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-medium"></div>
+
+          <div id="div-output" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+                <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Equation</div>
+                <div id="div-eq" class="mt-1 font-mono text-base font-bold text-slate-900 dark:text-white"></div>
+              </div>
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+                <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Quotient ($q$)</div>
+                <div id="div-q" class="mt-1 font-mono text-xl font-extrabold text-indigo-600 dark:text-indigo-400"></div>
+              </div>
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+                <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Remainder ($r$)</div>
+                <div id="div-r" class="mt-1 font-mono text-xl font-extrabold text-emerald-600 dark:text-emerald-400"></div>
+                <div id="div-check" class="mt-1 text-[11px] font-mono text-emerald-600 dark:text-emerald-400"></div>
+              </div>
+            </div>
+
+            <!-- SVG Number Line Container -->
+            <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto">
+              <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Number Line Geometry: Multiples of $b$ straddling $a$</div>
+              <svg id="div-svg" viewBox="0 0 600 130" class="w-full h-auto min-w-[320px]"></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 3: GCD, LCM & THE EUCLIDEAN ALGORITHM                       -->
+      <!-- =================================================================== -->
+      <section id="sec-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 03</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Greatest Common Divisor (GCD), LCM &amp; Euclidean Algorithm
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-3"
+            onclick="toggleSectionRead('sec-3')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <!-- Definitions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <h4 class="font-bold text-sm text-indigo-600 dark:text-indigo-400 mb-1">Greatest Common Divisor</h4>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              For $a, b \in \mathbb{Z}$ not both zero, $d = \gcd(a,b)$ (also written $(a,b)$) is the largest positive integer such that $d \mid a$ and $d \mid b$.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <h4 class="font-bold text-sm text-indigo-600 dark:text-indigo-400 mb-1">Least Common Multiple</h4>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              For nonzero $a, b \in \mathbb{Z}$, $m = \operatorname{lcm}(a,b)$ is the smallest positive integer divisible by both $a$ and $b$.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <h4 class="font-bold text-sm text-indigo-600 dark:text-indigo-400 mb-1">Relatively Prime (Coprime)</h4>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              Two integers $a$ and $b$ are <strong>relatively prime</strong> if their only positive common divisor is $1$, i.e., $\gcd(a,b) = 1$.
+            </p>
+          </div>
+        </div>
+
+        <!-- Properties of GCD (Frequently Tested) -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h4 class="font-bold text-slate-900 dark:text-white text-base">Essential Properties of GCD</h4>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">
+              Tested in ISRT 2019, 2020, 2021
+            </span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+              <span class="font-mono text-xs font-bold text-indigo-500">P1.</span> <strong>Commutativity &amp; Sign Invariance:</strong> $\gcd(a,b) = \gcd(b,a) = \gcd(|a|, |b|)$.
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+              <span class="font-mono text-xs font-bold text-indigo-500">P2.</span> <strong>Zero Identity:</strong> For any $a \neq 0$, $\gcd(a, 0) = |a|$.
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+              <span class="font-mono text-xs font-bold text-indigo-500">P3.</span> <strong>Euclidean Reduction:</strong> If $a = bq + r$, then $\gcd(a, b) = \gcd(b, r)$.
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+              <span class="font-mono text-xs font-bold text-indigo-500">P4.</span> <strong>Scaling Law:</strong> For any integer $k \neq 0$, $\gcd(ka, kb) = |k|\gcd(a,b)$.
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+              <span class="font-mono text-xs font-bold text-indigo-500">P5.</span> <strong>Bézout's Identity:</strong> $\exists x, y \in \mathbb{Z}$ such that $ax + by = \gcd(a,b)$.
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800">
+              <span class="font-mono text-xs font-bold text-indigo-500">P6.</span> <strong>Reduced Coprimality:</strong> If $d = \gcd(a,b)$, then $\gcd\!\left(\frac{a}{d}, \frac{b}{d}\right) = 1$.
+            </div>
+            <div class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900 sm:col-span-2">
+              <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">P7.</span> <strong>GCD–LCM Product Identity:</strong> For any nonzero integers $a, b$, $\gcd(a,b) \cdot \operatorname{lcm}(a,b) = |ab|$.
+            </div>
+          </div>
+        </div>
+
+        <!-- Worked Exam Example: ISRT 2019 -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <h4 class="font-bold text-slate-900 dark:text-white text-sm">Worked Example (ISRT Incourse-1 2019): Find $\gcd(272, 1479)$</h4>
+            <span class="text-xs font-mono text-indigo-600 dark:text-indigo-400">Euclidean Algorithm</span>
+          </div>
+          <div class="font-mono text-xs sm:text-sm space-y-1.5 text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+            <div>1479 = 272 × 5 + <span class="text-indigo-600 dark:text-indigo-400 font-bold">119</span></div>
+            <div>&nbsp;272 = 119 × 2 + <span class="text-indigo-600 dark:text-indigo-400 font-bold">34</span></div>
+            <div>&nbsp;119 = &nbsp;34 × 3 + <span class="text-emerald-600 dark:text-emerald-400 font-bold underline">17</span> &nbsp;&larr; last nonzero remainder</div>
+            <div>&nbsp;&nbsp;34 = &nbsp;17 × 2 + 0</div>
+          </div>
+          <p class="text-sm text-slate-700 dark:text-slate-300">
+            The last nonzero remainder is $17$, so $\gcd(272, 1479) = 17$.
+          </p>
+        </div>
+
+        <!-- ==================== INTERACTIVE LAB 2: EUCLIDEAN & BEZOUT ==================== -->
+        <div id="lab-euclidean" class="scroll-mt-24 rounded-2xl bg-slate-50 dark:bg-slate-950 border-2 border-indigo-200 dark:border-indigo-900/80 p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+              </span>
+              <h4 class="text-lg font-bold text-slate-900 dark:text-white">Euclidean Algorithm &amp; Bézout Solver</h4>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="setEucPreset(1479, 272)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">272 &amp; 1479</button>
+              <button type="button" onclick="setEucPreset(252, 198)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">252 &amp; 198</button>
+              <button type="button" onclick="setEucPreset(62, 11)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">62 &amp; 11</button>
+              <button type="button" onclick="setEucPreset(7469, 2387)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">7469 &amp; 2387</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+            <div>
+              <label for="euc-a" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Integer $a$</label>
+              <input id="euc-a" type="number" value="1479" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+            <div>
+              <label for="euc-b" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Integer $b$</label>
+              <input id="euc-b" type="number" value="272" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+            <button type="button" onclick="runEuclideanLab()" class="w-full px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-xs transition">
+              Run Euclidean Algorithm
+            </button>
+          </div>
+
+          <div id="euc-error" class="hidden p-3 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-medium"></div>
+
+          <div id="euc-output" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+                <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">GCD</div>
+                <div id="euc-gcd" class="mt-1 font-mono text-2xl font-extrabold text-emerald-600 dark:text-emerald-400"></div>
+              </div>
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+                <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">LCM</div>
+                <div id="euc-lcm" class="mt-1 font-mono text-2xl font-extrabold text-indigo-600 dark:text-indigo-400"></div>
+              </div>
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center flex flex-col justify-center items-center">
+                <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Status</div>
+                <div id="euc-coprime" class="mt-1.5"></div>
+              </div>
+            </div>
+
+            <!-- Division Steps Table -->
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold">
+                  <tr>
+                    <th class="px-4 py-2.5">Step</th>
+                    <th class="px-4 py-2.5">Division Equation ($a_i = b_i q_i + r_i$)</th>
+                    <th class="px-4 py-2.5">Quotient ($q_i$)</th>
+                    <th class="px-4 py-2.5">Remainder ($r_i$)</th>
+                  </tr>
+                </thead>
+                <tbody id="euc-steps-body" class="divide-y divide-slate-100 dark:divide-slate-800 font-mono"></tbody>
+              </table>
+            </div>
+
+            <!-- Bézout Identity Result -->
+            <div class="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/70">
+              <div class="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 mb-1">
+                Extended Euclidean Bézout Linear Combination ($ax + by = \gcd(a,b)$)
+              </div>
+              <div id="euc-bezout" class="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-white break-all"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 4: PRIMES, COMPOSITES & EUCLID'S LEMMA                      -->
+      <!-- =================================================================== -->
+      <section id="sec-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 04</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Primes, Composites &amp; Euclid's Lemma
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-4"
+            onclick="toggleSectionRead('sec-4')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60">
+            <h4 class="font-bold text-emerald-800 dark:text-emerald-300 text-sm uppercase tracking-wider mb-1.5">Prime Number</h4>
+            <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              An integer $p > 1$ is <strong>prime</strong> if its only positive divisors are $1$ and $p$ itself. Examples: $2, 3, 5, 7, 11, 13, 17, 19, 23, \dots$ (note that $2$ is the only even prime).
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/60">
+            <h4 class="font-bold text-indigo-800 dark:text-indigo-300 text-sm uppercase tracking-wider mb-1.5">Composite Number</h4>
+            <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              An integer $n > 1$ is <strong>composite</strong> if it is not prime—that is, there exist integers $a, b$ with $1 < a < n$ and $1 < b < n$ such that $n = ab$.
+            </p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-300">
+          <strong>Why is $1$ neither prime nor composite?</strong> By convention, $1$ is called a <em>unit</em>. If $1$ were considered prime, integers would not have a <em>unique</em> prime factorization (e.g., $6 = 2 \cdot 3 = 1 \cdot 2 \cdot 3 = 1^2 \cdot 2 \cdot 3$), breaking the Fundamental Theorem of Arithmetic!
+        </div>
+
+        <!-- Euclid's Lemma Collapsible Proof -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-euclid-lemma')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Lemma 4.1 · Euclid's Lemma</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                If $p$ is a prime and $p \mid ab$, then $p \mid a$ or $p \mid b$.
+              </p>
+            </div>
+            <span id="icon-proof-euclid-lemma" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-euclid-lemma" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <p><strong>Proof:</strong> Suppose $p \mid ab$. If $p \mid a$, we are done. Otherwise, assume $p \nmid a$.</p>
+            <p>Since $p$ is prime, its only positive divisors are $1$ and $p$. Because $p \nmid a$, the only positive common divisor of $p$ and $a$ is $1$, so $\gcd(p, a) = 1$.</p>
+            <p>By <strong>Bézout's Identity</strong>, there exist integers $x, y \in \mathbb{Z}$ such that $px + ay = 1$.</p>
+            <p>Multiply both sides by $b$: $pbx + aby = b$.</p>
+            <p>Now $p \mid pbx$ trivially, and $p \mid aby$ because $p \mid ab$. By Theorem 2.1(a), $p$ divides their sum $pbx + aby = b$. Thus $p \mid b$. $\blacksquare$</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 pt-1">
+              <em>Generalized Corollary:</em> If prime $p \mid a_1 a_2 \cdots a_k$, then $p \mid a_i$ for at least one index $i \in \{1, \dots, k\}$.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 5: FUNDAMENTAL THEOREM OF ARITHMETIC (FTA)                  -->
+      <!-- =================================================================== -->
+      <section id="sec-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 05</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                ⭐ Most Repeated ISRT Proof (2017, 2019, 2021, 2023, 2024)
+              </span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1.5">
+              Fundamental Theorem of Arithmetic (Unique Factorization Theorem)
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-5"
+            onclick="toggleSectionRead('sec-5')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/70">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider mb-1.5">Theorem 5.1 · Statement</h4>
+          <p class="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-relaxed">
+            Every integer $n > 1$ can be expressed as a product of prime numbers, and this factorization is <strong>unique</strong> except for the order in which the prime factors appear. In canonical (standard) form:
+          </p>
+          <div class="my-3 py-2.5 px-4 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900 text-center">
+            $$n = p_1^{a_1} p_2^{a_2} \cdots p_k^{a_k} = \prod_{i=1}^{k} p_i^{a_i}, \quad p_1 < p_2 < \cdots < p_k \text{ primes, } a_i \in \mathbb{Z}^+$$
+          </div>
+        </div>
+
+        <!-- Collapsible Full Two-Part Proof of FTA -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-fta')"
+            class="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Complete Exam-Ready Two-Part Proof</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Part 1: Existence (Strong Induction) + Part 2: Uniqueness (Euclid's Lemma)
+              </p>
+            </div>
+            <span id="icon-proof-fta" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Full Proof</span>
+          </button>
+
+          <div id="proof-fta" class="hidden px-5 py-5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <!-- Part 1 -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-2">
+              <h5 class="font-bold text-indigo-700 dark:text-indigo-300 uppercase text-xs tracking-wider">Part 1: Existence (via Strong Mathematical Induction)</h5>
+              <p><strong>Base Case ($n = 2$):</strong> $2$ is itself a prime number, so it is a product of one prime. The statement holds for $n = 2$.</p>
+              <p><strong>Inductive Hypothesis:</strong> Assume that every integer $k$ with $2 \le k < n$ can be written as a product of primes.</p>
+              <p><strong>Inductive Step:</strong> Consider the integer $n > 2$:</p>
+              <ul class="list-disc pl-5 space-y-1">
+                <li><strong>Case 1:</strong> If $n$ is prime, then $n$ is already a product of one prime.</li>
+                <li><strong>Case 2:</strong> If $n$ is composite, then $n = ab$ for some integers $a, b$ satisfying $2 \le a < n$ and $2 \le b < n$. By the inductive hypothesis, both $a$ and $b$ can be written as products of primes. Therefore, their product $n = ab$ is also a product of primes.</li>
+              </ul>
+              <p>By Strong Induction, every integer $n > 1$ has at least one prime factorization.</p>
+            </div>
+
+            <!-- Part 2 -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-2">
+              <h5 class="font-bold text-indigo-700 dark:text-indigo-300 uppercase text-xs tracking-wider">Part 2: Uniqueness (via Euclid's Lemma &amp; Contradiction / Induction)</h5>
+              <p>Suppose an integer $n > 1$ admits two prime factorizations (ordered in non-decreasing order):</p>
+              <div class="text-center font-mono py-1">
+                $$n = p_1 p_2 \cdots p_r = q_1 q_2 \cdots q_s$$
+              </div>
+              <p>where all $p_i$ and $q_j$ are primes, $p_1 \le p_2 \le \cdots \le p_r$, and $q_1 \le q_2 \le \cdots \le q_s$. We show $r = s$ and $p_i = q_i$ for all $i$.</p>
+              <p>Since $p_1 \mid n$, we have $p_1 \mid (q_1 q_2 \cdots q_s)$. By <strong>Euclid's Lemma</strong>, $p_1$ must divide $q_j$ for some $j$. Because both $p_1$ and $q_j$ are prime, we must have $p_1 = q_j$. Since $q_1 \le q_j$, this implies $p_1 \ge q_1$.</p>
+              <p>By the exact same argument starting with $q_1 \mid (p_1 p_2 \cdots p_r)$, we obtain $q_1 = p_i$ for some $i$, so $q_1 \ge p_1$. Combining both inequalities gives $p_1 = q_1$.</p>
+              <p>Cancel $p_1 = q_1$ from both sides to get $p_2 \cdots p_r = q_2 \cdots q_s$. Repeating this cancellation step inductively (assuming without loss of generality $r \le s$), we eventually cancel all $p_i$'s:</p>
+              <div class="text-center font-mono py-1">
+                $$1 = q_{r+1} q_{r+2} \cdots q_s$$
+              </div>
+              <p>If $s > r$, the right-hand side is a product of primes ($\ge 2$), which cannot equal $1$—a contradiction! Hence $r = s$ and $p_i = q_i$ for every $i = 1, 2, \dots, r$. Therefore, the prime factorization is unique. $\blacksquare$</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 6: DIVISOR FUNCTIONS d(n) AND sigma_k(n) + LAB 3            -->
+      <!-- =================================================================== -->
+      <section id="sec-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 06 · From Class Notes</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Divisor Functions $d(n)$ and $\sigma_k(n)$
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-6"
+            onclick="toggleSectionRead('sec-6')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- d(n) card -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+            <h4 class="font-bold text-indigo-700 dark:text-indigo-300 text-base">Number of Divisors: $d(n)$</h4>
+            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              The arithmetic function $d(n)$ counts the total number of positive divisors of $n$. If the canonical prime factorization is $n = p_1^{a_1} p_2^{a_2} \cdots p_k^{a_k}$, then each divisor chooses an exponent $0 \le e_i \le a_i$ (giving $a_i + 1$ choices per prime):
+            </p>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+              $$d(n) = (a_1 + 1)(a_2 + 1)\cdots(a_k + 1) = \prod_{i=1}^k (a_i + 1)$$
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400">
+              <strong>Class Note Example ($n = 6$):</strong> $6 = 2^1 \cdot 3^1 \implies d(6) = (1+1)(1+1) = 4$. The divisors are $\{1, 2, 3, 6\}$.
+            </p>
+          </div>
+
+          <!-- sigma_k(n) card -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+            <h4 class="font-bold text-indigo-700 dark:text-indigo-300 text-base">Sum of $k$-th Powers of Divisors: $\sigma_k(n)$</h4>
+            <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              The generalized divisor function $\sigma_k(n)$ sums the $k$-th powers of all positive divisors $d$ of $n$:
+            </p>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+              $$\sigma_k(n) = \sum_{d \mid n} d^k$$
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400">
+              Notice that $\sigma_0(n) = \sum_{d \mid n} 1 = d(n)$, and $\sigma_1(n) = \sigma(n)$ is the sum of divisors.<br />
+              <strong>Class Note Example ($n = 6, k = 2$):</strong> $\sigma_2(6) = 1^2 + 2^2 + 3^2 + 6^2 = 1 + 4 + 9 + 36 = 50$.
+            </p>
+          </div>
+        </div>
+
+        <!-- ==================== INTERACTIVE LAB 3: PRIME FACTOR TREE & DIVISORS ==================== -->
+        <div id="lab-factor" class="scroll-mt-24 rounded-2xl bg-slate-50 dark:bg-slate-950 border-2 border-indigo-200 dark:border-indigo-900/80 p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03
+              </span>
+              <h4 class="text-lg font-bold text-slate-900 dark:text-white">Prime Factorization Tree &amp; Divisor Explorer</h4>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="setFactorPreset(6)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">n = 6</button>
+              <button type="button" onclick="setFactorPreset(756)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">n = 756</button>
+              <button type="button" onclick="setFactorPreset(360)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">n = 360</button>
+              <button type="button" onclick="setFactorPreset(1024)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">n = 1024</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+            <div class="sm:col-span-2">
+              <label for="factor-n" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Positive Integer $n$ ($2 \le n \le 100000$)</label>
+              <input id="factor-n" type="number" value="756" min="2" max="100000" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+            </div>
+            <button type="button" onclick="runFactorLab()" class="w-full px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-xs transition">
+              Factorize &amp; Explore
+            </button>
+          </div>
+
+          <div id="factor-error" class="hidden p-3 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 text-xs font-medium"></div>
+
+          <div id="factor-output" class="space-y-4">
+            <!-- SVG Factor Tree -->
+            <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto">
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Dynamic Prime Factor Tree</span>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-indigo-500"></span> Composite</span>
+                  <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Prime Leaf</span>
+                </div>
+              </div>
+              <svg id="factor-svg" class="w-full h-auto max-h-80 mx-auto block"></svg>
+            </div>
+
+            <!-- Canonical Form & d(n) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <div class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">Canonical Prime Factorization</div>
+                <div id="factor-canonical" class="font-mono text-base sm:text-lg font-bold text-indigo-600 dark:text-indigo-400"></div>
+              </div>
+              <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <div class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">Divisor Count $d(n)$</div>
+                <div id="factor-dn" class="font-mono text-sm sm:text-base font-bold text-emerald-600 dark:text-emerald-400"></div>
+              </div>
+            </div>
+
+            <!-- All Positive Divisors -->
+            <div class="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+              <div class="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">All Positive Divisors</div>
+              <div id="factor-divisors" class="flex flex-wrap gap-1.5 font-mono text-xs"></div>
+            </div>
+
+            <!-- Interactive sigma_k(n) Calculator -->
+            <div class="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/70 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="text-xs font-bold uppercase tracking-wider text-indigo-800 dark:text-indigo-200">
+                  Interactive $\sigma_k(n)$ Power-Sum Explorer
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-xs text-slate-600 dark:text-slate-300 mr-1">Choose $k$:</span>
+                  <button type="button" data-k="0" onclick="selectSigmaK(0)" class="sigma-k-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold border transition">k=0</button>
+                  <button type="button" data-k="1" onclick="selectSigmaK(1)" class="sigma-k-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold border transition">k=1</button>
+                  <button type="button" data-k="2" onclick="selectSigmaK(2)" class="sigma-k-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold border transition">k=2</button>
+                  <button type="button" data-k="3" onclick="selectSigmaK(3)" class="sigma-k-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold border transition">k=3</button>
+                </div>
+              </div>
+              <div id="factor-sigma" class="font-mono text-xs sm:text-sm text-slate-800 dark:text-slate-100 leading-relaxed break-words"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT                                                -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Past Papers</span>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 1)</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Try solving each question on paper first, then reveal the hint or full exam-ready solution.</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Exam Problem 1 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Incourse-1 2023 · AST 103</span>
+              <span class="text-xs font-mono text-slate-400">[1.5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. Find the remainder and quotient when $-110$ is divided by $7$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Remember the Division Algorithm requires $0 \le r < 7$. Find the largest multiple of $7$ that is $\le -110$.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p>By the Division Algorithm, we need unique integers $q, r$ such that $-110 = 7q + r$ with $0 \le r < 7$.</p>
+              <p>Since $7 \times (-15) = -105 > -110$, we step one multiple lower: $7 \times (-16) = -112 \le -110$.</p>
+              <p>Then $r = -110 - (-112) = 2$, which satisfies $0 \le 2 < 7$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: Quotient $q = -16$, Remainder $r = 2$.</p>
+            </div>
+          </article>
+
+          <!-- Exam Problem 2 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Incourse-1 2023 · AST 103</span>
+              <span class="text-xs font-mono text-slate-400">[1.5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. Find the prime factorization of $756$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Divide repeatedly by the smallest primes ($2$, then $3$, then $7$). Check $756 \div 4 = 189$.
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p>$756 = 2 \times 378 = 2^2 \times 189$.</p>
+              <p>Next, $189 = 3 \times 63 = 3^2 \times 21 = 3^3 \times 7$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $756 = 2^2 \times 3^3 \times 7$.</p>
+            </div>
+          </article>
+
+          <!-- Exam Problem 3 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Incourse-1 2019 · AST 104</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. Find $\gcd(272, 1479)$ using the Euclidean Algorithm.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Start with $1479 = 272 \times 5 + 119$, and keep replacing $(a, b)$ with $(b, r)$ until $r = 0$.
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5 font-mono">
+              <p>Step 1: 1479 = 272 × 5 + 119</p>
+              <p>Step 2: 272 = 119 × 2 + 34</p>
+              <p>Step 3: 119 = 34 × 3 + 17</p>
+              <p>Step 4: 34 = 17 × 2 + 0</p>
+              <p class="font-sans font-bold text-emerald-700 dark:text-emerald-400 pt-1">Answer: $\gcd(272, 1479) = 17$.</p>
+            </div>
+          </article>
+
+          <!-- Exam Problem 4 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Incourse-1 2023 · AST 103</span>
+              <span class="text-xs font-mono text-slate-400">[5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. If $p, q, r$ are integers with $p \neq 0$, prove: (a) if $p \mid q$ and $p \mid r$ then $p \mid (q+r)$; (b) if $p \mid q$ then $p \mid qr$ for all $r \in \mathbb{Z}$; (c) if $p \mid q$ and $q \mid r$ then $p \mid r$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Always start by translating $a \mid b$ into the equation $b = ak$ for some $k \in \mathbb{Z}$, then use integer closure under addition and multiplication.
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>(a)</strong> $p \mid q \implies q = pk_1$ and $p \mid r \implies r = pk_2$ ($k_1, k_2 \in \mathbb{Z}$). Thus $q + r = p(k_1 + k_2)$. Since $k_1 + k_2 \in \mathbb{Z}$, $p \mid (q+r)$.</p>
+              <p><strong>(b)</strong> $p \mid q \implies q = pk$ ($k \in \mathbb{Z}$). Multiplying by $r$ gives $qr = p(kr)$. Since $kr \in \mathbb{Z}$, $p \mid qr$.</p>
+              <p><strong>(c)</strong> $p \mid q \implies q = pk_1$ and $q \mid r \implies r = qk_2$. Substituting gives $r = (pk_1)k_2 = p(k_1 k_2)$. Since $k_1 k_2 \in \mathbb{Z}$, $p \mid r$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Exam Problem 5 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Incourse-1 2023 · AST 103</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. State the order properties of real numbers and prove that if $a, b, c \in \mathbb{R}$ such that $a > b$ and $b > c$, then $a > c$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> State the three axioms of $\mathbb{R}^+$ (closure under $+$, closure under $\times$, trichotomy), then add $(a-b) \in \mathbb{R}^+$ and $(b-c) \in \mathbb{R}^+$.
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Order Properties:</strong> There exists a nonempty subset $\mathbb{R}^+ \subset \mathbb{R}$ such that: (1) $a,b \in \mathbb{R}^+ \implies a+b \in \mathbb{R}^+$; (2) $a,b \in \mathbb{R}^+ \implies ab \in \mathbb{R}^+$; (3) For every $a \in \mathbb{R}$, exactly one of $a \in \mathbb{R}^+$, $a = 0$, or $-a \in \mathbb{R}^+$ holds.</p>
+              <p><strong>Proof of Transitivity:</strong> $a > b \implies a - b \in \mathbb{R}^+$, and $b > c \implies b - c \in \mathbb{R}^+$. By closure under addition, $(a - b) + (b - c) = a - c \in \mathbb{R}^+$, hence $a > c$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Exam Problem 6 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2017, 2023 &amp; Incourse 2019, 2021</span>
+              <span class="text-xs font-mono text-slate-400">[5–7 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. State and prove the Fundamental Theorem of Arithmetic (Unique Factorization Theorem).
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Always structure your exam answer into 3 clearly labeled blocks: <strong>Statement</strong>, <strong>Part 1: Existence</strong> (Strong Induction), and <strong>Part 2: Uniqueness</strong> (Euclid's Lemma + cancellation).
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Statement:</strong> Every integer $n > 1$ can be expressed as a product of primes, uniquely up to the order of the factors.</p>
+              <p><strong>Existence:</strong> Base case $n=2$ is prime. Assume true for all $2 \le k < n$. If $n$ is prime, done. If composite, $n = ab$ with $2 \le a, b < n$; by hypothesis both $a, b$ factor into primes, so $n = ab$ does too.</p>
+              <p><strong>Uniqueness:</strong> Let $n = p_1 \cdots p_r = q_1 \cdots q_s$ with $p_1 \le \dots \le p_r$ and $q_1 \le \dots \le q_s$. By Euclid's Lemma, $p_1 \mid q_j \implies p_1 = q_j \ge q_1$, and symmetrically $q_1 \ge p_1$, so $p_1 = q_1$. Canceling repeatedly forces $r = s$ and $p_i = q_i$ for all $i$ (otherwise $1$ would equal a product of primes, impossible). $\blacksquare$</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- INTERACTIVE QUICK-CHECK QUIZ                                        -->
+      <!-- =================================================================== -->
+      <section id="quick-quiz" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Self-Assessment</span>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Mastery Bar -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Quiz Questions Container -->
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <p>MATH 103: Foundations of Mathematics · Interactive Course Companion (Lesson 1 of 14)</p>
+        <p>Next up: <strong>Lesson 2 — Congruences, Diophantine Equations &amp; Classical Theorems</strong></p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX AUTO-RENDER HELPER
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    /* =========================================================================
+       2. THEME TOGGLE & MOBILE SIDEBAR
+       ========================================================================= */
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('math103-theme', isDark ? 'dark' : 'light');
+      // Re-draw SVGs so colors match the active theme
+      runDivisionLab();
+      runFactorLab();
+    });
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    mobileMenuBtn.addEventListener('click', openSidebar);
+    closeSidebarBtn.addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    // Close mobile sidebar when clicking any TOC link
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      const list = document.getElementById('roadmap-list');
+      const chev = document.getElementById('roadmap-chevron');
+      list.classList.toggle('hidden');
+      chev.classList.toggle('rotate-180');
+    }
+
+    /* =========================================================================
+       3. COLLAPSIBLE PROOFS & VAULT TOGGLES
+       ========================================================================= */
+    function toggleCollapsible(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById('icon-' + id);
+      const isHidden = el.classList.toggle('hidden');
+      if (icon) {
+        icon.textContent = isHidden ? (id === 'proof-fta' ? 'Show Full Proof' : 'Show Proof') : 'Hide Proof';
+      }
+      if (!isHidden) renderMath(el);
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    /* =========================================================================
+       4. LESSON PROGRESS TRACKING (6 SECTIONS + 5 QUIZ QUESTIONS)
+       ========================================================================= */
+    const readSections = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function toggleSectionRead(secId) {
+      if (readSections.has(secId)) {
+        readSections.delete(secId);
+      } else {
+        readSections.add(secId);
+      }
+      updateSectionButtons();
+      updateOverallProgress();
+    }
+
+    function updateSectionButtons() {
+      document.querySelectorAll('.section-read-btn').forEach((btn) => {
+        const secId = btn.dataset.section;
+        if (readSections.has(secId)) {
+          btn.className = 'section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white border border-emerald-600 hover:bg-emerald-700 transition flex items-center gap-1.5';
+          btn.innerHTML = '<span class="check-icon">✓</span> Completed';
+        } else {
+          btn.className = 'section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5';
+          btn.innerHTML = '<span class="check-icon">○</span> Mark as Read';
+        }
+      });
+    }
+
+    function updateOverallProgress() {
+      const totalItems = 6 + 5; // 6 sections + 5 quiz questions
+      const completed = readSections.size + quizAnsweredCount;
+      const pct = Math.round((completed / totalItems) * 100);
+
+      document.getElementById('header-progress-text').textContent = pct + '%';
+      document.getElementById('sidebar-progress-pct').textContent = pct + '%';
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${readSections.size}/6 sections read · ${quizAnsweredCount}/5 quiz answered`;
+    }
+
+    /* =========================================================================
+       5. INTERACTIVE LAB 1: DIVISION ALGORITHM & SVG NUMBER LINE
+       ========================================================================= */
+    function setDivPreset(a, b) {
+      document.getElementById('div-a').value = a;
+      document.getElementById('div-b').value = b;
+      runDivisionLab();
+    }
+
+    function runDivisionLab() {
+      const aVal = parseInt(document.getElementById('div-a').value, 10);
+      const bVal = parseInt(document.getElementById('div-b').value, 10);
+      const errBox = document.getElementById('div-error');
+      const outBox = document.getElementById('div-output');
+
+      if (Number.isNaN(aVal) || Number.isNaN(bVal) || bVal <= 0) {
+        errBox.textContent = 'Please enter a valid integer dividend a and a strictly positive integer divisor b > 0.';
+        errBox.classList.remove('hidden');
+        outBox.classList.add('hidden');
+        return;
+      }
+
+      errBox.classList.add('hidden');
+      outBox.classList.remove('hidden');
+
+      // Euclidean division: q = floor(a / b), r = a - b*q
+      const q = Math.floor(aVal / bVal);
+      const r = aVal - bVal * q;
+
+      document.getElementById('div-eq').textContent = `${aVal} = ${bVal} × (${q}) + ${r}`;
+      document.getElementById('div-q').textContent = q;
+      document.getElementById('div-r').textContent = r;
+      document.getElementById('div-check').textContent = `✓ Verified: 0 ≤ ${r} < ${bVal}`;
+
+      drawDivisionSVG(aVal, bVal, q, r);
+    }
+
+    function drawDivisionSVG(a, b, q, r) {
+      const svg = document.getElementById('div-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisColor = isDark ? '#475569' : '#94a3b8';
+      const textColor = isDark ? '#e2e8f0' : '#1e293b';
+      const subText = isDark ? '#94a3b8' : '#64748b';
+
+      const leftMult = b * q;
+      const rightMult = b * (q + 1);
+      // Number line spans from leftMult - 0.35*b to rightMult + 0.35*b
+      const xStart = 70;
+      const xEnd = 530;
+      const span = xEnd - xStart;
+
+      const xLeft = xStart + span * 0.18;
+      const xRight = xStart + span * 0.82;
+      const frac = r / b;
+      const xA = xLeft + frac * (xRight - xLeft);
+      const yAxis = 78;
+
+      let remainderArc = '';
+      if (r > 0) {
+        const midX = (xLeft + xA) / 2;
+        const arcY = yAxis - 36;
+        remainderArc = `
+          <path d="M ${xLeft} ${yAxis - 8} Q ${midX} ${arcY} ${xA} ${yAxis - 8}" fill="none" stroke="#10b981" stroke-width="2.5" stroke-dasharray="4 3" />
+          <polygon points="${xA},${yAxis - 8} ${xA - 7},${yAxis - 15} ${xA - 2},${yAxis - 18}" fill="#10b981" />
+          <rect x="${midX - 28}" y="${arcY - 12}" width="56" height="20" rx="6" fill="${isDark ? '#064e3b' : '#d1fae5'}" />
+          <text x="${midX}" y="${arcY + 2}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="${isDark ? '#6ee7b7' : '#047857'}">+r = ${r}</text>
+        `;
+      } else {
+        remainderArc = `
+          <rect x="${xLeft - 42}" y="20" width="84" height="20" rx="6" fill="${isDark ? '#064e3b' : '#d1fae5'}" />
+          <text x="${xLeft}" y="34" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="${isDark ? '#6ee7b7' : '#047857'}">Exact (r=0)</text>
+        `;
+      }
+
+      svg.innerHTML = `
+        <!-- Main horizontal axis -->
+        <line x1="30" y1="${yAxis}" x2="570" y2="${yAxis}" stroke="${axisColor}" stroke-width="2" />
+        <polygon points="570,${yAxis} 562,${yAxis - 4} 562,${yAxis + 4}" fill="${axisColor}" />
+        <polygon points="30,${yAxis} 38,${yAxis - 4} 38,${yAxis + 4}" fill="${axisColor}" />
+
+        <!-- Highlighted interval [bq, b(q+1)] -->
+        <line x1="${xLeft}" y1="${yAxis}" x2="${xRight}" y2="${yAxis}" stroke="#6366f1" stroke-width="4" opacity="0.35" />
+
+        <!-- Tick for bq -->
+        <line x1="${xLeft}" y1="${yAxis - 9}" x2="${xLeft}" y2="${yAxis + 9}" stroke="#6366f1" stroke-width="2.5" />
+        <text x="${xLeft}" y="${yAxis + 25}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="${textColor}">${leftMult}</text>
+        <text x="${xLeft}" y="${yAxis + 41}" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="${subText}">bq = ${b}×(${q})</text>
+
+        <!-- Tick for b(q+1) -->
+        <line x1="${xRight}" y1="${yAxis - 9}" x2="${xRight}" y2="${yAxis + 9}" stroke="#6366f1" stroke-width="2.5" />
+        <text x="${xRight}" y="${yAxis + 25}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="${textColor}">${rightMult}</text>
+        <text x="${xRight}" y="${yAxis + 41}" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="${subText}">b(q+1) = ${b}×(${q + 1})</text>
+
+        <!-- Remainder Arc -->
+        ${remainderArc}
+
+        <!-- Point a -->
+        <circle cx="${xA}" cy="${yAxis}" r="6.5" fill="#4f46e5" stroke="${isDark ? '#0f172a' : '#ffffff'}" stroke-width="2" />
+        <text x="${xA}" y="${yAxis - 15}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="800" fill="${isDark ? '#a5b4fc' : '#4338ca'}">a = ${a}</text>
+      `;
+    }
+
+    /* =========================================================================
+       6. INTERACTIVE LAB 2: EUCLIDEAN ALGORITHM & EXTENDED BEZOUT SOLVER
+       ========================================================================= */
+    function setEucPreset(a, b) {
+      document.getElementById('euc-a').value = a;
+      document.getElementById('euc-b').value = b;
+      runEuclideanLab();
+    }
+
+    function extendedGCD(a, b) {
+      if (b === 0) return { g: a, x: 1, y: 0 };
+      const res = extendedGCD(b, a % b);
+      return {
+        g: res.g,
+        x: res.y,
+        y: res.x - Math.floor(a / b) * res.y
+      };
+    }
+
+    function runEuclideanLab() {
+      const rawA = parseInt(document.getElementById('euc-a').value, 10);
+      const rawB = parseInt(document.getElementById('euc-b').value, 10);
+      const errBox = document.getElementById('euc-error');
+      const outBox = document.getElementById('euc-output');
+
+      if (Number.isNaN(rawA) || Number.isNaN(rawB) || (rawA === 0 && rawB === 0)) {
+        errBox.textContent = 'Please enter two integers that are not both zero.';
+        errBox.classList.remove('hidden');
+        outBox.classList.add('hidden');
+        return;
+      }
+
+      errBox.classList.add('hidden');
+      outBox.classList.remove('hidden');
+
+      const absA = Math.abs(rawA);
+      const absB = Math.abs(rawB);
+
+      // Build Euclidean division steps using non-negative magnitudes (larger first)
+      let currA = Math.max(absA, absB);
+      let currB = Math.min(absA, absB);
+      const steps = [];
+
+      if (currB === 0) {
+        steps.push({ a: currA, b: 0, q: '-', r: currA });
+      } else {
+        while (currB !== 0) {
+          const q = Math.floor(currA / currB);
+          const r = currA - currB * q;
+          steps.push({ a: currA, b: currB, q, r });
+          currA = currB;
+          currB = r;
+        }
+      }
+
+      const g = currA;
+      const lcm = (rawA === 0 || rawB === 0) ? 0 : Math.abs((rawA / g) * rawB);
+
+      // Compute Bézout coefficients for original signed rawA, rawB
+      const ext = extendedGCD(absA, absB);
+      const x = rawA < 0 ? -ext.x : ext.x;
+      const y = rawB < 0 ? -ext.y : ext.y;
+
+      document.getElementById('euc-gcd').textContent = g;
+      document.getElementById('euc-lcm').textContent = lcm.toLocaleString();
+
+      const coprimeEl = document.getElementById('euc-coprime');
+      if (g === 1) {
+        coprimeEl.innerHTML = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300">✓ Relatively Prime (Coprime)</span>';
+      } else {
+        coprimeEl.innerHTML = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Not Coprime (gcd &gt; 1)</span>';
+      }
+
+      const tbody = document.getElementById('euc-steps-body');
+      tbody.innerHTML = steps.map((s, idx) => {
+        const isGcdRow = s.r === g && s.b !== 0;
+        const rowCls = isGcdRow ? 'bg-emerald-50/70 dark:bg-emerald-950/30 font-bold' : '';
+        return `
+          <tr class="${rowCls}">
+            <td class="px-4 py-2 text-slate-500">#${idx + 1}</td>
+            <td class="px-4 py-2 text-slate-800 dark:text-slate-100">${s.b === 0 ? `gcd(${s.a}, 0) = ${s.a}` : `${s.a} = ${s.b} × ${s.q} + ${s.r}`}</td>
+            <td class="px-4 py-2 text-indigo-600 dark:text-indigo-400">${s.q}</td>
+            <td class="px-4 py-2 ${isGcdRow ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-700 dark:text-slate-300'}">${s.r}${isGcdRow ? ' ← gcd' : ''}</td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('euc-bezout').textContent =
+        `(${rawA})(${x}) + (${rawB})(${y}) = ${rawA * x + rawB * y}`;
+    }
+
+    /* =========================================================================
+       7. INTERACTIVE LAB 3: PRIME FACTOR TREE & DIVISOR EXPLORER
+       ========================================================================= */
+    let currentFactorN = 756;
+    let currentDivisors = [];
+    let currentSigmaK = 2;
+
+    function setFactorPreset(n) {
+      document.getElementById('factor-n').value = n;
+      runFactorLab();
+    }
+
+    function isPrime(num) {
+      if (num < 2) return false;
+      for (let i = 2; i * i <= num; i++) {
+        if (num % i === 0) return false;
+      }
+      return true;
+    }
+
+    // Build a balanced binary factor tree
+    function buildFactorTree(n) {
+      if (isPrime(n)) {
+        return { val: n, prime: true, left: null, right: null };
+      }
+      let f1 = 2;
+      for (let i = Math.floor(Math.sqrt(n)); i >= 2; i--) {
+        if (n % i === 0) {
+          f1 = i;
+          break;
+        }
+      }
+      const f2 = n / f1;
+      return {
+        val: n,
+        prime: false,
+        left: buildFactorTree(f1),
+        right: buildFactorTree(f2)
+      };
+    }
+
+    function getPrimeFactorization(n) {
+      const map = new Map();
+      let temp = n;
+      for (let d = 2; d * d <= temp; d++) {
+        while (temp % d === 0) {
+          map.set(d, (map.get(d) || 0) + 1);
+          temp /= d;
+        }
+      }
+      if (temp > 1) map.set(temp, (map.get(temp) || 0) + 1);
+      return Array.from(map.entries()); // [[p, exp], ...]
+    }
+
+    function getAllDivisors(n) {
+      const small = [];
+      const large = [];
+      for (let i = 1; i * i <= n; i++) {
+        if (n % i === 0) {
+          small.push(i);
+          if (i !== n / i) large.push(n / i);
+        }
+      }
+      return small.concat(large.reverse());
+    }
+
+    function drawFactorTreeSVG(root) {
+      const svg = document.getElementById('factor-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+
+      let leafCount = 0;
+      let maxDepth = 0;
+
+      // Assign coordinates using in-order leaf indexing
+      function layout(node, depth) {
+        maxDepth = Math.max(maxDepth, depth);
+        node.depth = depth;
+        if (!node.left && !node.right) {
+          node.xIndex = leafCount++;
+        } else {
+          layout(node.left, depth + 1);
+          layout(node.right, depth + 1);
+          node.xIndex = (node.left.xIndex + node.right.xIndex) / 2;
+        }
+      }
+      layout(root, 0);
+
+      const xGap = 62;
+      const yGap = 64;
+      const padX = 45;
+      const padY = 34;
+
+      const width = Math.max(300, (leafCount - 1) * xGap + padX * 2);
+      const height = Math.max(120, maxDepth * yGap + padY * 2);
+      const xOffset = (width - (leafCount - 1) * xGap) / 2;
+
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+      const edges = [];
+      const nodes = [];
+      const edgeStroke = isDark ? '#475569' : '#cbd5e1';
+
+      function collect(node) {
+        const cx = xOffset + node.xIndex * xGap;
+        const cy = padY + node.depth * yGap;
+        node.cx = cx;
+        node.cy = cy;
+
+        if (node.left) {
+          collect(node.left);
+          edges.push(`<line x1="${cx}" y1="${cy}" x2="${node.left.cx}" y2="${node.left.cy}" stroke="${edgeStroke}" stroke-width="2" />`);
+        }
+        if (node.right) {
+          collect(node.right);
+          edges.push(`<line x1="${cx}" y1="${cy}" x2="${node.right.cx}" y2="${node.right.cy}" stroke="${edgeStroke}" stroke-width="2" />`);
+        }
+
+        const r = String(node.val).length >= 5 ? 24 : 20;
+        const fill = node.prime ? '#10b981' : '#6366f1';
+        const fontSize = String(node.val).length >= 5 ? 10 : 12;
+
+        nodes.push(`
+          <g>
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${isDark ? '#0f172a' : '#ffffff'}" stroke-width="2.5" />
+            <text x="${cx}" y="${cy + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="${fontSize}" font-weight="700" fill="#ffffff">${node.val}</text>
+          </g>
+        `);
+      }
+
+      collect(root);
+      svg.innerHTML = edges.join('') + nodes.join('');
+    }
+
+    function runFactorLab() {
+      const n = parseInt(document.getElementById('factor-n').value, 10);
+      const errBox = document.getElementById('factor-error');
+      const outBox = document.getElementById('factor-output');
+
+      if (Number.isNaN(n) || n < 2 || n > 100000) {
+        errBox.textContent = 'Please enter an integer n between 2 and 100,000.';
+        errBox.classList.remove('hidden');
+        outBox.classList.add('hidden');
+        return;
+      }
+
+      errBox.classList.add('hidden');
+      outBox.classList.remove('hidden');
+
+      currentFactorN = n;
+      const tree = buildFactorTree(n);
+      drawFactorTreeSVG(tree);
+
+      const factors = getPrimeFactorization(n);
+      const canonicalHTML = factors
+        .map(([p, e]) => (e === 1 ? `${p}` : `${p}<sup>${e}</sup>`))
+        .join(' × ');
+      document.getElementById('factor-canonical').innerHTML = `${n} = ${canonicalHTML}`;
+
+      const dnFormula = factors.map(([, e]) => `(${e}+1)`).join(' × ');
+      const divisors = getAllDivisors(n);
+      currentDivisors = divisors;
+
+      document.getElementById('factor-dn').textContent = `d(${n}) = ${dnFormula} = ${divisors.length}`;
+
+      document.getElementById('factor-divisors').innerHTML = divisors
+        .map((d) => `<span class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">${d}</span>`)
+        .join('');
+
+      selectSigmaK(currentSigmaK);
+    }
+
+    function selectSigmaK(k) {
+      currentSigmaK = k;
+      document.querySelectorAll('.sigma-k-btn').forEach((btn) => {
+        const isActive = parseInt(btn.dataset.k, 10) === k;
+        btn.className = isActive
+          ? 'sigma-k-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-indigo-600 text-white border border-indigo-600 transition'
+          : 'sigma-k-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:border-indigo-500 transition';
+      });
+
+      // Use BigInt for accurate k=3 sums on larger integers
+      let total = 0n;
+      const bigK = BigInt(k);
+      for (const d of currentDivisors) {
+        total += BigInt(d) ** bigK;
+      }
+
+      const maxPreview = 10;
+      const terms = currentDivisors.slice(0, maxPreview).map((d) => `${d}<sup>${k}</sup>`);
+      const expanded = currentDivisors.length > maxPreview
+        ? `${terms.join(' + ')} + … + ${currentDivisors[currentDivisors.length - 1]}<sup>${k}</sup>`
+        : terms.join(' + ');
+
+      document.getElementById('factor-sigma').innerHTML =
+        `<strong>σ<sub>${k}</sub>(${currentFactorN})</strong> = ${expanded} = <span class="text-indigo-700 dark:text-indigo-300 font-extrabold">${total.toLocaleString()}</span>`;
+    }
+
+    /* =========================================================================
+       8. INTERACTIVE QUICK-CHECK QUIZ (5 EXAM-STYLE MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. According to the Division Algorithm, what are the quotient $q$ and remainder $r$ when $-83$ is divided by $9$?',
+        options: [
+          '$q = -9,\\; r = -2$',
+          '$q = -10,\\; r = 7$',
+          '$q = -9,\\; r = 2$',
+          '$q = -10,\\; r = -7$'
+        ],
+        answer: 1,
+        explanation: 'We require $0 \\le r < 9$. Since $9(-10) = -90 \\le -83$, we get $-83 = 9(-10) + 7$, so $q = -10$ and $r = 7$.'
+      },
+      {
+        q: '2. Let $p, q, r \\in \\mathbb{Z}$ with $p \\neq 0$. If $p \\mid q$ and $p \\mid r$, which of the following is ALWAYS true?',
+        options: [
+          '$q \\mid r$',
+          '$p \\mid (3q - 5r)$',
+          '$\\gcd(q, r) = p$',
+          '$p$ must be a prime number'
+        ],
+        answer: 1,
+        explanation: 'By divisibility properties (Theorem 2.1), $p \\mid q \\implies p \\mid 3q$ and $p \\mid r \\implies p \\mid (-5r)$, so $p$ divides any integer linear combination $3q - 5r$.'
+      },
+      {
+        q: '3. Suppose $d = \\gcd(a, b) = 6$ and $ab = 216$ (with $a, b > 0$). What is $\\operatorname{lcm}(a, b)$ and what is $\\gcd(a/6, b/6)$?',
+        options: [
+          '$\\operatorname{lcm} = 36,\\; \\gcd(a/6, b/6) = 1$',
+          '$\\operatorname{lcm} = 36,\\; \\gcd(a/6, b/6) = 6$',
+          '$\\operatorname{lcm} = 1296,\\; \\gcd(a/6, b/6) = 1$',
+          '$\\operatorname{lcm} = 18,\\; \\gcd(a/6, b/6) = 2$'
+        ],
+        answer: 0,
+        explanation: 'Using $\\gcd(a,b) \\cdot \\operatorname{lcm}(a,b) = |ab|$, we get $\\operatorname{lcm}(a,b) = 216/6 = 36$. Also, dividing both numbers by their GCD always yields coprime integers: $\\gcd(a/d, b/d) = 1$.'
+      },
+      {
+        q: '4. Given the prime factorization $756 = 2^2 \\cdot 3^3 \\cdot 7^1$, how many positive divisors $d(756)$ does $756$ have?',
+        options: [
+          '$6$',
+          '$12$',
+          '$24$',
+          '$36$'
+        ],
+        answer: 2,
+        explanation: 'Using $d(n) = \\prod (a_i + 1)$, we compute $d(756) = (2+1)(3+1)(1+1) = 3 \\times 4 \\times 2 = 24$.'
+      },
+      {
+        q: '5. Why is the integer $1$ excluded from the definition of prime numbers?',
+        options: [
+          'Because $1$ is divisible by $0$',
+          'Because $1$ is a composite number',
+          'Because including $1$ would violate the uniqueness of prime factorization in the Fundamental Theorem of Arithmetic',
+          'Because $\\gcd(1, p) = p$ for all primes $p$'
+        ],
+        answer: 2,
+        explanation: 'If $1$ were prime, any integer like $6$ would have infinitely many prime factorizations ($2\\cdot 3$, $1\\cdot 2\\cdot 3$, $1^2\\cdot 2\\cdot 3$, etc.), destroying uniqueness.'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false, chosen: null }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div id="quiz-card-${qIdx}" class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizState[qIdx].chosen = optIdx;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       9. INITIALIZATION ON WINDOW LOAD
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      runDivisionLab();
+      runEuclideanLab();
+      runFactorLab();
+      renderQuiz();
+      updateOverallProgress();
+
+      // Wait briefly if KaTeX defer script is still parsing, then render all LaTeX
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

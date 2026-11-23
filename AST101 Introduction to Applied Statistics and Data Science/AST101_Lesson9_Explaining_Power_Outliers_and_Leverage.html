@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 9: Explaining Power, Extrapolation, Outliers & Leverage</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #dc2626, #d97706, #2563eb);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #dc2626, #d97706);
+      color: #fff; font-weight: 800; font-size: 15px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #dc2626, var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #991b1b 0%, #c2410c 46%, #1d4ed8 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.78;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+    .row-high { background: var(--danger-soft); }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .btn-primary {
+      padding: 8px 15px; border-radius: 9px; border: none;
+      background: var(--primary); color: #fff; font-weight: 700; font-size: 13.5px;
+      cursor: pointer; transition: background 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 16.5px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .high-pill {
+      display: inline-block; padding: 2px 8px; border-radius: 99px;
+      font-size: 11.5px; font-weight: 700; background: var(--danger-soft); color: var(--danger);
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 9</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L9</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 9 Progress</span>
+          <span id="progress-text">0 / 7</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. SST = SSR + SSE &amp; R²</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. SER (s) &amp; Slope Error SE(β̂)</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Extrapolation &amp; Its Dangers</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Outliers, Influence &amp; Leverage</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Interactive Leverage &amp; Influence Lab</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Proofs &amp; Derivations Vault</a></li>
+          <li><a class="nav-link" href="#sec-7" data-sec="sec-7"><span class="nav-check">✓</span>7. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 3 of 4 • 2nd Incourse &amp; Final Core</span>
+          <span class="badge">Lesson 9 of 12 (Slide Deck L9)</span>
+          <span class="badge">⏱ Est. Study Time: 60 mins</span>
+        </div>
+        <h1>Explaining Power, Extrapolation, Outliers &amp; Leverage</h1>
+        <p class="subtitle">
+          Evaluate how well a regression line actually performs—decompose total variation into SST = SSR + SSE, interpret R² and Standard Error of Regression (s), avoid dangerous extrapolation, and diagnose influential high-leverage points using h<sub>ii</sub> ≥ 2/n.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L9 Slides + Mihad Notes</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 34–35</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2019–2024</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Sum of Squares Decomposition &amp; Coefficient of Determination (<em>R²</em>)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p>Once we fit an OLS line <span class="mono">ŷ<sub>i</sub> = α̂ + β̂x<sub>i</sub></span>, we need to quantify how much of the total spread in <em>Y</em> our model actually explains. The total variation around the mean splits cleanly into two orthogonal components:</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag">Total Sum of Squares (SST)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">SST = Σ (y<sub>i</sub> − ȳ)²</div>
+            <p style="font-size:13.5px; margin-bottom:0">Total variation of observed <em>Y</em> values around their overall mean <span class="mono">ȳ</span>.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Regression SS (SSR)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">SSR = Σ (ŷ<sub>i</sub> − ȳ)²</div>
+            <p style="font-size:13.5px; margin-bottom:0"><strong>Explained</strong> variation attributable to the linear influence of <em>X</em> on <em>Y</em>.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">Error SS (SSE)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">SSE = Σ (y<sub>i</sub> − ŷ<sub>i</sub>)²</div>
+            <p style="font-size:13.5px; margin-bottom:0"><strong>Unexplained</strong> variation due to noise and factors other than <em>X</em> (minimized by OLS).</p>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          Fundamental Identity: &nbsp; SST = SSR + SSE<br>
+          Coefficient of Determination: &nbsp; R² = SSR / SST = 1 − (SSE / SST) = β̂² [ Σx² − (Σx)²/n ] / [ Σy² − (Σy)²/n ]
+        </div>
+
+        <div class="callout tip">
+          <strong class="callout-title">Exam Interpretation of R² (Final 2019 Q1d)</strong>
+          <span class="mono">0 ≤ R² ≤ 1</span>. Multiply by 100: <strong>"100·R²% of the total variation in the dependent variable Y is explained by the fitted regression model (variation in X)."</strong><br>
+          <em>Slide Cholesterol Example:</em> <span class="mono">SSR = 70.77, SST = 194.4 ⇒ R² = 70.77 / 194.4 = <strong>0.364</strong></span> → 36.4% of the variation in cholesterol level is explained by weight (leaving 63.6%, or <span class="mono">SSE = 123.63</span>, unexplained).
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02</div>
+            <h2>Standard Error of the Regression (SER) &amp; Slope Uncertainty</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>While <span class="mono">R²</span> gives a unit-free percentage, it does not tell you how far off your predictions are in the original units of <em>Y</em>. For prediction precision, we use two standard error measures:</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag purple">1. Standard Error of the Regression (s / SER)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13.2px">
+              s = √[ SSE / (n − 2) ] = √[ (1 / (n − 2)) Σ (y<sub>i</sub> − ŷ<sub>i</sub>)² ]
+            </div>
+            <ul style="font-size:13.8px; margin-bottom:0">
+              <li>Measures the <strong>average distance</strong> that observed values fall from the regression line (in the original units of <em>Y</em>).</li>
+              <li><strong>Smaller <em>s</em> is better</strong> (tighter predictions). Approximately <strong>95%</strong> of observations fall within <span class="mono">±2s</span> of the fitted line.</li>
+              <li><em>Cholesterol Example (n = 10):</em> <span class="mono">s = √(123.63 / 8) = <strong>3.93</strong></span>.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">2. Standard Error of the Slope SE(β̂)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13.2px">
+              SE(β̂) = s / √[ Σ (x<sub>i</sub> − x̄)² ]
+            </div>
+            <ul style="font-size:13.8px; margin-bottom:0">
+              <li>Quantifies the <strong>uncertainty</strong> in the estimated slope <span class="mono">β̂</span>.</li>
+              <li>Decreases when residual noise <span class="mono">s</span> is small OR when the predictor <span class="mono">X</span> is spread widely (large <span class="mono">S<sub>xx</sub></span>).</li>
+              <li><em>Cholesterol Example:</em> <span class="mono">SE(β̂) = 3.93 / √(138.5) = <strong>0.334</strong></span>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Extrapolation &amp; Why It Can Produce Absurd Predictions</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <p><strong>Extrapolation</strong> is using a fitted regression equation to predict <em>Y</em> for values of the independent variable <em>X</em> <strong>outside the range of the observed X-data</strong>. Even a model with an impressive <span class="mono">R² = 0.914</span> can fail dramatically outside its observed domain because linearity may break down (or the slope may flatten).</p>
+
+        <div class="lab-panel">
+          <h4 style="margin-top:0">Slide Example (L9 Slides 25–30): Children's Age vs. Height Extrapolation</h4>
+          <p style="font-size:13.8px">A linear model fitted to youths (Ages 1–18) gives <span class="mono">Height = 30.38 + 2.06 × Age</span> with <span class="mono">R² = 0.914</span>. Drag the Age slider past 18 to watch extrapolation break down compared to real adult heights (which plateau around ~64 inches!):</p>
+          <div class="control-row">
+            <span style="min-width:130px">Age: <strong id="ext-age-val" style="color:var(--primary)">30</strong> years</span>
+            <input type="range" id="ext-age" min="2" max="50" step="1" value="30" style="flex:1" oninput="renderExtrap()" />
+          </div>
+          <div id="ext-out" class="formula-box" style="margin-bottom:0"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • 2nd Incourse '24 &amp; Finals '22, '24</div>
+            <h2>Outliers, Influential Observations &amp; Leverage (<em>h<sub>ii</sub></em>)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag amber">1. Outlier (Vertical)</span>
+            <p style="font-size:13.8px; margin-bottom:0">An atypical, abnormal observation that does not follow the regular pattern of the data (large residual in the <strong>Y-direction</strong>). Because OLS squares residuals, outliers can pull the line and distort <em>r</em>.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">2. Influential Observation</span>
+            <p style="font-size:13.8px; margin-bottom:0">An observation is <strong>influential</strong> if <strong>removing it markedly changes</strong> the regression results (slope <span class="mono">β̂</span>, intercept <span class="mono">α̂</span>, or <span class="mono">R²</span>).</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">3. High-Leverage Point (Horizontal)</span>
+            <p style="font-size:13.8px; margin-bottom:0">An extreme point in the <strong>X-direction</strong> (far from <span class="mono">x̄</span>). Leverage depends <strong>ONLY on X</strong> (never on Y!) and acts like a long lever arm that can tilt the regression line.</p>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          Leverage of Observation i (SLR): &nbsp; h<sub>ii</sub> = (1 / n) + [ (x<sub>i</sub> − x̄)² / Σ(x<sub>j</sub> − x̄)² ]<br>
+          High-Leverage Cutoff Rule: &nbsp; h<sub>ii</sub> ≥ 2 / n &nbsp;&nbsp;(Note: 1/n ≤ h<sub>ii</sub> ≤ 1, and Σ h<sub>ii</sub> = 2 always!)
+        </div>
+
+        <div class="callout warn">
+          <strong class="callout-title">Key Distinction: High Leverage ≠ Automatically Influential!</strong>
+          A point far out in <em>X</em> has <strong>high leverage</strong> (high <em>potential</em> to tilt the line). If it lies right along the existing trend line, removing it barely changes <span class="mono">β̂</span> (high leverage, <em>low</em> influence). If it deviates vertically from the trend, it becomes <strong>strongly influential</strong>!
+        </div>
+      </section>
+
+      <!-- SECTION 5: INTERACTIVE LEVERAGE & INFLUENCE PLAYGROUND -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Interactive Lab (Orion Car Data)</div>
+            <h2>Leverage &amp; Influence Playground</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <p>Explore Dr. Masud's exact <strong>Orion Car Data (n = 11)</strong> from L9 Slides 35–39! Toggle <strong>Car #9 (Age = 2 yrs, Price = $169k)</strong> on/off to see the fitted line jump from <span class="mono">195.47 − 20.26x</span> (<span class="mono">R² = 0.8534</span>) to <span class="mono">160.33 − 14.24x</span> (<span class="mono">R² = 0.6538</span>)—or slide Car #9's Age (X) and Price (Y) yourself to watch leverage <span class="mono">h<sub>99</sub></span> and the line tilt in real time!</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Car #9 Scenario:</strong>
+            <button class="tab-btn active" onclick="setCar9Mode('orig', this)">Original Car #9 (Age=2, Price=169)</button>
+            <button class="tab-btn" onclick="setCar9Mode('drop', this)">Drop Car #9 (See Influence!)</button>
+            <button class="tab-btn" onclick="setCar9Mode('vert', this)">Vertical Outlier Only (Age=5.3, Price=190)</button>
+            <button class="tab-btn" onclick="setCar9Mode('lev_no_inf', this)">High Leverage, Low Influence (Age=1, Price=146)</button>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:8px">
+            <div class="lab-panel" style="margin-top:0">
+              <div class="control-row" style="margin-bottom:6px">
+                <span>Car #9 Age (<strong>X</strong>): <strong id="c9-x-val" style="color:var(--danger)">2.0</strong> yrs</span>
+                <input type="range" id="c9-x" min="1" max="10" step="0.1" value="2" style="flex:1" oninput="dragCar9()" />
+              </div>
+              <div class="control-row" style="margin-bottom:0">
+                <span>Car #9 Price (<strong>Y</strong>): <strong id="c9-y-val" style="color:var(--danger)">169</strong> ($000)</span>
+                <input type="range" id="c9-y" min="20" max="220" step="1" value="169" style="flex:1" oninput="dragCar9()" />
+              </div>
+            </div>
+            <div class="lab-panel" style="margin-top:0; display:flex; flex-direction:column; justify-content:center; font-size:13.8px" id="c9-verdict"></div>
+          </div>
+
+          <div style="text-align:center">
+            <svg id="lev-svg" viewBox="0 0 680 330" width="100%" style="max-width:680px; height:auto; background:var(--surface); border:1px solid var(--border); border-radius:10px"></svg>
+          </div>
+
+          <div class="metric-grid" id="lev-metrics"></div>
+
+          <details style="margin-top:12px">
+            <summary>Show Full Orion Car Leverage Table (Compare h<sub>ii</sub> vs. 2/n = 0.1818)</summary>
+            <div class="details-body">
+              <div class="table-wrap" style="margin:0">
+                <table>
+                  <thead>
+                    <tr><th>Car #</th><th>Age (X)</th><th>Price ($000)</th><th>(x<sub>i</sub> − x̄)²</th><th>Leverage h<sub>ii</sub></th><th>Status (2/n)</th></tr>
+                  </thead>
+                  <tbody id="lev-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- SECTION 6: PROOFS VAULT -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • High-Yield Proofs</div>
+            <h2>Proofs &amp; Derivations Vault</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <details open>
+          <summary><span><span class="proof-badge">Proof 1</span> Sum of Squares Decomposition: SST = SSE + SSR</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Start with SST = Σ(y<sub>i</sub> − ȳ)². Add and subtract ŷ<sub>i</sub> inside the parenthesis:<br>
+            SST = Σ [ (y<sub>i</sub> − ŷ<sub>i</sub>) + (ŷ<sub>i</sub> − ȳ) ]² = Σ(y<sub>i</sub> − ŷ<sub>i</sub>)² + Σ(ŷ<sub>i</sub> − ȳ)² + 2 Σ(y<sub>i</sub> − ŷ<sub>i</sub>)(ŷ<sub>i</sub> − ȳ).</div>
+            <div class="proof-step">Examine the cross-product term (writing e<sub>i</sub> = y<sub>i</sub> − ŷ<sub>i</sub> and ŷ<sub>i</sub> = α̂ + β̂x<sub>i</sub>):<br>
+            2 Σ e<sub>i</sub>(ŷ<sub>i</sub> − ȳ) = 2 Σ e<sub>i</sub>ŷ<sub>i</sub> − 2ȳ Σ e<sub>i</sub> = 2 Σ e<sub>i</sub>(α̂ + β̂x<sub>i</sub>) − 2ȳ Σ e<sub>i</sub><br>
+            = 2α̂ Σ e<sub>i</sub> + 2β̂ Σ e<sub>i</sub>x<sub>i</sub> − 2ȳ Σ e<sub>i</sub>.</div>
+            <div class="proof-step">From the OLS normal equations (Lesson 7), Σ e<sub>i</sub> = 0 and Σ e<sub>i</sub>x<sub>i</sub> = 0! Therefore the entire cross-product term equals <strong>0</strong>.</div>
+            <div class="proof-step">Hence: Σ(y<sub>i</sub> − ȳ)² = Σ(y<sub>i</sub> − ŷ<sub>i</sub>)² + Σ(ŷ<sub>i</sub> − ȳ)²  ⇒  <strong>SST = SSE + SSR</strong>.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Proof 2</span> Computational Formula for R² in Terms of β̂, S<sub>xx</sub>, and S<sub>yy</sub></span></summary>
+          <div class="details-body">
+            <div class="proof-step">Since ŷ<sub>i</sub> = α̂ + β̂x<sub>i</sub> and ȳ = α̂ + β̂x̄, we have ŷ<sub>i</sub> − ȳ = β̂(x<sub>i</sub> − x̄).</div>
+            <div class="proof-step">Thus SSR = Σ(ŷ<sub>i</sub> − ȳ)² = β̂² Σ(x<sub>i</sub> − x̄)² = β̂² [ Σx<sub>i</sub>² − (Σx<sub>i</sub>)² / n ].</div>
+            <div class="proof-step">Dividing by SST = Σ(y<sub>i</sub> − ȳ)² = Σy<sub>i</sub>² − (Σy<sub>i</sub>)² / n gives:<br>
+            <strong>R² = SSR / SST = { β̂² [ Σx<sub>i</sub>² − (Σx<sub>i</sub>)²/n ] } / [ Σy<sub>i</sub>² − (Σy<sub>i</sub>)²/n ]</strong>.  [Proved]</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 7: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-7">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 07 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2019–2024)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-7')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Questions &amp; Model Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2024 Q7(c), Final 2022 Q7(c) &amp; 2nd Incourse 2024</span> Outliers, Influential Points &amp; Leverage [3 Marks]</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> In regression analysis, what is (i) an outlier and (ii) an influential observation? How do you quantify and interpret the leverage of a point?</p>
+            <p><strong>Model Solution:</strong></p>
+            <ul>
+              <li><strong>(i) Outlier:</strong> An abnormal, infrequent observation that deviates far from the general pattern of the data (large vertical residual in <em>Y</em>), which can distort the OLS line because squared errors weight extreme residuals heavily.</li>
+              <li><strong>(ii) Influential Observation:</strong> A data point whose removal markedly alters the fitted regression equation (slope <span class="mono">β̂</span>, intercept <span class="mono">α̂</span>, or <span class="mono">R²</span>).</li>
+              <li><strong>Leverage (<span class="mono">h<sub>ii</sub></span>):</strong> Measures how far an observation's predictor value <span class="mono">x<sub>i</sub></span> lies from the center <span class="mono">x̄</span> (depends <em>only on X</em>):<br>
+              <span class="mono">h<sub>ii</sub> = (1/n) + (x<sub>i</sub> − x̄)² / Σ(x<sub>j</sub> − x̄)²</span>.<br>
+              <strong>Interpretation:</strong> Ranges from <span class="mono">1/n</span> to <span class="mono">1</span>. Traditionally, a point with <strong><span class="mono">h<sub>ii</sub> ≥ 2/n</span></strong> is flagged as a <strong>high-leverage point</strong>—meaning it has strong potential to tilt the regression line and should be inspected for influence.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2019 • Q1(d) [1 Mark]</span> Coefficient of Determination &amp; Its Importance</span></summary>
+          <div class="details-body">
+            <p><strong>Model Solution:</strong> The <strong>Coefficient of Determination (<span class="mono">R² = SSR / SST</span>)</strong> is the proportion of total variation in the dependent variable <em>Y</em> that is explained by the variation in the independent variable <em>X</em> via the fitted regression model. It is important because it provides a unit-free, standardized goodness-of-fit score between 0 and 1 showing how effectively the regression model explains and predicts <em>Y</em>.</p>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l9_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l9_theme') || localStorage.getItem('ast101_l8_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l9_done') || '[]');
+    function syncProgress() {
+      const total = 7;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l9_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l9_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Extrapolation Demo (Age vs Height) ----------
+    function renderExtrap() {
+      const age = parseInt(document.getElementById('ext-age').value, 10);
+      document.getElementById('ext-age-val').textContent = age;
+      const pred = 30.38 + 2.06 * age;
+      const ft = Math.floor(pred / 12), inch = (pred % 12).toFixed(1);
+      const out = document.getElementById('ext-out');
+      if (age <= 18) {
+        out.innerHTML = `<span style="color:var(--success)">✓ Within Observed Youth Range (1–18 yrs):</span> Predicted Height = 30.38 + 2.06(${age}) = <strong>${pred.toFixed(1)} inches</strong> (${ft}' ${inch}") — Realistic!`;
+      } else {
+        out.innerHTML = `<span style="color:var(--danger)">⚠ EXTRAPOLATION WARNING (Age ${age} &gt; 18):</span> Predicted Height = 30.38 + 2.06(${age}) = <strong>${pred.toFixed(1)} inches</strong> (${ft}' ${inch}") — Unrealistic! Human growth plateaus after ~18 years (~64 in average).`;
+      }
+    }
+    renderExtrap();
+
+    // ---------- Interactive Leverage & Influence Lab (Orion Car Data) ----------
+    const baseOrion = [
+      { id: 1, x: 5, y: 85 }, { id: 2, x: 4, y: 103 }, { id: 3, x: 6, y: 70 },
+      { id: 4, x: 5, y: 82 }, { id: 5, x: 5, y: 89 },  { id: 6, x: 5, y: 98 },
+      { id: 7, x: 6, y: 66 }, { id: 8, x: 6, y: 95 },  { id: 10, x: 7, y: 70 },
+      { id: 11, x: 7, y: 48 }
+    ];
+    let includeCar9 = true;
+    let car9 = { id: 9, x: 2, y: 169 };
+
+    function olsFull(pts) {
+      const n = pts.length;
+      const mx = pts.reduce((s, p) => s + p.x, 0) / n;
+      const my = pts.reduce((s, p) => s + p.y, 0) / n;
+      let sxx = 0, syy = 0, sxy = 0;
+      pts.forEach(p => {
+        sxx += (p.x - mx) ** 2;
+        syy += (p.y - my) ** 2;
+        sxy += (p.x - mx) * (p.y - my);
+      });
+      const b = sxy / sxx;
+      const a = my - b * mx;
+      const ssr = b * b * sxx;
+      const sse = Math.max(0, syy - ssr);
+      const r2 = syy > 0 ? ssr / syy : 0;
+      const s = Math.sqrt(sse / (n - 2));
+      const seB = s / Math.sqrt(sxx);
+      const lev = pts.map(p => 1 / n + ((p.x - mx) ** 2) / sxx);
+      return { n, mx, my, sxx, syy, a, b, ssr, sse, r2, s, seB, lev, cutoff: 2 / n };
+    }
+
+    const baseFit = olsFull(baseOrion); // Reference line WITHOUT Car #9: 160.33 - 14.24x
+
+    function setCar9Mode(mode, btn) {
+      if (btn) {
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      if (mode === 'drop') {
+        includeCar9 = false;
+      } else {
+        includeCar9 = true;
+        if (mode === 'orig') { car9.x = 2; car9.y = 169; }
+        if (mode === 'vert') { car9.x = 5.3; car9.y = 190; }
+        if (mode === 'lev_no_inf') { car9.x = 1; car9.y = Math.round(baseFit.a + baseFit.b * 1); }
+        document.getElementById('c9-x').value = car9.x;
+        document.getElementById('c9-y').value = car9.y;
+      }
+      renderLevLab();
+    }
+
+    function dragCar9() {
+      includeCar9 = true;
+      car9.x = parseFloat(document.getElementById('c9-x').value);
+      car9.y = parseFloat(document.getElementById('c9-y').value);
+      renderLevLab();
+    }
+
+    function renderLevLab() {
+      document.getElementById('c9-x-val').textContent = car9.x.toFixed(1);
+      document.getElementById('c9-y-val').textContent = car9.y.toFixed(0);
+
+      const activePts = includeCar9 ? [...baseOrion.slice(0, 8), car9, ...baseOrion.slice(8)] : [...baseOrion];
+      const fit = olsFull(activePts);
+
+      const c9Idx = includeCar9 ? 8 : -1;
+      const h9 = includeCar9 ? fit.lev[c9Idx] : 0;
+      const isHighLev = includeCar9 && h9 >= fit.cutoff;
+      const slopeShift = Math.abs(fit.b - baseFit.b);
+      const isInfluential = includeCar9 && slopeShift > 2.5;
+
+      const vBox = document.getElementById('c9-verdict');
+      if (!includeCar9) {
+        vBox.innerHTML = `<strong style="color:var(--success)">Car #9 Dropped (n = 10):</strong><br>Baseline line: <span class="mono">Ŷ = ${fit.a.toFixed(2)} ${fit.b>=0?'+':'−'} ${Math.abs(fit.b).toFixed(2)}x</span>, R² = <strong>${fit.r2.toFixed(4)}</strong>.`;
+      } else {
+        vBox.innerHTML = `<strong>Car #9 Leverage (h<sub>99</sub>):</strong> <span class="mono">${h9.toFixed(4)}</span> vs. cutoff <span class="mono">2/11 = 0.1818</span> → ${isHighLev ? '<span class="high-pill">HIGH LEVERAGE</span>' : '<span style="color:var(--success);font-weight:700">Normal Leverage</span>'}<br>
+          <strong>Slope Change vs. Baseline:</strong> <span class="mono">Δβ̂ = ${(fit.b - baseFit.b).toFixed(2)}</span> → ${isInfluential ? '<span class="high-pill">STRONGLY INFLUENTIAL</span>' : '<span style="color:var(--success);font-weight:700">Low Influence</span>'}`;
+      }
+
+      document.getElementById('lev-metrics').innerHTML = [
+        ["Fitted Equation", `${fit.a.toFixed(1)} ${fit.b>=0?'+':'−'} ${Math.abs(fit.b).toFixed(2)}x`],
+        ["R² (Explaining Power)", `${(fit.r2 * 100).toFixed(2)}%`],
+        ["SER (s)", fit.s.toFixed(2)],
+        ["SE(β̂)", fit.seB.toFixed(3)],
+        ["Cutoff (2/n)", fit.cutoff.toFixed(4)],
+        ["Car #9 h_99", includeCar9 ? h9.toFixed(4) : "Dropped"]
+      ].map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+      // Leverage Table
+      document.getElementById('lev-table-body').innerHTML = activePts.map((p, i) => {
+        const hi = fit.lev[i];
+        const high = hi >= fit.cutoff;
+        return `<tr class="${high ? 'row-high' : ''}">
+          <td><strong>#${p.id}${p.id === 9 ? ' (Movable)' : ''}</strong></td>
+          <td>${p.x.toFixed(1)}</td>
+          <td>${p.y}</td>
+          <td>${((p.x - fit.mx) ** 2).toFixed(4)}</td>
+          <td><strong>${hi.toFixed(5)}</strong></td>
+          <td>${high ? '<span class="high-pill">HIGH (≥ 2/n)</span>' : 'Normal'}</td>
+        </tr>`;
+      }).join('');
+
+      // Draw SVG
+      const svg = document.getElementById('lev-svg');
+      const W = 680, H = 330, padL = 54, padR = 24, padT = 22, padB = 40;
+      const pW = W - padL - padR, pH = H - padT - padB;
+      const minX = 0, maxX = 10.5, minY = 0, maxY = 230;
+      const sx = x => padL + ((x - minX) / (maxX - minX)) * pW;
+      const sy = y => padT + pH - ((y - minY) / (maxY - minY)) * pH;
+
+      let out = `<defs><clipPath id="levClip"><rect x="${padL}" y="${padT}" width="${pW}" height="${pH}"/></clipPath></defs>`;
+      out += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+pH}" stroke="currentColor" opacity="0.4"/>`;
+      out += `<line x1="${padL}" y1="${padT+pH}" x2="${padL+pW}" y2="${padT+pH}" stroke="currentColor" opacity="0.4"/>`;
+
+      for (let x = 0; x <= 10; x += 2) out += `<text x="${sx(x)}" y="${padT+pH+16}" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">${x}</text>`;
+      for (let y = 0; y <= 200; y += 50) out += `<text x="${padL-8}" y="${sy(y)+4}" text-anchor="end" font-size="10.5" fill="currentColor" opacity="0.75">${y}</text>`;
+      out += `<text x="${padL+pW/2}" y="${H-6}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Car Age (Years)</text>`;
+      out += `<text x="16" y="${padT+pH/2}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" transform="rotate(-90 16 ${padT+pH/2})">Price ($000)</text>`;
+
+      let inner = '';
+      // Reference baseline line (without Car #9)
+      inner += `<line x1="${sx(minX)}" y1="${sy(baseFit.a + baseFit.b * minX)}" x2="${sx(maxX)}" y2="${sy(baseFit.a + baseFit.b * maxX)}" stroke="#059669" stroke-width="2.2" stroke-dasharray="6 4"/>`;
+      // Active fitted line
+      inner += `<line x1="${sx(minX)}" y1="${sy(fit.a + fit.b * minX)}" x2="${sx(maxX)}" y2="${sy(fit.a + fit.b * maxX)}" stroke="#2563eb" stroke-width="3"/>`;
+
+      // Base 10 cars
+      baseOrion.forEach(p => {
+        inner += `<circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="5" fill="#1d4ed8" stroke="#fff" stroke-width="1.5"/>`;
+      });
+      // Car #9 highlighted
+      if (includeCar9) {
+        inner += `<circle cx="${sx(car9.x)}" cy="${sy(car9.y)}" r="8" fill="#dc2626" stroke="#fff" stroke-width="2"/>`;
+        inner += `<text x="${sx(car9.x)+11}" y="${sy(car9.y)+4}" font-size="11.5" font-weight="800" fill="#dc2626">Car #9</text>`;
+      }
+      out += `<g clip-path="url(#levClip)">${inner}</g>`;
+
+      out += `<text x="${W-padR}" y="22" text-anchor="end" font-size="11" font-weight="700" fill="#2563eb">━━ Current Fit: Ŷ = ${fit.a.toFixed(1)} ${fit.b>=0?'+':'−'} ${Math.abs(fit.b).toFixed(2)}x</text>`;
+      out += `<text x="${W-padR}" y="38" text-anchor="end" font-size="11" font-weight="700" fill="#059669">- - - Without Car #9: Ŷ = 160.3 − 14.24x</text>`;
+      svg.innerHTML = out;
+    }
+    renderLevLab();
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "L9 Sum of Squares",
+        q: "In Simple Linear Regression, if SST = 200 and SSE = 50, what is the Coefficient of Determination (R²)?",
+        opts: ["0.25", "0.50", "0.75", "0.80"],
+        ans: 2,
+        exp: "SSR = SST − SSE = 200 − 50 = 150. Therefore R² = SSR / SST = 150 / 200 = 0.75 (75% explained)."
+      },
+      {
+        tag: "L9 SER (s)",
+        q: "For a regression with n = 10 observations and SSE = 123.63, what is the degrees-of-freedom denominator used to compute the Standard Error of Regression (s)?",
+        opts: ["n = 10", "n − 1 = 9", "n − 2 = 8", "n + 2 = 12"],
+        ans: 2,
+        exp: "Simple linear regression estimates 2 parameters (α̂ and β̂), so SER divides SSE by n − 2 = 8."
+      },
+      {
+        tag: "L9 Leverage",
+        q: "The leverage h_ii of a data point in Simple Linear Regression depends on:",
+        opts: ["Both X and Y values", "Only the Y value", "Only the X values (distance from x̄)", "Only the residual e_i"],
+        ans: 2,
+        exp: "h_ii = (1/n) + (x_i − x̄)² / Σ(x_j − x̄)² depends exclusively on the predictor X."
+      },
+      {
+        tag: "L9 Cutoff Rule",
+        q: "In a dataset of n = 20 observations, what is the traditional threshold for flagging a point as a 'high leverage' observation?",
+        opts: ["h_ii ≥ 0.05", "h_ii ≥ 0.10", "h_ii ≥ 0.20", "h_ii ≥ 0.50"],
+        ans: 1,
+        exp: "High leverage cutoff is h_ii ≥ 2 / n = 2 / 20 = 0.10."
+      },
+      {
+        tag: "L9 Extrapolation",
+        q: "Predicting Y for an X value far outside the observed range of X in the sample is called:",
+        opts: ["Interpolation", "Extrapolation", "Standardization", "Colligation"],
+        ans: 1,
+        exp: "Extrapolation assumes linearity continues outside the observed range, which often leads to grossly unrealistic predictions."
+      },
+      {
+        tag: "L9 Diagnostics",
+        q: "A point has very high leverage (far from x̄) AND sits almost exactly on the regression line fitted to the rest of the data. This point is:",
+        opts: ["High leverage and strongly influential", "High leverage, but NOT strongly influential on the slope", "A vertical outlier", "Impossible to compute leverage for"],
+        ans: 1,
+        exp: "High leverage gives a point the POTENTIAL to tilt the line, but if it already follows the existing trend, removing it barely changes β̂."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

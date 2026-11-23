@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON107 • Lesson 2: Technological Possibilities &amp; the PPF</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f4c81;
+      --primary-light: #e0f2fe;
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+      --warn: #d97706;
+      --warn-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-elevated: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-light: rgba(56, 189, 248, 0.14);
+      --accent: #2dd4bf;
+      --accent-light: rgba(45, 212, 191, 0.14);
+      --warn: #fbbf24;
+      --warn-light: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.14);
+      --success: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.14);
+      --purple: #a78bfa;
+      --purple-light: rgba(167, 139, 250, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .brand-badge { color: #0b1120; }
+    .top-controls { display: flex; align-items: center; gap: 0.75rem; }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .progress-bar-wrap {
+      width: 72px;
+      height: 7px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+    .btn-icon {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+
+    .scroll-track { height: 3px; background: transparent; width: 100%; }
+    .scroll-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.1s linear;
+    }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 4.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 9px;
+      transition: all 0.18s;
+    }
+    .nav-link:hover, .nav-link.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .nav-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-link.active .nav-num { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .nav-link.active .nav-num { color: #0b1120; }
+    .sidebar-meta {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sidebar-meta strong { color: var(--text); }
+
+    /* Main Content */
+    .main { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+
+    /* Hero Card */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #0d9488 55%, #0f4c81 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+    }
+    .pill-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-accent { background: var(--accent-light); color: var(--accent); }
+    .pill-warn { background: var(--warn-light); color: var(--warn); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+
+    .hero h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.65rem; }
+    .hero p { color: rgba(255, 255, 255, 0.92); max-width: 72ch; font-size: 1rem; }
+    .hero-stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+    }
+    .hero-stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+    .hero-stat-val { font-size: 1rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.85rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .section-card h2 { font-size: 1.45rem; line-height: 1.25; }
+    .section-card h3 { font-size: 1.1rem; margin: 1.15rem 0 0.5rem; }
+    .section-card p { margin-bottom: 0.85rem; color: var(--text); }
+    .muted { color: var(--text-muted); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.2rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-light); }
+    .callout.danger { border-left-color: var(--danger); background: var(--danger-light); }
+    .callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.95rem; }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .mini-card h4 { font-size: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem; }
+    .mini-card ul { padding-left: 1.15rem; font-size: 0.92rem; color: var(--text-muted); }
+    .mini-card li { margin-bottom: 0.35rem; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { padding: 0.72rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-subtle); font-weight: 700; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr.highlight-row { background: var(--primary-light); font-weight: 600; }
+
+    /* Interactive PPF Lab */
+    .ppf-lab-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+    .canvas-wrap {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+      position: relative;
+    }
+    canvas#ppfCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      cursor: crosshair;
+      border: 1px solid var(--border);
+    }
+    .control-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-size: 0.88rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Buttons & Tabs */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .tab-btn.active { color: #0b1120; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .btn-primary { color: #0b1120; }
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Opportunity Cost Calculator */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+      margin: 1rem 0;
+    }
+    .calc-field {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem;
+    }
+    .calc-field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+    .calc-field input {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* SVG Box */
+    .svg-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+      text-align: center;
+    }
+    .svg-box svg { max-width: 100%; height: auto; }
+
+    /* Accordion */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .acc-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg-elevated);
+    }
+    .acc-btn {
+      width: 100%;
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: none;
+      padding: 0.95rem 1.15rem;
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .acc-btn:hover { filter: brightness(0.97); }
+    .acc-chevron { transition: transform 0.2s; font-size: 0.85rem; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body {
+      display: none;
+      padding: 1.1rem 1.2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .acc-item.open .acc-body { display: block; }
+
+    /* Quiz */
+    .quiz-q {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--bg-subtle);
+    }
+    .quiz-q-title { font-weight: 700; margin-bottom: 0.7rem; }
+    .quiz-opts { display: grid; gap: 0.45rem; }
+    .quiz-opt {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .quiz-opt.is-correct { background: var(--success-light); border-color: var(--success); font-weight: 600; }
+    .quiz-opt.is-wrong { background: var(--danger-light); border-color: var(--danger); }
+    .quiz-exp { margin-top: 0.65rem; font-size: 0.86rem; color: var(--text-muted); display: none; }
+    .quiz-exp.show { display: block; }
+
+    /* Done Button */
+    .done-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .done-btn.completed {
+      background: var(--success-light);
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-2, .grid-3, .ppf-lab-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge">ECON107</span>
+        <span>Lesson 2: Technological Possibilities &amp; the PPF</span>
+      </div>
+      <div class="top-controls">
+        <div class="progress-pill">
+          <span id="progressText">0/6 Done</span>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="scroll-track"><div class="scroll-fill" id="scrollFill"></div></div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lesson 2 Roadmap</div>
+      <ul class="nav-list">
+        <li><a class="nav-link active" href="#sec-inputs"><span class="nav-num">1</span> Inputs &amp; Factors</a></li>
+        <li><a class="nav-link" href="#sec-ppf"><span class="nav-num">2</span> The PPF &amp; Trade-Offs</a></li>
+        <li><a class="nav-link" href="#sec-lab"><span class="nav-num">3</span> Interactive PPF Lab</a></li>
+        <li><a class="nav-link" href="#sec-opcost"><span class="nav-num">4</span> Opportunity Cost &amp; Efficiency</a></li>
+        <li><a class="nav-link" href="#sec-choices"><span class="nav-num">5</span> Society's Choices &amp; Shifts</a></li>
+        <li><a class="nav-link" href="#sec-pyq"><span class="nav-num">6</span> ISRT PYQ Vault</a></li>
+        <li><a class="nav-link" href="#sec-quiz"><span class="nav-num">7</span> Mastery Check</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <div><strong>Course:</strong> ECON107 (4 Credits)</div>
+        <div><strong>Institution:</strong> ISRT, University of Dhaka</div>
+        <div><strong>Sources:</strong> ECON107_L2.pdf, Ch. 1C &amp; Appendix 1</div>
+        <div><strong>Exam Focus:</strong> 1st In-course (Nearly Every Year)</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-badges">
+          <span class="pill pill-glass">Module 1 • 1st In-Course Scope</span>
+          <span class="pill pill-glass">Lecture 2 • ECON107</span>
+          <span class="pill pill-glass">Guaranteed Graph Question</span>
+        </div>
+        <h1>Society's Technological Possibilities &amp; the PPF</h1>
+        <p>
+          Explore how limited inputs and technology bound an economy's output, how to distinguish
+          efficient, inefficient, and infeasible points on a Production Possibility Frontier (PPF),
+          how to calculate opportunity cost, and why economic growth shifts the frontier outward.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Factors of Production</div>
+            <div class="hero-stat-val">Land, Labor, Capital</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Interactive Tool</div>
+            <div class="hero-stat-val">Clickable PPF Sandbox</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Key Applications</div>
+            <div class="hero-stat-val">Rich vs. Poor &amp; Growth</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Past Questions</div>
+            <div class="hero-stat-val">7 ISRT PYQs (2017–25)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Inputs, Outputs & Factors of Production -->
+      <section class="section-card" id="sec-inputs">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 01 • Building Blocks</div>
+            <h2>Inputs, Outputs &amp; Factors of Production</h2>
+          </div>
+          <button class="done-btn" data-section="s1">✓ Mark Done</button>
+        </div>
+
+        <p>
+          Because goods are scarce relative to wants, every economy must combine its limited resources using
+          existing engineering and technical knowledge to produce useful goods and services.
+        </p>
+
+        <div class="grid-2">
+          <div class="mini-card">
+            <h4>⚙️ Inputs (Resources)</h4>
+            <p class="muted" style="font-size:0.9rem; margin:0;">
+              Commodities or services used by firms in their production processes (e.g., flour, ovens, chefs' time,
+              and electricity for making pizza).
+            </p>
+          </div>
+          <div class="mini-card">
+            <h4>📦 Outputs (Goods &amp; Services)</h4>
+            <p class="muted" style="font-size:0.9rem; margin:0;">
+              Useful goods or services resulting from production—either consumed directly (rice, haircuts) or
+              employed in further production (tractors, computers).
+            </p>
+          </div>
+        </div>
+
+        <h3>The Three Broad Factors of Production</h3>
+        <div class="grid-3">
+          <div class="mini-card" style="border-top: 4px solid var(--success);">
+            <h4>🌱 1. Land (Natural Resources)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Gifts of nature used in production: farmland, forests, minerals, oil/gas reserves, water resources,
+              and urban building sites.
+            </p>
+          </div>
+          <div class="mini-card" style="border-top: 4px solid var(--primary);">
+            <h4>👷 2. Labor (Human Time)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Human time and effort spent in production—factory workers, farmers, teachers, software engineers,
+              and doctors.
+            </p>
+          </div>
+          <div class="mini-card" style="border-top: 4px solid var(--warn);">
+            <h4>🏭 3. Capital (Durable Produced Goods)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Durable goods produced by the economy to produce <em>other</em> goods: machines, roads, computers,
+              trucks, factories, and software. <em>(Note: In economics, capital means physical tools, not cash!)</em>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: The PPF -->
+      <section class="section-card" id="sec-ppf">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 02 • Core Model</div>
+            <h2>The Production Possibility Frontier (PPF)</h2>
+          </div>
+          <button class="done-btn" data-section="s2">✓ Mark Done</button>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Exact Definition (Samuelson &amp; Nordhaus / ECON107_L2)</div>
+          The <strong>Production Possibility Frontier (PPF)</strong> shows the <strong>maximum quantity of goods</strong>
+          that can be <strong>efficiently produced</strong> by an economy, given its <strong>technological knowledge</strong>
+          and the <strong>quantity of available inputs</strong>.
+        </div>
+
+        <h3>Classic Numerical Schedule: Guns vs. Butter (Table 1-1)</h3>
+        <p class="muted" style="font-size:0.92rem;">
+          Notice how each additional million pounds of butter requires sacrificing a <em>larger</em> number of guns—this
+          is the <strong>Law of Increasing Opportunity Cost</strong>, which gives a typical PPF its <strong>bowed-out (concave)</strong> shape.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Possibility</th>
+                <th>Butter (millions of lbs)</th>
+                <th>Guns (thousands)</th>
+                <th>Opportunity Cost of +1 Butter</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>A</strong></td><td>0</td><td>15</td><td>— (All resources in guns)</td></tr>
+              <tr><td><strong>B</strong></td><td>1</td><td>14</td><td><strong>1</strong> thousand guns (15 → 14)</td></tr>
+              <tr><td><strong>C</strong></td><td>2</td><td>12</td><td><strong>2</strong> thousand guns (14 → 12)</td></tr>
+              <tr><td><strong>D</strong></td><td>3</td><td>9</td><td><strong>3</strong> thousand guns (12 → 9)</td></tr>
+              <tr><td><strong>E</strong></td><td>4</td><td>5</td><td><strong>4</strong> thousand guns (9 → 5)</td></tr>
+              <tr><td><strong>F</strong></td><td>5</td><td>0</td><td><strong>5</strong> thousand guns (5 → 0)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Three Zones on Any PPF Graph</h3>
+        <div class="grid-3">
+          <div class="mini-card" style="border-left: 4px solid var(--success);">
+            <h4>✅ On the Curve (Efficient)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Full employment of resources and best available technology. To get more of one good, society
+              <em>must</em> give up some of the other.
+            </p>
+          </div>
+          <div class="mini-card" style="border-left: 4px solid var(--warn);">
+            <h4>⚠️ Inside the Curve (Inefficient)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Feasible, but resources are idle or misallocated (e.g., high unemployment in recessions, outdated
+              methods, or pollution market failures).
+            </p>
+          </div>
+          <div class="mini-card" style="border-left: 4px solid var(--danger);">
+            <h4>🚫 Outside the Curve (Infeasible)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Unattainable with current inputs and technology. Can only be reached in the future through
+              <strong>economic growth</strong> (outward shift).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Interactive PPF Lab -->
+      <section class="section-card" id="sec-lab">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 03 • Interactive Sandbox</div>
+            <h2>Interactive PPF Lab: Test Points, Opportunity Cost &amp; Growth</h2>
+          </div>
+          <button class="done-btn" data-section="s3">✓ Mark Done</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="presetGuns" onclick="setPreset('guns')">🧈 Guns vs. Butter (Concave / Table 1-1)</button>
+          <button class="tab-btn" id="presetSalon" onclick="setPreset('salon')">💇 Salon: Haircuts vs. Facials (Linear / PYQ 2020)</button>
+        </div>
+
+        <div class="ppf-lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="ppfCanvas" width="540" height="400"></canvas>
+            <p class="muted" style="font-size:0.8rem; margin:0.55rem 0 0; text-align:center;">
+              👆 <strong>Click anywhere on the chart</strong> to test a bundle (Efficient, Inefficient, or Infeasible).
+            </p>
+          </div>
+
+          <div class="control-panel">
+            <div class="control-group">
+              <label>
+                <span>Move Along PPF (<span id="xLabelName">Butter</span>)</span>
+                <span id="moveVal" style="color:var(--primary);">2.0</span>
+              </label>
+              <input type="range" id="moveSlider" min="0" max="5" step="0.5" value="2" />
+            </div>
+
+            <div class="control-group">
+              <label>
+                <span>Economic Growth / Tech Scale</span>
+                <span id="growthVal" style="color:var(--accent);">1.00× (Baseline)</span>
+              </label>
+              <input type="range" id="growthSlider" min="0.7" max="1.35" step="0.05" value="1.0" />
+            </div>
+
+            <div class="readout-card" id="curveReadout"></div>
+            <div class="readout-card" id="clickReadout">
+              <span class="status-badge pill-primary">Point Inspector</span>
+              <div class="muted">Click anywhere on the graph to check whether a combination is <strong>Efficient</strong>, <strong>Inefficient</strong>, or <strong>Infeasible</strong>.</div>
+            </div>
+
+            <button class="btn btn-outline" type="button" onclick="resetLab()">↻ Reset Lab</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Opportunity Cost & Productive Efficiency -->
+      <section class="section-card" id="sec-opcost">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 04 • Trade-Offs &amp; Real Costs</div>
+            <h2>Opportunity Cost &amp; Productive Efficiency</h2>
+          </div>
+          <button class="done-btn" data-section="s4">✓ Mark Done</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="callout" style="margin:0;">
+            <div class="callout-title">Opportunity Cost</div>
+            In a world of scarcity, choosing one thing means giving up something else. The <strong>opportunity cost</strong>
+            of a decision is the <strong>value of the next best good or service forgone</strong>.
+          </div>
+          <div class="callout accent" style="margin:0;">
+            <div class="callout-title">Productive Efficiency</div>
+            Occurs when an economy <strong>cannot produce more of one good without producing less of another good</strong>.
+            Graphically, this means the economy is operating <em>directly on its PPF</em>.
+          </div>
+        </div>
+
+        <h3>Interactive Example: The True Opportunity Cost of Attending University (Final 2024 PYQ)</h3>
+        <p class="muted" style="font-size:0.9rem;">
+          A classic exam question asks: <em>"Is there any opportunity cost of taking education?"</em> Yes! Even if university tuition
+          were low or free, a student sacrifices the salary they could have earned working full-time during those years.
+          Adjust the numbers below (in BDT per year) to see the difference between accounting cost and economic opportunity cost:
+        </p>
+
+        <div class="calc-grid">
+          <div class="calc-field">
+            <label for="cTuition">Annual Tuition &amp; Fees (BDT)</label>
+            <input type="number" id="cTuition" value="15000" min="0" step="5000" />
+          </div>
+          <div class="calc-field">
+            <label for="cBooks">Books, Supplies &amp; Commute (BDT)</label>
+            <input type="number" id="cBooks" value="25000" min="0" step="5000" />
+          </div>
+          <div class="calc-field">
+            <label for="cWages">Forgone Annual Salary (BDT)</label>
+            <input type="number" id="cWages" value="240000" min="0" step="10000" />
+          </div>
+          <div class="calc-field">
+            <label for="cRoom">Food &amp; Lodging (Same Either Way)</label>
+            <input type="number" id="cRoom" value="120000" min="0" step="10000" />
+          </div>
+        </div>
+
+        <div class="callout warn" id="eduCalcOutput"></div>
+      </section>
+
+      <!-- Section 5: Applying the PPF to Society's Choices -->
+      <section class="section-card" id="sec-choices">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 05 • Real-World Applications</div>
+            <h2>Applying the PPF to Society's Choices &amp; Growth</h2>
+          </div>
+          <button class="done-btn" data-section="s5">✓ Mark Done</button>
+        </div>
+
+        <p>
+          Samuelson &amp; Nordhaus (Figures 1-3, 1-4, 1-5) and ISRT exams frequently test three major macro applications of the PPF,
+          plus the crucial distinction between a <strong>movement along</strong> vs. a <strong>shift of</strong> the PPF.
+        </p>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="app-rich">1. Rich vs. Poor Nation (Fig 1-3)</button>
+          <button class="tab-btn" data-tab="app-public">2. Public vs. Private Goods (Fig 1-4)</button>
+          <button class="tab-btn" data-tab="app-invest">3. Investment vs. Consumption (Fig 1-5)</button>
+        </div>
+
+        <!-- Tab 1: Rich vs Poor -->
+        <div class="tab-panel active" id="app-rich">
+          <div class="svg-box">
+            <svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rich vs Poor Nation PPF">
+              <!-- Axes -->
+              <line x1="70" y1="230" x2="540" y2="230" stroke="#475569" stroke-width="2"/>
+              <line x1="70" y1="230" x2="70" y2="25" stroke="#475569" stroke-width="2"/>
+              <text x="305" y="264" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Necessities (Rice / Food)</text>
+              <text x="26" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" transform="rotate(-90 26 130)">Luxuries (Cars / Perfume)</text>
+
+              <!-- Poor Nation PPF -->
+              <path d="M 70 140 Q 170 145 220 230" fill="none" stroke="#d97706" stroke-width="3"/>
+              <text x="155" y="135" font-size="12" font-weight="700" fill="#b45309">Low-Income Nation PPF</text>
+              <circle cx="192" cy="195" r="5.5" fill="#d97706"/>
+              <text x="202" y="192" font-size="11.5" font-weight="700" fill="#b45309">A (Mostly necessities)</text>
+
+              <!-- Rich Nation PPF -->
+              <path d="M 70 42 Q 360 55 460 230" fill="none" stroke="#0f4c81" stroke-width="3.5"/>
+              <text x="345" y="70" font-size="12.5" font-weight="700" fill="#0f4c81">High-Income Nation PPF</text>
+              <circle cx="315" cy="112" r="5.5" fill="#0f4c81"/>
+              <text x="326" y="108" font-size="11.5" font-weight="700" fill="#0f4c81">B (Abundant luxuries &amp; food)</text>
+
+              <!-- Growth Arrow -->
+              <line x1="185" y1="158" x2="285" y2="115" stroke="#0d9488" stroke-width="2" stroke-dasharray="5,4"/>
+              <text x="215" y="128" font-size="11" font-weight="700" fill="#0d9488">Economic Growth ↗</text>
+            </svg>
+          </div>
+          <p class="muted" style="font-size:0.9rem;">
+            <strong>Exam Insight (1st In-course 2023 &amp; 2025):</strong> A high-income nation has more capital, skilled labor,
+            and advanced technology, so its PPF lies far <strong>outward</strong> compared to a low-income nation. A poor nation
+            must devote most resources to basic necessities (point A), whereas a rich nation can enjoy abundant necessities
+            <em>and</em> luxuries like cars or perfume (point B).
+          </p>
+        </div>
+
+        <!-- Tab 2: Public vs Private -->
+        <div class="tab-panel" id="app-public">
+          <div class="svg-box">
+            <svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Public vs Private Goods PPF">
+              <line x1="70" y1="225" x2="540" y2="225" stroke="#475569" stroke-width="2"/>
+              <line x1="70" y1="225" x2="70" y2="25" stroke="#475569" stroke-width="2"/>
+              <text x="305" y="258" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Private Goods (Food, Houses)</text>
+              <text x="26" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" transform="rotate(-90 26 125)">Public Goods (Roads, Clean Air)</text>
+
+              <path d="M 70 135 Q 190 140 245 225" fill="none" stroke="#7c3aed" stroke-width="3"/>
+              <circle cx="215" cy="190" r="5" fill="#7c3aed"/>
+              <text x="225" y="188" font-size="11.5" font-weight="700" fill="#6d28d9">Frontier Society (Low public goods)</text>
+
+              <path d="M 70 45 Q 350 60 450 225" fill="none" stroke="#0d9488" stroke-width="3.5"/>
+              <circle cx="255" cy="92" r="5.5" fill="#0d9488"/>
+              <text x="268" y="88" font-size="11.5" font-weight="700" fill="#0f766e">Modern Urban Society (Higher share of public goods)</text>
+            </svg>
+          </div>
+          <p class="muted" style="font-size:0.9rem;">
+            Economies trade off private goods (purchased individually) against public goods (funded by taxes: highways,
+            public health, defense, clean air). As nations grow richer, they allocate a larger share of output to public goods
+            and environmental quality.
+          </p>
+        </div>
+
+        <!-- Tab 3: Present vs Future -->
+        <div class="tab-panel" id="app-invest">
+          <div class="svg-box">
+            <svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Investment vs Consumption PPF">
+              <line x1="70" y1="225" x2="540" y2="225" stroke="#475569" stroke-width="2"/>
+              <line x1="70" y1="225" x2="70" y2="25" stroke="#475569" stroke-width="2"/>
+              <text x="305" y="258" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">Current / Future Consumption</text>
+              <text x="26" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a" transform="rotate(-90 26 125)">Capital Investment</text>
+
+              <path d="M 70 135 Q 200 140 250 225" fill="none" stroke="#475569" stroke-width="3"/>
+              <text x="155" y="212" font-size="11" font-weight="700" fill="#475569">Today's PPF (All 3 Countries)</text>
+
+              <path d="M 70 95 Q 270 105 340 225" fill="none" stroke="#d97706" stroke-width="2.5" stroke-dasharray="5,4"/>
+              <text x="315" y="165" font-size="11.5" font-weight="700" fill="#b45309">Country 2 (Moderate Invest)</text>
+
+              <path d="M 70 40 Q 370 55 470 225" fill="none" stroke="#16a34a" stroke-width="3.5"/>
+              <text x="350" y="95" font-size="12" font-weight="700" fill="#15803d">Country 3 (High Investment ↗ Rapid Growth)</text>
+            </svg>
+          </div>
+          <p class="muted" style="font-size:0.9rem;">
+            <strong>Sacrificing Today for Tomorrow:</strong> A nation that devotes more resources to <strong>capital investment</strong>
+            (machines, factories, education) instead of immediate consumption shifts its future PPF much further outward,
+            enjoying higher consumption <em>and</em> capital in the future.
+          </p>
+        </div>
+
+        <div class="callout accent">
+          <div class="callout-title">Movement Along vs. Shift of the PPF</div>
+          <strong>Movement Along the PPF</strong> (e.g., B → D) means reallocating fixed resources from one good to another.<br>
+          <strong>Outward Shift of the PPF</strong> means economic growth caused by <em>more inputs</em> (labor/capital growth) or
+          <em>technological innovation</em>. <strong>Inward Shift</strong> occurs from natural resource depletion, war, or disaster.
+        </div>
+      </section>
+
+      <!-- Section 6: ISRT PYQ Vault -->
+      <section class="section-card" id="sec-pyq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 06 • Exam Preparation</div>
+            <h2>ISRT Past Exam Question (PYQ) Vault (2017–2025)</h2>
+          </div>
+          <button class="done-btn" data-section="s6">✓ Mark Done</button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">1st In-course 2025 • Q1(a,b) [5 Marks]</span> Economy producing rice &amp; perfume: Define PPF, identify infeasible/inefficient points, and draw PPFs for high-income vs. low-income countries.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) Definition &amp; Points:</strong> The PPF shows the maximum combinations of rice and perfume that an economy can efficiently produce given its available inputs and technology.</p>
+              <ul style="padding-left:1.2rem; margin-bottom:0.7rem;">
+                <li><strong>Inefficient point (inside PPF):</strong> Resources are underutilized or misallocated; the economy could produce more rice, more perfume, or both without any sacrifice.</li>
+                <li><strong>Infeasible/Unattainable point (outside PPF):</strong> Cannot be produced with current resources and technology.</li>
+              </ul>
+              <p style="margin:0;"><strong>(b) High-Income vs. Low-Income Country:</strong> Draw Rice (necessity) on the horizontal axis and Perfume (luxury) on the vertical axis. The high-income country's PPF lies further outward (to the northeast) than the low-income country's PPF because it possesses larger capital stock, higher productivity, and superior technology. Consequently, a low-income country devotes most of its capacity to rice (necessity), whereas a high-income country can produce abundant rice and substantial perfume (luxury).</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-accent">1st In-course 2020 • Q4 [2.5 Marks]</span> A salon has 10 hours of labor/day. A haircut takes 0.5 hr; a facial takes 2 hrs. Construct the salon's PPF.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p>Let $H$ = number of haircuts and $F$ = number of facials. The labor constraint is:</p>
+              <p style="font-family:monospace; background:var(--bg-subtle); padding:0.5rem 0.8rem; border-radius:8px;">0.5H + 2F = 10  ⇒  H = 20 - 4F</p>
+              <p><strong>Production Possibilities Schedule:</strong> (F=0, H=20), (F=1, H=16), (F=2, H=12), (F=3, H=8), (F=4, H=4), (F=5, H=0).</p>
+              <p style="margin:0;"><strong>Shape &amp; Opportunity Cost:</strong> Because labor is equally productive across both tasks, the PPF is a <strong>straight downward-sloping line</strong> connecting (0, 20) and (5, 0) with a constant opportunity cost: 1 facial costs 4 haircuts (and 1 haircut costs 0.25 facials). <em>Try the "Salon" preset in the Interactive PPF Lab above!</em></p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-warn">Final 2024 • Q1(2) &amp; Q1(5) [4 Marks]</span> Is there any opportunity cost of taking education? Explain. Illustrate a PPF with inefficient and unattainable points.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Opportunity Cost of Education:</strong> Yes. Opportunity cost is the value of the next best alternative forgone. Attending university involves not only direct out-of-pocket costs (tuition, books, fees) but also the <strong>forgone earnings</strong> (salary) the student could have earned by working full-time during those years—which is typically the largest part of the opportunity cost.</p>
+              <p style="margin:0;"><strong>PPF Graph:</strong> Plot a concave curve between two goods (e.g., Guns and Butter). Mark a point <em>on</em> the curve as Efficient, a point <em>inside</em> the curve (toward the origin) as Inefficient, and a point <em>outside</em> the curve (northeast) as Unattainable/Infeasible.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-purple">Final 2023 • Q4(b) [3 Marks]</span> Illustrate a PPF with a numeric example. How do change in technology and change in income of a nation impact its PPF?</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Numeric Example:</strong> Use the Guns &amp; Butter table: (0,15), (1,14), (2,12), (3,9), (4,5), (5,0).</p>
+              <p><strong>Change in Technology:</strong> Technological improvement allows more output from the same inputs, shifting the PPF <strong>outward</strong> (if it improves only one good, the PPF pivots outward on that good's axis).</p>
+              <p style="margin:0;"><strong>Change in National Income:</strong> Higher national income reflects greater productive capacity/capital accumulation (outward PPF) and also changes the <em>chosen point</em> on the PPF—shifting society's choice away from purely necessities toward a higher share of luxuries and public goods.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-danger">1st In-course 2023 • Q3 &amp; 1st In-course 2022 • Q1</span> Define PPF, scarcity, productive efficiency, and opportunity cost with examples (Rice &amp; Cars).</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p style="margin:0;">Combine the four crisp definitions from Sections 1–4: (1) <strong>Scarcity:</strong> limited resources vs. unlimited wants; (2) <strong>PPF:</strong> maximum efficient output combinations of Rice and Cars given inputs &amp; technology; (3) <strong>Productive Efficiency:</strong> being on the PPF where producing more cars requires producing less rice; (4) <strong>Opportunity Cost:</strong> the tons of rice forgone to produce one additional car.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Quick Mastery Check -->
+      <section class="section-card" id="sec-quiz">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 07 • Self-Assessment</div>
+            <h2>Lesson 2 Quick Mastery Check</h2>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="resetQuiz()">↻ Reset Quiz</button>
+        </div>
+
+        <div id="quizContainer"></div>
+        <div class="callout accent" id="quizSummary" style="display:none;"></div>
+      </section>
+
+      <footer>
+        ECON107 Interactive Course Series • Lesson 2: Technological Possibilities &amp; the PPF • Built for ISRT, University of Dhaka
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme Toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('econ107_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('econ107_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      drawPPF();
+    });
+
+    // ---------- Scroll Progress & Active Nav ----------
+    const scrollFill = document.getElementById('scrollFill');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section-card');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      scrollFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      let currentId = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) currentId = sec.id; });
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + currentId));
+    });
+
+    // ---------- Section Completion Tracker ----------
+    const doneBtns = document.querySelectorAll('.done-btn');
+    let completedSet = new Set(JSON.parse(localStorage.getItem('econ107_l2_done') || '[]'));
+    function updateProgressUI() {
+      document.getElementById('progressText').textContent = `${completedSet.size}/${doneBtns.length} Done`;
+      document.getElementById('progressBar').style.width = `${(completedSet.size / doneBtns.length) * 100}%`;
+      doneBtns.forEach(btn => {
+        const isDone = completedSet.has(btn.dataset.section);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : '✓ Mark Done';
+      });
+    }
+    doneBtns.forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.section;
+      completedSet.has(k) ? completedSet.delete(k) : completedSet.add(k);
+      localStorage.setItem('econ107_l2_done', JSON.stringify([...completedSet]));
+      updateProgressUI();
+    }));
+    updateProgressUI();
+
+    // ---------- Accordions & Tabs ----------
+    document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const parent = btn.closest('.section-card');
+        parent.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+        parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        parent.querySelector('#' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ---------- Interactive PPF Lab ----------
+    const canvas = document.getElementById('ppfCanvas');
+    const ctx = canvas.getContext('2d');
+    const moveSlider = document.getElementById('moveSlider');
+    const growthSlider = document.getElementById('growthSlider');
+
+    const presets = {
+      guns: {
+        xLabel: "Butter (millions of lbs)",
+        yLabel: "Guns (thousands)",
+        xShort: "Butter",
+        yShort: "Guns",
+        maxX: 7,
+        maxY: 22,
+        baseMaxX: 5,
+        // Exact Table 1-1 quadratic fit: y = 15 - 0.5*x - 0.5*x^2
+        fn: (x, scale) => {
+          const sx = x / scale;
+          if (sx > 5) return -1;
+          return scale * (15 - 0.5 * sx - 0.5 * sx * sx);
+        },
+        slope: (x, scale) => {
+          const sx = x / scale;
+          return 0.5 + sx; // |dy/dx|
+        }
+      },
+      salon: {
+        xLabel: "Facials (per day)",
+        yLabel: "Haircuts (per day)",
+        xShort: "Facials",
+        yShort: "Haircuts",
+        maxX: 7.5,
+        maxY: 28,
+        baseMaxX: 5,
+        // 0.5H + 2F = 10 => H = 20 - 4F
+        fn: (x, scale) => {
+          const sx = x / scale;
+          if (sx > 5) return -1;
+          return scale * (20 - 4 * sx);
+        },
+        slope: () => 4.0
+      }
+    };
+
+    let currentPreset = 'guns';
+    let clickedPoint = null;
+    const pad = { left: 58, right: 24, top: 24, bottom: 48 };
+
+    function setPreset(name) {
+      currentPreset = name;
+      clickedPoint = null;
+      document.getElementById('presetGuns').classList.toggle('active', name === 'guns');
+      document.getElementById('presetSalon').classList.toggle('active', name === 'salon');
+      document.getElementById('xLabelName').textContent = presets[name].xShort;
+      document.getElementById('clickReadout').innerHTML = `<span class="status-badge pill-primary">Point Inspector</span><div class="muted">Click anywhere on the graph to check whether a combination is <strong>Efficient</strong>, <strong>Inefficient</strong>, or <strong>Infeasible</strong>.</div>`;
+      updateSliders();
+      drawPPF();
+    }
+
+    function updateSliders() {
+      const scale = parseFloat(growthSlider.value);
+      const maxSliderX = +(presets[currentPreset].baseMaxX * scale).toFixed(2);
+      moveSlider.max = maxSliderX;
+      if (parseFloat(moveSlider.value) > maxSliderX) moveSlider.value = maxSliderX;
+      document.getElementById('moveVal').textContent = parseFloat(moveSlider.value).toFixed(1);
+      const gLabel = scale === 1 ? "1.00× (Baseline)" : scale > 1 ? `${scale.toFixed(2)}× (Growth ↗)` : `${scale.toFixed(2)}× (Contraction ↙)`;
+      document.getElementById('growthVal').textContent = gLabel;
+    }
+
+    function toCanvasX(x) {
+      const p = presets[currentPreset];
+      return pad.left + (x / p.maxX) * (canvas.width - pad.left - pad.right);
+    }
+    function toCanvasY(y) {
+      const p = presets[currentPreset];
+      return canvas.height - pad.bottom - (y / p.maxY) * (canvas.height - pad.top - pad.bottom);
+    }
+    function fromCanvasX(cx) {
+      const p = presets[currentPreset];
+      return ((cx - pad.left) / (canvas.width - pad.left - pad.right)) * p.maxX;
+    }
+    function fromCanvasY(cy) {
+      const p = presets[currentPreset];
+      return ((canvas.height - pad.bottom - cy) / (canvas.height - pad.top - pad.bottom)) * p.maxY;
+    }
+
+    function drawPPF() {
+      const p = presets[currentPreset];
+      const scale = parseFloat(growthSlider.value);
+      const curX = parseFloat(moveSlider.value);
+      const curY = Math.max(0, p.fn(curX, scale));
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Grid
+      ctx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0';
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 6; i++) {
+        const gx = toCanvasX((p.maxX / 6) * i);
+        ctx.beginPath(); ctx.moveTo(gx, pad.top); ctx.lineTo(gx, canvas.height - pad.bottom); ctx.stroke();
+      }
+      for (let j = 1; j <= 5; j++) {
+        const gy = toCanvasY((p.maxY / 5) * j);
+        ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(canvas.width - pad.right, gy); ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, pad.top);
+      ctx.lineTo(pad.left, canvas.height - pad.bottom);
+      ctx.lineTo(canvas.width - pad.right, canvas.height - pad.bottom);
+      ctx.stroke();
+
+      // Axis Labels
+      ctx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      ctx.font = 'bold 12px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.xLabel, (pad.left + canvas.width - pad.right) / 2, canvas.height - 12);
+      ctx.save();
+      ctx.translate(18, (pad.top + canvas.height - pad.bottom) / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText(p.yLabel, 0, 0);
+      ctx.restore();
+
+      // Ticks
+      ctx.font = '11px system-ui, sans-serif';
+      ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+      for (let i = 0; i <= p.maxX; i += 1) {
+        const tx = toCanvasX(i);
+        ctx.textAlign = 'center';
+        ctx.fillText(i, tx, canvas.height - pad.bottom + 16);
+      }
+      const yStep = p.maxY > 25 ? 5 : 3;
+      for (let j = 0; j <= p.maxY; j += yStep) {
+        const ty = toCanvasY(j);
+        ctx.textAlign = 'right';
+        ctx.fillText(j, pad.left - 8, ty + 4);
+      }
+
+      // Baseline dashed PPF if shifted
+      if (Math.abs(scale - 1.0) > 0.001) {
+        ctx.save();
+        ctx.setLineDash([6, 5]);
+        ctx.strokeStyle = isDark ? '#64748b' : '#94a3b8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let x = 0; x <= p.baseMaxX; x += 0.05) {
+          const y = p.fn(x, 1.0);
+          if (x === 0) ctx.moveTo(toCanvasX(x), toCanvasY(y));
+          else ctx.lineTo(toCanvasX(x), toCanvasY(y));
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Active PPF Shaded Area
+      ctx.fillStyle = isDark ? 'rgba(45, 212, 191, 0.09)' : 'rgba(13, 148, 136, 0.09)';
+      ctx.beginPath();
+      ctx.moveTo(toCanvasX(0), toCanvasY(0));
+      const maxActiveX = p.baseMaxX * scale;
+      for (let x = 0; x <= maxActiveX + 0.001; x += 0.05) {
+        const clampedX = Math.min(x, maxActiveX);
+        const y = Math.max(0, p.fn(clampedX, scale));
+        ctx.lineTo(toCanvasX(clampedX), toCanvasY(y));
+      }
+      ctx.lineTo(toCanvasX(maxActiveX), toCanvasY(0));
+      ctx.closePath();
+      ctx.fill();
+
+      // Active PPF Curve
+      ctx.strokeStyle = isDark ? '#38bdf8' : '#0f4c81';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      for (let x = 0; x <= maxActiveX + 0.001; x += 0.05) {
+        const clampedX = Math.min(x, maxActiveX);
+        const y = Math.max(0, p.fn(clampedX, scale));
+        if (x === 0) ctx.moveTo(toCanvasX(clampedX), toCanvasY(y));
+        else ctx.lineTo(toCanvasX(clampedX), toCanvasY(y));
+      }
+      ctx.stroke();
+
+      // Current Slider Point on PPF
+      const px = toCanvasX(curX);
+      const py = toCanvasY(curY);
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = isDark ? '#2dd4bf' : '#0d9488';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(px, toCanvasY(0)); ctx.lineTo(px, py); ctx.lineTo(toCanvasX(0), py);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = isDark ? '#2dd4bf' : '#0d9488';
+      ctx.beginPath(); ctx.arc(px, py, 6.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+
+      // Clicked Test Point
+      if (clickedPoint) {
+        const cx = toCanvasX(clickedPoint.x);
+        const cy = toCanvasY(clickedPoint.y);
+        const color = clickedPoint.zone === 'efficient' ? '#16a34a' : clickedPoint.zone === 'inefficient' ? '#d97706' : '#dc2626';
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.arc(cx, cy, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+      }
+
+      // Update Curve Readout
+      const mc = p.slope(curX, scale).toFixed(2);
+      document.getElementById('curveReadout').innerHTML = `
+        <span class="status-badge pill-success">On the PPF (Productively Efficient)</span>
+        <div><strong>Current Bundle:</strong> ${curX.toFixed(1)} ${p.xShort}, ${curY.toFixed(1)} ${p.yShort}</div>
+        <div><strong>Marginal Opportunity Cost:</strong> 1 extra ${p.xShort.slice(0,-1) || p.xShort} costs <strong>${mc}</strong> ${p.yShort}</div>
+        <div class="muted" style="font-size:0.8rem; margin-top:0.25rem;">
+          ${currentPreset === 'guns' ? 'Notice OC rises as you move right (concave PPF).' : 'Notice OC stays constant at 4.00 everywhere (linear PPF).'}
+        </div>
+      `;
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const cx = (e.clientX - rect.left) * scaleX;
+      const cy = (e.clientY - rect.top) * scaleY;
+      const x = fromCanvasX(cx);
+      const y = fromCanvasY(cy);
+      const p = presets[currentPreset];
+      if (x < 0 || y < 0 || x > p.maxX || y > p.maxY) return;
+
+      const scale = parseFloat(growthSlider.value);
+      const maxYAtX = p.fn(x, scale);
+      let zone, badgeClass, title, desc;
+
+      if (maxYAtX < 0 || y > maxYAtX + 0.55) {
+        zone = 'infeasible';
+        badgeClass = 'pill-danger';
+        title = '🚫 Infeasible / Unattainable Point';
+        desc = `At ${x.toFixed(1)} ${p.xShort}, maximum possible ${p.yShort} is ${Math.max(0, maxYAtX).toFixed(1)}. Requires economic growth (shift PPF outward) to reach!`;
+      } else if (Math.abs(y - maxYAtX) <= 0.55) {
+        zone = 'efficient';
+        badgeClass = 'pill-success';
+        title = '✅ Productively Efficient Point';
+        desc = `This bundle lies directly on the PPF—all inputs are fully employed with zero waste.`;
+      } else {
+        zone = 'inefficient';
+        badgeClass = 'pill-warn';
+        title = '⚠️ Inefficient Point (Inside PPF)';
+        desc = `Resources are underutilized! Without sacrificing any ${p.xShort}, you could produce ${(maxYAtX - y).toFixed(1)} more ${p.yShort}.`;
+      }
+
+      clickedPoint = { x, y, zone };
+      document.getElementById('clickReadout').innerHTML = `
+        <span class="status-badge ${badgeClass}">${title}</span>
+        <div><strong>Tested Bundle:</strong> (${x.toFixed(1)} ${p.xShort}, ${y.toFixed(1)} ${p.yShort})</div>
+        <div class="muted" style="font-size:0.82rem; margin-top:0.2rem;">${desc}</div>
+      `;
+      drawPPF();
+    });
+
+    moveSlider.addEventListener('input', () => { updateSliders(); drawPPF(); });
+    growthSlider.addEventListener('input', () => { clickedPoint = null; updateSliders(); drawPPF(); });
+    function resetLab() {
+      growthSlider.value = 1.0;
+      moveSlider.value = 2.0;
+      clickedPoint = null;
+      updateSliders();
+      drawPPF();
+    }
+    updateSliders();
+    drawPPF();
+
+    // ---------- Opportunity Cost of Education Calculator ----------
+    const calcIds = ['cTuition', 'cBooks', 'cWages', 'cRoom'];
+    function updateEduCalc() {
+      const tuition = Number(document.getElementById('cTuition').value) || 0;
+      const books = Number(document.getElementById('cBooks').value) || 0;
+      const wages = Number(document.getElementById('cWages').value) || 0;
+      const room = Number(document.getElementById('cRoom').value) || 0;
+      const explicit = tuition + books;
+      const totalOpp = explicit + wages;
+      document.getElementById('eduCalcOutput').innerHTML = `
+        <div class="callout-title">Annual Economic Opportunity Cost: BDT ${totalOpp.toLocaleString()}</div>
+        <strong>Explicit Direct Education Costs:</strong> BDT ${explicit.toLocaleString()} (Tuition + Books/Commute)<br>
+        <strong>Implicit Forgone Earnings:</strong> BDT ${wages.toLocaleString()} (Next-best job salary sacrificed)<br>
+        <span class="muted" style="font-size:0.86rem;"><em>Note:</em> Food &amp; lodging (BDT ${room.toLocaleString()}) is <strong>excluded</strong> from opportunity cost because you must eat and live somewhere whether you study or work!</span>
+      `;
+    }
+    calcIds.forEach(id => document.getElementById(id).addEventListener('input', updateEduCalc));
+    updateEduCalc();
+
+    // ---------- Quick Mastery Check Quiz ----------
+    const quizData = [
+      {
+        q: "1. Which of the following is NOT classified as a factor of production in economics?",
+        opts: ["Land (natural resources)", "Labor (human time)", "Capital (machines and factories)", "Paper money / cash"],
+        ans: 3,
+        exp: "Money is a lubricant of exchange, not a physical productive input. The three factors of production are Land, Labor, and Capital (durable goods used to produce other goods)."
+      },
+      {
+        q: "2. A point lying strictly INSIDE the Production Possibility Frontier represents:",
+        opts: [
+          "Productive efficiency",
+          "Unattainable output given current technology",
+          "Inefficiency / underutilized resources",
+          "Economic growth"
+        ],
+        ans: 2,
+        exp: "Points inside the PPF are feasible but inefficient—resources are unemployed or misallocated (e.g., during recessions)."
+      },
+      {
+        q: "3. Using Table 1-1 (Guns vs. Butter), moving from C (2 butter, 12 guns) to D (3 butter, 9 guns) means the opportunity cost of the 3rd million pounds of butter is:",
+        opts: ["1 thousand guns", "2 thousand guns", "3 thousand guns", "9 thousand guns"],
+        ans: 2,
+        exp: "Guns fall from 12 thousand to 9 thousand, so the opportunity cost of that 3rd unit of butter is 3 thousand guns."
+      },
+      {
+        q: "4. In the 2020 ISRT Salon problem (10 hrs labor; 0.5 hr/haircut, 2 hrs/facial), why is the PPF a straight line?",
+        opts: [
+          "Because opportunity cost is constant (1 facial always costs 4 haircuts).",
+          "Because resources are infinite.",
+          "Because haircuts are free goods.",
+          "Because technology is improving."
+        ],
+        ans: 0,
+        exp: "When inputs are perfectly substitutable across two goods at a constant rate (0.5H + 2F = 10), the opportunity cost is constant and the PPF is linear."
+      },
+      {
+        q: "5. Which event will shift a country's entire PPF outward?",
+        opts: [
+          "Reducing unemployment from 10% to 4%.",
+          "Reallocating workers from rice farms to car factories.",
+          "A major technological breakthrough and expansion of capital stock.",
+          "Depletion of natural resources with no invention."
+        ],
+        ans: 2,
+        exp: "Reducing unemployment moves the economy from inside the PPF toward the frontier; reallocating workers moves along the PPF. Only more inputs or better technology shifts the PPF outward."
+      },
+      {
+        q: "6. If a country chooses to invest heavily in capital goods today (sacrificing some current consumption), what happens in the future?",
+        opts: [
+          "Its future PPF shifts further outward, allowing higher future consumption.",
+          "Its future PPF shifts inward.",
+          "It moves to an inefficient point inside the PPF.",
+          "Nothing changes in the future."
+        ],
+        ans: 0,
+        exp: "Capital investment builds machines, infrastructure, and factories that expand future productive capacity, pushing the future PPF further outward (Figure 1-5)."
+      }
+    ];
+
+    let quizAnswers = {};
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        div.innerHTML = `
+          <div class="quiz-q-title">${item.q}</div>
+          <div class="quiz-opts">
+            ${item.opts.map((opt, oIdx) => `<button class="quiz-opt" type="button" onclick="answerQuiz(${idx}, ${oIdx}, this)">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${idx}">${item.exp}</div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('quizSummary').style.display = 'none';
+    }
+
+    function answerQuiz(qIdx, oIdx, btn) {
+      if (quizAnswers[qIdx] !== undefined) return;
+      quizAnswers[qIdx] = oIdx;
+      const allBtns = btn.closest('.quiz-q').querySelectorAll('.quiz-opt');
+      const correctIdx = quizData[qIdx].ans;
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === correctIdx) b.classList.add('is-correct');
+        else if (i === oIdx) b.classList.add('is-wrong');
+      });
+      document.getElementById(`qexp-${qIdx}`).classList.add('show');
+
+      if (Object.keys(quizAnswers).length === quizData.length) {
+        let score = 0;
+        quizData.forEach((q, i) => { if (quizAnswers[i] === q.ans) score++; });
+        const summary = document.getElementById('quizSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `
+          <div class="callout-title">Mastery Check Complete: ${score} / ${quizData.length} (${Math.round(score / quizData.length * 100)}%)</div>
+          ${score === quizData.length
+            ? "Outstanding! You've mastered PPF graphs, opportunity cost, and economic growth—ready for Lesson 3 (Theory of Demand & Supply)!"
+            : "Solid progress! Review the explanations above and reset the quiz to aim for 100%."}
+        `;
+      }
+    }
+
+    function resetQuiz() { quizAnswers = {}; renderQuiz(); }
+    renderQuiz();
+  </script>
+</body>
+</html>

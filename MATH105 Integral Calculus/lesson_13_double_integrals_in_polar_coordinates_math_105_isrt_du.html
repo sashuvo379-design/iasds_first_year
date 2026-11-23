@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 13: Double Integrals in Polar Coordinates | MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK ACADEMIC THEME (MATH 105)
+       ========================================================================== */
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --accent-border: rgba(56, 189, 248, 0.36);
+      --accent2-soft: rgba(129, 140, 248, 0.15);
+      --accent2-border: rgba(129, 140, 248, 0.38);
+      --green-soft: rgba(52, 211, 153, 0.14);
+      --green-border: rgba(52, 211, 153, 0.36);
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.36);
+      --rose-soft: rgba(251, 113, 133, 0.12);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 270px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ==========================================================================
+       MOBILE TOP BAR (< 900px)
+       ========================================================================== */
+    .mobile-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .mobile-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .menu-toggle {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .mobile-bar-title {
+      font-size: 0.9rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-pct-pill {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
+      color: var(--green); background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       FIXED LEFT SIDEBAR (270px)
+       ========================================================================== */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      z-index: 55; backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    aside.sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 60;
+      transition: transform 0.25s ease;
+    }
+    .brand { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .brand .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .brand h1 { font-size: 1.08rem; margin-top: 5px; line-height: 1.3; font-weight: 800; }
+    .brand p { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
+
+    .progress-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; margin-bottom: 7px; font-weight: 600;
+    }
+    .progress-bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--green));
+      transition: width 0.35s ease;
+    }
+    .progress-detail {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; color: var(--muted); margin-top: 7px;
+    }
+
+    nav.side-nav { display: flex; flex-direction: column; gap: 5px; }
+    .nav-heading {
+      font-size: 0.69rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); padding: 0 10px; margin-bottom: 4px;
+    }
+    nav.side-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.18s ease;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    nav.side-nav a:hover { background: var(--surface-2); color: var(--text); }
+    nav.side-nav a.active {
+      background: var(--surface-2);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .foot-btn {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .foot-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 34px 40px 84px;
+      max-width: calc(1140px + var(--sidebar-w));
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.13), rgba(129, 140, 248, 0.16));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-bottom: 34px;
+    }
+    .hero .pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      background: var(--accent-soft); border: 1px solid var(--accent-border);
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .hero h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    .hero p { color: var(--muted); max-width: 820px; font-size: 0.95rem; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .hero-chip {
+      font-size: 0.77rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(11, 17, 32, 0.55); border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 1.32rem; font-weight: 800; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .num {
+      background: var(--accent); color: var(--bg);
+      font-family: var(--font-mono); font-weight: 800; font-size: 0.85rem;
+      width: 28px; height: 28px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-sub { color: var(--muted); font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================================================
+       CONTROLS, BUTTONS & CANVASES
+       ========================================================================== */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn, .btn {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.84rem; font-weight: 600;
+      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .tab-btn:hover, .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+    .tab-btn.active, .btn-primary {
+      background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700;
+    }
+    .btn-primary:hover:not(:disabled) { background: #7dd3fc; border-color: #7dd3fc; color: var(--bg); }
+    .btn.toggled {
+      background: var(--accent2-soft); border-color: var(--accent-2); color: var(--accent-2);
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .control-group label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted); font-weight: 600;
+    }
+    .control-group label strong {
+      font-family: var(--font-mono); color: var(--accent); font-size: 0.82rem;
+    }
+    .control-group select {
+      width: 100%;
+      background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 11px; font-size: 0.86rem; cursor: pointer;
+    }
+    .control-group select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .control-group input[type="range"] {
+      width: 100%; accent-color: var(--accent); cursor: pointer; height: 6px;
+    }
+
+    .canvas-wrap {
+      background: #070d19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+      width: 100%;
+      height: 390px;
+    }
+    .canvas-wrap.compact { height: 340px; }
+    .canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+
+    .legend-row {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      overflow-x: auto;
+    }
+    .stat.highlight { background: var(--green-soft); border-color: var(--green-border); }
+    .stat.warn { background: var(--amber-soft); border-color: var(--amber-border); }
+    .stat .label {
+      font-size: 0.71rem; color: var(--muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat .val {
+      font-family: var(--font-mono);
+      font-size: 1rem; font-weight: 700; margin-top: 4px; color: var(--accent);
+    }
+    .stat .sub { font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+
+    /* Section 2 Two-Column & Stepper */
+    .lab2-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(290px, 1fr);
+      gap: 18px; align-items: start;
+    }
+    .pipe-bar {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;
+    }
+    .pipe-node {
+      padding: 9px 8px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--muted); font-size: 0.77rem; font-weight: 700;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .pipe-node.done { border-color: var(--green-border); background: var(--green-soft); color: var(--green); }
+    .pipe-node.current { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+
+    .step-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .step-card {
+      display: none;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-2); border-radius: 8px;
+      padding: 13px 15px; overflow-x: auto; font-size: 0.9rem;
+    }
+    .step-card.visible { display: block; animation: fadeIn 0.22s ease; }
+    .step-card.final { border-left-color: var(--green); background: rgba(52, 211, 153, 0.08); }
+    .step-tag {
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+      color: var(--accent-2); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .step-card.final .step-tag { color: var(--green); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ==========================================================================
+       SECTION 3: THEORY, TABLE & EXAM TRAPS
+       ========================================================================== */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .formula-box {
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent-2);
+      padding: 13px 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; }
+    table.ref-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; background: var(--surface-2); }
+    table.ref-table th, table.ref-table td {
+      padding: 10px 13px; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    table.ref-table th {
+      background: var(--bg); color: var(--muted);
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    table.ref-table tr:last-child td { border-bottom: none; }
+
+    .trap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .trap-box {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+    }
+    .trap-box strong { color: var(--rose); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    /* ==========================================================================
+       SECTION 4: VAULT
+       ========================================================================== */
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .vault-item.reviewed { border-color: var(--green-border); }
+    .vault-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+      border-radius: 999px; background: var(--accent2-soft); color: var(--accent-2);
+      border: 1px solid var(--accent2-border);
+    }
+    .badge.sky { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+
+    .vault-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .reveal-box {
+      display: none; margin-top: 12px; padding: 14px 16px;
+      background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.91rem;
+    }
+    .reveal-box.open { display: block; }
+    .reveal-box.hint-box { background: var(--amber-soft); border-color: var(--amber-border); }
+    .check-label {
+      margin-left: auto; font-size: 0.82rem; font-weight: 600; color: var(--green);
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+      padding: 6px 11px; border-radius: 8px;
+      background: var(--green-soft); border: 1px solid var(--green-border);
+      user-select: none;
+    }
+    .check-label input { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; }
+
+    /* ==========================================================================
+       SECTION 5: QUIZ
+       ========================================================================== */
+    .quiz-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    }
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; margin-top: 12px; }
+    .opt-btn {
+      text-align: left; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px;
+      cursor: pointer; font-size: 0.89rem; transition: all 0.18s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .opt-btn.correct { background: var(--green-soft); border-color: var(--green); color: var(--green); font-weight: 600; }
+    .opt-btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); }
+    .feedback {
+      margin-top: 11px; font-size: 0.87rem; color: var(--text);
+      padding: 10px 13px; border-radius: 8px; background: var(--surface-2);
+      border: 1px solid var(--border); display: none;
+    }
+    .feedback.show { display: block; }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 80;
+      background: var(--surface-2); border: 1px solid var(--accent-border);
+      color: var(--text); padding: 11px 16px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+      opacity: 0; transform: translateY(10px); pointer-events: none; transition: all 0.22s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 980px) {
+      .lab2-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .mobile-bar { display: flex; }
+      aside.sidebar {
+        transform: translateX(-100%);
+        top: 63px;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+      }
+      aside.sidebar.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 22px 16px 64px; }
+      section { scroll-margin-top: 78px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Header -->
+  <header class="mobile-bar">
+    <div class="mobile-bar-left">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-bar-title">Lesson 13: Double Integrals in Polar</span>
+    </div>
+    <span class="mobile-pct-pill" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Fixed Left Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Lesson 13 navigation">
+    <div class="brand">
+      <div class="tag">MATH 105 · ISRT, DU</div>
+      <h1>Lesson 13: Double Integrals in Polar Coordinates</h1>
+      <p>Module 4 · Section 14.3</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Mastery Progress</span>
+        <strong id="progressPct" style="color:var(--green)">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-detail" id="progressDetail">0 / 13 tasks (0/8 Vault, 0/5 Quiz)</div>
+    </div>
+
+    <nav class="side-nav" id="sideNav">
+      <div class="nav-heading">Sections (14.3)</div>
+      <a href="#sec1" class="active" data-sec="sec1">1. Polar Region Scanner</a>
+      <a href="#sec2" data-sec="sec2">2. Why dA = r dr dθ? &amp; 3D</a>
+      <a href="#sec3" data-sec="sec3">3. Core Theory &amp; Traps</a>
+      <a href="#sec4" data-sec="sec4">4. ISRT Past-Exam Vault (8)</a>
+      <a href="#sec5" data-sec="sec5">5. Quick Mastery Check (5)</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="foot-btn" id="prevBtn"><span>&larr; Prev Lesson</span><span class="mono">L12</span></button>
+      <button type="button" class="foot-btn" id="nextBtn"><span>Next Lesson &rarr;</span><span class="mono" style="color:var(--accent)">L14</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <span class="pill">Module 4 · Section 14.3 · Year Final Core</span>
+      <h2>Double Integrals in Polar Coordinates</h2>
+      <p>
+        Overlay polar wedges $dA = r\,dr\,d\theta$ onto circular sectors, cardioids, roses, and shifted circles, understand geometrically why the Jacobian factor $r$ appears, and convert tough Cartesian double integrals into effortless polar evaluations.
+      </p>
+      <div class="hero-chips">
+        <span class="hero-chip">$dA = r\,dr\,d\theta$</span>
+        <span class="hero-chip">Simple Polar Regions</span>
+        <span class="hero-chip">Cartesian &rarr; Polar Conversion</span>
+        <span class="hero-chip">Gaussian Integral $\sqrt{\pi}$</span>
+        <span class="hero-chip">8 Solved ISRT &amp; Note Problems</span>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         SECTION 1: POLAR GRID OVERLAY & SIMPLE POLAR REGION SCANNER
+         ====================================================================== -->
+    <section id="sec1">
+      <h3 class="section-title"><span class="num">1</span> Polar Grid Overlay &amp; Simple Polar Region Scanner</h3>
+      <p class="section-sub">Sweep a radial ray from the origin to see where it enters ($r_1(\theta)$, emerald) and exits ($r_2(\theta)$, rose) each ISRT exam region.</p>
+
+      <div class="card">
+        <div class="controls-grid">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="polarScanPreset"><span>ISRT Exam / Class Notes Region (6 Presets)</span></label>
+            <select id="polarScanPreset">
+              <option value="f25_q5c">1) Final 2025 Q5c: Sector y=0, y=x, x²+y²=4 (∬ 1/(1+x²+y²) dA)</option>
+              <option value="ex1_cardioid">2) Class Notes Ex 1: Outside r=2, Inside r=2(1+cos θ) in Q1 (∬ sin θ dA)</option>
+              <option value="f23_rose3">3) Final 2023 Q5b: Three-Petaled Rose r = sin 3θ (Area ∬ dA)</option>
+              <option value="ex4_semi">4) Class Notes Ex 4: Upper Semicircle x²+y² ≤ 1 (∬ (x²+y²)^(3/2) dA)</option>
+              <option value="ex10_sec">5) Class Notes Ex 10: Right of x=1 (r=sec θ), Inside r=2 (Area)</option>
+              <option value="ex26_shift">6) Class Notes Ex 26: Shifted Circle (x-1)²+y²=1 above y=x (∬ 2y dA)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="raySlider">
+              <span>Sweep Ray Angle ($\theta$)</span>
+              <strong id="rayAngleLabel">22.5&deg;</strong>
+            </label>
+            <input type="range" id="raySlider" min="0" max="100" step="0.5" value="50" />
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" id="playRayBtn">&#9654; Play Ray Sweep</button>
+            <button type="button" class="btn" id="resetRayBtn">&#8634; Reset</button>
+          </div>
+          <button type="button" class="btn toggled" id="toggleWedgeGridBtn">&#9783; Show Polar Wedge Grid ($r\,dr\,d\theta$)</button>
+        </div>
+
+        <div class="canvas-wrap" id="scanCanvasWrap">
+          <canvas id="scanCanvas" aria-label="Polar region scanner canvas"></canvas>
+        </div>
+
+        <div class="legend-row">
+          <span class="legend-item"><span class="swatch" style="background:var(--green)"></span> Entry Point $r = r_1(\theta)$</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--rose)"></span> Exit Arrowhead $r = r_2(\theta)$</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--accent)"></span> Region $R$ &amp; Polar Wedges</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Sweeping Ray from Pole</span>
+        </div>
+
+        <!-- 4 Live Telemetry Cards -->
+        <div class="telemetry">
+          <div class="stat">
+            <div class="label">1. $\theta$-Limits ($\alpha \le \theta \le \beta$)</div>
+            <div class="val" id="teleThetaLim">—</div>
+            <div class="sub" id="teleThetaCur">Current ray angle</div>
+          </div>
+          <div class="stat">
+            <div class="label">2. $r$-Limits ($r_1(\theta) \le r \le r_2(\theta)$)</div>
+            <div class="val" id="teleRLim">—</div>
+            <div class="sub" id="teleRCur">Active radial span</div>
+          </div>
+          <div class="stat">
+            <div class="label">3. Polar Iterated Integral</div>
+            <div class="val" id="teleIntegral" style="font-size:0.86rem;color:var(--text)">—</div>
+            <div class="sub">Includes Jacobian factor $r$</div>
+          </div>
+          <div class="stat highlight">
+            <div class="label">4. Exact Value</div>
+            <div class="val" id="teleExact" style="color:var(--green)">—</div>
+            <div class="sub" id="teleExactDec">Decimal approximation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 2: WHY dA = r dr dθ? & 3D POLAR APPLICATIONS LAB (2 TABS)
+         ====================================================================== -->
+    <section id="sec2">
+      <h3 class="section-title"><span class="num">2</span> Why $dA = r\,dr\,d\theta$? Polar Wedge &amp; 3D Applications Lab</h3>
+      <p class="section-sub">See geometrically why moving a polar wedge farther from the pole linearly stretches its area by $r^*$, then step through 3 classic 3D &amp; Gaussian polar evaluations.</p>
+
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-lab2="wedge">Tab A: Polar Wedge Area Element Visualizer ($dA = r\,dr\,d\theta$)</button>
+          <button type="button" class="tab-btn" data-lab2="apps3d">Tab B: 3D Polar Volume &amp; Gaussian Integral Showcase</button>
+        </div>
+
+        <!-- TAB A: Polar Wedge Visualizer -->
+        <div id="lab2-wedge">
+          <div class="lab2-grid">
+            <div class="canvas-wrap compact" id="wedgeCanvasWrap">
+              <canvas id="wedgeCanvas" aria-label="Polar wedge area element visualizer"></canvas>
+            </div>
+            <div>
+              <div class="controls-grid" style="grid-template-columns:1fr;">
+                <div class="control-group">
+                  <label for="wRSlider"><span>Center Radius ($r^*$)</span><strong id="wRVal">r* = 2.00</strong></label>
+                  <input type="range" id="wRSlider" min="0.5" max="4.0" step="0.1" value="2.0" />
+                </div>
+                <div class="control-group">
+                  <label for="wDrSlider"><span>Radial Thickness ($\Delta r$)</span><strong id="wDrVal">&Delta;r = 0.60</strong></label>
+                  <input type="range" id="wDrSlider" min="0.2" max="1.0" step="0.05" value="0.6" />
+                </div>
+                <div class="control-group">
+                  <label for="wDtSlider"><span>Angular Width ($\Delta \theta$)</span><strong id="wDtVal">&Delta;&theta; = 30&deg; (0.524 rad)</strong></label>
+                  <input type="range" id="wDtSlider" min="10" max="60" step="2" value="30" />
+                </div>
+              </div>
+
+              <div class="formula-box" style="font-size:0.86rem;">
+                $$\Delta A = \frac{1}{2}(r_2^2 - r_1^2)\Delta\theta = \underbrace{\frac{r_2 + r_1}{2}}_{r^*}\underbrace{(r_2 - r_1)}_{\Delta r}\Delta\theta = r^*\,\Delta r\,\Delta\theta$$
+              </div>
+
+              <div class="telemetry" style="grid-template-columns:repeat(2,1fr);">
+                <div class="stat highlight">
+                  <div class="label">Exact Wedge Area ($r^*\Delta r\Delta\theta$)</div>
+                  <div class="val" id="wExactArea" style="color:var(--green)">0.6283</div>
+                  <div class="sub">Doubles when $r^*$ doubles!</div>
+                </div>
+                <div class="stat warn">
+                  <div class="label">Naive $\Delta r\cdot\Delta\theta$ (Missing $r^*$)</div>
+                  <div class="val" id="wNaiveArea" style="color:var(--amber)">0.3142</div>
+                  <div class="sub" id="wRatioSub">Off by factor $r^* = 2.00\times$!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: 3D Polar Volume & Gaussian Integral Showcase -->
+        <div id="lab2-apps3d" style="display:none;">
+          <div class="tabs" id="app3dTabs">
+            <button type="button" class="tab-btn active" data-a3d="0">1) Final 2020 Q7: Cone over Annulus</button>
+            <button type="button" class="tab-btn" data-a3d="1">2) Class Notes Ex 2: Sphere Volume</button>
+            <button type="button" class="tab-btn" data-a3d="2">3) Class Notes Bonus: Gaussian $e^{-x^2}$</button>
+          </div>
+
+          <div class="lab2-grid">
+            <div class="canvas-wrap compact" id="app3dCanvasWrap">
+              <canvas id="app3dCanvas" aria-label="3D polar application diagram"></canvas>
+            </div>
+
+            <div>
+              <div class="pipe-bar" id="app3dPipe">
+                <button type="button" class="pipe-node current" data-astep="1">1. Cartesian Setup</button>
+                <button type="button" class="pipe-node" data-astep="2">2. Polar $r\,dr\,d\theta$</button>
+                <button type="button" class="pipe-node" data-astep="3">3. Exact Result</button>
+              </div>
+
+              <div class="step-list" id="app3dStepsWrap"></div>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="mono" style="font-size:0.78rem;color:var(--muted)" id="app3dCounter">Step 1 of 3</span>
+                <div style="display:flex;gap:8px;">
+                  <button type="button" class="btn" id="a3dPrevBtn">&larr; Prev</button>
+                  <button type="button" class="btn btn-primary" id="a3dNextBtn">Next &rarr;</button>
+                  <button type="button" class="btn" id="a3dAllBtn">Show All</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: CORE THEORY, CONVERSION DICTIONARY & EXAM TRAPS
+         ====================================================================== -->
+    <section id="sec3">
+      <h3 class="section-title"><span class="num">3</span> Core Theory, Conversion Cheat Sheet &amp; ISRT Exam Traps</h3>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>1. Polar Double Integral Theorem (Section 14.3)</h4>
+          <p style="font-size:0.88rem;color:var(--muted);margin-top:4px;">If $R$ is a simple polar region bounded by $\alpha \le \theta \le \beta$ and $r_1(\theta) \le r \le r_2(\theta)$, and $f$ is continuous on $R$:</p>
+          <div class="formula-box">
+            $$\iint_R f(x, y)\,dA = \int_\alpha^\beta \int_{r_1(\theta)}^{r_2(\theta)} f(r\cos\theta, r\sin\theta)\,r\,dr\,d\theta$$
+          </div>
+          <p style="font-size:0.84rem;color:var(--muted);">Setting $f = 1$ gives the polar area formula: $\displaystyle A = \iint_R 1\,dA = \int_\alpha^\beta \int_{r_1(\theta)}^{r_2(\theta)} r\,dr\,d\theta = \frac{1}{2}\int_\alpha^\beta [r_2^2 - r_1^2]\,d\theta$.</p>
+        </div>
+
+        <div class="card">
+          <h4>2. Cartesian &rarr; Polar Conversion Dictionary</h4>
+          <div class="formula-box" style="margin-bottom:10px;">
+            $$x = r\cos\theta,\quad y = r\sin\theta,\quad x^2 + y^2 = r^2,\quad dA = r\,dr\,d\theta$$
+          </div>
+          <div class="table-wrap">
+            <table class="ref-table">
+              <thead>
+                <tr><th>Cartesian Boundary</th><th>Polar Equivalent</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Vertical line $x = a$</td><td>$r\cos\theta = a \implies r = a\sec\theta$</td></tr>
+                <tr><td>Horizontal line $y = b$</td><td>$r\sin\theta = b \implies r = b\csc\theta$</td></tr>
+                <tr><td>Shifted circle $(x-a)^2 + y^2 = a^2$</td><td>$x^2+y^2 = 2ax \implies r = 2a\cos\theta$</td></tr>
+                <tr><td>Diagonal line $y = x$ (Q1)</td><td>$\tan\theta = 1 \implies \theta = \dfrac{\pi}{4}$</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 style="color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h4>
+        <div class="trap-grid">
+          <div class="trap-box">
+            <strong>Trap 1: Forgetting the Factor $r$ in $dA$</strong>
+            Always replace $dx\,dy$ by <strong>$r\,dr\,d\theta$</strong>, never $dr\,d\theta$! Missing $r$ breaks both the geometry and your $u$-substitution (e.g., $\frac{r}{1+r^2}$ or $r e^{-r^2}$).
+          </div>
+          <div class="trap-box">
+            <strong>Trap 2: Assuming $r$ Always Starts at $0$</strong>
+            $r$ starts at $0$ <em>only</em> when the pole $(0,0)$ is inside or on the boundary of $R$. Outside $r=2$ or right of $x=1$, your lower limit is $r_1(\theta) = 2$ or $r_1(\theta) = \sec\theta$!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 3: Double-Counting Odd-Petal Roses</strong>
+            In Final 2023 Q5(b) ($r = \sin 3\theta$), integrating $\theta$ from $0$ to $2\pi$ traces every petal <strong>twice</strong>! Integrate 1 petal on $[0, \pi/3]$ and multiply by $3$.
+          </div>
+          <div class="trap-box">
+            <strong>Trap 4: Wrong $\theta$-Limits on Shifted Circles</strong>
+            The shifted circle $(x-1)^2+y^2=1$ ($r = 2\cos\theta$) lies entirely in Q1 &amp; Q4 and is traced once on $[-\frac{\pi}{2}, \frac{\pi}{2}]$ (NOT $[0, 2\pi]$). Above $y = x$, the limits are $\frac{\pi}{4} \le \theta \le \frac{\pi}{2}$.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ====================================================================== -->
+    <section id="sec4">
+      <h3 class="section-title"><span class="num">4</span> ISRT Past-Exam &amp; Class-Notes Vault (8 Problems)</h3>
+      <div class="tabs" id="vaultFilters">
+        <button type="button" class="tab-btn active" data-vcat="all">All (8)</button>
+        <button type="button" class="tab-btn" data-vcat="conversion">Conversion (3)</button>
+        <button type="button" class="tab-btn" data-vcat="area">Area (2)</button>
+        <button type="button" class="tab-btn" data-vcat="volume">Volume (1)</button>
+        <button type="button" class="tab-btn" data-vcat="gaussian">Gaussian / Advanced (2)</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ====================================================================== -->
+    <section id="sec5">
+      <h3 class="section-title"><span class="num">5</span> Quick Mastery Check</h3>
+      <div class="quiz-bar">
+        <span style="color:var(--muted);font-size:0.9rem;">Quiz Score: <strong id="quizScore" style="color:var(--green);font-family:var(--font-mono)">0 / 5</strong></span>
+        <button type="button" class="btn" id="resetQuizBtn">&#8634; Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2600);
+      }
+
+      /* ----------------------------------------------------------------------
+         2. HIDPI CANVAS & POLAR GRID HELPERS
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(220, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function drawPolarBaseGrid(ctx, cx, cy, scale, maxR, ringStep) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        for (let r = ringStep; r <= maxR + 1e-6; r += ringStep) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, r * scale, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
+
+        const spokes = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
+        const outerPx = maxR * scale;
+        spokes.forEach((deg) => {
+          const rad = (deg * Math.PI) / 180;
+          const isAxis = deg % 90 === 0;
+          ctx.strokeStyle = isAxis ? 'rgba(148, 163, 184, 0.36)' : 'rgba(148, 163, 184, 0.09)';
+          ctx.lineWidth = isAxis ? 1.4 : 1;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + outerPx * Math.cos(rad), cy - outerPx * Math.sin(rad));
+          ctx.stroke();
+        });
+
+        // Axis labels
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText('x (θ=0)', cx + outerPx + 6, cy);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillText('y (θ=π/2)', cx, cy - outerPx - 6);
+
+        ctx.fillStyle = '#64748b';
+        ctx.font = '500 10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (let r = ringStep; r <= maxR + 1e-6; r += ringStep) {
+          ctx.fillText(Number(r.toFixed(1)).toString(), cx + r * scale, cy + 4);
+        }
+        ctx.restore();
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 1: POLAR GRID OVERLAY & SIMPLE POLAR REGION SCANNER
+         ---------------------------------------------------------------------- */
+      const scanPresets = {
+        f25_q5c: {
+          tMin: 0, tMax: Math.PI / 4,
+          r1: () => 0, r2: () => 2,
+          maxR: 2.4, ringStep: 0.5, cxFrac: 0.42, cyFrac: 0.62,
+          tLimTex: '0 \\le \\theta \\le \\frac{\\pi}{4}',
+          rLimTex: '0 \\le r \\le 2',
+          intTex: '\\int_0^{\\pi/4}\\!\\int_0^2 \\frac{r}{1+r^2}\\,dr\\,d\\theta',
+          exactTex: '\\frac{\\pi}{8}\\ln 5',
+          exactDec: ((Math.PI / 8) * Math.log(5)).toFixed(4),
+          drawExtra(ctx, cx, cy, scale) {
+            // Full circle r = 2 dashed reference
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.35)';
+            ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+            ctx.beginPath(); ctx.arc(cx, cy, 2 * scale, 0, Math.PI * 2); ctx.stroke();
+            ctx.setLineDash([]);
+            // Line y = x
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.75)';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + 2.3 * scale * Math.cos(Math.PI / 4), cy - 2.3 * scale * Math.sin(Math.PI / 4));
+            ctx.stroke();
+          }
+        },
+        ex1_cardioid: {
+          tMin: 0, tMax: Math.PI / 2,
+          r1: () => 2, r2: (t) => 2 * (1 + Math.cos(t)),
+          maxR: 4.4, ringStep: 1, cxFrac: 0.42, cyFrac: 0.62,
+          tLimTex: '0 \\le \\theta \\le \\frac{\\pi}{2}',
+          rLimTex: '2 \\le r \\le 2(1 + \\cos\\theta)',
+          intTex: '\\int_0^{\\pi/2}\\!\\int_2^{2(1+\\cos\\theta)} (\\sin\\theta)\\,r\\,dr\\,d\\theta',
+          exactTex: '\\frac{8}{3}',
+          exactDec: (8 / 3).toFixed(4),
+          drawExtra(ctx, cx, cy, scale) {
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.55)'; ctx.lineWidth = 1.8;
+            ctx.beginPath(); ctx.arc(cx, cy, 2 * scale, 0, Math.PI * 2); ctx.stroke();
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            for (let i = 0; i <= 200; i++) {
+              const t = (i / 200) * Math.PI * 2;
+              const r = 2 * (1 + Math.cos(t));
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke(); ctx.setLineDash([]);
+          }
+        },
+        f23_rose3: {
+          tMin: 0, tMax: Math.PI / 3,
+          r1: () => 0, r2: (t) => Math.sin(3 * t),
+          maxR: 1.25, ringStep: 0.5, cxFrac: 0.5, cyFrac: 0.52,
+          tLimTex: '0 \\le \\theta \\le \\frac{\\pi}{3}\\; (\\times 3\\text{ petals})',
+          rLimTex: '0 \\le r \\le \\sin 3\\theta',
+          intTex: '3\\int_0^{\\pi/3}\\!\\int_0^{\\sin 3\\theta} r\\,dr\\,d\\theta',
+          exactTex: '\\frac{\\pi}{4}',
+          exactDec: (Math.PI / 4).toFixed(4),
+          drawExtra(ctx, cx, cy, scale) {
+            // Faint all 3 petals
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.45)'; ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            for (let i = 0; i <= 240; i++) {
+              const t = (i / 240) * Math.PI;
+              const r = Math.sin(3 * t);
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          }
+        },
+        ex4_semi: {
+          tMin: 0, tMax: Math.PI,
+          r1: () => 0, r2: () => 1,
+          maxR: 1.3, ringStep: 0.5, cxFrac: 0.5, cyFrac: 0.66,
+          tLimTex: '0 \\le \\theta \\le \\pi',
+          rLimTex: '0 \\le r \\le 1',
+          intTex: '\\int_0^{\\pi}\\!\\int_0^1 r^3\\cdot r\\,dr\\,d\\theta',
+          exactTex: '\\frac{\\pi}{5}',
+          exactDec: (Math.PI / 5).toFixed(4),
+          drawExtra(ctx, cx, cy, scale) {
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.35)'; ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]);
+            ctx.beginPath(); ctx.arc(cx, cy, 1 * scale, 0, Math.PI * 2); ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        },
+        ex10_sec: {
+          tMin: -Math.PI / 3, tMax: Math.PI / 3,
+          r1: (t) => 1 / Math.cos(t), r2: () => 2,
+          maxR: 2.35, ringStep: 0.5, cxFrac: 0.45, cyFrac: 0.5,
+          tLimTex: '-\\frac{\\pi}{3} \\le \\theta \\le \\frac{\\pi}{3}',
+          rLimTex: '\\sec\\theta \\le r \\le 2',
+          intTex: '\\int_{-\\pi/3}^{\\pi/3}\\!\\int_{\\sec\\theta}^{2} r\\,dr\\,d\\theta',
+          exactTex: '\\frac{4\\pi}{3} - \\sqrt{3}',
+          exactDec: ((4 * Math.PI) / 3 - Math.sqrt(3)).toFixed(4),
+          drawExtra(ctx, cx, cy, scale) {
+            // Circle r = 2
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)'; ctx.lineWidth = 1.8;
+            ctx.beginPath(); ctx.arc(cx, cy, 2 * scale, 0, Math.PI * 2); ctx.stroke();
+            // Vertical line x = 1
+            ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx + 1 * scale, cy - 2.2 * scale);
+            ctx.lineTo(cx + 1 * scale, cy + 2.2 * scale);
+            ctx.stroke();
+          }
+        },
+        ex26_shift: {
+          tMin: Math.PI / 4, tMax: Math.PI / 2 - 0.002,
+          r1: () => 0, r2: (t) => 2 * Math.cos(t),
+          maxR: 2.25, ringStep: 0.5, cxFrac: 0.42, cyFrac: 0.62,
+          tLimTex: '\\frac{\\pi}{4} \\le \\theta \\le \\frac{\\pi}{2}',
+          rLimTex: '0 \\le r \\le 2\\cos\\theta',
+          intTex: '\\int_{\\pi/4}^{\\pi/2}\\!\\int_0^{2\\cos\\theta} (2r\\sin\\theta)\\,r\\,dr\\,d\\theta',
+          exactTex: '\\frac{1}{3}',
+          exactDec: (1 / 3).toFixed(4),
+          drawExtra(ctx, cx, cy, scale) {
+            // Shifted circle (x-1)^2 + y^2 = 1
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)'; ctx.lineWidth = 1.8;
+            ctx.beginPath(); ctx.arc(cx + 1 * scale, cy, 1 * scale, 0, Math.PI * 2); ctx.stroke();
+            // Line y = x
+            ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 1.8; ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + 2.1 * scale * Math.cos(Math.PI / 4), cy - 2.1 * scale * Math.sin(Math.PI / 4));
+            ctx.stroke(); ctx.setLineDash([]);
+          }
+        }
+      };
+
+      const scanState = {
+        preset: 'f25_q5c',
+        pct: 50,
+        showWedges: true,
+        playing: false,
+        rafId: null,
+        lastTs: 0
+      };
+
+      const scanCanvas = document.getElementById('scanCanvas');
+      const raySlider = document.getElementById('raySlider');
+      const playRayBtn = document.getElementById('playRayBtn');
+
+      function drawPolarScanner() {
+        const pr = scanPresets[scanState.preset];
+        const { ctx, w, h } = setupCanvas(scanCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w * pr.cxFrac;
+        const cy = h * pr.cyFrac;
+        const scale = (Math.min(w, h) * 0.40) / pr.maxR;
+
+        drawPolarBaseGrid(ctx, cx, cy, scale, pr.maxR, pr.ringStep);
+
+        // 1. Shaded Simple Polar Region R
+        const steps = 140;
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.24)';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i++) {
+          const t = pr.tMin + (i / steps) * (pr.tMax - pr.tMin);
+          const r = pr.r2(t);
+          const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        for (let i = steps; i >= 0; i--) {
+          const t = pr.tMin + (i / steps) * (pr.tMax - pr.tMin);
+          const r = pr.r1(t);
+          ctx.lineTo(cx + r * scale * Math.cos(t), cy - r * scale * Math.sin(t));
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // 2. Optional Polar Wedge Grid Overlay (r dr dθ) inside R
+        if (scanState.showWedges) {
+          const nT = 10, nR = 5;
+          ctx.strokeStyle = 'rgba(129, 140, 248, 0.42)';
+          ctx.lineWidth = 1;
+          for (let i = 0; i <= nT; i++) {
+            const t = pr.tMin + (i / nT) * (pr.tMax - pr.tMin);
+            const rA = pr.r1(t), rB = pr.r2(t);
+            ctx.beginPath();
+            ctx.moveTo(cx + rA * scale * Math.cos(t), cy - rA * scale * Math.sin(t));
+            ctx.lineTo(cx + rB * scale * Math.cos(t), cy - rB * scale * Math.sin(t));
+            ctx.stroke();
+          }
+          for (let j = 1; j < nR; j++) {
+            const frac = j / nR;
+            ctx.beginPath();
+            for (let i = 0; i <= 60; i++) {
+              const t = pr.tMin + (i / 60) * (pr.tMax - pr.tMin);
+              const r = pr.r1(t) + frac * (pr.r2(t) - pr.r1(t));
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          }
+        }
+
+        // Extra reference geometry
+        pr.drawExtra(ctx, cx, cy, scale);
+
+        // 3. Sweeping Radial Ray from Origin: faint pole->entry, bright entry->exit
+        const theta = pr.tMin + (scanState.pct / 100) * (pr.tMax - pr.tMin);
+        const rStart = pr.r1(theta);
+        const rEnd = pr.r2(theta);
+
+        const ex = cx + rStart * scale * Math.cos(theta);
+        const ey = cy - rStart * scale * Math.sin(theta);
+        const fx = cx + rEnd * scale * Math.cos(theta);
+        const fy = cy - rEnd * scale * Math.sin(theta);
+
+        // Dashed guide from origin to entry if r1 > 0
+        if (rStart > 0.01) {
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+          ctx.lineWidth = 1.6; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Solid glowing active ray segment inside R
+        ctx.save();
+        ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 8;
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.8;
+        ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(fx, fy); ctx.stroke();
+        ctx.restore();
+
+        // Emerald entry dot at r1(theta)
+        ctx.fillStyle = '#34d399';
+        ctx.strokeStyle = '#070d19'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(ex, ey, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        // Rose exit arrowhead at r2(theta)
+        if (Math.hypot(fx - ex, fy - ey) > 6) {
+          const ang = Math.atan2(fy - ey, fx - ex);
+          const hl = 11;
+          ctx.fillStyle = '#fb7185';
+          ctx.beginPath();
+          ctx.moveTo(fx, fy);
+          ctx.lineTo(fx - hl * Math.cos(ang - 0.42), fy - hl * Math.sin(ang - 0.42));
+          ctx.lineTo(fx - hl * Math.cos(ang + 0.42), fy - hl * Math.sin(ang + 0.42));
+          ctx.closePath(); ctx.fill();
+        }
+
+        // Update UI & 4 Telemetry Cards
+        const deg = (theta * 180) / Math.PI;
+        document.getElementById('rayAngleLabel').textContent = `${deg.toFixed(1)}° (${theta.toFixed(2)} rad)`;
+        document.getElementById('teleThetaCur').textContent = `Active ray: θ = ${deg.toFixed(1)}°`;
+        document.getElementById('teleRCur').textContent = `Entry r₁ = ${rStart.toFixed(2)} → Exit r₂ = ${rEnd.toFixed(2)}`;
+
+        const tEl = document.getElementById('teleThetaLim');
+        const rEl = document.getElementById('teleRLim');
+        const iEl = document.getElementById('teleIntegral');
+        const eEl = document.getElementById('teleExact');
+        if (iEl.dataset.pkey !== scanState.preset) {
+          tEl.innerHTML = `$${pr.tLimTex}$`;
+          rEl.innerHTML = `$${pr.rLimTex}$`;
+          iEl.innerHTML = `$${pr.intTex}$`;
+          eEl.innerHTML = `$${pr.exactTex}$`;
+          document.getElementById('teleExactDec').textContent = `Decimal: ≈ ${pr.exactDec}`;
+          iEl.dataset.pkey = scanState.preset;
+          renderMath(tEl); renderMath(rEl); renderMath(iEl); renderMath(eEl);
+        }
+      }
+
+      function stopRayAnim() {
+        scanState.playing = false;
+        if (scanState.rafId) cancelAnimationFrame(scanState.rafId);
+        scanState.rafId = null;
+        playRayBtn.innerHTML = '&#9654; Play Ray Sweep';
+      }
+
+      function stepRayAnim(ts) {
+        if (!scanState.playing) return;
+        if (!scanState.lastTs) scanState.lastTs = ts;
+        const dt = Math.min(0.05, (ts - scanState.lastTs) / 1000);
+        scanState.lastTs = ts;
+        scanState.pct += 28 * dt;
+        if (scanState.pct >= 100) scanState.pct = 0;
+        raySlider.value = scanState.pct;
+        drawPolarScanner();
+        scanState.rafId = requestAnimationFrame(stepRayAnim);
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2A: POLAR WEDGE AREA ELEMENT VISUALIZER (dA = r dr dθ)
+         ---------------------------------------------------------------------- */
+      const wedgeCanvas = document.getElementById('wedgeCanvas');
+      const wRSlider = document.getElementById('wRSlider');
+      const wDrSlider = document.getElementById('wDrSlider');
+      const wDtSlider = document.getElementById('wDtSlider');
+
+      function drawWedgeVisualizer() {
+        const rStar = parseFloat(wRSlider.value);
+        const dr = parseFloat(wDrSlider.value);
+        const dtDeg = parseFloat(wDtSlider.value);
+        const dtRad = (dtDeg * Math.PI) / 180;
+
+        const r1 = Math.max(0.05, rStar - dr / 2);
+        const r2 = rStar + dr / 2;
+        const actualRStar = 0.5 * (r1 + r2);
+        const actualDr = r2 - r1;
+        const exactArea = actualRStar * actualDr * dtRad;
+        const naiveArea = actualDr * dtRad;
+
+        document.getElementById('wRVal').textContent = `r* = ${actualRStar.toFixed(2)}`;
+        document.getElementById('wDrVal').textContent = `Δr = ${actualDr.toFixed(2)}`;
+        document.getElementById('wDtVal').textContent = `Δθ = ${dtDeg}° (${dtRad.toFixed(3)} rad)`;
+        document.getElementById('wExactArea').textContent = exactArea.toFixed(4);
+        document.getElementById('wNaiveArea').textContent = naiveArea.toFixed(4);
+        document.getElementById('wRatioSub').textContent = `Missing factor r* = ${actualRStar.toFixed(2)}×`;
+
+        const { ctx, w, h } = setupCanvas(wedgeCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w * 0.22;
+        const cy = h * 0.80;
+        const scale = Math.min(w * 0.68, h * 0.68) / 4.8;
+
+        // Polar concentric arcs & rays in Quadrant 1
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+        ctx.lineWidth = 1;
+        for (let r = 1; r <= 5; r++) {
+          ctx.beginPath(); ctx.arc(cx, cy, r * scale, -Math.PI / 2, 0); ctx.stroke();
+        }
+        for (let deg = 0; deg <= 90; deg += 15) {
+          const rad = (deg * Math.PI) / 180;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + 5 * scale * Math.cos(rad), cy - 5 * scale * Math.sin(rad));
+          ctx.stroke();
+        }
+
+        // Main Q1 axes
+        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy); ctx.lineTo(cx + 5.1 * scale, cy);
+        ctx.moveTo(cx, cy); ctx.lineTo(cx, cy - 5.1 * scale);
+        ctx.stroke();
+
+        // Highlighted Polar Wedge centered around θ = 40°
+        const tMid = (40 * Math.PI) / 180;
+        const t1 = tMid - dtRad / 2;
+        const t2 = tMid + dtRad / 2;
+
+        ctx.fillStyle = 'rgba(52, 211, 153, 0.36)';
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r2 * scale, -t2, -t1, false);
+        ctx.arc(cx, cy, r1 * scale, -t1, -t2, true);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Dashed center arc at r*
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1.8; ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.arc(cx, cy, actualRStar * scale, -t2, -t1, false);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Center radius vector from pole to (r*, tMid)
+        const mx = cx + actualRStar * scale * Math.cos(tMid);
+        const my = cy - actualRStar * scale * Math.sin(tMid);
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(mx, my); ctx.stroke();
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '700 11.5px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+        ctx.fillText(`r*=${actualRStar.toFixed(1)}`, (cx + mx) / 2 - 6, (cy + my) / 2 - 4);
+
+        // Outer arc width label
+        const ox = cx + (r2 + 0.25) * scale * Math.cos(tMid);
+        const oy = cy - (r2 + 0.25) * scale * Math.sin(tMid);
+        ctx.fillStyle = '#34d399';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(`Arc ≈ r*Δθ = ${(actualRStar * dtRad).toFixed(2)}`, ox, oy);
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 2B: 3D POLAR VOLUME & GAUSSIAN INTEGRAL SHOWCASE
+         ---------------------------------------------------------------------- */
+      const app3dData = [
+        {
+          id: 'cone',
+          steps: [
+            { tag: 'Step 1: Cartesian / Region Setup', body: 'Final 2020 Q7: Solid $T$ lies below the cone $z = \\sqrt{x^2 + y^2}$, above the $xy$-plane, between $x^2+y^2 = 1$ and $x^2+y^2 = 4$. Thus $V = \\iint_R \\sqrt{x^2+y^2}\\,dA$ over the annulus $R$.' },
+            { tag: 'Step 2: Polar Conversion with r dr dθ', body: 'In polar coordinates, $z = \\sqrt{x^2+y^2} = r$, $1 \\le r \\le 2$, $0 \\le \\theta \\le 2\\pi$, and $dA = r\\,dr\\,d\\theta$: $$V = \\int_0^{2\\pi}\\int_1^2 r\\cdot r\\,dr\\,d\\theta = \\int_0^{2\\pi}\\int_1^2 r^2\\,dr\\,d\\theta.$$' },
+            { tag: 'Step 3: Evaluation & Final Result', final: true, body: '$$V = \\int_0^{2\\pi} \\left[\\frac{r^3}{3}\\right]_1^2 d\\theta = \\int_0^{2\\pi} \\frac{7}{3}\\,d\\theta = \\frac{14\\pi}{3}.$$' }
+          ]
+        },
+        {
+          id: 'sphere',
+          steps: [
+            { tag: 'Step 1: Cartesian / Region Setup', body: 'Class Notes Ex 2: Sphere $x^2+y^2+z^2 = a^2$ has upper hemisphere $z = \\sqrt{a^2 - x^2 - y^2}$ over the disk $x^2+y^2 \\le a^2$. By symmetry, $V = 2\\iint_R \\sqrt{a^2 - x^2 - y^2}\\,dA$.' },
+            { tag: 'Step 2: Polar Conversion with r dr dθ', body: 'Over the disk $0 \\le r \\le a$, $0 \\le \\theta \\le 2\\pi$: $$V = 2\\int_0^{2\\pi}\\int_0^a \\sqrt{a^2 - r^2}\\,r\\,dr\\,d\\theta.$$' },
+            { tag: 'Step 3: Evaluation & Final Result', final: true, body: 'Substitute $u = a^2 - r^2$ ($du = -2r\\,dr$): $$V = \\int_0^{2\\pi} \\left[-\\frac{2}{3}(a^2-r^2)^{3/2}\\right]_0^a d\\theta = \\int_0^{2\\pi}\\frac{2}{3}a^3\\,d\\theta = \\frac{4}{3}\\pi a^3.$$' }
+          ]
+        },
+        {
+          id: 'gaussian',
+          steps: [
+            { tag: 'Step 1: Square the Integral into 2D', body: 'Class Notes Bonus: Let $I = \\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx$. Since $x$ and $y$ are dummy variables, $$I^2 = \\left(\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx\\right)\\left(\\int_{-\\infty}^{\\infty} e^{-y^2}\\,dy\\right) = \\iint_{\\mathbb{R}^2} e^{-(x^2+y^2)}\\,dx\\,dy.$$' },
+            { tag: 'Step 2: Polar Conversion with r dr dθ', body: 'Over the entire $xy$-plane ($0 \\le \\theta \\le 2\\pi$, $0 \\le r &lt; \\infty$): $$I^2 = \\int_0^{2\\pi}\\int_0^{\\infty} e^{-r^2} r\\,dr\\,d\\theta.$$' },
+            { tag: 'Step 3: Evaluation & Final Result', final: true, body: 'Let $u = r^2$ ($r\\,dr = \\frac{1}{2}du$): $$I^2 = \\int_0^{2\\pi}\\left[-\\frac{1}{2}e^{-r^2}\\right]_0^\\infty d\\theta = \\int_0^{2\\pi} \\frac{1}{2}\\,d\\theta = \\pi \\implies I = \\sqrt{\\pi}.$$' }
+          ]
+        }
+      ];
+
+      let a3dIdx = 0;
+      let a3dStep = 1;
+      const app3dCanvas = document.getElementById('app3dCanvas');
+
+      function drawApp3DCanvas() {
+        const mode = app3dData[a3dIdx].id;
+        const { ctx, w, h } = setupCanvas(app3dCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w * 0.5, cy = h * 0.72;
+        const rxScale = Math.min(w, h) * 0.36;
+        const ryScale = rxScale * 0.34;
+
+        // Draw subtle axes
+        ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 30); ctx.lineTo(cx, 24);
+        ctx.moveTo(cx - rxScale * 1.15, cy); ctx.lineTo(cx + rxScale * 1.15, cy);
+        ctx.stroke();
+        ctx.fillStyle = '#94a3b8'; ctx.font = '700 11px "JetBrains Mono", monospace';
+        ctx.fillText('z', cx + 8, 30);
+
+        if (mode === 'cone') {
+          const r1 = rxScale * 0.45, r2 = rxScale * 0.9;
+          const h1 = h * 0.22, h2 = h * 0.44;
+          // Base annulus
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.8;
+          ctx.beginPath(); ctx.ellipse(cx, cy, r2, ryScale * 0.9, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#070d19';
+          ctx.beginPath(); ctx.ellipse(cx, cy, r1, ryScale * 0.45, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+          // Slanted cone wall between r1 and r2
+          ctx.fillStyle = 'rgba(129, 140, 248, 0.25)';
+          ctx.beginPath();
+          ctx.moveTo(cx - r2, cy - h2); ctx.lineTo(cx - r1, cy - h1);
+          ctx.lineTo(cx - r1, cy); ctx.lineTo(cx - r2, cy); ctx.closePath(); ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(cx + r2, cy - h2); ctx.lineTo(cx + r1, cy - h1);
+          ctx.lineTo(cx + r1, cy); ctx.lineTo(cx + r2, cy); ctx.closePath(); ctx.fill();
+
+          // Top rims
+          ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 2.2;
+          ctx.beginPath(); ctx.ellipse(cx, cy - h2, r2, ryScale * 0.9, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.strokeStyle = '#34d399';
+          ctx.beginPath(); ctx.ellipse(cx, cy - h1, r1, ryScale * 0.45, 0, 0, Math.PI * 2); ctx.stroke();
+
+          // Vertical outer walls
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(cx - r2, cy); ctx.lineTo(cx - r2, cy - h2);
+          ctx.moveTo(cx + r2, cy); ctx.lineTo(cx + r2, cy - h2);
+          ctx.stroke();
+
+          ctx.fillStyle = '#f1f5f9'; ctx.textAlign = 'center';
+          ctx.fillText('Cone z = r over Annulus 1 ≤ r ≤ 2', cx, h - 14);
+        } else if (mode === 'sphere') {
+          const R = Math.min(w, h) * 0.34;
+          const scy = h * 0.50;
+          // Sphere shading
+          const grad = ctx.createRadialGradient(cx - R * 0.3, scy - R * 0.3, R * 0.1, cx, scy, R);
+          grad.addColorStop(0, 'rgba(56, 189, 248, 0.42)');
+          grad.addColorStop(1, 'rgba(129, 140, 248, 0.14)');
+          ctx.fillStyle = grad;
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.2;
+          ctx.beginPath(); ctx.arc(cx, scy, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+          // Equator ellipse
+          ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.8;
+          ctx.beginPath(); ctx.ellipse(cx, scy, R, R * 0.32, 0, 0, Math.PI * 2); ctx.stroke();
+
+          // Meridian ellipse
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)'; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.ellipse(cx, scy, R * 0.35, R, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#f1f5f9'; ctx.textAlign = 'center';
+          ctx.fillText('Sphere x² + y² + z² = a²  (V = 4/3 πa³)', cx, h - 14);
+        } else {
+          // 3D Gaussian Bell Surface z = e^(-r^2)
+          const R = rxScale * 1.05;
+          const peakH = h * 0.48;
+          // Concentric level rings of e^(-r^2)
+          for (let k = 8; k >= 1; k--) {
+            const rNorm = k / 8;
+            const zNorm = Math.exp(-3.2 * rNorm * rNorm);
+            const rr = rNorm * R;
+            const yy = cy - zNorm * peakH;
+            ctx.strokeStyle = k === 8 ? 'rgba(56, 189, 248, 0.35)' : 'rgba(52, 211, 153, 0.55)';
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.ellipse(cx, yy, rr, rr * 0.32, 0, 0, Math.PI * 2);
+            ctx.fill(); ctx.stroke();
+          }
+          // Profile silhouette curve
+          ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.6;
+          ctx.beginPath();
+          for (let i = -80; i <= 80; i++) {
+            const u = i / 80;
+            const x = cx + u * R;
+            const y = cy - Math.exp(-3.2 * u * u) * peakH;
+            i === -80 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          ctx.fillStyle = '#f1f5f9'; ctx.textAlign = 'center';
+          ctx.fillText('Gaussian Surface z = e^(-r²)  (Volume = π)', cx, h - 14);
+        }
+      }
+
+      function renderApp3D() {
+        const steps = app3dData[a3dIdx].steps;
+        document.querySelectorAll('#app3dPipe .pipe-node').forEach((node) => {
+          const s = parseInt(node.dataset.astep, 10);
+          node.classList.toggle('current', s === a3dStep);
+          node.classList.toggle('done', s < a3dStep);
+        });
+
+        const wrap = document.getElementById('app3dStepsWrap');
+        wrap.innerHTML = steps.map((st, i) => `
+          <div class="step-card ${i < a3dStep ? 'visible' : ''} ${st.final ? 'final' : ''}">
+            <div class="step-tag">${st.tag}</div>
+            <div>${st.body}</div>
+          </div>
+        `).join('');
+
+        document.getElementById('app3dCounter').textContent = `Step ${a3dStep} of ${steps.length}`;
+        document.getElementById('a3dPrevBtn').disabled = a3dStep <= 1;
+        document.getElementById('a3dNextBtn').disabled = a3dStep >= steps.length;
+        renderMath(wrap);
+        drawApp3DCanvas();
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const vaultData = [
+        {
+          id: 'v1', cat: 'conversion', exam: 'Final 2025 Q5(c)', topic: 'Conversion',
+          q: 'Use polar coordinates to evaluate $\\displaystyle \\iint_R \\frac{1}{1 + x^2 + y^2}\\,dA$, where $R$ is the sector in the first quadrant bounded by $y = 0$, $y = x$, and $x^2 + y^2 = 4$.',
+          hint: 'Convert the sector to $0 \\le \\theta \\le \\frac{\\pi}{4}$ and $0 \\le r \\le 2$. Do not forget $dA = r\\,dr\\,d\\theta$, which enables $u = 1 + r^2$!',
+          sol: `In polar coordinates, $R$ is $0 \\le \\theta \\le \\frac{\\pi}{4}$, $0 \\le r \\le 2$, and $x^2 + y^2 = r^2$:
+                $$\\int_0^{\\pi/4}\\int_0^2 \\frac{r}{1 + r^2}\\,dr\\,d\\theta = \\int_0^{\\pi/4} \\left[\\frac{1}{2}\\ln(1 + r^2)\\right]_0^2 d\\theta$$
+                $$= \\int_0^{\\pi/4} \\frac{1}{2}\\ln 5\\,d\\theta = \\frac{\\pi}{8}\\ln 5 \\approx 0.6320.$$`
+        },
+        {
+          id: 'v2', cat: 'area', exam: 'Final 2023 Q5(b)', topic: 'Area',
+          q: 'Find the area enclosed by the three-petaled rose $r = \\sin 3\\theta$ using <strong>both</strong> a polar double integral and a polar single integral.',
+          hint: 'Solve $\\sin 3\\theta = 0$ to isolate one petal on $[0, \\frac{\\pi}{3}]$, then multiply by $3$.',
+          sol: `One petal lies on $0 \\le \\theta \\le \\frac{\\pi}{3}$ ($0 \\le r \\le \\sin 3\\theta$).<br/>
+                <strong>Polar Double Integral:</strong>
+                $$A = 3\\int_0^{\\pi/3}\\int_0^{\\sin 3\\theta} r\\,dr\\,d\\theta = 3\\int_0^{\\pi/3} \\left[\\frac{r^2}{2}\\right]_0^{\\sin 3\\theta} d\\theta = \\frac{3}{2}\\int_0^{\\pi/3} \\sin^2(3\\theta)\\,d\\theta.$$
+                <strong>Polar Single Integral (identical step):</strong>
+                $$A = 3\\cdot\\frac{1}{2}\\int_0^{\\pi/3} \\frac{1 - \\cos 6\\theta}{2}\\,d\\theta = \\frac{3}{4}\\left[\\theta - \\frac{\\sin 6\\theta}{6}\\right]_0^{\\pi/3} = \\frac{3}{4}\\cdot\\frac{\\pi}{3} = \\frac{\\pi}{4}.$$`
+        },
+        {
+          id: 'v3', cat: 'volume', exam: 'Final 2020 Q7', topic: 'Volume',
+          q: 'Use polar coordinates to find the volume of the solid region $T$ that lies below the cone $z = \\sqrt{x^2 + y^2}$, above the $xy$-plane, inside $x^2 + y^2 = 4$, and outside $x^2 + y^2 = 1$.',
+          hint: 'The base is the annulus $1 \\le r \\le 2$, $0 \\le \\theta \\le 2\\pi$, and the height is $z = r$.',
+          sol: `In polar coordinates, $z = r$ over the annulus $1 \\le r \\le 2$, $0 \\le \\theta \\le 2\\pi$:
+                $$V = \\iint_R \\sqrt{x^2+y^2}\\,dA = \\int_0^{2\\pi}\\int_1^2 r\\cdot r\\,dr\\,d\\theta = \\int_0^{2\\pi} \\left[\\frac{r^3}{3}\\right]_1^2 d\\theta$$
+                $$= \\int_0^{2\\pi} \\frac{8 - 1}{3}\\,d\\theta = \\frac{7}{3}(2\\pi) = \\frac{14\\pi}{3}.$$`
+        },
+        {
+          id: 'v4', cat: 'gaussian', exam: 'Class Notes Ex 1 (Anton 14.3)', topic: 'Gaussian / Advanced',
+          q: 'Evaluate $\\displaystyle \\iint_R \\sin\\theta\\,dA$, where $R$ is the region in the first quadrant outside the circle $r = 2$ and inside the cardioid $r = 2(1 + \\cos\\theta)$.',
+          hint: 'Limits are $0 \\le \\theta \\le \\frac{\\pi}{2}$ and $2 \\le r \\le 2(1 + \\cos\\theta)$. Integrate $r$ first, then let $u = 1 + \\cos\\theta$!',
+          sol: `$$\\int_0^{\\pi/2}\\int_2^{2(1+\\cos\\theta)} (\\sin\\theta)\\,r\\,dr\\,d\\theta = \\int_0^{\\pi/2} \\sin\\theta \\left[\\frac{r^2}{2}\\right]_2^{2(1+\\cos\\theta)} d\\theta$$
+                $$= 2\\int_0^{\\pi/2} \\left[(1 + \\cos\\theta)^2 - 1\\right]\\sin\\theta\\,d\\theta = 2\\left[-\\frac{(1+\\cos\\theta)^3}{3} + \\cos\\theta\\right]_0^{\\pi/2}$$
+                $$= 2\\left[\\left(-\\frac{1}{3} + 0\\right) - \\left(-\\frac{8}{3} + 1\\right)\\right] = 2\\left(\\frac{4}{3}\\right) = \\frac{8}{3}.$$`
+        },
+        {
+          id: 'v5', cat: 'conversion', exam: 'Class Notes Ex 4', topic: 'Conversion',
+          q: 'Convert to polar coordinates and evaluate $\\displaystyle \\int_{-1}^1 \\int_0^{\\sqrt{1 - x^2}} (x^2 + y^2)^{3/2}\\,dy\\,dx$.',
+          hint: 'The limits $-1 \\le x \\le 1$ and $0 \\le y \\le \\sqrt{1-x^2}$ describe the upper unit semicircle: $0 \\le \\theta \\le \\pi$, $0 \\le r \\le 1$.',
+          sol: `The region $R$ is the upper semicircle $x^2 + y^2 \\le 1,\\; y \\ge 0$ ($0 \\le \\theta \\le \\pi,\\; 0 \\le r \\le 1$). Since $(x^2+y^2)^{3/2} = r^3$:
+                $$\\int_0^{\\pi}\\int_0^1 r^3\\cdot r\\,dr\\,d\\theta = \\int_0^{\\pi}\\left[\\frac{r^5}{5}\\right]_0^1 d\\theta = \\int_0^{\\pi} \\frac{1}{5}\\,d\\theta = \\frac{\\pi}{5}.$$`
+        },
+        {
+          id: 'v6', cat: 'area', exam: 'Class Notes Ex 10', topic: 'Area',
+          q: 'Use a polar double integral to find the area of the region inside the circle $x^2 + y^2 = 4$ and to the right of the line $x = 1$.',
+          hint: 'Convert $x = 1$ to $r = \\sec\\theta$ and $x^2+y^2 = 4$ to $r = 2$. Intersections satisfy $\\sec\\theta = 2 \\implies \\theta = \\pm\\frac{\\pi}{3}$.',
+          sol: `Boundaries: $r_1(\\theta) = \\sec\\theta$ and $r_2(\\theta) = 2$ for $-\\frac{\\pi}{3} \\le \\theta \\le \\frac{\\pi}{3}$. By symmetry:
+                $$A = 2\\int_0^{\\pi/3}\\int_{\\sec\\theta}^{2} r\\,dr\\,d\\theta = 2\\int_0^{\\pi/3} \\frac{1}{2}\\left(4 - \\sec^2\\theta\\right)d\\theta$$
+                $$= \\Big[4\\theta - \\tan\\theta\\Big]_0^{\\pi/3} = \\frac{4\\pi}{3} - \\sqrt{3}.$$`
+        },
+        {
+          id: 'v7', cat: 'conversion', exam: 'Class Notes Ex 26', topic: 'Conversion',
+          q: 'Use polar coordinates to evaluate $\\displaystyle \\iint_R 2y\\,dA$, where $R$ is the region inside the shifted circle $(x - 1)^2 + y^2 = 1$ and above the line $y = x$.',
+          hint: 'Expand $(x-1)^2 + y^2 = 1 \\implies r = 2\\cos\\theta$. Above $y = x$ corresponds to $\\frac{\\pi}{4} \\le \\theta \\le \\frac{\\pi}{2}$ and $0 \\le r \\le 2\\cos\\theta$.',
+          sol: `Since $(x-1)^2 + y^2 = 1 \\iff x^2 + y^2 = 2x \\iff r = 2\\cos\\theta$, and $y \\ge x$ gives $\\frac{\\pi}{4} \\le \\theta \\le \\frac{\\pi}{2}$:
+                $$\\iint_R 2y\\,dA = \\int_{\\pi/4}^{\\pi/2}\\int_0^{2\\cos\\theta} (2r\\sin\\theta)\\,r\\,dr\\,d\\theta = 2\\int_{\\pi/4}^{\\pi/2} \\sin\\theta \\left[\\frac{r^3}{3}\\right]_0^{2\\cos\\theta} d\\theta$$
+                $$= \\frac{16}{3}\\int_{\\pi/4}^{\\pi/2} \\cos^3\\theta\\sin\\theta\\,d\\theta = \\frac{16}{3}\\left[-\\frac{\\cos^4\\theta}{4}\\right]_{\\pi/4}^{\\pi/2} = \\frac{4}{3}\\left(0 + \\frac{1}{4}\\right) = \\frac{1}{3}.$$`
+        },
+        {
+          id: 'v8', cat: 'gaussian', exam: 'Class Notes Bonus', topic: 'Gaussian / Advanced',
+          q: 'Evaluate the Gaussian integral $\\displaystyle I = \\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx$ using a polar double integral.',
+          hint: 'Write $I^2 = \\int_{-\\infty}^{\\infty}\\int_{-\\infty}^{\\infty} e^{-(x^2+y^2)}\\,dx\\,dy$ and switch to polar coordinates on $0 \\le \\theta \\le 2\\pi$, $0 \\le r &lt; \\infty$.',
+          sol: `$$I^2 = \\iint_{\\mathbb{R}^2} e^{-(x^2+y^2)}\\,dA = \\int_0^{2\\pi}\\int_0^{\\infty} e^{-r^2}\\,r\\,dr\\,d\\theta$$
+                Using $u = r^2$ ($r\\,dr = \\frac{1}{2}du$):
+                $$I^2 = \\int_0^{2\\pi} \\lim_{b\\to\\infty}\\left[-\\frac{1}{2}e^{-r^2}\\right]_0^b d\\theta = \\int_0^{2\\pi} \\frac{1}{2}\\,d\\theta = \\pi.$$
+                Since $e^{-x^2} &gt; 0$, we take the positive root: $\\displaystyle I = \\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}$.`
+        }
+      ];
+
+      const reviewedVault = new Set();
+
+      function renderVault(filter) {
+        const list = document.getElementById('vaultList');
+        list.innerHTML = '';
+        vaultData.filter((v) => filter === 'all' || v.cat === filter).forEach((v) => {
+          const isRev = reviewedVault.has(v.id);
+          const card = document.createElement('div');
+          card.className = `vault-item ${isRev ? 'reviewed' : ''}`;
+          card.innerHTML = `
+            <div class="vault-head">
+              <span class="badge">${v.exam}</span>
+              <span class="badge sky">${v.topic}</span>
+            </div>
+            <p>${v.q}</p>
+            <div class="vault-actions">
+              <button type="button" class="btn" data-toggle="${v.id}-hint">Show Hint</button>
+              <button type="button" class="btn btn-primary" data-toggle="${v.id}-sol">Step-by-Step Solution</button>
+              <label class="check-label">
+                <input type="checkbox" class="vault-cb" data-vid="${v.id}" ${isRev ? 'checked' : ''} />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="reveal-box hint-box" id="${v.id}-hint"><strong>Hint:</strong> ${v.hint}</div>
+            <div class="reveal-box" id="${v.id}-sol">${v.sol}</div>
+          `;
+          list.appendChild(card);
+        });
+
+        list.querySelectorAll('[data-toggle]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const box = document.getElementById(btn.dataset.toggle);
+            const open = box.classList.toggle('open');
+            if (btn.dataset.toggle.endsWith('-hint')) {
+              btn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            } else {
+              btn.textContent = open ? 'Hide Solution' : 'Step-by-Step Solution';
+            }
+            if (open) renderMath(box);
+          });
+        });
+
+        list.querySelectorAll('.vault-cb').forEach((cb) => {
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) reviewedVault.add(vid);
+            else reviewedVault.delete(vid);
+            cb.closest('.vault-item').classList.toggle('reviewed', cb.checked);
+            updateProgress();
+          });
+        });
+
+        renderMath(list);
+      }
+
+      /* ----------------------------------------------------------------------
+         7. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. When converting a Cartesian double integral $\\iint_R f(x,y)\\,dx\\,dy$ to polar coordinates, what replaces the area element $dA = dx\\,dy$?',
+          opts: ['$dr\\,d\\theta$', '$r\\,dr\\,d\\theta$', '$r^2\\,dr\\,d\\theta$', '$\\frac{1}{2}r^2\\,dr\\,d\\theta$'],
+          ans: 1,
+          exp: 'A polar wedge at radius $r^*$ has radial width $\\Delta r$ and arc width $r^*\\Delta\\theta$, so $dA = r\\,dr\\,d\\theta$.'
+        },
+        {
+          q: '2. For the region inside the circle $x^2 + y^2 = 4$ and to the right of the vertical line $x = 1$, what are the correct $r$-limits?',
+          opts: ['$0 \\le r \\le 2$', '$1 \\le r \\le 2$', '$\\sec\\theta \\le r \\le 2$', '$\\cos\\theta \\le r \\le 2$'],
+          ans: 2,
+          exp: 'The vertical line $x = 1$ converts to $r\\cos\\theta = 1 \\implies r = \\sec\\theta$. Thus each radial ray enters at $r_1(\\theta) = \\sec\\theta$ and exits at $r_2(\\theta) = 2$.'
+        },
+        {
+          q: '3. In Final 2025 Q5(c), $R$ is the first-quadrant sector bounded by $y = 0$, $y = x$, and $x^2 + y^2 = 4$. What are the $\\theta$-limits?',
+          opts: ['$0 \\le \\theta \\le \\dfrac{\\pi}{4}$', '$0 \\le \\theta \\le \\dfrac{\\pi}{2}$', '$\\dfrac{\\pi}{4} \\le \\theta \\le \\dfrac{\\pi}{2}$', '$0 \\le \\theta \\le \\pi$'],
+          ans: 0,
+          exp: 'The positive $x$-axis is $\\theta = 0$ and the line $y = x$ in Quadrant 1 is $\\theta = \\frac{\\pi}{4}$, so $0 \\le \\theta \\le \\frac{\\pi}{4}$.'
+        },
+        {
+          q: '4. Which polar integral is equivalent to $\\displaystyle \\int_{-1}^{1}\\int_0^{\\sqrt{1-x^2}} (x^2 + y^2)^{3/2}\\,dy\\,dx$?',
+          opts: [
+            '$\\displaystyle \\int_0^{2\\pi}\\int_0^1 r^4\\,dr\\,d\\theta$',
+            '$\\displaystyle \\int_0^{\\pi}\\int_0^1 r^3\\,dr\\,d\\theta$',
+            '$\\displaystyle \\int_0^{\\pi}\\int_0^1 r^4\\,dr\\,d\\theta$',
+            '$\\displaystyle \\int_0^{\\pi/2}\\int_0^1 r^4\\,dr\\,d\\theta$'
+          ],
+          ans: 2,
+          exp: 'The region is the upper unit semicircle ($0 \\le \\theta \\le \\pi$, $0 \\le r \\le 1$), and $(x^2+y^2)^{3/2}\\,dA = r^3 \\cdot (r\\,dr\\,d\\theta) = r^4\\,dr\\,d\\theta$.'
+        },
+        {
+          q: '5. What is the polar equation of the shifted circle $(x - 1)^2 + y^2 = 1$?',
+          opts: ['$r = 1$', '$r = 2\\sin\\theta$', '$r = \\cos\\theta$', '$r = 2\\cos\\theta$'],
+          ans: 3,
+          exp: 'Expanding gives $x^2 - 2x + 1 + y^2 = 1 \\implies x^2 + y^2 = 2x \\implies r^2 = 2r\\cos\\theta \\implies r = 2\\cos\\theta$.'
+        }
+      ];
+
+      const quizAnswered = new Map();
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        quizData.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'quiz-q';
+          div.innerHTML = `
+            <p><strong>${item.q}</strong></p>
+            <div class="options" id="q-opts-${idx}"></div>
+            <div class="feedback" id="q-fb-${idx}"></div>
+          `;
+          container.appendChild(div);
+          const optsDiv = div.querySelector(`#q-opts-${idx}`);
+          item.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'opt-btn';
+            btn.innerHTML = opt;
+            btn.addEventListener('click', () => handleQuizAnswer(idx, oi));
+            optsDiv.appendChild(btn);
+          });
+        });
+        renderMath(container);
+      }
+
+      function handleQuizAnswer(qIdx, oIdx) {
+        if (quizAnswered.has(qIdx)) return;
+        const item = quizData[qIdx];
+        const ok = oIdx === item.ans;
+        quizAnswered.set(qIdx, ok);
+
+        const btns = document.querySelectorAll(`#q-opts-${qIdx} .opt-btn`);
+        btns.forEach((b, i) => {
+          b.disabled = true;
+          if (i === item.ans) b.classList.add('correct');
+          else if (i === oIdx) b.classList.add('wrong');
+        });
+
+        const fb = document.getElementById(`q-fb-${qIdx}`);
+        fb.innerHTML = (ok ? '<strong style="color:var(--green)">Correct!</strong> ' : '<strong style="color:var(--rose)">Not quite.</strong> ') + item.exp;
+        fb.classList.add('show');
+        renderMath(fb);
+
+        const score = [...quizAnswered.values()].filter(Boolean).length;
+        document.getElementById('quizScore').textContent = `${score} / ${quizData.length}`;
+        updateProgress();
+      }
+
+      /* ----------------------------------------------------------------------
+         8. MASTERY PROGRESS (8 VAULT + 5 QUIZ = 13 TASKS)
+         ---------------------------------------------------------------------- */
+      function updateProgress() {
+        const total = vaultData.length + quizData.length;
+        const done = reviewedVault.size + quizAnswered.size;
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressDetail').textContent = `${done} / ${total} tasks (${reviewedVault.size}/8 Vault, ${quizAnswered.size}/5 Quiz)`;
+      }
+
+      /* ----------------------------------------------------------------------
+         9. DOM INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile Drawer
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        function setDrawer(open) {
+          sidebar.classList.toggle('open', open);
+          overlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+        menuToggle.addEventListener('click', () => setDrawer(!sidebar.classList.contains('open')));
+        overlay.addEventListener('click', () => setDrawer(false));
+        document.querySelectorAll('#sideNav a').forEach((a) => a.addEventListener('click', () => setDrawer(false)));
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 12 — Double Integrals over Rectangular & General Regions');
+        });
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          showToast('Next Up: Lesson 14 — Triple Integrals (Rectangular, Cylindrical & Spherical)');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('main section');
+        const navLinks = document.querySelectorAll('#sideNav a');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.sec === entry.target.id));
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Controls
+        document.getElementById('polarScanPreset').addEventListener('change', (e) => {
+          stopRayAnim();
+          scanState.preset = e.target.value;
+          scanState.pct = 50;
+          raySlider.value = 50;
+          drawPolarScanner();
+        });
+
+        raySlider.addEventListener('input', () => {
+          stopRayAnim();
+          scanState.pct = parseFloat(raySlider.value);
+          drawPolarScanner();
+        });
+
+        playRayBtn.addEventListener('click', () => {
+          if (scanState.playing) {
+            stopRayAnim();
+          } else {
+            scanState.playing = true;
+            scanState.lastTs = 0;
+            playRayBtn.textContent = '❚❚ Pause';
+            scanState.rafId = requestAnimationFrame(stepRayAnim);
+          }
+        });
+
+        document.getElementById('resetRayBtn').addEventListener('click', () => {
+          stopRayAnim();
+          scanState.pct = 50;
+          raySlider.value = 50;
+          drawPolarScanner();
+        });
+
+        const toggleWedgeBtn = document.getElementById('toggleWedgeGridBtn');
+        toggleWedgeBtn.addEventListener('click', () => {
+          scanState.showWedges = !scanState.showWedges;
+          toggleWedgeBtn.classList.toggle('toggled', scanState.showWedges);
+          drawPolarScanner();
+        });
+
+        // Section 2 Tabs & Controls
+        document.querySelectorAll('[data-lab2]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-lab2]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tgt = btn.dataset.lab2;
+            document.getElementById('lab2-wedge').style.display = tgt === 'wedge' ? 'block' : 'none';
+            document.getElementById('lab2-apps3d').style.display = tgt === 'apps3d' ? 'block' : 'none';
+            requestAnimationFrame(() => {
+              if (tgt === 'wedge') drawWedgeVisualizer();
+              else drawApp3DCanvas();
+            });
+          });
+        });
+
+        wRSlider.addEventListener('input', drawWedgeVisualizer);
+        wDrSlider.addEventListener('input', drawWedgeVisualizer);
+        wDtSlider.addEventListener('input', drawWedgeVisualizer);
+
+        document.querySelectorAll('#app3dTabs .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#app3dTabs .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            a3dIdx = parseInt(btn.dataset.a3d, 10);
+            a3dStep = 1;
+            renderApp3D();
+          });
+        });
+
+        document.querySelectorAll('#app3dPipe .pipe-node').forEach((node) => {
+          node.addEventListener('click', () => {
+            a3dStep = parseInt(node.dataset.astep, 10);
+            renderApp3D();
+          });
+        });
+
+        document.getElementById('a3dPrevBtn').addEventListener('click', () => {
+          if (a3dStep > 1) { a3dStep--; renderApp3D(); }
+        });
+        document.getElementById('a3dNextBtn').addEventListener('click', () => {
+          if (a3dStep < 3) { a3dStep++; renderApp3D(); }
+        });
+        document.getElementById('a3dAllBtn').addEventListener('click', () => {
+          a3dStep = 3; renderApp3D();
+        });
+
+        // Section 4 Vault Filters
+        document.querySelectorAll('#vaultFilters .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#vaultFilters .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderVault(btn.dataset.vcat);
+          });
+        });
+
+        // Section 5 Reset Quiz
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          quizAnswered.clear();
+          document.getElementById('quizScore').textContent = `0 / ${quizData.length}`;
+          renderQuiz();
+          updateProgress();
+        });
+
+        // Initial Renders
+        renderVault('all');
+        renderQuiz();
+        renderApp3D();
+        drawPolarScanner();
+        drawWedgeVisualizer();
+        updateProgress();
+        renderMath(document.body);
+
+        // Responsive ResizeObserver
+        const ro = new ResizeObserver(() => {
+          drawPolarScanner();
+          drawWedgeVisualizer();
+          drawApp3DCanvas();
+        });
+        ro.observe(document.getElementById('scanCanvasWrap'));
+        ro.observe(document.getElementById('wedgeCanvasWrap'));
+        ro.observe(document.getElementById('app3dCanvasWrap'));
+      });
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawPolarScanner();
+        drawWedgeVisualizer();
+        drawApp3DCanvas();
+      });
+    })();
+  </script>
+</body>
+</html>

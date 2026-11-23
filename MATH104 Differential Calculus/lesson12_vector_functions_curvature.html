@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 12: Vector-Valued Functions, T-N-B Frame &amp; Curvature | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #0284c7 52%, #7c3aed 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 12: Vector Curves &amp; Curvature</h2>
+      <p>Module 4 Finale &bull; $\mathbf{T}, \mathbf{N}, \mathbf{B}$ &amp; $\kappa$</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Core Theory &amp; Formulas</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lectures 12a, 12b, 12c</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">Year Final 2025 Q7</span>
+      <span class="source-pill">Past Final Q8(a)</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 12 of 15</span>
+        <span class="hero-badge">High Yield: Year Final 2025 Q7 (12 Marks!)</span>
+        <span class="hero-badge">Interactive 3D &amp; 2D Web Lab</span>
+      </div>
+      <h1>Vector-Valued Functions, Arc Length, $\mathbf{T}$-$\mathbf{N}$-$\mathbf{B}$ Frame &amp; Curvature</h1>
+      <p>
+        Rotate 3D space curves like the circular helix and twisted cubic $\langle t, t^2, t^3\rangle$ while watching the
+        moving Frenet frame $(\mathbf{T}, \mathbf{N}, \mathbf{B})$ turn in space, shrink and expand the osculating circle
+        along ellipses, $y = \ln x$, and cardioids, and master every curvature formula.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-3d', this)">3D Space Curve &amp; T-N-B Frame</button>
+          <button class="tab-btn" onclick="switchTab('tab-curv', this)">Osculating Circle &amp; Curvature Lab</button>
+          <button class="tab-btn" onclick="switchTab('tab-smooth', this)">Smoothness &amp; Orientation Lab</button>
+        </div>
+
+        <!-- TAB 1: 3D SPACE CURVE -->
+        <div id="tab-3d" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="curve3dCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="curve3dSelect">Choose 3D Space Curve</label>
+                <select id="curve3dSelect" onchange="setup3dControls()">
+                  <option value="helix">Ex 2 (12a): Circular Helix &lang;cos t, sin t, 0.35t&rang;</option>
+                  <option value="cubic">Final 2025 Q7(a): Twisted Cubic &lang;t, t&sup2;, t&sup3;&rang;</option>
+                  <option value="line">Ex 1 (12a): 3D Line &lang;1 - t, 3t, 2t&rang; (&kappa; = 0)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Parameter $t$</span><span id="t3dVal">2.00</span></label>
+                <input type="range" id="t3dSlider" min="0" max="10" step="0.1" value="2.0" oninput="draw3dCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span>Rotate Camera Angle</span><span id="rot3dVal">35&deg;</span></label>
+                <input type="range" id="rot3dSlider" min="0" max="360" step="5" value="35" oninput="draw3dCanvas()" />
+              </div>
+              <div class="readout-card" id="readout3d"></div>
+              <p style="font-size: 0.78rem; color: var(--text-muted);">
+                <strong>Frame Colors:</strong> <span style="color:#2563eb; font-weight:700;">T(t) Blue</span> (tangent),
+                <span style="color:#059669; font-weight:700;">N(t) Green</span> (inward normal),
+                <span style="color:#7c3aed; font-weight:700;">B(t) Purple</span> (binormal $\mathbf{T}\times\mathbf{N}$).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: CURVATURE & OSCULATING CIRCLE -->
+        <div id="tab-curv" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="curvCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="curvSelect">Choose Lecture / Final 2025 Curve</label>
+                <select id="curvSelect" onchange="setupCurvControls()">
+                  <option value="ellipse">Ashraful's Notes: Ellipse &lang;2 cos t, 3 sin t&rang;</option>
+                  <option value="lnx">Year Final 2025 Q7(b): Cartesian y = ln(x)</option>
+                  <option value="cardioid">Year Final 2025 Q7(c): Polar Cardioid r = 1 + cos &theta;</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span id="curvParamLabel">Parameter $t$</span><span id="curvParamVal">0.00</span></label>
+                <input type="range" id="curvSlider" min="0" max="6.28" step="0.05" value="0" oninput="drawCurvCanvas()" />
+              </div>
+              <div class="btn-row" id="curvQuickBtns">
+                <button class="btn btn-primary" onclick="snapCurvExam()">Snap to Exam Point</button>
+              </div>
+              <div class="readout-card" id="curvReadout"></div>
+              <p style="font-size: 0.78rem; color: var(--text-muted);">
+                <strong>Visual Intuition:</strong> Tight bend = <strong>large $\kappa$</strong> = <strong>small osculating circle ($\rho = 1/\kappa$)</strong>. Flat curve = small $\kappa$ = huge circle!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: SMOOTHNESS & ORIENTATION -->
+        <div id="tab-smooth" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="smoothCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="smoothSelect">Compare Parametrizations (Ashraful's Notes)</label>
+                <select id="smoothSelect" onchange="drawSmoothCanvas()">
+                  <option value="good">Smooth: r(t) = &lang;t, t&sup2;&rang; (y = x&sup2;, r'(0) = &lang;1,0&rang; &ne; 0)</option>
+                  <option value="stall">NOT Smooth at 0: r(&tau;) = &lang;&tau;&sup3;, &tau;⁶&rang; (Same y = x&sup2;, stalls!)</option>
+                  <option value="cusp">Cusp Curve: r(t) = &lang;t&sup3;, t&sup2;&rang; (y&sup3; = x&sup2;, sharp cusp!)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Scrub Parameter $t$</span><span id="smoothTVal">0.00</span></label>
+                <input type="range" id="smoothSlider" min="-1.6" max="1.6" step="0.05" value="0" oninput="drawSmoothCanvas()" />
+              </div>
+              <div class="readout-card" id="smoothReadout"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory &amp; Formula Sheet (Lectures 12a–12c)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Vector-Valued Functions, Smoothness &amp; Arc-Length Parametrization</h3>
+        <p>
+          A <strong>vector-valued function</strong> $\mathbf{r}(t) = \langle f(t), g(t), h(t)\rangle = f(t)\hat{i} + g(t)\hat{j} + h(t)\hat{k}$ maps a scalar parameter $t$ to a position vector whose tip traces a curve as $t$ increases (giving its <strong>orientation</strong>).
+        </p>
+        <ul style="margin: 10px 0 12px 20px; display: flex; flex-direction: column; gap: 5px;">
+          <li><strong>Domain:</strong> Intersection of the domains of all component functions $f(t), g(t), h(t)$.</li>
+          <li><strong>Limits &amp; Continuity:</strong> Evaluated component-wise. If <em>any single component</em> limit DNE, the vector limit DNE.</li>
+          <li><strong>Smoothness Condition:</strong> A parametrization $\mathbf{r}(t)$ is <strong>smooth</strong> on an interval if $\mathbf{r}'(t)$ is continuous and <strong>$\mathbf{r}'(t) \ne \mathbf{0}$</strong> everywhere on the interval. <em>(Smoothness depends on the parametrization, not just the shape!)</em></li>
+          <li><strong>Orthogonality Property:</strong> If $\|\mathbf{r}(t)\| = c$ (constant length), then $\mathbf{r}(t) \cdot \mathbf{r}'(t) = 0$ (orthogonal!).</li>
+          <li><strong>Arc Length Parameter:</strong> $s(t) = \displaystyle\int_{t_0}^{t} \|\mathbf{r}'(u)\|\,du$, so $\dfrac{ds}{dt} = \|\mathbf{r}'(t)\|$.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>2.2 The T-N-B (Frenet) Frame &amp; Curvature Formulas</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Object</th>
+                <th>General Parameter $t$ Formula</th>
+                <th>Arc-Length $s$ / Geometric Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Unit Tangent $\mathbf{T}(t)$</strong></td>
+                <td>$\mathbf{T}(t) = \dfrac{\mathbf{r}'(t)}{\|\mathbf{r}'(t)\|}$</td>
+                <td>$\mathbf{T}(s) = \mathbf{r}'(s)$; unit vector pointing along motion.</td>
+              </tr>
+              <tr>
+                <td><strong>Principal Unit Normal $\mathbf{N}(t)$</strong></td>
+                <td>$\mathbf{N}(t) = \dfrac{\mathbf{T}'(t)}{\|\mathbf{T}'(t)\|}$</td>
+                <td>$\mathbf{N}(s) = \dfrac{\mathbf{r}''(s)}{\|\mathbf{r}''(s)\|}$; perpendicular to $\mathbf{T}$, always points <strong>inward</strong> (concave side).</td>
+              </tr>
+              <tr>
+                <td><strong>Binormal Vector $\mathbf{B}(t)$</strong></td>
+                <td>$\mathbf{B}(t) = \mathbf{T}(t) \times \mathbf{N}(t) = \dfrac{\mathbf{r}'(t) \times \mathbf{r}''(t)}{\|\mathbf{r}'(t) \times \mathbf{r}''(t)\|}$</td>
+                <td>Perpendicular to the <strong>osculating plane</strong> spanned by $\mathbf{T}$ and $\mathbf{N}$.</td>
+              </tr>
+              <tr>
+                <td><strong>Curvature $\kappa$ (3D Space)</strong></td>
+                <td>$\kappa(t) = \dfrac{\|\mathbf{T}'(t)\|}{\|\mathbf{r}'(t)\|} = \dfrac{\|\mathbf{r}'(t) \times \mathbf{r}''(t)\|}{\|\mathbf{r}'(t)\|^3}$</td>
+                <td>$\kappa(s) = \left\|\dfrac{d\mathbf{T}}{ds}\right\|$; measures how fast $\mathbf{T}$ turns per unit arc length.</td>
+              </tr>
+              <tr>
+                <td><strong>Curvature (2D Parametric)</strong></td>
+                <td>$\kappa(t) = \dfrac{|x'y'' - y'x''|}{\left[(x')^2 + (y')^2\right]^{3/2}}$</td>
+                <td>Special case of 3D cross product with $z = 0$.</td>
+              </tr>
+              <tr>
+                <td><strong>Curvature (Cartesian $y=f(x)$)</strong></td>
+                <td>$\kappa(x) = \dfrac{|y''|}{\left[1 + (y')^2\right]^{3/2}}$</td>
+                <td>Radius of curvature: $\rho = \dfrac{1}{\kappa}$. Center: $(x - \frac{y'(1+y'^2)}{y''},\; y + \frac{1+y'^2}{y''})$.</td>
+              </tr>
+              <tr>
+                <td><strong>Curvature (Polar $r = r(\theta)$)</strong></td>
+                <td>$\kappa(\theta) = \dfrac{|r^2 + 2(r')^2 - r r''|}{\left[r^2 + (r')^2\right]^{3/2}}$</td>
+                <td>Obtained by setting $x = r\cos\theta,\; y = r\sin\theta$ in the 2D parametric formula.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn">
+          <strong>Watch Out (Ashraful's Note):</strong>
+          $\mathbf{N}(t) = \dfrac{\mathbf{T}'(t)}{\|\mathbf{T}'(t)\|}$ is <strong>always</strong> correct, whereas $\dfrac{\mathbf{r}''(t)}{\|\mathbf{r}''(t)\|}$ is generally <em>NOT</em> equal to $\mathbf{N}(t)$ unless the curve is parametrized by arc length $s$ (constant speed)!
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: Ellipse Curvature -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Parametric Curvature</span>
+            <h3 style="margin-top: 6px;">Example 1: Curvature of the Ellipse $\mathbf{r}(t) = 2\cos t\,\hat{i} + 3\sin t\,\hat{j}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Find $\kappa(t)$ for the ellipse and evaluate it at the minor-axis vertex $(2, 0)$ and major-axis vertex $(0, 3)$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Derivatives:</strong> $\mathbf{r}'(t) = \langle -2\sin t, 3\cos t, 0\rangle$, &nbsp; $\mathbf{r}''(t) = \langle -2\cos t, -3\sin t, 0\rangle$.</div>
+          <div class="step-item"><strong>Step 2 — Cross Product &amp; Speed:</strong> $\mathbf{r}'(t) \times \mathbf{r}''(t) = (6\sin^2 t + 6\cos^2 t)\hat{k} = 6\hat{k}$, so $\|\mathbf{r}' \times \mathbf{r}''\| = 6$. And $\|\mathbf{r}'(t)\| = \sqrt{4\sin^2 t + 9\cos^2 t} = \sqrt{4 + 5\cos^2 t}$.</div>
+          <div class="step-item"><strong>Step 3 — Curvature Formula &amp; Vertices:</strong> $\kappa(t) = \dfrac{6}{(4 + 5\cos^2 t)^{3/2}}$.<br />
+            &bull; At $(2, 0)$ ($t = 0$): $\kappa(0) = \dfrac{6}{9^{3/2}} = \dfrac{6}{27} = \mathbf{\dfrac{2}{9}}$ (flattest!).<br />
+            &bull; At $(0, 3)$ ($t = \frac{\pi}{2}$): $\kappa\!\left(\frac{\pi}{2}\right) = \dfrac{6}{4^{3/2}} = \dfrac{6}{8} = \mathbf{\dfrac{3}{4}}$ (sharpest bend!).</div>
+        </div>
+      </div>
+
+      <!-- Example 2: T, N, B for e^t sin t, e^t cos t, 3 -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Ashraful's Notes &bull; Complete T-N-B Frame</span>
+            <h3 style="margin-top: 6px;">Example 2: Find $\mathbf{T}(t), \mathbf{N}(t), \mathbf{B}(t)$ for $\mathbf{r}(t) = e^t\sin t\,\hat{i} + e^t\cos t\,\hat{j} + 3\hat{k}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Compute the full moving Frenet frame for this logarithmic spiral in the plane $z = 3$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — $\mathbf{r}'(t)$ &amp; Speed:</strong> $\mathbf{r}'(t) = e^t(\sin t + \cos t)\hat{i} + e^t(\cos t - \sin t)\hat{j}$. Using $(a+b)^2 + (a-b)^2 = 2(a^2+b^2)$, $\|\mathbf{r}'(t)\| = \sqrt{2}e^t$.</div>
+          <div class="step-item"><strong>Step 2 — Unit Tangent $\mathbf{T}(t)$:</strong> Divide by $\sqrt{2}e^t$: $\mathbf{T}(t) = \dfrac{\sin t + \cos t}{\sqrt{2}}\hat{i} + \dfrac{\cos t - \sin t}{\sqrt{2}}\hat{j}$.</div>
+          <div class="step-item"><strong>Step 3 — Unit Normal $\mathbf{N}(t)$:</strong> $\mathbf{T}'(t) = \dfrac{\cos t - \sin t}{\sqrt{2}}\hat{i} - \dfrac{\sin t + \cos t}{\sqrt{2}}\hat{j}$. Since $\|\mathbf{T}'(t)\| = 1$, $\mathbf{N}(t) = \mathbf{T}'(t)$.</div>
+          <div class="step-item"><strong>Step 4 — Binormal $\mathbf{B}(t)$:</strong> $\mathbf{B}(t) = \mathbf{T}(t) \times \mathbf{N}(t) = \mathbf{-\hat{k}}$ (constant, because the curve lies completely in the horizontal plane $z = 3$!).</div>
+        </div>
+      </div>
+
+      <!-- Example 3: Arc-Length Parametrization of Helix -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Arc-Length Parametrization</span>
+            <h3 style="margin-top: 6px;">Example 3: Reparametrize the Helix $\mathbf{r}(t) = \cos t\,\hat{i} + \sin t\,\hat{j} + t\,\hat{k}$ by Arc Length $s$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Find $\mathbf{r}(s)$ measured from $t = 0$, and locate the point at arc-length distance $s = 10$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Speed $\|\mathbf{r}'(u)\|$:</strong> $\mathbf{r}'(u) = \langle -\sin u, \cos u, 1\rangle \implies \|\mathbf{r}'(u)\| = \sqrt{\sin^2 u + \cos^2 u + 1} = \sqrt{2}$.</div>
+          <div class="step-item"><strong>Step 2 — Integrate for $s(t)$:</strong> $s = \int_0^t \sqrt{2}\,du = \sqrt{2}\,t \implies t = \dfrac{s}{\sqrt{2}}$.</div>
+          <div class="step-item"><strong>Step 3 — Substitute Back:</strong> $\mathbf{r}(s) = \cos\!\left(\dfrac{s}{\sqrt{2}}\right)\hat{i} + \sin\!\left(\dfrac{s}{\sqrt{2}}\right)\hat{j} + \dfrac{s}{\sqrt{2}}\hat{k}$. At $s = 10$: $\left(\cos\frac{10}{\sqrt{2}},\; \sin\frac{10}{\sqrt{2}},\; \frac{10}{\sqrt{2}}\right)$.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Filtered MATH104)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: Year Final 2025 Q7(a) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2025 &bull; Q7(a)</span>
+          <span class="pill pill-amber">4 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Given the vector-valued function $\mathbf{r}(t) = \langle t, t^2, t^3\rangle$: (i) Find the unit tangent vector $\mathbf{T}(t)$; (ii) Determine the unit normal vector $\mathbf{N}(t)$ at $t = 1$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> To compute $\mathbf{N}(1)$ cleanly without messy quotient-rule algebra on all $t$, differentiate $\mathbf{T}(t) = \frac{\mathbf{r}'(t)}{\|\mathbf{r}'(t)\|}$ using the product rule and plug in $t = 1$ right away!
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>(i) Unit Tangent $\mathbf{T}(t)$:</strong><br />
+          $\mathbf{r}'(t) = \langle 1, 2t, 3t^2\rangle$ and $\|\mathbf{r}'(t)\| = \sqrt{1 + 4t^2 + 9t^4}$. Therefore:
+          $$\mathbf{T}(t) = \frac{\langle 1,\; 2t,\; 3t^2\rangle}{\sqrt{1 + 4t^2 + 9t^4}}$$
+          <strong>(ii) Unit Normal $\mathbf{N}(1)$:</strong><br />
+          Let $v(t) = \|\mathbf{r}'(t)\| = (1 + 4t^2 + 9t^4)^{1/2}$. At $t = 1$: $v(1) = \sqrt{14}$, and $v'(t) = \dfrac{4t + 18t^3}{v(t)} \implies v'(1) = \dfrac{22}{\sqrt{14}}$.<br />
+          Also $\mathbf{r}'(1) = \langle 1, 2, 3\rangle$ and $\mathbf{r}''(1) = \langle 0, 2, 6\rangle$. By the quotient rule:
+          $$\mathbf{T}'(1) = \frac{v(1)\mathbf{r}''(1) - v'(1)\mathbf{r}'(1)}{[v(1)]^2} = \frac{\sqrt{14}\langle 0, 2, 6\rangle - \frac{22}{\sqrt{14}}\langle 1, 2, 3\rangle}{14} = \frac{\langle -22,\; -16,\; 18\rangle}{14\sqrt{14}} = \frac{\langle -11,\; -8,\; 9\rangle}{7\sqrt{14}}$$
+          Normalize $\langle -11, -8, 9\rangle$: length is $\sqrt{121 + 64 + 81} = \sqrt{266}$. Thus:
+          $$\mathbf{N}(1) = \frac{\langle -11,\; -8,\; 9\rangle}{\sqrt{266}}$$
+          *(Check: $\mathbf{T}(1) \cdot \mathbf{N}(1) \propto 1(-11) + 2(-8) + 3(9) = -11 - 16 + 27 = 0$ ✓!)*
+        </div>
+      </div>
+
+      <!-- Exam Q2: Year Final 2025 Q7(b) & Q7(c) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2025 &bull; Q7(b) &amp; Q7(c)</span>
+          <span class="pill pill-amber">4 + 4 = 8 Marks</span>
+        </div>
+        <p>
+          <strong>(b)</strong> For the plane curve $y = \ln x$, derive the curvature $\kappa(x)$ and evaluate it at $x = 1$.<br />
+          <strong>(c)</strong> A curve is given in polar coordinates by $r(\theta) = 1 + \cos\theta$. Find the radius of curvature at $\theta = \pi$, and determine the coordinates of the center of curvature at this point.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Part (b) ($y = \ln x$):</strong><br />
+          $y' = \dfrac{1}{x}$ and $y'' = -\dfrac{1}{x^2}$. Substitute into $\kappa(x) = \dfrac{|y''|}{[1 + (y')^2]^{3/2}}$:
+          $$\kappa(x) = \frac{1/x^2}{\left(1 + \frac{1}{x^2}\right)^{3/2}} = \frac{1/x^2}{(x^2 + 1)^{3/2} / x^3} = \mathbf{\frac{x}{(x^2 + 1)^{3/2}}} \;\;(x > 0)$$
+          At $x = 1$: $\kappa(1) = \dfrac{1}{2^{3/2}} = \mathbf{\dfrac{1}{2\sqrt{2}}}$ (and radius $\rho(1) = 2\sqrt{2}$).<br /><br />
+          <strong>Part (c) (Cardioid $r(\theta) = 1 + \cos\theta$):</strong><br />
+          We have $r = 1 + \cos\theta$, $r' = -\sin\theta$, $r'' = -\cos\theta$. Compute the polar curvature numerator &amp; denominator:<br />
+          &bull; $r^2 + (r')^2 = (1 + 2\cos\theta + \cos^2\theta) + \sin^2\theta = 2(1 + \cos\theta) = 4\cos^2(\theta/2)$.<br />
+          &bull; $r^2 + 2(r')^2 - rr'' = (1 + 2\cos\theta + \cos^2\theta) + 2\sin^2\theta + \cos\theta(1 + \cos\theta) = 3(1 + \cos\theta) = 6\cos^2(\theta/2)$.<br />
+          Therefore, for $\theta \ne \pi$:
+          $$\kappa(\theta) = \frac{6\cos^2(\theta/2)}{\left[4\cos^2(\theta/2)\right]^{3/2}} = \frac{3}{4\left|\cos(\theta/2)\right|} \implies \rho(\theta) = \frac{1}{\kappa(\theta)} = \mathbf{\frac{4}{3}\left|\cos\frac{\theta}{2}\right|}$$
+          At $\theta = \pi$ (the cardioid's cusp at the origin $(0,0)$): $\rho(\pi) = \dfrac{4}{3}\cos\!\left(\dfrac{\pi}{2}\right) = \mathbf{0}$ (limiting radius of curvature is $0$, since $\kappa \to \infty$ at a sharp cusp!), so the limiting <strong>center of curvature</strong> collapses right onto the cusp at <strong>$(0, 0)$</strong>! *(Compare with $\theta = 0$ in Tab 2, where $\rho(0) = \frac{4}{3}$ and center is $(\frac{2}{3}, 0)$.)*
+        </div>
+      </div>
+
+      <!-- Exam Q3: Past Final Q8(a) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Past Year Final &bull; Q8(a)</span>
+          <span class="pill pill-amber">6 Marks (Core Derivation!)</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Define <strong>curvature</strong> and <strong>radius of curvature</strong>. Show that the curvature of a plane parametric curve $x = x(t),\; y = y(t)$ is
+          $$\kappa(t) = \frac{|x'y'' - y'x''|}{\left[(x')^2 + (y')^2\right]^{3/2}}$$
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Complete Exam Derivation</button>
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Definitions:</strong><br />
+          &bull; <strong>Curvature ($\kappa$):</strong> The rate at which the unit tangent vector $\mathbf{T}$ turns with respect to arc length $s$: $\kappa = \left\|\dfrac{d\mathbf{T}}{ds}\right\|$.<br />
+          &bull; <strong>Radius of Curvature ($\rho$):</strong> The reciprocal of curvature, $\rho = \dfrac{1}{\kappa}$ (for $\kappa \ne 0$), which equals the radius of the best-fitting osculating circle at that point.<br /><br />
+          <strong>Derivation:</strong> Embed the 2D curve in 3D space as $\mathbf{r}(t) = \langle x(t), y(t), 0\rangle$.<br />
+          1. Differentiate twice: $\mathbf{r}'(t) = \langle x', y', 0\rangle$ and $\mathbf{r}''(t) = \langle x'', y'', 0\rangle$.<br />
+          2. Compute the cross product:
+          $$\mathbf{r}'(t) \times \mathbf{r}''(t) = \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ x' & y' & 0 \\ x'' & y'' & 0 \end{vmatrix} = (x'y'' - y'x'')\hat{k} \implies \|\mathbf{r}'(t) \times \mathbf{r}''(t)\| = |x'y'' - y'x''|$$
+          3. Speed is $\|\mathbf{r}'(t)\| = \sqrt{(x')^2 + (y')^2}$, so $\|\mathbf{r}'(t)\|^3 = \left[(x')^2 + (y')^2\right]^{3/2}$.<br />
+          4. Substitute into $\kappa(t) = \dfrac{\|\mathbf{r}'(t) \times \mathbf{r}''(t)\|}{\|\mathbf{r}'(t)\|^3}$:
+          $$\kappa(t) = \frac{|x'y'' - y'x''|}{\left[(x')^2 + (y')^2\right]^{3/2}} \quad \blacksquare$$
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      draw3dCanvas();
+      drawCurvCanvas();
+      drawSmoothCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-3d') draw3dCanvas();
+      if (id === 'tab-curv') drawCurvCanvas();
+      if (id === 'tab-smooth') drawSmoothCanvas();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    /* ================= VECTOR MATH HELPERS ================= */
+    const vNorm = v => Math.hypot(v[0], v[1], v[2]);
+    const vUnit = v => { const l = vNorm(v) || 1; return [v[0]/l, v[1]/l, v[2]/l]; };
+    const vCross = (a, b) => [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+    const vAdd = (a, b, s=1) => [a[0]+b[0]*s, a[1]+b[1]*s, a[2]+b[2]*s];
+
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        amber: '#d97706',
+        red: '#dc2626',
+        oscFill: dark ? 'rgba(217, 119, 6, 0.14)' : 'rgba(217, 119, 6, 0.12)'
+      };
+    }
+
+    /* ================= TAB 1: 3D SPACE CURVE & T-N-B ================= */
+    function setup3dControls() {
+      const mode = document.getElementById('curve3dSelect').value;
+      const sl = document.getElementById('t3dSlider');
+      if (mode === 'helix') { sl.min = 0; sl.max = 10; sl.step = 0.1; sl.value = 3.0; }
+      else if (mode === 'cubic') { sl.min = -1.2; sl.max = 1.4; sl.step = 0.05; sl.value = 1.0; }
+      else { sl.min = -1; sl.max = 2; sl.step = 0.1; sl.value = 0.5; }
+      draw3dCanvas();
+    }
+
+    function draw3dCanvas() {
+      const canvas = document.getElementById('curve3dCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('curve3dSelect').value;
+      const t0 = parseFloat(document.getElementById('t3dSlider').value);
+      const yaw = parseFloat(document.getElementById('rot3dSlider').value) * Math.PI / 180;
+      document.getElementById('t3dVal').textContent = t0.toFixed(2);
+      document.getElementById('rot3dVal').textContent = `${Math.round(yaw * 180 / Math.PI)}°`;
+
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cx = canvas.width / 2, cy = canvas.height / 2 + 25;
+      const pitch = 0.42;
+      const scale = mode === 'helix' ? 68 : (mode === 'cubic' ? 58 : 42);
+
+      const proj = ([x, y, z]) => {
+        const rx = x * Math.cos(yaw) - y * Math.sin(yaw);
+        const ry = x * Math.sin(yaw) + y * Math.cos(yaw);
+        const sx = cx + rx * scale;
+        const sy = cy - (z * Math.cos(pitch) - ry * Math.sin(pitch)) * scale;
+        return [sx, sy];
+      };
+
+      const drawArrow3D = (p, vec, len, color, label) => {
+        const a = proj(p);
+        const b = proj(vAdd(p, vec, len));
+        ctx.strokeStyle = color; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.arc(b[0], b[1], 4, 0, Math.PI*2); ctx.fill();
+        ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText(label, b[0] + 6, b[1] - 4);
+      };
+
+      // Draw 3D Axes
+      const axLen = 2.2;
+      [[axLen,0,0,'x'], [0,axLen,0,'y'], [0,0,axLen,'z']].forEach(([x,y,z,lbl]) => {
+        const o = proj([0,0,0]), e = proj([x,y,z]);
+        ctx.strokeStyle = c.grid; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(e[0], e[1]); ctx.stroke();
+        ctx.fillStyle = c.axis; ctx.font = '11px Inter, sans-serif';
+        ctx.fillText(lbl, e[0]+4, e[1]);
+      });
+
+      // Curve definition
+      let rFn, drFn, ddrFn, tMin, tMax;
+      if (mode === 'helix') {
+        rFn = t => [Math.cos(t), Math.sin(t), 0.35*t - 1.5];
+        drFn = t => [-Math.sin(t), Math.cos(t), 0.35];
+        ddrFn = t => [-Math.cos(t), -Math.sin(t), 0];
+        tMin = 0; tMax = 10;
+      } else if (mode === 'cubic') {
+        rFn = t => [t, t*t, t*t*t];
+        drFn = t => [1, 2*t, 3*t*t];
+        ddrFn = t => [0, 2, 6*t];
+        tMin = -1.2; tMax = 1.4;
+      } else {
+        rFn = t => [1 - t, 3*t - 1.5, 2*t - 1];
+        drFn = t => [-1, 3, 2];
+        ddrFn = t => [0, 0, 0];
+        tMin = -1; tMax = 2;
+      }
+
+      // Plot 3D Curve
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      for (let i = 0; i <= 250; i++) {
+        const t = tMin + (tMax - tMin) * (i / 250);
+        const [sx, sy] = proj(rFn(t));
+        if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+      }
+      ctx.stroke();
+
+      // Compute T, N, B, curvature at t0
+      const p0 = rFn(t0);
+      const r1 = drFn(t0), r2 = ddrFn(t0);
+      const speed = vNorm(r1);
+      const T = vUnit(r1);
+      const cross = vCross(r1, r2);
+      const crossMag = vNorm(cross);
+      const kappa = crossMag / Math.pow(speed, 3);
+
+      const pScr = proj(p0);
+      drawArrow3D(p0, T, 1.0, c.blue, 'T');
+
+      let N = [0,0,0], B = [0,0,0];
+      if (crossMag > 1e-5) {
+        B = vUnit(cross);
+        N = vUnit(vCross(B, T));
+        drawArrow3D(p0, N, 1.0, c.green, 'N');
+        drawArrow3D(p0, B, 1.0, c.purple, 'B');
+      }
+
+      ctx.fillStyle = c.red;
+      ctx.beginPath(); ctx.arc(pScr[0], pScr[1], 5.5, 0, Math.PI*2); ctx.fill();
+
+      const fmtV = v => `⟨${v[0].toFixed(2)}, ${v[1].toFixed(2)}, ${v[2].toFixed(2)}⟩`;
+      document.getElementById('readout3d').innerHTML = `
+        <div class="readout-row"><span>Unit Tangent T(t):</span><strong style="color:var(--primary);">${fmtV(T)}</strong></div>
+        <div class="readout-row"><span>Unit Normal N(t):</span><strong style="color:var(--success);">${crossMag > 1e-5 ? fmtV(N) : 'Undefined (Line)'}</strong></div>
+        <div class="readout-row"><span>Binormal B(t):</span><strong style="color:var(--accent);">${crossMag > 1e-5 ? fmtV(B) : 'Undefined (Line)'}</strong></div>
+        <div class="readout-row"><span>Curvature κ(t):</span><span class="pill pill-amber">${kappa.toFixed(4)}</span></div>
+      `;
+    }
+
+    /* ================= TAB 2: CURVATURE & OSCULATING CIRCLE ================= */
+    function draw2dAxes(ctx, w, h, xMin, xMax, yMin, yMax, step = 1) {
+      const c = getColors();
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, w, h);
+      const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+      ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin/step)*step; x <= xMax; x += step) { ctx.beginPath(); ctx.moveTo(toX(x),0); ctx.lineTo(toX(x),h); ctx.stroke(); }
+      for (let y = Math.ceil(yMin/step)*step; y <= yMax; y += step) { ctx.beginPath(); ctx.moveTo(0,toY(y)); ctx.lineTo(w,toY(y)); ctx.stroke(); }
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 1.6;
+      if (yMin <= 0 && yMax >= 0) { ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke(); }
+      if (xMin <= 0 && xMax >= 0) { ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke(); }
+      return { toX, toY };
+    }
+
+    function setupCurvControls() {
+      const mode = document.getElementById('curvSelect').value;
+      const sl = document.getElementById('curvSlider');
+      if (mode === 'ellipse') {
+        sl.min = 0; sl.max = 6.28; sl.step = 0.05; sl.value = 1.57;
+        document.getElementById('curvParamLabel').textContent = 'Angle t (rad)';
+      } else if (mode === 'lnx') {
+        sl.min = 0.25; sl.max = 4.5; sl.step = 0.05; sl.value = 1.0;
+        document.getElementById('curvParamLabel').textContent = 'x value';
+      } else {
+        sl.min = 0; sl.max = 6.28; sl.step = 0.05; sl.value = 0.0;
+        document.getElementById('curvParamLabel').textContent = 'Polar Angle θ (rad)';
+      }
+      drawCurvCanvas();
+    }
+
+    function snapCurvExam() {
+      const mode = document.getElementById('curvSelect').value;
+      if (mode === 'ellipse') document.getElementById('curvSlider').value = 1.57;
+      else if (mode === 'lnx') document.getElementById('curvSlider').value = 1.0;
+      else document.getElementById('curvSlider').value = 3.14;
+      drawCurvCanvas();
+    }
+
+    function drawCurvCanvas() {
+      const canvas = document.getElementById('curvCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('curvSelect').value;
+      const p = parseFloat(document.getElementById('curvSlider').value);
+      document.getElementById('curvParamVal').textContent = p.toFixed(2);
+      const c = getColors();
+
+      // Use isotropic scaling (equal x and y pixels/unit) so circles look circular!
+      const aspect = canvas.width / canvas.height;
+      let ySpan = mode === 'ellipse' ? 7.6 : (mode === 'lnx' ? 6.0 : 4.2);
+      let xSpan = ySpan * aspect;
+      let cx0 = mode === 'lnx' ? 2.5 : (mode === 'cardioid' ? 0.5 : 0);
+      let cy0 = mode === 'lnx' ? -0.5 : 0;
+      const xMin = cx0 - xSpan/2, xMax = cx0 + xSpan/2, yMin = cy0 - ySpan/2, yMax = cy0 + ySpan/2;
+      const { toX, toY } = draw2dAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 1);
+      const pxPerUnit = canvas.height / ySpan;
+
+      let px, py, kappa, rho, ocx, ocy, note;
+      ctx.strokeStyle = c.blue; ctx.lineWidth = 3; ctx.beginPath();
+
+      if (mode === 'ellipse') {
+        for (let i = 0; i <= 250; i++) {
+          const t = (i/250) * Math.PI * 2;
+          const x = 2*Math.cos(t), y = 3*Math.sin(t);
+          if (i === 0) ctx.moveTo(toX(x), toY(y)); else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+        px = 2*Math.cos(p); py = 3*Math.sin(p);
+        const dx = -2*Math.sin(p), dy = 3*Math.cos(p);
+        const ddx = -2*Math.cos(p), ddy = -3*Math.sin(p);
+        const spd2 = dx*dx + dy*dy;
+        const det = dx*ddy - dy*ddx; // = 6
+        kappa = Math.abs(det) / Math.pow(spd2, 1.5);
+        rho = 1 / kappa;
+        const nx = -dy / Math.sqrt(spd2), ny = dx / Math.sqrt(spd2);
+        ocx = px + rho * nx; ocy = py + rho * ny;
+        note = 'Sharpest at (0, ±3) where κ = 3/4 = 0.75; flattest at (±2, 0) where κ = 2/9 ≈ 0.222.';
+      } else if (mode === 'lnx') {
+        for (let i = 0; i <= 250; i++) {
+          const x = 0.12 + (i/250) * 6.5;
+          const y = Math.log(x);
+          if (i === 0) ctx.moveTo(toX(x), toY(y)); else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+        px = p; py = Math.log(p);
+        const dy = 1/p, ddy = -1/(p*p);
+        kappa = p / Math.pow(p*p + 1, 1.5);
+        rho = 1 / kappa;
+        ocx = px - (dy * (1 + dy*dy)) / ddy;
+        ocy = py + (1 + dy*dy) / ddy;
+        note = 'At x = 1 (Exam): κ(1) = 1/(2√2) ≈ 0.3536, ρ(1) = 2√2 ≈ 2.828.';
+      } else {
+        for (let i = 0; i <= 300; i++) {
+          const th = (i/300) * Math.PI * 2;
+          const r = 1 + Math.cos(th);
+          const x = r*Math.cos(th), y = r*Math.sin(th);
+          if (i === 0) ctx.moveTo(toX(x), toY(y)); else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+        const r = 1 + Math.cos(p);
+        px = r*Math.cos(p); py = r*Math.sin(p);
+        const cHalf = Math.abs(Math.cos(p / 2));
+        rho = (4/3) * cHalf;
+        kappa = cHalf < 0.02 ? Infinity : 1 / rho;
+        // Center of curvature for r = 1 + cos(th)
+        ocx = (2/3) * Math.cos(p) * (1 - Math.cos(p)) + (2/3) * Math.cos(p) * Math.cos(p) * 0;
+        // Exact analytical center via parametric derivatives
+        const dr = -Math.sin(p), ddr = -Math.cos(p);
+        const dx = dr*Math.cos(p) - r*Math.sin(p);
+        const dy = dr*Math.sin(p) + r*Math.cos(p);
+        const spd = Math.hypot(dx, dy);
+        if (spd > 0.04) {
+          ocx = px - rho * (dy / spd);
+          ocy = py + rho * (dx / spd);
+        } else { ocx = 0; ocy = 0; }
+        note = 'At θ = π (Exam cusp): ρ → 0 and center → (0, 0). At θ = 0: ρ = 4/3 ≈ 1.333.';
+      }
+
+      // Draw Osculating Circle
+      if (isFinite(rho) && rho > 0.02 && rho < 30) {
+        ctx.fillStyle = c.oscFill;
+        ctx.strokeStyle = c.amber; ctx.lineWidth = 2.2;
+        ctx.beginPath(); ctx.arc(toX(ocx), toY(ocy), rho * pxPerUnit, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = c.amber;
+        ctx.beginPath(); ctx.arc(toX(ocx), toY(ocy), 4.5, 0, Math.PI*2); ctx.fill();
+      }
+
+      // Active Point P
+      ctx.fillStyle = c.red;
+      ctx.beginPath(); ctx.arc(toX(px), toY(py), 6, 0, Math.PI*2); ctx.fill();
+
+      document.getElementById('curvReadout').innerHTML = `
+        <div class="readout-row"><span>Point P(x, y):</span><strong>(${px.toFixed(2)}, ${py.toFixed(2)})</strong></div>
+        <div class="readout-row"><span>Curvature κ:</span><span class="pill pill-blue">${isFinite(kappa) ? kappa.toFixed(4) : '∞ (Cusp!)'}</span></div>
+        <div class="readout-row"><span>Radius ρ = 1/κ:</span><span class="pill pill-amber">${rho.toFixed(4)}</span></div>
+        <div class="readout-row"><span>Center of Curvature:</span><strong>(${ocx.toFixed(2)}, ${ocy.toFixed(2)})</strong></div>
+        <div style="margin-top:5px; font-size:0.79rem; color:var(--text-muted);">${note}</div>
+      `;
+    }
+
+    /* ================= TAB 3: SMOOTHNESS & ORIENTATION ================= */
+    function drawSmoothCanvas() {
+      const canvas = document.getElementById('smoothCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('smoothSelect').value;
+      const t0 = parseFloat(document.getElementById('smoothSlider').value);
+      document.getElementById('smoothTVal').textContent = t0.toFixed(2);
+      const c = getColors();
+
+      const { toX, toY } = draw2dAxes(ctx, canvas.width, canvas.height, -3.5, 3.5, -0.5, 3.5, 1);
+
+      let f, df, desc;
+      if (mode === 'good') {
+        f = t => [t, t*t]; df = t => [1, 2*t];
+        desc = 'r\'(t) = ⟨1, 2t⟩ is NEVER zero ⇒ smooth everywhere!';
+      } else if (mode === 'stall') {
+        f = t => [t*t*t, Math.pow(t, 6)]; df = t => [3*t*t, 6*Math.pow(t, 5)];
+        desc = 'Same parabola y = x², but r\'(0) = ⟨0, 0⟩ ⇒ NOT smooth at τ = 0!';
+      } else {
+        f = t => [t*t*t, t*t]; df = t => [3*t*t, 2*t];
+        desc = 'Eliminating t gives y³ = x² (y ≥ 0) with a sharp cusp at (0, 0) where r\'(0) = 0.';
+      }
+
+      // Plot Curve
+      ctx.strokeStyle = c.blue; ctx.lineWidth = 3; ctx.beginPath();
+      for (let i = 0; i <= 250; i++) {
+        const t = -1.6 + 3.2 * (i/250);
+        const [x, y] = f(t);
+        if (i === 0) ctx.moveTo(toX(x), toY(y)); else ctx.lineTo(toX(x), toY(y));
+      }
+      ctx.stroke();
+
+      const [px, py] = f(t0);
+      const [vx, vy] = df(t0);
+      const spd = Math.hypot(vx, vy);
+
+      // Velocity / Tangent vector
+      if (spd > 0.02) {
+        ctx.strokeStyle = c.green; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(toX(px), toY(py)); ctx.lineTo(toX(px + vx*0.35), toY(py + vy*0.35)); ctx.stroke();
+      }
+      ctx.fillStyle = spd < 0.03 ? c.red : c.amber;
+      ctx.beginPath(); ctx.arc(toX(px), toY(py), 6.5, 0, Math.PI*2); ctx.fill();
+
+      document.getElementById('smoothReadout').innerHTML = `
+        <div class="readout-row"><span>Position r(${t0.toFixed(2)}):</span><strong>(${px.toFixed(2)}, ${py.toFixed(2)})</strong></div>
+        <div class="readout-row"><span>Tangent r'(${t0.toFixed(2)}):</span><strong>⟨${vx.toFixed(2)}, ${vy.toFixed(2)}⟩</strong></div>
+        <div class="readout-row"><span>Speed ||r'||:</span><span class="pill ${spd < 0.03 ? 'pill-red' : 'pill-green'}">${spd.toFixed(3)} ${spd < 0.03 ? '(STALLED!)' : ''}</span></div>
+        <div style="margin-top:5px; font-size:0.8rem; color:var(--text-muted);">${desc}</div>
+      `;
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. If a differentiable vector-valued function has constant length ||r(t)|| = c, what is r(t) · r\'(t)?',
+        opts: ['c', 'c²', '0 (r and r\' are orthogonal)', '1'],
+        ans: 2,
+        exp: 'Differentiating r(t)·r(t) = c² gives 2 r(t)·r\'(t) = 0 ⇒ r(t)·r\'(t) = 0.'
+      },
+      {
+        q: '2. Why is r(τ) = τ³i + τ⁶j NOT smooth at τ = 0 even though its graph is the smooth parabola y = x²?',
+        opts: [
+          'Because y = x² has a corner at (0,0)',
+          'Because r\'(0) = ⟨0, 0⟩ = 0 (smoothness depends on parametrization)',
+          'Because τ⁶ is not continuous',
+          'Because its curvature is infinite'
+        ],
+        ans: 1,
+        exp: 'Smoothness requires r\'(τ) to be continuous AND non-zero. Here r\'(0) = 0, so the parametrization stalls at the origin.'
+      },
+      {
+        q: '3. For the Cartesian curve y = ln x, what is the curvature κ(1)? (Year Final 2025 Q7b)',
+        opts: ['1', '1 / (2√2)', '2√2', '1 / 2'],
+        ans: 1,
+        exp: 'κ(x) = x / (x² + 1)^(3/2). Substituting x = 1 gives 1 / 2^(3/2) = 1 / (2√2).'
+      },
+      {
+        q: '4. For r(t) = ⟨t, t², t³⟩, what is the unit normal vector N(1)? (Year Final 2025 Q7a)',
+        opts: ['⟨1, 2, 3⟩ / √14', '⟨0, 2, 6⟩ / √40', '⟨-11, -8, 9⟩ / √266', '⟨0, 0, 1⟩'],
+        ans: 2,
+        exp: 'Differentiating T(t) at t = 1 yields T\'(1) ∝ ⟨-11, -8, 9⟩, which is orthogonal to T(1) ∝ ⟨1, 2, 3⟩ and has length √266.'
+      },
+      {
+        q: '5. What is the curvature κ(t) of a straight line r(t) = r₀ + tv?',
+        opts: ['||v||', '1 / ||v||', '0 everywhere', 'Undefined'],
+        ans: 2,
+        exp: 'A straight line never bends: r\'\'(t) = 0, so κ(t) = ||r\' × 0|| / ||r\'||³ = 0 everywhere.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      setup3dControls();
+      setupCurvControls();
+      drawSmoothCanvas();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

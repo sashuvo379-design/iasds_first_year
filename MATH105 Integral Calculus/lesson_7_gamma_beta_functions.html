@@ -1,0 +1,3258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 7: Gamma &amp; Beta Functions — MATH 105: Integral Calculus (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK SLATE / INDIGO ACADEMIC THEME
+       ========================================================================== */
+    :root {
+      --bg-page: #0b1120;
+      --bg-card: #111827;
+      --bg-subtle: #162033;
+      --bg-elevated: #1e293b;
+      --border: #1e293b;
+      --border-strong: #334155;
+
+      --text-primary: #e2e8f0;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --cyan: #38bdf8;
+      --cyan-soft: rgba(56, 189, 248, 0.14);
+      --cyan-border: rgba(56, 189, 248, 0.35);
+
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --emerald-border: rgba(16, 185, 129, 0.36);
+
+      --amber: #f59e0b;
+      --amber-light: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --amber-border: rgba(245, 158, 11, 0.36);
+
+      --violet: #a78bfa;
+      --violet-dark: #7c3aed;
+      --violet-soft: rgba(167, 139, 250, 0.15);
+      --violet-border: rgba(167, 139, 250, 0.36);
+
+      --rose: #fb7185;
+      --rose-dark: #e11d48;
+      --rose-soft: rgba(251, 113, 133, 0.13);
+      --rose-border: rgba(251, 113, 133, 0.36);
+
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.42);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-w: 292px;
+      --header-h: 64px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* ==========================================================================
+       TOP HEADER
+       ========================================================================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--header-h);
+      background: rgba(11, 17, 32, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .header-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--violet-soft);
+      border: 1px solid var(--violet-border);
+      color: var(--violet);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       APP SHELL & STICKY LEFT SIDEBAR
+       ========================================================================== */
+    .app-shell {
+      display: flex;
+      max-width: 1460px;
+      margin: 0 auto;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .sidebar {
+      position: sticky;
+      top: var(--header-h);
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 30;
+      transition: transform 0.28s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .course-pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+      font-weight: 700;
+    }
+
+    .sidebar-title {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .sidebar-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.76);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active { display: block; }
+
+    .progress-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-pct {
+      font-family: var(--font-mono);
+      color: var(--emerald-light);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--cyan), var(--violet), var(--emerald));
+      transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .nav-label {
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 10px;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .nav-link.active {
+      background: var(--cyan-soft);
+      color: var(--cyan);
+      border-color: var(--cyan-border);
+      font-weight: 600;
+    }
+
+    .nav-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-link.active .nav-num {
+      background: var(--cyan);
+      color: #0b1120;
+      border-color: var(--cyan);
+    }
+
+    .nav-check {
+      margin-left: auto;
+      color: var(--emerald-light);
+      font-weight: 800;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link.done .nav-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .lesson-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.79rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .lesson-nav-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+      background: var(--cyan-soft);
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 28px 32px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .lesson-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 48%, #0369a1 100%);
+      border: 1px solid var(--cyan-border);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.28) 0%, rgba(56, 189, 248, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(11, 17, 32, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .lesson-hero h1 {
+      font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .lesson-hero p {
+      max-width: 820px;
+      color: rgba(241, 245, 249, 0.92);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background: rgba(11, 17, 32, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       SECTIONS & CARDS
+       ========================================================================== */
+    .section-block {
+      scroll-margin-top: calc(var(--header-h) + 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+
+    .section-desc {
+      font-size: 0.91rem;
+      color: var(--text-muted);
+      max-width: 760px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ==========================================================================
+       BUTTONS, TABS & CONTROLS
+       ========================================================================== */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #0b1120;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+      color: #0b1120;
+    }
+
+    .btn-violet {
+      background: var(--violet-soft);
+      border-color: var(--violet-border);
+      color: var(--violet);
+    }
+
+    .btn-violet:hover:not(:disabled) {
+      background: rgba(167, 139, 250, 0.28);
+      border-color: var(--violet);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 6px 11px;
+      font-size: 0.78rem;
+    }
+
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mode-tab {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .mode-tab:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+    }
+
+    .mode-tab.active {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #0b1120;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.3);
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--cyan);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      padding: 2px 9px;
+      border-radius: var(--radius-sm);
+    }
+
+    .control-value.violet {
+      color: var(--violet);
+      background: var(--violet-soft);
+      border-color: var(--violet-border);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    input[type="range"].violet-range {
+      accent-color: var(--violet);
+    }
+
+    .preset-chip {
+      padding: 5px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-page);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.77rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .preset-chip:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .preset-chip.active {
+      background: var(--cyan-soft);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .preset-chip.violet.active {
+      background: var(--violet-soft);
+      border-color: var(--violet);
+      color: var(--violet);
+    }
+
+    /* ==========================================================================
+       SECTION 1: GAMMA & BETA VISUALIZER CANVAS & TELEMETRY
+       ========================================================================== */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      min-height: 295px;
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.79rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch-cyan { background: var(--cyan); }
+    .swatch-violet { background: var(--violet); }
+    .swatch-emerald { background: var(--emerald); }
+    .swatch-amber { background: var(--amber); }
+    .swatch-rose { background: var(--rose); }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .formula-box {
+      background: var(--bg-subtle);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.87rem;
+      color: var(--text-secondary);
+      overflow-x: auto;
+    }
+
+    .formula-box.violet { border-left-color: var(--violet); }
+    .formula-box.emerald { border-left-color: var(--emerald); }
+
+    .telemetry-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .tele-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow-x: auto;
+    }
+
+    .tele-card.cyan { background: var(--cyan-soft); border-color: var(--cyan-border); }
+    .tele-card.violet { background: var(--violet-soft); border-color: var(--violet-border); }
+    .tele-card.emerald { background: var(--emerald-soft); border-color: var(--emerald-border); }
+    .tele-card.rose { background: var(--rose-soft); border-color: var(--rose-border); }
+    .tele-card.amber { background: var(--amber-soft); border-color: var(--amber-border); }
+
+    .tele-label {
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .tele-val {
+      font-family: var(--font-mono);
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .tele-sub {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       SECTION 2: INTERACTIVE BETA-GAMMA SUBSTITUTION CONVERTER
+       ========================================================================== */
+    .conv-pills {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .conv-pill {
+      text-align: left;
+      padding: 11px 13px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .conv-pill:hover {
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+
+    .conv-pill.active {
+      background: var(--cyan-soft);
+      border-color: var(--cyan);
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.22);
+    }
+
+    .conv-pill-tag {
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--amber-light);
+    }
+
+    /* 4-Node Horizontal Stepper Bar */
+    .stepper-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stepper-node {
+      padding: 11px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-page);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .stepper-node.done-node {
+      border-color: var(--emerald-border);
+      background: var(--emerald-soft);
+      color: var(--emerald-light);
+    }
+
+    .stepper-node.active-node {
+      border-color: var(--cyan);
+      background: var(--cyan);
+      color: #0b1120;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+    }
+
+    .conv-steps-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .conv-step-card {
+      display: none;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 0.93rem;
+      overflow-x: auto;
+    }
+
+    .conv-step-card.visible {
+      display: block;
+      animation: fadeSlide 0.24s ease;
+    }
+
+    .conv-step-card.final {
+      border-left-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .conv-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .conv-step-card.final .conv-step-title { color: var(--emerald-light); }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY CARDS, MASTER TABLES, BONUS BOX & TRAPS
+       ========================================================================== */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .theory-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theory-card h3 {
+      font-size: 1.06rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .identity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+
+    .identity-item {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-left: 3px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 10px 13px;
+      overflow-x: auto;
+    }
+
+    .ref-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+    }
+
+    table.ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background: var(--bg-card);
+    }
+
+    table.ref-table th, table.ref-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    table.ref-table th {
+      background: var(--bg-subtle);
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    table.ref-table tr:last-child td { border-bottom: none; }
+
+    .bonus-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 16px;
+    }
+
+    .bonus-card {
+      background: var(--violet-soft);
+      border: 1px solid var(--violet-border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.89rem;
+      overflow-x: auto;
+    }
+
+    .bonus-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--violet);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .traps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .trap-card {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .trap-card-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--rose);
+    }
+
+    /* ==========================================================================
+       SECTION 4: ISRT PAST-EXAM VAULT
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 15px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #0b1120;
+    }
+
+    .vault-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .exam-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .exam-card.hidden { display: none; }
+    .exam-card.reviewed-card { border-color: var(--emerald-border); }
+
+    .exam-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exam-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .topic-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--violet-soft);
+      border: 1px solid var(--violet-border);
+      color: var(--violet);
+    }
+
+    .exam-prompt {
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+
+    .review-check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--emerald-border);
+      background: var(--emerald-soft);
+      color: var(--emerald-light);
+      font-size: 0.79rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .review-check-label input {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--emerald);
+      cursor: pointer;
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+    }
+
+    .hint-box.open { display: block; }
+
+    .solution-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .solution-box.open { display: flex; }
+
+    .sol-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-left: 3px solid var(--emerald);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.91rem;
+      overflow-x: auto;
+    }
+
+    .sol-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--emerald-light);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       SECTION 5: QUICK MASTERY CHECK (QUIZ)
+       ========================================================================== */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--emerald-light);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-qnum {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--cyan);
+      background: var(--cyan-soft);
+    }
+
+    .quiz-opt.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .quiz-opt.wrong {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: var(--emerald-soft); border: 1px solid var(--emerald-border); }
+    .quiz-feedback.err { background: var(--rose-soft); border: 1px solid var(--rose-border); }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 60;
+      background: var(--bg-elevated);
+      border: 1px solid var(--cyan-border);
+      color: var(--text-primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1080px) {
+      .lab-grid { grid-template-columns: 1fr; }
+      .main-content { padding: 22px 20px 56px; }
+    }
+
+    @media (max-width: 860px) {
+      .menu-btn { display: inline-flex; }
+      .header-subtitle, .header-chip { display: none; }
+      .sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        height: calc(100vh - var(--header-h));
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .stepper-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 540px) {
+      .top-header { padding: 0 12px; }
+      .main-content { padding: 16px 14px 48px; }
+      .card, .exam-card, .theory-card, .quiz-card { padding: 16px; }
+      .lesson-hero { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP HEADER
+       ======================================================================== -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="brand-badge">MATH 105 &bull; Module 2 &bull; Lesson 7</span>
+      <span class="header-subtitle">ISRT, University of Dhaka &mdash; Gamma &amp; Beta Functions</span>
+    </div>
+
+    <span class="header-chip">Module 2 Capstone &bull; Special Functions</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ========================================================================
+       APP SHELL
+       ======================================================================== -->
+  <div class="app-shell">
+
+    <!-- STICKY LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Lesson 7 navigation">
+      <div class="sidebar-brand">
+        <span class="course-pill">MATH 105 &bull; Module 2 &bull; Lesson 7</span>
+        <div class="sidebar-title">Gamma &amp; Beta Functions</div>
+        <div class="sidebar-sub">ISRT, University of Dhaka</div>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Mastery Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-caption" id="progressCaption">Vault reviewed: 0/8 &bull; Quiz score: 0/5</p>
+      </div>
+
+      <nav>
+        <div class="nav-label">Lesson 7 Sections</div>
+        <ul class="nav-list" id="sidebarNav">
+          <li>
+            <a class="nav-link active" href="#section-explorer" data-section="section-explorer">
+              <span class="nav-num">1</span>
+              <span>Gamma &amp; Beta Explorer</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-converter" data-section="section-converter">
+              <span class="nav-num">2</span>
+              <span>Substitution Converter</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-theory" data-section="section-theory">
+              <span class="nav-num">3</span>
+              <span>Core Theory &amp; Traps</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-vault" data-section="section-vault">
+              <span class="nav-num">4</span>
+              <span>ISRT Past-Exam Vault</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-quiz" data-section="section-quiz">
+              <span class="nav-num">5</span>
+              <span>Quick Mastery Check</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button type="button" class="lesson-nav-btn" id="prevLessonBtn">
+          <span>&larr; Previous Lesson</span>
+          <span class="mono" style="color:var(--text-muted);">Lesson 6</span>
+        </button>
+        <button type="button" class="lesson-nav-btn" id="nextLessonBtn">
+          <span>Next Lesson &rarr;</span>
+          <span class="mono" style="color:var(--cyan);">Lesson 8</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="lesson-hero">
+        <div class="hero-eyebrow">Module 2: Integration Techniques &amp; Special Functions &bull; Lesson 7 of 17</div>
+        <h1>Lesson 7: Gamma &amp; Beta Functions</h1>
+        <p>
+          Explore Euler's generalized factorial $\Gamma(n)$ and the symmetric Beta function $B(m, n)$ visually, convert tricky exponential, logarithmic, and trigonometric ISRT exam integrals in 4 steps, and master the fundamental bridge $B(m, n) = \frac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}$.
+        </p>
+        <div class="hero-pills">
+          <span class="hero-pill">$\Gamma(n) = \int_0^\infty e^{-x}x^{n-1}dx$</span>
+          <span class="hero-pill">$\Gamma(\frac{1}{2}) = \sqrt{\pi}$</span>
+          <span class="hero-pill">$B(m,n) = \frac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}$</span>
+          <span class="hero-pill">Trig &amp; Infinite Beta Forms</span>
+          <span class="hero-pill">8 Authentic ISRT Problems</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 1: GAMMA & BETA CURVE EXPLORER (2 TABS)
+           ==================================================================== -->
+      <section class="section-block" id="section-explorer">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 1 &bull; Interactive Visualizer</span>
+            <h2>1. Gamma &amp; Beta Curve Explorer</h2>
+          </div>
+          <p class="section-desc">
+            Inspect how the Gamma integrand's peak shifts at $x = n - 1$ (and spikes integrably for $0 &lt; n &lt; 1$), and test Beta mirror symmetry $B(m, n) = B(n, m)$ across $x = 0.5$.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="mode-tabs" role="tablist" aria-label="Gamma and Beta Visualizers">
+            <button type="button" class="mode-tab active" data-exptab="tab-gamma">Tab A &mdash; Gamma Function Visualizer</button>
+            <button type="button" class="mode-tab" data-exptab="tab-beta">Tab B &mdash; Beta Function &amp; Symmetry Visualizer</button>
+          </div>
+
+          <!-- TAB A: GAMMA FUNCTION VISUALIZER -->
+          <div class="tab-pane active" id="tab-gamma">
+            <div class="lab-grid">
+              <div>
+                <div class="canvas-wrapper" id="gammaCanvasWrap">
+                  <canvas id="gammaCanvas" aria-label="Gamma integrand curve g_n(x) = e^-x x^(n-1)"></canvas>
+                </div>
+                <div class="canvas-legend">
+                  <span class="legend-item"><span class="swatch swatch-cyan"></span> $g_n(x) = e^{-x}x^{n-1}$ &amp; Area $\Gamma(n)$</span>
+                  <span class="legend-item"><span class="swatch swatch-amber"></span> Mode / Peak at $x = n - 1$ ($n &gt; 1$)</span>
+                  <span class="legend-item"><span class="swatch swatch-rose"></span> Integrable Type II Spike at $x = 0$ ($0 &lt; n &lt; 1$)</span>
+                </div>
+              </div>
+
+              <div class="controls-panel">
+                <div class="control-group">
+                  <label class="control-label" for="gammaNSlider">
+                    <span>Parameter ($n$)</span>
+                    <span class="control-value" id="gammaNDisplay">n = 2.5</span>
+                  </label>
+                  <input type="range" id="gammaNSlider" min="0.5" max="6.0" step="0.1" value="2.5" />
+                </div>
+
+                <div class="control-group">
+                  <span class="control-label">Quick Exam Presets</span>
+                  <div class="btn-row" id="gammaPresetRow">
+                    <button type="button" class="preset-chip" data-gn="0.5">n = 0.5</button>
+                    <button type="button" class="preset-chip" data-gn="1">n = 1</button>
+                    <button type="button" class="preset-chip" data-gn="1.5">n = 1.5</button>
+                    <button type="button" class="preset-chip" data-gn="2">n = 2</button>
+                    <button type="button" class="preset-chip active" data-gn="2.5">n = 2.5</button>
+                    <button type="button" class="preset-chip" data-gn="3">n = 3</button>
+                    <button type="button" class="preset-chip" data-gn="4">n = 4</button>
+                    <button type="button" class="preset-chip" data-gn="5">n = 5</button>
+                  </div>
+                </div>
+
+                <div class="formula-box" id="gammaFormulaNote">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 Live Telemetry Cards -->
+            <div class="telemetry-grid">
+              <div class="tele-card cyan">
+                <span class="tele-label">1. Exact Symbolic $\Gamma(n)$</span>
+                <span class="tele-val" id="gTeleExact"></span>
+                <span class="tele-sub" id="gTeleExactSub">Exact closed form</span>
+              </div>
+              <div class="tele-card">
+                <span class="tele-label">2. Numeric Value (Lanczos)</span>
+                <span class="tele-val" id="gTeleNum">1.329340</span>
+                <span class="tele-sub">Area on $[0, \infty)$</span>
+              </div>
+              <div class="tele-card violet">
+                <span class="tele-label">3. Factorial Link $(n-1)!$</span>
+                <span class="tele-val" id="gTeleFact"></span>
+                <span class="tele-sub">$\Gamma(n) = (n-1)!$</span>
+              </div>
+              <div class="tele-card amber" id="gTeleModeCard">
+                <span class="tele-label">4. Singularity / Mode Status</span>
+                <span class="tele-val" id="gTeleMode">Mode at x = 1.5</span>
+                <span class="tele-sub" id="gTeleModeSub">Bounded peak on $[0, \infty)$</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB B: BETA FUNCTION & SYMMETRY VISUALIZER -->
+          <div class="tab-pane" id="tab-beta">
+            <div class="lab-grid">
+              <div>
+                <div class="canvas-wrapper" id="betaCanvasWrap">
+                  <canvas id="betaCanvas" aria-label="Beta integrand curve b_{m,n}(x) = x^(m-1)(1-x)^(n-1)"></canvas>
+                </div>
+                <div class="canvas-legend">
+                  <span class="legend-item"><span class="swatch swatch-violet"></span> $b_{m,n}(x) = x^{m-1}(1-x)^{n-1}$</span>
+                  <span class="legend-item"><span class="swatch swatch-emerald"></span> Shaded Area $= B(m, n)$</span>
+                  <span class="legend-item"><span class="swatch swatch-amber"></span> Symmetry Axis $x = 0.5$</span>
+                </div>
+              </div>
+
+              <div class="controls-panel">
+                <div class="control-group">
+                  <label class="control-label" for="betaMSlider">
+                    <span>Parameter ($m$)</span>
+                    <span class="control-value violet" id="betaMDisplay">m = 1.5</span>
+                  </label>
+                  <input type="range" id="betaMSlider" class="violet-range" min="0.5" max="5.0" step="0.5" value="1.5" />
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label" for="betaNSlider">
+                    <span>Parameter ($n$)</span>
+                    <span class="control-value" id="betaNDisplay">n = 0.5</span>
+                  </label>
+                  <input type="range" id="betaNSlider" min="0.5" max="5.0" step="0.5" value="0.5" />
+                </div>
+
+                <div class="control-group">
+                  <span class="control-label">ISRT Exam &amp; Classic Presets</span>
+                  <div class="btn-row" id="betaPresetRow">
+                    <button type="button" class="preset-chip violet" data-bm="1" data-bn="1">B(1, 1)</button>
+                    <button type="button" class="preset-chip violet active" data-bm="1.5" data-bn="0.5">B(3/2, 1/2) [Final 2025]</button>
+                    <button type="button" class="preset-chip violet" data-bm="2" data-bn="3">B(2, 3)</button>
+                    <button type="button" class="preset-chip violet" data-bm="3" data-bn="4">B(3, 4)</button>
+                    <button type="button" class="preset-chip violet" data-bm="0.5" data-bn="0.5">B(0.5, 0.5)</button>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-violet" id="betaSwapBtn">
+                  &#8646; Swap $m \leftrightarrow n$ (Test Symmetry)
+                </button>
+
+                <div class="formula-box violet" id="betaFormulaNote">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 Live Telemetry Cards -->
+            <div class="telemetry-grid">
+              <div class="tele-card violet">
+                <span class="tele-label">1. $B(m, n)$ Exact &amp; Numeric</span>
+                <span class="tele-val" id="bTeleExact"></span>
+                <span class="tele-sub" id="bTeleNum">Numeric: 1.570796</span>
+              </div>
+              <div class="tele-card emerald">
+                <span class="tele-label">2. Gamma Ratio Live Check</span>
+                <span class="tele-val" id="bTeleGamma" style="font-size:0.9rem;"></span>
+                <span class="tele-sub" id="bTeleGammaSub">Matches $B(m,n)$ identically</span>
+              </div>
+              <div class="tele-card cyan">
+                <span class="tele-label">3. Equivalent Trig Form</span>
+                <span class="tele-val" id="bTeleTrig" style="font-size:0.86rem;"></span>
+                <span class="tele-sub">Via $x = \sin^2\theta$</span>
+              </div>
+              <div class="tele-card amber" id="bTeleSymCard">
+                <span class="tele-label">4. Symmetry Mirror Status</span>
+                <span class="tele-val" id="bTeleSym">Asymmetric ($m \ne n$)</span>
+                <span class="tele-sub" id="bTeleSymSub">Click Swap to mirror across $x = 0.5$</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 2: INTERACTIVE BETA–GAMMA SUBSTITUTION CONVERTER
+           ==================================================================== -->
+      <section class="section-block" id="section-converter">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 2 &bull; Interactive Substitution Pipeline</span>
+            <h2>2. Interactive Beta&ndash;Gamma Substitution Converter</h2>
+          </div>
+          <p class="section-desc">
+            Select any of the 6 high-frequency ISRT exam &amp; class-note integrals and step through how each transforms into a standard $\Gamma(n)$ or $B(m, n)$ evaluation.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="conv-pills" id="convPills">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- 4-Node Horizontal Stepper -->
+          <div class="stepper-bar" id="convStepperBar">
+            <button type="button" class="stepper-node active-node" data-cstep="1">1. Pattern Match</button>
+            <button type="button" class="stepper-node" data-cstep="2">2. Substitution &amp; $dx$</button>
+            <button type="button" class="stepper-node" data-cstep="3">3. New Limits</button>
+            <button type="button" class="stepper-node" data-cstep="4">4. Gamma / Beta Result</button>
+          </div>
+
+          <div class="conv-steps-wrap" id="convStepsWrap">
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="btn-row" style="justify-content:space-between;">
+            <span class="mono" style="font-size:0.82rem;color:var(--text-muted);" id="convCounter">Step 1 of 4</span>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm" id="convPrevBtn">&larr; Previous</button>
+              <button type="button" class="btn btn-sm btn-primary" id="convNextBtn">Next &rarr;</button>
+              <button type="button" class="btn btn-sm" id="convAllBtn">Show All</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 3: CORE THEORY, MASTER IDENTITIES & ISRT EXAM TRAPS
+           ==================================================================== -->
+      <section class="section-block" id="section-theory">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 3 &bull; Exam-Ready Reference</span>
+            <h2>3. Core Theory, Master Identities &amp; ISRT Exam Traps</h2>
+          </div>
+          <p class="section-desc">
+            Every definition, reduction formula, Beta representation, and exam pitfall required for ISRT 2nd In-course and Year Final exams.
+          </p>
+        </div>
+
+        <div class="theory-grid">
+          <!-- Gamma Function Master Card -->
+          <article class="theory-card">
+            <h3>1. Gamma Function Master Card</h3>
+            <div class="identity-list">
+              <div class="identity-item">
+                <strong>Definition ($n &gt; 0$):</strong>
+                $$\Gamma(n) = \int_0^\infty e^{-x} x^{n-1}\,dx$$
+              </div>
+              <div class="identity-item">
+                <strong>Base &amp; Reduction:</strong>
+                $$\Gamma(1) = 1, \qquad \Gamma(n + 1) = n\,\Gamma(n)$$
+              </div>
+              <div class="identity-item">
+                <strong>Factorial &amp; Half-Integer Anchor:</strong>
+                $$\Gamma(n + 1) = n!\; (n \in \mathbb{Z}_{\ge 0}), \qquad \Gamma\!\left(\frac{1}{2}\right) = \sqrt{\pi}$$
+              </div>
+              <div class="identity-item">
+                <strong>Scaling Identity ($k &gt; 0, n &gt; 0$):</strong>
+                $$\int_0^\infty x^{n-1} e^{-kx}\,dx = \frac{\Gamma(n)}{k^n}$$
+              </div>
+              <div class="identity-item" style="border-left-color:var(--violet);">
+                <strong>Euler's Reflection Formula ($0 &lt; m &lt; 1$):</strong>
+                $$\Gamma(m)\,\Gamma(1 - m) = \frac{\pi}{\sin(m\pi)}$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Beta Function 3-Form Master Table -->
+          <article class="theory-card">
+            <h3>2. Beta Function 3-Form Master Table ($m, n &gt; 0$)</h3>
+            <div class="ref-table-wrap">
+              <table class="ref-table">
+                <thead>
+                  <tr>
+                    <th>Form</th>
+                    <th>Formula &amp; Derivation Key</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Standard $[0,1]$ Form</strong></td>
+                    <td>
+                      $B(m,n) = \displaystyle\int_0^1 x^{m-1}(1-x)^{n-1}\,dx = B(n,m)$
+                      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">
+                        <em>Adib's Probability Intuition:</em> Placing $m$ red, $n$ blue, and $1$ gray ball randomly on $[0,1]$, the probability all $m$ red land left of the gray ball and $n$ blue land right of it is $B(m+1, n+1) = \frac{m!\,n!}{(m+n+1)!}$.
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Infinite-Limit (2nd Kind)</strong></td>
+                    <td>
+                      $B(m,n) = \displaystyle\int_0^\infty \frac{x^{m-1}}{(1+x)^{m+n}}\,dx$
+                      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">Via $y = \frac{1}{1+x}$ (or $x = \frac{y}{1-y}$).</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Trigonometric Form</strong></td>
+                    <td>
+                      $B(m,n) = \displaystyle 2\int_0^{\pi/2} \sin^{2m-1}\theta \cos^{2n-1}\theta\,d\theta$
+                      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">Via $x = \sin^2\theta,\; dx = 2\sin\theta\cos\theta\,d\theta$.</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Fundamental Bridge &amp; Shortcut</strong></td>
+                    <td>
+                      $B(m,n) = \dfrac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}$
+                      <div style="margin-top:4px;">
+                        $\displaystyle \int_0^{\pi/2}\sin^p\theta\cos^q\theta\,d\theta = \frac{\Gamma\!\left(\frac{p+1}{2}\right)\Gamma\!\left(\frac{q+1}{2}\right)}{2\,\Gamma\!\left(\frac{p+q+2}{2}\right)}$
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <!-- Class Notes Bonus Box: Gaussian Integral & Feynman's Technique -->
+        <div class="card">
+          <h3 style="margin-bottom:12px;font-size:1.05rem;">3. Class Notes Bonus: Gaussian Integral &amp; Feynman's Technique</h3>
+          <div class="bonus-grid">
+            <div class="bonus-card">
+              <span class="bonus-tag">Gaussian Integral &rarr; Polar $I^2$ Trick</span>
+              <div>
+                Let $I = \displaystyle\int_{-\infty}^\infty e^{-x^2}\,dx = 2\int_0^\infty e^{-x^2}\,dx$. Squaring:
+                $$I^2 = \int_{-\infty}^\infty \int_{-\infty}^\infty e^{-(x^2+y^2)}\,dx\,dy = \int_0^{2\pi}\int_0^\infty e^{-r^2} r\,dr\,d\theta = 2\pi\left(\frac{1}{2}\right) = \pi.$$
+                $$\therefore\; I = \sqrt{\pi} \quad \text{and} \quad \int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2} \implies \Gamma\!\left(\frac{1}{2}\right) = \sqrt{\pi}.$$
+              </div>
+            </div>
+            <div class="bonus-card" style="background:var(--emerald-soft);border-color:var(--emerald-border);">
+              <span class="bonus-tag" style="color:var(--emerald-light);">Feynman's Technique (2nd Incourse Syllabus)</span>
+              <div>
+                To evaluate the Dirichlet integral $\displaystyle\int_0^\infty \frac{\sin x}{x}\,dx$, introduce parameter $b \ge 0$:
+                $$I(b) = \int_0^\infty \frac{\sin x}{x} e^{-bx}\,dx \implies I'(b) = -\int_0^\infty e^{-bx}\sin x\,dx = -\frac{1}{1+b^2}.$$
+                Integrating back: $I(b) = -\tan^{-1}b + C$. Since $\lim_{b\to\infty} I(b) = 0$, $C = \frac{\pi}{2}$. Setting $b = 0$:
+                $$\int_0^\infty \frac{\sin x}{x}\,dx = I(0) = \frac{\pi}{2}.$$
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Rose-Accented ISRT Exam Traps -->
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:12px;color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h3>
+          <div class="traps-grid">
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 1: The $n - 1$ Shift Trap</div>
+              <p>
+                In $\Gamma(n) = \int_0^\infty e^{-x} x^{n-1}\,dx$, the argument is <strong>one more</strong> than the exponent! Thus $\int_0^\infty x^3 e^{-x}\,dx = \Gamma(4) = 3! = 6$, <strong>NOT</strong> $\Gamma(3) = 2$.
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 2: Missing Factor of $2$ in Trig Beta</div>
+              <p>
+                Since $B(m, n) = \mathbf{2}\int_0^{\pi/2}\sin^{2m-1}\theta\cos^{2n-1}\theta\,d\theta$, a standalone trig integral is $\int_0^{\pi/2}\sin^p\theta\cos^q\theta\,d\theta = \mathbf{\frac{1}{2}}B\!\left(\frac{p+1}{2}, \frac{q+1}{2}\right)$. Forgetting the $\frac{1}{2}$ doubles your answer!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 3: The Scaling Exponent Trap</div>
+              <p>
+                In $\int_0^\infty x^{n-1} e^{-kx}\,dx$, setting $u = kx$ yields $x^{n-1} = u^{n-1}/k^{n-1}$ <strong>AND</strong> $dx = du/k$, combining to $\dfrac{\Gamma(n)}{k^n}$ (not $k^{n-1}$). Example: $\int_0^\infty x^{2019}e^{-2020x}dx = \frac{2019!}{2020^{2020}}$.
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 4: Domain Condition ($n \le 0$)</div>
+              <p>
+                $\Gamma(n)$ diverges at $n = 0, -1, -2, \dots$! Always explicitly write <strong>"$n &gt; 0$"</strong> when defining $\Gamma(n)$ and <strong>"$m, n &gt; 0$"</strong> when defining $B(m, n)$ on ISRT exams to earn full definition marks.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 4: ISRT PAST-EXAM VAULT (8 FILTERABLE PROBLEMS)
+           ==================================================================== -->
+      <section class="section-block" id="section-vault">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 4 &bull; ISRT Past-Exam Vault</span>
+            <h2>4. ISRT Past-Exam Vault (8 Solved Problems)</h2>
+          </div>
+          <p class="section-desc">
+            Filter by exam source, try each problem with the hint, reveal the complete step-by-step KaTeX proof, and check "Mark Reviewed" to update your Mastery Progress bar.
+          </p>
+        </div>
+
+        <div class="filter-tabs" id="vaultFilters" role="tablist" aria-label="Filter exam problems">
+          <button type="button" class="filter-tab active" data-filter="all">All (8)</button>
+          <button type="button" class="filter-tab" data-filter="final">Final Exam (4)</button>
+          <button type="button" class="filter-tab" data-filter="inc2">2nd Incourse (2)</button>
+          <button type="button" class="filter-tab" data-filter="notes">Class Notes (3)</button>
+        </div>
+
+        <div class="vault-list" id="vaultList">
+
+          <!-- Vault 1 -->
+          <article class="exam-card" data-vid="v1" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 Q3(a)</span>
+              <span class="topic-badge">Gamma Definition &amp; Substitutions</span>
+            </div>
+            <div class="exam-prompt">
+              Define the Gamma function. Use it to evaluate:<br />
+              <strong>(i)</strong> $\displaystyle \int_0^1 \left(\ln\frac{1}{x}\right)^2 dx$ &qquad <strong>(ii)</strong> $\displaystyle \int_0^\infty x^3 e^{-2x}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v1" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For (i), set $u = \ln(1/x) \implies x = e^{-u}, dx = -e^{-u}du$. For (ii), set $u = 2x$ and watch the denominator $2^4 = 16$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Definition</div>
+                For any real $n &gt; 0$, the Gamma function is defined by the improper integral $\displaystyle \Gamma(n) = \int_0^\infty e^{-x} x^{n-1}\,dx$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (i): $\int_0^1 (\ln(1/x))^2\,dx = 2$</div>
+                Let $u = \ln(1/x) = -\ln x \implies x = e^{-u}$ and $dx = -e^{-u}\,du$.<br />
+                Limits: $x \to 0^+ \Rightarrow u \to \infty$; $x = 1 \Rightarrow u = 0$:
+                $$\int_\infty^0 u^2 (-e^{-u}\,du) = \int_0^\infty e^{-u} u^{3-1}\,du = \Gamma(3) = 2! = 2.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (ii): $\int_0^\infty x^3 e^{-2x}\,dx = 3/8$</div>
+                Let $u = 2x \implies x = \frac{u}{2}$ and $dx = \frac{du}{2}$ (limits remain $0$ to $\infty$):
+                $$\int_0^\infty \left(\frac{u}{2}\right)^3 e^{-u}\frac{du}{2} = \frac{1}{2^4}\int_0^\infty e^{-u} u^{4-1}\,du = \frac{\Gamma(4)}{16} = \frac{3!}{16} = \frac{6}{16} = \frac{3}{8}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="exam-card" data-vid="v2" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 Q3(b)</span>
+              <span class="topic-badge">Beta Trig Form &amp; $B(3/2, 1/2)$</span>
+            </div>
+            <div class="exam-prompt">
+              Define the Beta function $B(m, n)$ for $m, n &gt; 0$. Using the substitution $x = \sin^2\theta$, show that
+              $$B(m, n) = 2\int_0^{\pi/2} \sin^{2m-1}\theta \cos^{2n-1}\theta\,d\theta,$$
+              and hence evaluate $B\!\left(\frac{3}{2}, \frac{1}{2}\right)$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v2" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> With $x = \sin^2\theta$, $1-x = \cos^2\theta$ and $dx = 2\sin\theta\cos\theta\,d\theta$. For $m = 3/2, n = 1/2$, you get $2\int_0^{\pi/2} \sin^2\theta\,d\theta$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Definition &amp; Substitution $x = \sin^2\theta$</div>
+                For $m, n &gt; 0$, $\displaystyle B(m, n) = \int_0^1 x^{m-1}(1-x)^{n-1}\,dx$.<br />
+                Let $x = \sin^2\theta \implies 1 - x = \cos^2\theta$ and $dx = 2\sin\theta\cos\theta\,d\theta$.<br />
+                Limits: $x = 0 \Rightarrow \theta = 0$; $x = 1 \Rightarrow \theta = \frac{\pi}{2}$.
+                $$B(m, n) = \int_0^{\pi/2} (\sin^2\theta)^{m-1}(\cos^2\theta)^{n-1}\cdot 2\sin\theta\cos\theta\,d\theta = 2\int_0^{\pi/2} \sin^{2m-1}\theta\cos^{2n-1}\theta\,d\theta.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate $B(3/2, 1/2)$</div>
+                Setting $m = \frac{3}{2}$ ($2m-1 = 2$) and $n = \frac{1}{2}$ ($2n-1 = 0$):
+                $$B\!\left(\frac{3}{2}, \frac{1}{2}\right) = 2\int_0^{\pi/2} \sin^2\theta\,d\theta = \int_0^{\pi/2} (1 - \cos 2\theta)\,d\theta = \left[\theta - \frac{\sin 2\theta}{2}\right]_0^{\pi/2} = \frac{\pi}{2}.$$
+                <em>Check via Gamma bridge:</em> $\dfrac{\Gamma(3/2)\Gamma(1/2)}{\Gamma(2)} = \dfrac{\frac{1}{2}\sqrt{\pi}\cdot\sqrt{\pi}}{1!} = \dfrac{\pi}{2}$.
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="exam-card" data-vid="v3" data-category="inc2">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2024 Q1(a)</span>
+              <span class="topic-badge">Beta&ndash;Gamma Fundamental Proof</span>
+            </div>
+            <div class="exam-prompt">
+              Define Gamma and Beta functions. Prove the fundamental relation
+              $$B(m, n) = \frac{\Gamma(m)\Gamma(n)}{\Gamma(m + n)}, \qquad m, n &gt; 0.$$
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v3" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Write $\Gamma(m)\Gamma(n) = \int_0^\infty\int_0^\infty e^{-(x+y)}x^{m-1}y^{n-1}\,dx\,dy$ and transform via $x = u^2, y = v^2$ then polar coordinates $(r, \theta)$ in the first quadrant!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Rewrite $\Gamma(m)$ and $\Gamma(n)$ via $x = u^2$ and $y = v^2$</div>
+                Using $x = u^2$ ($dx = 2u\,du$): $\Gamma(m) = 2\int_0^\infty e^{-u^2} u^{2m-1}\,du$. Similarly $\Gamma(n) = 2\int_0^\infty e^{-v^2} v^{2n-1}\,dv$. Multiplying:
+                $$\Gamma(m)\Gamma(n) = 4\int_0^\infty\int_0^\infty e^{-(u^2+v^2)} u^{2m-1} v^{2n-1}\,du\,dv.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Switch to Polar Coordinates ($u = r\cos\theta, v = r\sin\theta$, $du\,dv = r\,dr\,d\theta$)</div>
+                Over the first quadrant ($0 \le r &lt; \infty,\; 0 \le \theta \le \frac{\pi}{2}$):
+                $$\Gamma(m)\Gamma(n) = 4\int_0^{\pi/2}\int_0^\infty e^{-r^2} r^{2m-1}\cos^{2m-1}\theta \cdot r^{2n-1}\sin^{2n-1}\theta \cdot r\,dr\,d\theta$$
+                $$= \left(2\int_0^\infty e^{-r^2} r^{2(m+n)-1}\,dr\right)\left(2\int_0^{\pi/2} \sin^{2n-1}\theta \cos^{2m-1}\theta\,d\theta\right).$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Recognize $\Gamma(m+n)$ and $B(m, n)$</div>
+                The first factor is $\Gamma(m+n)$ (setting $t = r^2$) and the second factor is $B(n, m) = B(m, n)$:
+                $$\Gamma(m)\Gamma(n) = \Gamma(m+n)\,B(m, n) \implies B(m, n) = \frac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}. \qquad \blacksquare$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="exam-card" data-vid="v4" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q3(b)</span>
+              <span class="topic-badge">Beta Infinite-Limit Form</span>
+            </div>
+            <div class="exam-prompt">
+              Define the Beta function and show that
+              $$B(m, n) = \int_0^\infty \frac{x^{m-1}}{(1 + x)^{m+n}}\,dx, \qquad m, n &gt; 0.$$
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v4" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Start from $B(m, n) = \int_0^1 y^{m-1}(1-y)^{n-1}\,dy$ and substitute $y = \frac{x}{1+x}$ (or $y = \frac{1}{1+x}$ + symmetry $B(m,n)=B(n,m)$).
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Substitute $y = \frac{x}{1+x}$ into $B(m, n)$</div>
+                Start from $\displaystyle B(m, n) = \int_0^1 y^{m-1}(1 - y)^{n-1}\,dy$. Set:
+                $$y = \frac{x}{1 + x} \implies 1 - y = \frac{1}{1 + x}, \qquad dy = \frac{(1+x) - x}{(1+x)^2}\,dx = \frac{dx}{(1+x)^2}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Transform limits and combine powers of $(1+x)$</div>
+                When $y = 0$, $x = 0$; as $y \to 1^-$, $x \to \infty$:
+                $$B(m, n) = \int_0^\infty \left(\frac{x}{1+x}\right)^{m-1}\left(\frac{1}{1+x}\right)^{n-1}\frac{dx}{(1+x)^2} = \int_0^\infty \frac{x^{m-1}}{(1+x)^{(m-1)+(n-1)+2}}\,dx = \int_0^\infty \frac{x^{m-1}}{(1+x)^{m+n}}\,dx. \qquad \blacksquare$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="exam-card" data-vid="v5" data-category="inc2 final">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2024 Q1(b) &amp; Final 2024 Q3(a)</span>
+              <span class="topic-badge">Gamma Scaling Formula</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate both integrals using the Gamma function:<br />
+              <strong>(i)</strong> $\displaystyle \int_0^\infty x^{2019} e^{-2020x}\,dx$ &qquad <strong>(ii)</strong> $\displaystyle \int_0^\infty x^{2018} e^{-2019x}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v5" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Use the scaling identity $\int_0^\infty x^{n-1} e^{-kx}\,dx = \frac{\Gamma(n)}{k^n}$ (watch the $n-1$ shift!).
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Part (i): $\int_0^\infty x^{2019} e^{-2020x}\,dx$</div>
+                Let $u = 2020x \implies x = \frac{u}{2020}$, $dx = \frac{du}{2020}$:
+                $$\int_0^\infty \left(\frac{u}{2020}\right)^{2019} e^{-u}\frac{du}{2020} = \frac{1}{2020^{2020}}\int_0^\infty e^{-u} u^{2020-1}\,du = \frac{\Gamma(2020)}{2020^{2020}} = \frac{2019!}{2020^{2020}}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (ii): $\int_0^\infty x^{2018} e^{-2019x}\,dx$</div>
+                Similarly, setting $u = 2019x$ ($n = 2019, k = 2019$):
+                $$\int_0^\infty x^{2018} e^{-2019x}\,dx = \frac{\Gamma(2019)}{2019^{2019}} = \frac{2018!}{2019^{2019}}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="exam-card" data-vid="v6" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &mdash; Proof</span>
+              <span class="topic-badge">Gamma Reduction &amp; Beta Symmetry</span>
+            </div>
+            <div class="exam-prompt">
+              <strong>(a)</strong> Prove the Gamma reduction formula $\Gamma(n+1) = n\Gamma(n)$ ($n &gt; 0$) using Integration by Parts and L'H&ocirc;pital's Rule.<br />
+              <strong>(b)</strong> Prove Beta symmetry $B(m, n) = B(n, m)$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v6" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For (a), set $u = x^n$ and $dv = e^{-x}dx$ in $\int_0^b e^{-x}x^n\,dx$. For (b), substitute $y = 1 - x$ in $B(m, n)$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Part (a): Proof of $\Gamma(n+1) = n\Gamma(n)$</div>
+                $$\Gamma(n+1) = \lim_{b\to\infty}\int_0^b x^n e^{-x}\,dx.$$
+                Integrate by parts with $u = x^n$ ($du = nx^{n-1}dx$) and $dv = e^{-x}dx$ ($v = -e^{-x}$):
+                $$\Gamma(n+1) = \lim_{b\to\infty}\left[-x^n e^{-x}\right]_0^b + n\int_0^\infty e^{-x} x^{n-1}\,dx = -\lim_{b\to\infty}\frac{b^n}{e^b} + 0 + n\Gamma(n).$$
+                Repeated application of L'H&ocirc;pital's Rule shows $\lim_{b\to\infty}\frac{b^n}{e^b} = 0$, leaving $\Gamma(n+1) = n\Gamma(n)$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (b): Proof of $B(m, n) = B(n, m)$</div>
+                In $B(m, n) = \int_0^1 x^{m-1}(1-x)^{n-1}\,dx$, let $y = 1 - x \implies x = 1 - y$, $dx = -dy$ (limits flip $1 \to 0$):
+                $$B(m, n) = \int_1^0 (1-y)^{m-1} y^{n-1}(-dy) = \int_0^1 y^{n-1}(1-y)^{m-1}\,dy = B(n, m). \qquad \blacksquare$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 7 -->
+          <article class="exam-card" data-vid="v7" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &mdash; Trig &amp; Half-Integer</span>
+              <span class="topic-badge">Beta Shortcut &amp; Fractional Gamma</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate:<br />
+              <strong>(i)</strong> $\displaystyle \int_0^{\pi/2} \sin^5\theta \cos^7\theta\,d\theta$ &qquad <strong>(ii)</strong> $\displaystyle \int_0^\infty e^{-\sqrt{x}} x^{1/4}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v7" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For (i), use $\frac{\Gamma((p+1)/2)\Gamma((q+1)/2)}{2\Gamma((p+q+2)/2)}$. For (ii), let $u = \sqrt{x} \implies x = u^2, dx = 2u\,du$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Part (i): $\int_0^{\pi/2}\sin^5\theta\cos^7\theta\,d\theta = 1/120$</div>
+                With $p = 5$ ($m = \frac{5+1}{2} = 3$) and $q = 7$ ($n = \frac{7+1}{2} = 4$):
+                $$\int_0^{\pi/2}\sin^5\theta\cos^7\theta\,d\theta = \frac{1}{2}B(3, 4) = \frac{\Gamma(3)\Gamma(4)}{2\Gamma(7)} = \frac{2!\cdot 3!}{2\cdot 6!} = \frac{2\cdot 6}{2\cdot 720} = \frac{1}{120}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (ii): $\int_0^\infty e^{-\sqrt{x}} x^{1/4}\,dx = \frac{3}{2}\sqrt{\pi}$</div>
+                Let $u = \sqrt{x} \implies x = u^2$, $x^{1/4} = u^{1/2}$, $dx = 2u\,du$:
+                $$2\int_0^\infty e^{-u} u^{3/2}\,du = 2\,\Gamma\!\left(\frac{5}{2}\right) = 2\cdot\frac{3}{2}\cdot\frac{1}{2}\Gamma\!\left(\frac{1}{2}\right) = \frac{3}{2}\sqrt{\pi}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 8 -->
+          <article class="exam-card" data-vid="v8" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &mdash; Bonus Proof</span>
+              <span class="topic-badge">$\Gamma(1/2) = \sqrt{\pi}$ via Gaussian / Reflection</span>
+            </div>
+            <div class="exam-prompt">
+              Prove that $\displaystyle \Gamma\!\left(\frac{1}{2}\right) = \sqrt{\pi}$ using the Gaussian integral $I = \int_{-\infty}^\infty e^{-x^2}\,dx$ in polar coordinates (and verify using Euler's Reflection Formula).
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v8" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Substitute $x = t^2$ in $\Gamma(1/2) = \int_0^\infty e^{-x} x^{-1/2}\,dx$ to obtain $2\int_0^\infty e^{-t^2}\,dt = \int_{-\infty}^\infty e^{-t^2}\,dt$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Connect $\Gamma(1/2)$ to the Gaussian Integral</div>
+                $$\Gamma\!\left(\frac{1}{2}\right) = \int_0^\infty e^{-x} x^{-1/2}\,dx.$$
+                Let $x = t^2 \implies dx = 2t\,dt$ and $x^{-1/2} = 1/t$:
+                $$\Gamma\!\left(\frac{1}{2}\right) = 2\int_0^\infty e^{-t^2}\,dt = \int_{-\infty}^\infty e^{-t^2}\,dt = I.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate $I^2$ in Polar Coordinates</div>
+                $$I^2 = \left(\int_{-\infty}^\infty e^{-x^2}\,dx\right)\left(\int_{-\infty}^\infty e^{-y^2}\,dy\right) = \int_0^{2\pi}\int_0^\infty e^{-r^2} r\,dr\,d\theta = 2\pi\left[-\frac{1}{2}e^{-r^2}\right]_0^\infty = \pi.$$
+                Since $I &gt; 0$, $\Gamma\!\left(\frac{1}{2}\right) = I = \sqrt{\pi}$.<br />
+                <em>Reflection check ($m = 1/2$):</em> $\Gamma(\frac{1}{2})\Gamma(\frac{1}{2}) = \frac{\pi}{\sin(\pi/2)} = \pi \implies \Gamma(\frac{1}{2}) = \sqrt{\pi}$. $\blacksquare$
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 5: QUICK MASTERY CHECK (5 INTERACTIVE MCQS)
+           ==================================================================== -->
+      <section class="section-block" id="section-quiz">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 5 &bull; Self-Assessment</span>
+            <h2>5. Quick Mastery Check</h2>
+          </div>
+          <p class="section-desc">
+            5 targeted questions on half-integer Gamma values, scaling exponents, Beta evaluations, infinite-limit substitutions, and convergence domains.
+          </p>
+        </div>
+
+        <div class="quiz-topbar">
+          <div class="score-pill">
+            <span>Score:</span>
+            <span id="quizScore">0 / 5</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="resetQuizBtn">&#8634; Reset Quiz</button>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+
+          <!-- Q1 -->
+          <div class="quiz-card" data-qid="q1" data-answer="b">
+            <div class="quiz-qnum">Question 1 &bull; Half-Integer Gamma Reduction</div>
+            <div>What is the exact value of $\displaystyle \Gamma\!\left(\frac{5}{2}\right)$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\dfrac{1}{2}\sqrt{\pi}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\dfrac{3}{4}\sqrt{\pi}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\dfrac{15}{8}\sqrt{\pi}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\dfrac{5}{4}\sqrt{\pi}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-card" data-qid="q2" data-answer="c">
+            <div class="quiz-qnum">Question 2 &bull; Gamma Scaling Identity</div>
+            <div>Evaluate $\displaystyle \int_0^\infty x^4 e^{-3x}\,dx$:</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\dfrac{4!}{3^4} = \dfrac{8}{27}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\dfrac{3!}{3^5} = \dfrac{2}{81}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\dfrac{4!}{3^5} = \dfrac{8}{81}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\dfrac{5!}{3^5} = \dfrac{40}{81}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-card" data-qid="q3" data-answer="a">
+            <div class="quiz-qnum">Question 3 &bull; Beta Function Evaluation (Final 2025)</div>
+            <div>Using the Beta function, what is the exact value of $\displaystyle B\!\left(\frac{3}{2}, \frac{1}{2}\right)$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\dfrac{\pi}{2}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\pi$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\dfrac{\pi}{4}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\dfrac{\sqrt{\pi}}{2}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-card" data-qid="q4" data-answer="d">
+            <div class="quiz-qnum">Question 4 &bull; Beta Second-Kind Substitution</div>
+            <div>Which substitution transforms $\displaystyle \int_0^1 y^{m-1}(1-y)^{n-1}\,dy$ into $\displaystyle \int_0^\infty \frac{x^{n-1}}{(1+x)^{m+n}}\,dx$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$y = \sin^2 x$</button>
+              <button type="button" class="quiz-opt" data-val="b">$y = e^{-x}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$y = \dfrac{1}{x}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$y = \dfrac{1}{1 + x}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-card" data-qid="q5" data-answer="b">
+            <div class="quiz-qnum">Question 5 &bull; Gamma Convergence Domain</div>
+            <div>For which real values of $n$ does the defining integral $\displaystyle \Gamma(n) = \int_0^\infty e^{-x} x^{n-1}\,dx$ converge?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$n \ge 0$</button>
+              <button type="button" class="quiz-opt" data-val="b">$n &gt; 0$</button>
+              <button type="button" class="quiz-opt" data-val="c">$n &gt; 1$</button>
+              <button type="button" class="quiz-opt" data-val="d">All real $n \in \mathbb{R}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Non-blocking Toast Notification -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX AUTO-RENDER HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2800);
+      }
+
+      /* ----------------------------------------------------------------------
+         2. EXACT RATIONAL & LANCZOS GAMMA MATH ENGINE
+         ---------------------------------------------------------------------- */
+      function gammaLanczos(z) {
+        const g = 7;
+        const p = [
+          0.99999999999980993,
+          676.5203681218851,
+          -1259.1392167224028,
+          771.32342877765313,
+          -176.61502916214059,
+          12.507343278686905,
+          -0.13857109526572012,
+          9.9843695780195716e-6,
+          1.5056327351493116e-7
+        ];
+        if (z < 0.5) {
+          return Math.PI / (Math.sin(Math.PI * z) * gammaLanczos(1 - z));
+        }
+        z -= 1;
+        let x = p[0];
+        for (let i = 1; i < p.length; i++) {
+          x += p[i] / (z + i);
+        }
+        const t = z + g + 0.5;
+        return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+      }
+
+      function gcd(a, b) {
+        a = Math.abs(Math.round(a));
+        b = Math.abs(Math.round(b));
+        while (b) { const t = b; b = a % b; a = t; }
+        return a || 1;
+      }
+
+      function frac(n, d) {
+        const g = gcd(n, d);
+        return { n: n / g, d: d / g };
+      }
+
+      // Exact Gamma representation for integer or half-integer z > 0:
+      // returns { n, d, sqrtPi: boolean } where Gamma(z) = (n/d) * (sqrtPi ? sqrt(pi) : 1)
+      function exactGammaParts(z) {
+        const twoZ = Math.round(z * 2);
+        if (Math.abs(z * 2 - twoZ) > 1e-6 || twoZ <= 0) return null;
+        if (twoZ % 2 === 0) {
+          const k = twoZ / 2;
+          let f = 1;
+          for (let i = 2; i < k; i++) f *= i;
+          return { n: f, d: 1, sqrtPi: false };
+        } else {
+          // z = k + 0.5
+          const k = (twoZ - 1) / 2;
+          let num = 1;
+          let den = 1;
+          for (let i = 0; i < k; i++) {
+            num *= (2 * i + 1);
+            den *= 2;
+          }
+          const rf = frac(num, den);
+          return { n: rf.n, d: rf.d, sqrtPi: true };
+        }
+      }
+
+      function formatExactGammaTex(z) {
+        const parts = exactGammaParts(z);
+        if (!parts) return `\\Gamma(${z.toFixed(1)})`;
+        if (!parts.sqrtPi) return `${parts.n}`;
+        if (parts.n === 1 && parts.d === 1) return `\\sqrt{\\pi}`;
+        return `\\frac{${parts.n}}{${parts.d}}\\sqrt{\\pi}`;
+      }
+
+      function formatExactBetaTex(m, n) {
+        const gm = exactGammaParts(m);
+        const gn = exactGammaParts(n);
+        const gmn = exactGammaParts(m + n);
+        if (!gm || !gn || !gmn) return `B(${m}, ${n})`;
+
+        // Numerator = gm * gn, Denominator = gmn
+        const num = gm.n * gn.n * gmn.d;
+        const den = gm.d * gn.d * gmn.n;
+        const rf = frac(num, den);
+        const hasPi = gm.sqrtPi && gn.sqrtPi && !gmn.sqrtPi;
+
+        if (hasPi) {
+          if (rf.d === 1) return rf.n === 1 ? '\\pi' : `${rf.n}\\pi`;
+          return rf.n === 1 ? `\\frac{\\pi}{${rf.d}}` : `\\frac{${rf.n}\\pi}{${rf.d}}`;
+        } else {
+          return rf.d === 1 ? `${rf.n}` : `\\frac{${rf.n}}{${rf.d}}`;
+        }
+      }
+
+      function formatHalfTex(v) {
+        const twoV = Math.round(v * 2);
+        if (twoV % 2 === 0) return `${twoV / 2}`;
+        return `\\frac{${twoV}}{2}`;
+      }
+
+      /* ----------------------------------------------------------------------
+         3. CANVAS & AXES UTILITIES
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(260, Math.floor(rect.width));
+        const h = Math.max(210, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function niceStep(range, ticks) {
+        const rough = Math.max(range, 1e-6) / ticks;
+        const p10 = Math.pow(10, Math.floor(Math.log10(rough)));
+        const norm = rough / p10;
+        const m = norm > 5 ? 10 : norm > 2 ? 5 : norm > 1 ? 2 : 1;
+        return m * p10;
+      }
+
+      function drawAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax) {
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = '#0b1120';
+        ctx.fillRect(0, 0, w, h);
+
+        const xStep = niceStep(xMax - xMin, 6);
+        const yStep = niceStep(yMax - yMin, 5);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.font = '500 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#94a3b8';
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let xv = Math.ceil(xMin / xStep) * xStep; xv <= xMax + 1e-9; xv += xStep) {
+          const px = toX(xv);
+          ctx.beginPath(); ctx.moveTo(px, pad.top); ctx.lineTo(px, h - pad.bottom); ctx.stroke();
+          ctx.fillText(Math.abs(xv) < 1e-9 ? '0' : Number(xv.toFixed(2)).toString(), px, h - pad.bottom + 6);
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let yv = Math.ceil(yMin / yStep) * yStep; yv <= yMax + 1e-9; yv += yStep) {
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(w - pad.right, py); ctx.stroke();
+          ctx.fillText(Math.abs(yv) < 1e-9 ? '0' : Number(yv.toFixed(2)).toString(), pad.left - 8, py);
+        }
+
+        // Main x=0 and y=0 axes
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.6;
+        if (yMin <= 0 && yMax >= 0) {
+          const y0 = toY(0);
+          ctx.beginPath(); ctx.moveTo(pad.left, y0); ctx.lineTo(w - pad.right, y0); ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          const x0 = toX(0);
+          ctx.beginPath(); ctx.moveTo(x0, pad.top); ctx.lineTo(x0, h - pad.bottom); ctx.stroke();
+        }
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pad.left, pad.top, plotW, plotH);
+
+        return { toX, toY, plotW, plotH };
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 1A: GAMMA FUNCTION VISUALIZER
+         ---------------------------------------------------------------------- */
+      let gammaN = 2.5;
+      const gammaCanvas = document.getElementById('gammaCanvas');
+      const gammaNSlider = document.getElementById('gammaNSlider');
+      const gammaNDisplay = document.getElementById('gammaNDisplay');
+
+      function drawGammaCanvas() {
+        const n = gammaN;
+        const gFn = (x) => (x <= 1e-6 ? (n > 1 ? 0 : n === 1 ? 1 : 99) : Math.exp(-x) * Math.pow(x, n - 1));
+
+        // Dynamic yMax for crisp framing
+        let peakY = 1.2;
+        if (n > 1) {
+          peakY = gFn(n - 1);
+        } else if (n === 1) {
+          peakY = 1.0;
+        } else {
+          peakY = 4.2; // cap vertical asymptote view cleanly
+        }
+        const yMax = Math.max(0.6, peakY * 1.24);
+        const xMin = 0, xMax = 12, yMin = 0;
+
+        const { ctx, w, h } = setupCanvas(gammaCanvas);
+        const pad = { top: 22, right: 20, bottom: 32, left: 48 };
+        const { toX, toY } = drawAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax);
+        const y0 = toY(0);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+
+        // Shaded area under g_n(x)
+        const steps = 260;
+        const startX = n < 1 ? 0.015 : 0;
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.24)';
+        ctx.beginPath();
+        ctx.moveTo(toX(startX), y0);
+        for (let i = 0; i <= steps; i++) {
+          const x = startX + (i / steps) * (xMax - startX);
+          const y = Math.min(yMax * 1.2, gFn(x));
+          ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.lineTo(toX(xMax), y0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cyan curve
+        ctx.save();
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 8;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i++) {
+          const x = startX + (i / steps) * (xMax - startX);
+          const y = Math.min(yMax * 1.2, gFn(x));
+          if (i === 0) ctx.moveTo(toX(x), toY(y));
+          else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Annotations: Mode line (n > 1) or Rose Type II asymptote (0 < n < 1)
+        if (n > 1.001) {
+          const mx = n - 1;
+          const my = gFn(mx);
+          const pmx = toX(mx);
+          const pmy = toY(my);
+
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(pmx, y0);
+          ctx.lineTo(pmx, pmy);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#fbbf24';
+          ctx.beginPath();
+          ctx.arc(pmx, pmy, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.textAlign = pmx > w - pad.right - 95 ? 'right' : 'left';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(`Peak x = ${mx.toFixed(1)}`, pmx + (pmx > w - pad.right - 95 ? -8 : 8), Math.max(pad.top + 16, pmy - 6));
+        } else if (n < 0.999) {
+          const x0 = toX(0);
+          ctx.strokeStyle = '#fb7185';
+          ctx.lineWidth = 3;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(x0 + 1.5, pad.top);
+          ctx.lineTo(x0 + 1.5, h - pad.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#fb7185';
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'top';
+          ctx.fillText('Integrable Type II spike at x = 0⁺ (n < 1)', x0 + 10, pad.top + 8);
+        } else {
+          ctx.fillStyle = '#34d399';
+          ctx.beginPath();
+          ctx.arc(toX(0), toY(1), 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText('Pure exponential e⁻ˣ, starts at (0, 1)', toX(0) + 10, toY(1) - 4);
+        }
+
+        ctx.restore();
+
+        // Update Telemetry Cards & Labels
+        gammaNDisplay.textContent = `n = ${n.toFixed(1)}`;
+        const gNum = gammaLanczos(n);
+        const exactTex = formatExactGammaTex(n);
+
+        const gExactEl = document.getElementById('gTeleExact');
+        gExactEl.innerHTML = `$${exactTex}$`;
+        document.getElementById('gTeleExactSub').textContent = exactGammaParts(n)
+          ? 'Exact integer / half-integer value'
+          : 'Non-half-integer (numeric via Lanczos)';
+
+        document.getElementById('gTeleNum').textContent = gNum.toFixed(6);
+
+        const gFactEl = document.getElementById('gTeleFact');
+        const nm1 = Number((n - 1).toFixed(1));
+        gFactEl.innerHTML = Math.abs(nm1 - Math.round(nm1)) < 1e-6
+          ? `$${Math.round(nm1)}! = ${Math.round(gNum)}$`
+          : `$(${nm1})! \\approx ${gNum.toFixed(4)}$`;
+
+        const modeCard = document.getElementById('gTeleModeCard');
+        const modeVal = document.getElementById('gTeleMode');
+        const modeSub = document.getElementById('gTeleModeSub');
+        if (n < 0.999) {
+          modeCard.className = 'tele-card rose';
+          modeVal.textContent = 'Asymptote at x = 0⁺';
+          modeSub.textContent = 'Integrable Type II singularity (0 < n < 1)';
+        } else if (Math.abs(n - 1) < 1e-6) {
+          modeCard.className = 'tele-card emerald';
+          modeVal.textContent = 'Peak at x = 0 (y = 1)';
+          modeSub.textContent = 'Exponential decay e⁻ˣ';
+        } else {
+          modeCard.className = 'tele-card amber';
+          modeVal.textContent = `Mode at x = ${(n - 1).toFixed(1)}`;
+          modeSub.textContent = `Max height = ${peakY.toFixed(3)}`;
+        }
+
+        const noteEl = document.getElementById('gammaFormulaNote');
+        noteEl.innerHTML = `
+          <div><strong>Active Integral:</strong> $\\displaystyle \\Gamma(${n.toFixed(1)}) = \\int_0^\\infty e^{-x} x^{${(n - 1).toFixed(1)}}\\,dx \\approx ${gNum.toFixed(4)}$</div>
+        `;
+
+        // Highlight active preset chip
+        document.querySelectorAll('#gammaPresetRow .preset-chip').forEach((ch) => {
+          ch.classList.toggle('active', Math.abs(parseFloat(ch.dataset.gn) - n) < 1e-5);
+        });
+
+        renderMath(gExactEl);
+        renderMath(gFactEl);
+        renderMath(noteEl);
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 1B: BETA FUNCTION & SYMMETRY VISUALIZER
+         ---------------------------------------------------------------------- */
+      const betaState = { m: 1.5, n: 0.5, lastSwapped: false, prevM: null, prevN: null };
+      const betaCanvas = document.getElementById('betaCanvas');
+      const betaMSlider = document.getElementById('betaMSlider');
+      const betaNSlider = document.getElementById('betaNSlider');
+
+      function drawBetaCanvas() {
+        const { m, n } = betaState;
+        const bFn = (x, pm, pn) => {
+          if (x <= 1e-5) return pm > 1 ? 0 : pm === 1 ? 1 : 99;
+          if (x >= 1 - 1e-5) return pn > 1 ? 0 : pn === 1 ? 1 : 99;
+          return Math.pow(x, pm - 1) * Math.pow(1 - x, pn - 1);
+        };
+
+        // Determine sensible yMax
+        let peakY = 1.2;
+        if (m > 1 && n > 1) {
+          const modeX = (m - 1) / (m + n - 2);
+          peakY = bFn(modeX, m, n);
+        } else if (m < 1 || n < 1) {
+          peakY = 4.2;
+        } else {
+          peakY = 1.05;
+        }
+        const yMax = Math.max(0.08, peakY * 1.24);
+        const xMin = 0, xMax = 1, yMin = 0;
+
+        const { ctx, w, h } = setupCanvas(betaCanvas);
+        const pad = { top: 22, right: 20, bottom: 32, left: 50 };
+        const { toX, toY } = drawAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax);
+        const y0 = toY(0);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+
+        // Dashed mirror line at x = 0.5
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(toX(0.5), pad.top);
+        ctx.lineTo(toX(0.5), h - pad.bottom);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        const steps = 220;
+        const epsL = m < 1 ? 0.008 : 0;
+        const epsR = n < 1 ? 0.008 : 0;
+
+        // If user just swapped, draw subtle dashed ghost of previous curve to emphasize mirror reflection
+        if (betaState.lastSwapped && betaState.prevM !== null) {
+          const pEpsL = betaState.prevM < 1 ? 0.008 : 0;
+          const pEpsR = betaState.prevN < 1 ? 0.008 : 0;
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+          ctx.lineWidth = 1.8;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          for (let i = 0; i <= steps; i++) {
+            const x = pEpsL + (i / steps) * (1 - pEpsL - pEpsR);
+            const y = Math.min(yMax * 1.2, bFn(x, betaState.prevM, betaState.prevN));
+            if (i === 0) ctx.moveTo(toX(x), toY(y));
+            else ctx.lineTo(toX(x), toY(y));
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // Gradient violet -> emerald fill
+        const grad = ctx.createLinearGradient(pad.left, 0, w - pad.right, 0);
+        grad.addColorStop(0, 'rgba(167, 139, 250, 0.30)');
+        grad.addColorStop(1, 'rgba(16, 185, 129, 0.28)');
+        ctx.fillStyle = grad;
+
+        ctx.beginPath();
+        ctx.moveTo(toX(epsL), y0);
+        for (let i = 0; i <= steps; i++) {
+          const x = epsL + (i / steps) * (1 - epsL - epsR);
+          const y = Math.min(yMax * 1.2, bFn(x, m, n));
+          ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.lineTo(toX(1 - epsR), y0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Main Violet curve
+        ctx.save();
+        ctx.shadowColor = '#a78bfa';
+        ctx.shadowBlur = 8;
+        ctx.strokeStyle = '#a78bfa';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i++) {
+          const x = epsL + (i / steps) * (1 - epsL - epsR);
+          const y = Math.min(yMax * 1.2, bFn(x, m, n));
+          if (i === 0) ctx.moveTo(toX(x), toY(y));
+          else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Symmetry axis label
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '700 11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText('x = 0.5 mirror', toX(0.5), pad.top + 6);
+
+        ctx.restore();
+
+        // Update Labels & 4 Telemetry Cards
+        document.getElementById('betaMDisplay').textContent = `m = ${m.toFixed(1)}`;
+        document.getElementById('betaNDisplay').textContent = `n = ${n.toFixed(1)}`;
+
+        const gm = gammaLanczos(m);
+        const gn = gammaLanczos(n);
+        const gmn = gammaLanczos(m + n);
+        const bVal = (gm * gn) / gmn;
+        const bExactTex = formatExactBetaTex(m, n);
+
+        const bExactEl = document.getElementById('bTeleExact');
+        bExactEl.innerHTML = `$${bExactTex}$`;
+        document.getElementById('bTeleNum').textContent = `Numeric: ${bVal.toFixed(6)}`;
+
+        const bGammaEl = document.getElementById('bTeleGamma');
+        bGammaEl.innerHTML = `$\\frac{\\Gamma(${formatHalfTex(m)})\\Gamma(${formatHalfTex(n)})}{\\Gamma(${formatHalfTex(m + n)})} = ${bVal.toFixed(5)}$`;
+
+        const pSin = Math.round(2 * m - 1);
+        const pCos = Math.round(2 * n - 1);
+        const sinPart = pSin === 0 ? '' : pSin === 1 ? '\\sin\\theta' : `\\sin^{${pSin}}\\theta`;
+        const cosPart = pCos === 0 ? '' : pCos === 1 ? '\\cos\\theta' : `\\cos^{${pCos}}\\theta`;
+        const trigBody = (sinPart + ' ' + cosPart).trim() || '1';
+        const bTrigEl = document.getElementById('bTeleTrig');
+        bTrigEl.innerHTML = `$2\\int_0^{\\pi/2} ${trigBody}\\,d\\theta$`;
+
+        const symCard = document.getElementById('bTeleSymCard');
+        const symVal = document.getElementById('bTeleSym');
+        const symSub = document.getElementById('bTeleSymSub');
+        if (Math.abs(m - n) < 1e-6) {
+          symCard.className = 'tele-card emerald';
+          symVal.textContent = 'Self-Symmetric (m = n)';
+          symSub.textContent = 'Curve is already symmetric across x = 0.5';
+        } else if (betaState.lastSwapped) {
+          symCard.className = 'tele-card emerald';
+          symVal.textContent = 'Mirrored! Area Invariant';
+          symSub.textContent = `B(${m}, ${n}) = B(${n}, ${m}) = ${bVal.toFixed(5)}`;
+        } else {
+          symCard.className = 'tele-card amber';
+          symVal.textContent = `Skewed (m=${m}, n=${n})`;
+          symSub.textContent = 'Click Swap m ↔ n to mirror across x = 0.5';
+        }
+
+        const bNoteEl = document.getElementById('betaFormulaNote');
+        bNoteEl.innerHTML = `
+          <div><strong>Active Integral:</strong> $\\displaystyle B(${formatHalfTex(m)}, ${formatHalfTex(n)}) = \\int_0^1 x^{${(m - 1).toFixed(1)}}(1-x)^{${(n - 1).toFixed(1)}}\\,dx = ${bExactTex}$</div>
+        `;
+
+        // Preset chip highlight
+        document.querySelectorAll('#betaPresetRow .preset-chip').forEach((ch) => {
+          const cm = parseFloat(ch.dataset.bm);
+          const cn = parseFloat(ch.dataset.bn);
+          ch.classList.toggle('active', Math.abs(cm - m) < 1e-5 && Math.abs(cn - n) < 1e-5);
+        });
+
+        renderMath(bExactEl);
+        renderMath(bGammaEl);
+        renderMath(bTrigEl);
+        renderMath(bNoteEl);
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 2: INTERACTIVE BETA–GAMMA SUBSTITUTION CONVERTER (6 PRESETS)
+         ---------------------------------------------------------------------- */
+      const convPresets = [
+        {
+          tag: '1. Final 2025 Q3a-ii',
+          tex: '\\int_0^\\infty x^3 e^{-2x}\\,dx',
+          steps: [
+            { title: '1. Pattern Match', body: 'Matches the scaled Gamma form $\\displaystyle \\int_0^\\infty x^{n-1} e^{-kx}\\,dx$ with $n - 1 = 3 \\implies n = 4$ and $k = 2$.' },
+            { title: '2. Substitution & dx', body: 'Let $u = 2x \\implies x = \\dfrac{u}{2}$ and $dx = \\dfrac{du}{2}$. Substitute both into the integrand: $x^3 e^{-2x}\\,dx = \\dfrac{u^3}{2^3} e^{-u}\\dfrac{du}{2} = \\dfrac{1}{2^4} e^{-u} u^3\\,du$.' },
+            { title: '3. New Limits', body: 'When $x = 0$, $u = 0$. As $x \\to \\infty$, $u = 2x \\to \\infty$. Thus $\\displaystyle \\frac{1}{16}\\int_0^\\infty e^{-u} u^{4-1}\\,du$.' },
+            { title: '4. Gamma / Beta Result', final: true, body: '$$\\int_0^\\infty x^3 e^{-2x}\\,dx = \\frac{\\Gamma(4)}{2^4} = \\frac{3!}{16} = \\frac{6}{16} = \\frac{3}{8}.$$' }
+          ]
+        },
+        {
+          tag: '2. 2nd Incourse 2024 Q1b',
+          tex: '\\int_0^\\infty x^{2019} e^{-2020x}\\,dx',
+          steps: [
+            { title: '1. Pattern Match', body: 'Matches $\\displaystyle \\int_0^\\infty x^{n-1} e^{-kx}\\,dx$ with $n - 1 = 2019 \\implies n = 2020$ and $k = 2020$.' },
+            { title: '2. Substitution & dx', body: 'Let $u = 2020x \\implies x = \\dfrac{u}{2020}$ and $dx = \\dfrac{du}{2020}$. Notice the total denominator factor is $2020^{2019}\\cdot 2020 = 2020^{2020}$.' },
+            { title: '3. New Limits', body: 'Limits stay $[0, \\infty)$: $\\displaystyle \\frac{1}{2020^{2020}}\\int_0^\\infty e^{-u} u^{2020-1}\\,du$.' },
+            { title: '4. Gamma / Beta Result', final: true, body: '$$\\int_0^\\infty x^{2019} e^{-2020x}\\,dx = \\frac{\\Gamma(2020)}{2020^{2020}} = \\frac{2019!}{2020^{2020}}.$$' }
+          ]
+        },
+        {
+          tag: '3. Final 2025 Q3a-i',
+          tex: '\\int_0^1 \\left(\\ln\\frac{1}{x}\\right)^2 dx',
+          steps: [
+            { title: '1. Pattern Match', body: 'Classic logarithmic Gamma integral $\\displaystyle \\int_0^1 \\left(\\ln\\frac{1}{x}\\right)^{n-1}dx$ with $n - 1 = 2 \\implies n = 3$.' },
+            { title: '2. Substitution & dx', body: 'Let $u = \\ln\\left(\\dfrac{1}{x}\\right) = -\\ln x \\implies x = e^{-u}$ and $dx = -e^{-u}\\,du$.' },
+            { title: '3. New Limits', body: 'As $x \\to 0^+$, $u \\to +\\infty$; when $x = 1$, $u = 0$. The minus sign flips $\\int_\\infty^0$ to $\\int_0^\\infty$: $\\displaystyle \\int_0^\\infty e^{-u} u^{3-1}\\,du$.' },
+            { title: '4. Gamma / Beta Result', final: true, body: '$$\\int_0^1 \\left(\\ln\\frac{1}{x}\\right)^2 dx = \\Gamma(3) = 2! = 2.$$' }
+          ]
+        },
+        {
+          tag: '4. Class Notes (Fractional)',
+          tex: '\\int_0^\\infty e^{-\\sqrt{x}} x^{1/4}\\,dx',
+          steps: [
+            { title: '1. Pattern Match', body: 'Exponential has $-\\sqrt{x}$ instead of $-x$. A power substitution $u = \\sqrt{x}$ converts this directly into a Gamma integral!' },
+            { title: '2. Substitution & dx', body: 'Let $u = \\sqrt{x} \\implies x = u^2$, $x^{1/4} = u^{1/2}$, and $dx = 2u\\,du$. Product: $e^{-u} u^{1/2}\\cdot 2u\\,du = 2e^{-u} u^{3/2}\\,du$.' },
+            { title: '3. New Limits', body: 'Limits remain $0$ to $\\infty$: $\\displaystyle 2\\int_0^\\infty e^{-u} u^{\\frac{5}{2}-1}\\,du$ (here $n - 1 = \\frac{3}{2} \\implies n = \\frac{5}{2}$).' },
+            { title: '4. Gamma / Beta Result', final: true, body: '$$\\int_0^\\infty e^{-\\sqrt{x}} x^{1/4}\\,dx = 2\\,\\Gamma\\!\\left(\\frac{5}{2}\\right) = 2\\cdot\\frac{3}{2}\\cdot\\frac{1}{2}\\sqrt{\\pi} = \\frac{3}{2}\\sqrt{\\pi}.$$' }
+          ]
+        },
+        {
+          tag: '5. Class Notes (Trig Beta)',
+          tex: '\\int_0^{\\pi/2} \\sin^5\\theta \\cos^7\\theta\\,d\\theta',
+          steps: [
+            { title: '1. Pattern Match', body: 'Matches the Beta trig shortcut $\\displaystyle \\int_0^{\\pi/2} \\sin^p\\theta \\cos^q\\theta\\,d\\theta = \\frac{1}{2}B\\!\\left(\\frac{p+1}{2}, \\frac{q+1}{2}\\right)$ with $p = 5$ and $q = 7$.' },
+            { title: '2. Map Exponents to (m, n)', body: 'Set $2m - 1 = 5 \\implies m = 3$, and $2n - 1 = 7 \\implies n = 4$. Remember the factor of $\\frac{1}{2}$!' },
+            { title: '3. Apply Beta–Gamma Bridge', body: '$$\\frac{1}{2}B(3, 4) = \\frac{\\Gamma(3)\\Gamma(4)}{2\\,\\Gamma(3+4)} = \\frac{\\Gamma(3)\\Gamma(4)}{2\\,\\Gamma(7)}.$$' },
+            { title: '4. Gamma / Beta Result', final: true, body: '$$\\int_0^{\\pi/2} \\sin^5\\theta \\cos^7\\theta\\,d\\theta = \\frac{2!\\cdot 3!}{2\\cdot 6!} = \\frac{12}{1440} = \\frac{1}{120}.$$' }
+          ]
+        },
+        {
+          tag: '6. Class Notes (a > 1)',
+          tex: '\\int_0^\\infty \\frac{x^a}{a^x}\\,dx',
+          steps: [
+            { title: '1. Pattern Match', body: 'Rewrite $a^{-x} = e^{-x\\ln a}$ (since $a &gt; 1$, $\\ln a &gt; 0$): $\\displaystyle \\int_0^\\infty x^a e^{-(\\ln a)x}\\,dx$.' },
+            { title: '2. Substitution & dx', body: 'Let $u = x\\ln a \\implies x = \\dfrac{u}{\\ln a}$ and $dx = \\dfrac{du}{\\ln a}$. Then $x^a\\,dx = \\dfrac{u^a\\,du}{(\\ln a)^{a+1}}$.' },
+            { title: '3. New Limits', body: 'Since $\\ln a &gt; 0$, $x = 0 \\Rightarrow u = 0$ and $x \\to \\infty \\Rightarrow u \\to \\infty$: $\\displaystyle \\frac{1}{(\\ln a)^{a+1}}\\int_0^\\infty e^{-u} u^{(a+1)-1}\\,du$.' },
+            { title: '4. Gamma / Beta Result', final: true, body: '$$\\int_0^\\infty \\frac{x^a}{a^x}\\,dx = \\frac{\\Gamma(a + 1)}{(\\ln a)^{a+1}}.$$' }
+          ]
+        }
+      ];
+
+      const convState = { idx: 0, step: 1 };
+      const convPills = document.getElementById('convPills');
+      const convStepsWrap = document.getElementById('convStepsWrap');
+      const convStepperBar = document.getElementById('convStepperBar');
+
+      function buildConvPills() {
+        convPills.innerHTML = convPresets.map((p, i) => `
+          <button type="button" class="conv-pill ${i === convState.idx ? 'active' : ''}" data-cidx="${i}">
+            <span class="conv-pill-tag">${p.tag}</span>
+            <span style="font-size:0.92rem;">$${p.tex}$</span>
+          </button>
+        `).join('');
+
+        convPills.querySelectorAll('.conv-pill').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            convState.idx = parseInt(btn.dataset.cidx, 10);
+            convState.step = 1;
+            visitedSections.converter = true;
+            updateProgress();
+            renderConverter();
+          });
+        });
+        renderMath(convPills);
+      }
+
+      function renderConverter() {
+        const p = convPresets[convState.idx];
+        convPills.querySelectorAll('.conv-pill').forEach((b, i) => b.classList.toggle('active', i === convState.idx));
+
+        convStepperBar.querySelectorAll('.stepper-node').forEach((node) => {
+          const s = parseInt(node.dataset.cstep, 10);
+          node.classList.toggle('active-node', s === convState.step);
+          node.classList.toggle('done-node', s < convState.step);
+        });
+
+        convStepsWrap.innerHTML = p.steps.map((s, i) => `
+          <div class="conv-step-card ${i < convState.step ? 'visible' : ''} ${s.final ? 'final' : ''}">
+            <div class="conv-step-title">${s.title}</div>
+            <div>${s.body}</div>
+          </div>
+        `).join('');
+
+        document.getElementById('convCounter').textContent = `Step ${convState.step} of ${p.steps.length}`;
+        document.getElementById('convPrevBtn').disabled = convState.step <= 1;
+        document.getElementById('convNextBtn').disabled = convState.step >= p.steps.length;
+
+        renderMath(convStepsWrap);
+      }
+
+      /* ----------------------------------------------------------------------
+         7. SIDEBAR, PROGRESS BAR & QUIZ / VAULT STATE
+         ---------------------------------------------------------------------- */
+      const reviewedVault = new Set();
+      const quizResults = { q1: null, q2: null, q3: null, q4: null, q5: null };
+      const visitedSections = { explorer: false, converter: false, theory: false };
+
+      function updateProgress() {
+        const quizCorrectCount = Object.values(quizResults).filter((v) => v === true).length;
+        const done = reviewedVault.size + quizCorrectCount;
+        const pct = Math.round((done / 13) * 100);
+
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressCaption').textContent =
+          `Vault reviewed: ${reviewedVault.size}/8 • Quiz score: ${quizCorrectCount}/5`;
+
+        document.querySelector('[data-section="section-explorer"]').classList.toggle('done', visitedSections.explorer);
+        document.querySelector('[data-section="section-converter"]').classList.toggle('done', visitedSections.converter);
+        document.querySelector('[data-section="section-theory"]').classList.toggle('done', visitedSections.theory);
+        document.querySelector('[data-section="section-vault"]').classList.toggle('done', reviewedVault.size === 8);
+        document.querySelector('[data-section="section-quiz"]').classList.toggle('done', quizCorrectCount === 5);
+      }
+
+      const quizExplanations = {
+        q1: 'Using $\\Gamma(n+1) = n\\Gamma(n)$ twice: $\\Gamma\\!\\left(\\frac{5}{2}\\right) = \\frac{3}{2}\\Gamma\\!\\left(\\frac{3}{2}\\right) = \\frac{3}{2}\\cdot\\frac{1}{2}\\Gamma\\!\\left(\\frac{1}{2}\\right) = \\frac{3}{4}\\sqrt{\\pi}$.',
+        q2: 'By the scaling identity $\\int_0^\\infty x^{n-1}e^{-kx}\\,dx = \\frac{\\Gamma(n)}{k^n}$ with $n - 1 = 4 \\implies n = 5$ and $k = 3$: $\\frac{\\Gamma(5)}{3^5} = \\frac{4!}{243} = \\frac{24}{243} = \\frac{8}{81}$.',
+        q3: '$B\\!\\left(\\frac{3}{2}, \\frac{1}{2}\\right) = \\frac{\\Gamma(3/2)\\Gamma(1/2)}{\\Gamma(2)} = \\frac{\\frac{1}{2}\\sqrt{\\pi}\\cdot\\sqrt{\\pi}}{1!} = \\frac{\\pi}{2}$.',
+        q4: 'Setting $y = \\frac{1}{1+x}$ gives $1 - y = \\frac{x}{1+x}$ and $dy = -\\frac{dx}{(1+x)^2}$, transforming $\\int_0^1 y^{m-1}(1-y)^{n-1}\\,dy$ directly into $\\int_0^\\infty \\frac{x^{n-1}}{(1+x)^{m+n}}\\,dx$.',
+        q5: 'As $x \\to 0^+$, $e^{-x}x^{n-1} \\sim x^{-(1-n)}$, which converges iff $1 - n &lt; 1 \\iff n &gt; 0$. (At $n \\le 0$, the integral diverges at $0^+$.)'
+      };
+
+      /* ----------------------------------------------------------------------
+         8. DOMCONTENTLOADED INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile Sidebar
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+
+        function setSidebar(open) {
+          sidebar.classList.toggle('open', open);
+          sidebarOverlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+
+        menuToggle.addEventListener('click', () => setSidebar(!sidebar.classList.contains('open')));
+        sidebarOverlay.addEventListener('click', () => setSidebar(false));
+        document.querySelectorAll('.nav-link').forEach((l) => l.addEventListener('click', () => setSidebar(false)));
+
+        document.getElementById('prevLessonBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 6 — Improper Integrals (lesson6_improper_integrals.html)');
+        });
+        document.getElementById('nextLessonBtn').addEventListener('click', () => {
+          showToast('Module 3 Starts Next: Lesson 8 — Area Between Curves');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('.section-block');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === id));
+              if (id === 'section-theory' && !visitedSections.theory) {
+                visitedSections.theory = true;
+                updateProgress();
+              }
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Explorer Tabs (Gamma / Beta)
+        document.querySelectorAll('[data-exptab]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-exptab]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('#section-explorer .tab-pane').forEach((p) => p.classList.remove('active'));
+            document.getElementById(btn.dataset.exptab).classList.add('active');
+            visitedSections.explorer = true;
+            updateProgress();
+            requestAnimationFrame(() => {
+              if (btn.dataset.exptab === 'tab-gamma') drawGammaCanvas();
+              else drawBetaCanvas();
+            });
+          });
+        });
+
+        // Gamma Controls
+        gammaNSlider.addEventListener('input', () => {
+          gammaN = parseFloat(gammaNSlider.value);
+          visitedSections.explorer = true;
+          updateProgress();
+          drawGammaCanvas();
+        });
+
+        document.querySelectorAll('#gammaPresetRow .preset-chip').forEach((ch) => {
+          ch.addEventListener('click', () => {
+            gammaN = parseFloat(ch.dataset.gn);
+            gammaNSlider.value = gammaN;
+            visitedSections.explorer = true;
+            updateProgress();
+            drawGammaCanvas();
+          });
+        });
+
+        // Beta Controls
+        betaMSlider.addEventListener('input', () => {
+          betaState.m = parseFloat(betaMSlider.value);
+          betaState.lastSwapped = false;
+          visitedSections.explorer = true;
+          updateProgress();
+          drawBetaCanvas();
+        });
+
+        betaNSlider.addEventListener('input', () => {
+          betaState.n = parseFloat(betaNSlider.value);
+          betaState.lastSwapped = false;
+          visitedSections.explorer = true;
+          updateProgress();
+          drawBetaCanvas();
+        });
+
+        document.querySelectorAll('#betaPresetRow .preset-chip').forEach((ch) => {
+          ch.addEventListener('click', () => {
+            betaState.m = parseFloat(ch.dataset.bm);
+            betaState.n = parseFloat(ch.dataset.bn);
+            betaState.lastSwapped = false;
+            betaMSlider.value = betaState.m;
+            betaNSlider.value = betaState.n;
+            visitedSections.explorer = true;
+            updateProgress();
+            drawBetaCanvas();
+          });
+        });
+
+        document.getElementById('betaSwapBtn').addEventListener('click', () => {
+          betaState.prevM = betaState.m;
+          betaState.prevN = betaState.n;
+          const tmp = betaState.m;
+          betaState.m = betaState.n;
+          betaState.n = tmp;
+          betaState.lastSwapped = true;
+          betaMSlider.value = betaState.m;
+          betaNSlider.value = betaState.n;
+          visitedSections.explorer = true;
+          updateProgress();
+          drawBetaCanvas();
+          showToast(`Swapped m ↔ n! Curve mirrored across x = 0.5, while B(${betaState.m}, ${betaState.n}) stayed identical.`);
+        });
+
+        // Converter Controls
+        convStepperBar.querySelectorAll('.stepper-node').forEach((node) => {
+          node.addEventListener('click', () => {
+            convState.step = parseInt(node.dataset.cstep, 10);
+            visitedSections.converter = true;
+            updateProgress();
+            renderConverter();
+          });
+        });
+
+        document.getElementById('convPrevBtn').addEventListener('click', () => {
+          if (convState.step > 1) convState.step--;
+          renderConverter();
+        });
+
+        document.getElementById('convNextBtn').addEventListener('click', () => {
+          if (convState.step < 4) convState.step++;
+          visitedSections.converter = true;
+          updateProgress();
+          renderConverter();
+        });
+
+        document.getElementById('convAllBtn').addEventListener('click', () => {
+          convState.step = 4;
+          visitedSections.converter = true;
+          updateProgress();
+          renderConverter();
+        });
+
+        // Vault Filters, Hints, Solutions & Mark Reviewed Checkboxes
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const examCards = document.querySelectorAll('.exam-card');
+
+        filterTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            filterTabs.forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+            const f = tab.dataset.filter;
+            examCards.forEach((card) => {
+              const cats = card.dataset.category.split(' ');
+              card.classList.toggle('hidden', f !== 'all' && !cats.includes(f));
+            });
+          });
+        });
+
+        examCards.forEach((card) => {
+          const hintBtn = card.querySelector('.hint-toggle');
+          const hintBox = card.querySelector('.hint-box');
+          const solBtn = card.querySelector('.sol-toggle');
+          const solBox = card.querySelector('.solution-box');
+          const cb = card.querySelector('.review-cb');
+
+          hintBtn.addEventListener('click', () => {
+            const open = hintBox.classList.toggle('open');
+            hintBtn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            if (open) renderMath(hintBox);
+          });
+
+          solBtn.addEventListener('click', () => {
+            const open = solBox.classList.toggle('open');
+            solBtn.textContent = open ? 'Hide Solution' : 'Show Full Solution';
+            if (open) renderMath(solBox);
+          });
+
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) {
+              reviewedVault.add(vid);
+              card.classList.add('reviewed-card');
+            } else {
+              reviewedVault.delete(vid);
+              card.classList.remove('reviewed-card');
+            }
+            updateProgress();
+          });
+        });
+
+        // Quick Mastery Check Quiz
+        function updateQuizScoreUI() {
+          const score = Object.values(quizResults).filter((v) => v === true).length;
+          document.getElementById('quizScore').textContent = `${score} / 5`;
+        }
+
+        document.querySelectorAll('.quiz-card').forEach((card) => {
+          const qid = card.dataset.qid;
+          const ans = card.dataset.answer;
+          const opts = card.querySelectorAll('.quiz-opt');
+          const fb = card.querySelector('.quiz-feedback');
+
+          opts.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const ok = btn.dataset.val === ans;
+              opts.forEach((b) => {
+                b.disabled = true;
+                if (b.dataset.val === ans) b.classList.add('correct');
+              });
+              if (!ok) btn.classList.add('wrong');
+
+              quizResults[qid] = ok;
+              updateQuizScoreUI();
+              updateProgress();
+
+              fb.className = `quiz-feedback show ${ok ? 'ok' : 'err'}`;
+              fb.innerHTML = `<strong>${ok ? 'Correct!' : 'Not quite.'}</strong> ${quizExplanations[qid]}`;
+              renderMath(fb);
+            });
+          });
+        });
+
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          Object.keys(quizResults).forEach((k) => { quizResults[k] = null; });
+          document.querySelectorAll('.quiz-opt').forEach((b) => {
+            b.disabled = false;
+            b.classList.remove('correct', 'wrong');
+          });
+          document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+            fb.className = 'quiz-feedback';
+            fb.innerHTML = '';
+          });
+          updateQuizScoreUI();
+          updateProgress();
+        });
+
+        // Initial Builds & Renders
+        buildConvPills();
+        renderConverter();
+        drawGammaCanvas();
+        drawBetaCanvas();
+        updateProgress();
+        renderMath(document.body);
+
+        // Window Resize & ResizeObserver for crisp canvases
+        const ro = new ResizeObserver(() => {
+          drawGammaCanvas();
+          drawBetaCanvas();
+        });
+        ro.observe(document.getElementById('gammaCanvasWrap'));
+        ro.observe(document.getElementById('betaCanvasWrap'));
+        window.addEventListener('resize', () => {
+          drawGammaCanvas();
+          drawBetaCanvas();
+        });
+      });
+
+      // Ensure KaTeX renders once deferred scripts finish loading
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawGammaCanvas();
+        drawBetaCanvas();
+      });
+    })();
+  </script>
+</body>
+</html>

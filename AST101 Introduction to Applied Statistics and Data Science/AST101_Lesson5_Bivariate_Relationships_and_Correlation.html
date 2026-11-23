@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 5: Bivariate Relationships, Covariance & Pearson's Correlation</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #0284c7, #2563eb, #059669);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #059669);
+      color: #fff; font-weight: 800; font-size: 15px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #0284c7, var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0369a1 0%, #2563eb 52%, #059669 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.78;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .btn-primary {
+      padding: 8px 15px; border-radius: 9px; border: none;
+      background: var(--primary); color: #fff; font-weight: 700; font-size: 13.5px;
+      cursor: pointer; transition: background 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .mini-input {
+      width: 78px; padding: 6px 8px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 16.5px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    /* Correlation Scale Bar */
+    .r-bar-wrap {
+      margin: 14px 0; padding: 14px 16px; background: var(--surface-alt);
+      border: 1px solid var(--border); border-radius: 10px;
+    }
+    .r-bar {
+      height: 18px; border-radius: 99px; display: flex; overflow: hidden;
+      font-size: 10px; font-weight: 700; color: #fff; text-align: center; line-height: 18px;
+    }
+    .r-labels {
+      display: flex; justify-content: space-between; font-family: var(--font-mono);
+      font-size: 11.5px; margin-top: 6px; color: var(--text-muted);
+    }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* Scatter Canvas */
+    #scatter-svg {
+      cursor: crosshair;
+      user-select: none;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 5</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L5</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 5 Progress</span>
+          <span id="progress-text">0 / 7</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Bivariate Data &amp; Scatter Plots</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Covariance &amp; 4-Quadrant Intuition</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Karl Pearson's r &amp; Interpretation</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Interactive 4-Quadrant Scatter Lab</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Correlation Ratio (η) &amp; Nonlinearity</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Proofs &amp; Derivations Vault</a></li>
+          <li><a class="nav-link" href="#sec-7" data-sec="sec-7"><span class="nav-check">✓</span>7. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 3 of 4 • 2nd Incourse &amp; Final Core</span>
+          <span class="badge">Lesson 5 of 12</span>
+          <span class="badge">⏱ Est. Study Time: 65 mins</span>
+        </div>
+        <h1>Bivariate Relationships, Covariance &amp; Pearson's Correlation</h1>
+        <p class="subtitle">
+          Move from single variables to pairs—read scatter diagrams, master 4-quadrant covariance intuition, compute Karl Pearson's r, detect nonlinear curves with the Correlation Ratio (η), and prove −1 ≤ r ≤ 1.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L5 Slides + Mihad Notes + Kelleher</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 26–29</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2017–2025</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Bivariate Data, Graphical Displays &amp; Scatter Diagrams</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p><strong>Bivariate data</strong> consist of paired observations <span class="mono">(x<sub>i</sub>, y<sub>i</sub>)</span> collected on two variables for each element. <strong>Bivariate analysis</strong> investigates whether a statistical association exists, how strong it is, and whether one variable can be predicted from the other.</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag">Qualitative vs. Qualitative</span>
+            <p style="font-size:13.8px; margin-bottom:0"><strong>Bivariate Bar Diagram</strong> (clustered/stacked bars) or <strong>Contingency Table</strong> (e.g., Party Affiliation vs. Opinion on Tax Reform).</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Quantitative vs. Qualitative</span>
+            <p style="font-size:13.8px; margin-bottom:0"><strong>Bar Diagram of Mean ± SD</strong> (whiskers on top of mean bars) or <strong>Scatter Plot of Medians</strong> across each category.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Quantitative vs. Quantitative</span>
+            <p style="font-size:13.8px; margin-bottom:0"><strong>Scatter Diagram (Scatter Plot)</strong>: plots the independent variable <em>X</em> on the horizontal axis and dependent variable <em>Y</em> on the vertical axis.</p>
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <strong class="callout-title">4 Things a Scatter Diagram Reveals at a Glance (Final 2019 Q6a &amp; Final 2024 Q7a)</strong>
+          <ol style="margin-bottom:0; margin-top:4px">
+            <li><strong>Type of relationship:</strong> Linear vs. nonlinear (curved).</li>
+            <li><strong>Existence</strong> of a linear relationship (or random cloud = none).</li>
+            <li><strong>Strength</strong> of the relationship (tightly clustered along a line vs. widely scattered).</li>
+            <li><strong>Direction</strong> of the relationship: Positive (bottom-left to top-right) vs. Negative (top-left to bottom-right).</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02</div>
+            <h2>Covariance &amp; The 4-Quadrant Intuition</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>Draw vertical and horizontal reference lines at the means <span class="mono">x̄</span> and <span class="mono">ȳ</span> on a scatter plot. They slice the plane into four quadrants based on the signs of <span class="mono">(x<sub>i</sub> − x̄)</span> and <span class="mono">(y<sub>i</sub> − ȳ)</span>:</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag green">Positive Cross-Products: QI &amp; QIII</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>QI:</strong> <span class="mono">(x − x̄) &gt; 0</span> and <span class="mono">(y − ȳ) &gt; 0</span> ⇒ product <strong>+</strong></li>
+              <li><strong>QIII:</strong> <span class="mono">(x − x̄) &lt; 0</span> and <span class="mono">(y − ȳ) &lt; 0</span> ⇒ product <strong>+</strong></li>
+              <li>If most points fall in <strong>QI and QIII</strong>, <span class="mono">Cov(X, Y) &gt; 0</span> (positive linear trend).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">Negative Cross-Products: QII &amp; QIV</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>QII:</strong> <span class="mono">(x − x̄) &lt; 0</span> and <span class="mono">(y − ȳ) &gt; 0</span> ⇒ product <strong>−</strong></li>
+              <li><strong>QIV:</strong> <span class="mono">(x − x̄) &gt; 0</span> and <span class="mono">(y − ȳ) &lt; 0</span> ⇒ product <strong>−</strong></li>
+              <li>If most points fall in <strong>QII and QIV</strong>, <span class="mono">Cov(X, Y) &lt; 0</span> (negative linear trend).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          Sample Covariance: &nbsp; Cov(X, Y) = [1 / (n − 1)] Σ (x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) = [Σ x<sub>i</sub> y<sub>i</sub> − (1/n)(Σx<sub>i</sub>)(Σy<sub>i</sub>)] / (n − 1)
+        </div>
+
+        <p><strong>Key Properties of Covariance:</strong> (1) Symmetric: <span class="mono">Cov(X, Y) = Cov(Y, X)</span>; (2) Unbounded: ranges from <span class="mono">−∞</span> to <span class="mono">+∞</span>; (3) Independent of origin shift, <strong>but dependent on scale</strong> (units change the magnitude, making it hard to judge strength directly!).</p>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Karl Pearson's Product-Moment Correlation Coefficient (<em>r</em>)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <p>To eliminate unit dependence and bound the strength between <span class="mono">−1</span> and <span class="mono">+1</span>, Karl Pearson rescaled covariance by the product of the two standard deviations:</p>
+
+        <div class="formula-box">
+          r = Cov(X, Y) / (s<sub>x</sub> · s<sub>y</sub>) = Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) / √[ Σ(x<sub>i</sub> − x̄)² · Σ(y<sub>i</sub> − ȳ)² ]<br>
+          Computational Shortcut: &nbsp; r = [ Σxy − (1/n)ΣxΣy ] / √[ {Σx² − (1/n)(Σx)²} · {Σy² − (1/n)(Σy)²} ]
+        </div>
+
+        <h3>Dr. Masud's Interpretation Scale for |<em>r</em>|</h3>
+        <div class="r-bar-wrap">
+          <div class="r-bar">
+            <div style="width:12.5%; background:#dc2626">Strong (−)</div>
+            <div style="width:25%; background:#f97316">Intermediate (−)</div>
+            <div style="width:12.5%; background:#eab308; color:#0f172a">Weak</div>
+            <div style="width:12.5%; background:#eab308; color:#0f172a">Weak</div>
+            <div style="width:25%; background:#10b981">Intermediate (+)</div>
+            <div style="width:12.5%; background:#059669">Strong (+)</div>
+          </div>
+          <div class="r-labels">
+            <span>−1.0 (Perfect)</span><span>−0.75</span><span>−0.25</span><span>0 (None)</span><span>+0.25</span><span>+0.75</span><span>+1.0 (Perfect)</span>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Real-World Examples (Slides &amp; Kelleher)</span>
+            <ul style="font-size:13.8px; margin-bottom:0">
+              <li><strong>Positive (+):</strong> Height &amp; weight, income &amp; expenditure, shoe size &amp; height (<em>r</em> = 0.898), BMI &amp; diabetes risk (<em>r</em> = 0.877).</li>
+              <li><strong>Negative (−):</strong> Price &amp; demand, altitude &amp; temperature, exercise &amp; body weight (<em>r</em> = −0.710).</li>
+              <li><strong>Zero (0):</strong> Tea consumed &amp; intelligence, computer price &amp; Coca-Cola consumption.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">Crucial Warnings &amp; Exam Traps</span>
+            <ul style="font-size:13.8px; margin-bottom:0">
+              <li><strong>Always −1 ≤ r ≤ +1:</strong> Obtaining <span class="mono">r = 1.23</span> (Final 2017 Q6d) guarantees an arithmetic error!</li>
+              <li><strong>Two points only (n = 2):</strong> Always yields <span class="mono">r = +1</span> or <span class="mono">r = −1</span> (a line passes perfectly through any 2 points).</li>
+              <li><strong>Independence ⇒ r = 0</strong>, but <strong>r = 0 does NOT imply independence</strong> (e.g., <span class="mono">Y = X²</span> is deterministic yet has <em>r</em> = 0!).</li>
+              <li><strong>Correlation ≠ Causation!</strong></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: INTERACTIVE 4-QUADRANT SCATTER LAB -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • Interactive Lab 1</div>
+            <h2>Interactive 4-Quadrant Scatter Plot &amp; Scale-Shift Simulator</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <p><strong>Click anywhere inside the plot to add a point</strong> (or click an existing point to remove it). Load slide/exam datasets to watch the <span class="mono">(x̄, ȳ)</span> crosshairs, quadrant counts, Covariance, and Pearson's <em>r</em> update live!</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Presets:</strong>
+            <button class="tab-btn active" onclick="loadScatterPreset('children', this)">Slide: 6 Children (r = 0.759)</button>
+            <button class="tab-btn" onclick="loadScatterPreset('midfinal', this)">Final '22/'25: Midterm vs Final</button>
+            <button class="tab-btn" onclick="loadScatterPreset('copier', this)">Slide: 10 Copier Reps</button>
+            <button class="tab-btn" onclick="loadScatterPreset('parabola', this)">Nonlinear U-Curve (r ≈ 0)</button>
+            <button class="tab-btn" onclick="loadScatterPreset('neg', this)">Strong Negative</button>
+          </div>
+
+          <div class="control-row">
+            <label style="font-size:13.5px; display:inline-flex; align-items:center; gap:6px; cursor:pointer">
+              <input type="checkbox" id="chk-quads" checked onchange="renderScatter()" /> Show (x̄, ȳ) Quadrants (QI–QIV)
+            </label>
+            <label style="font-size:13.5px; display:inline-flex; align-items:center; gap:6px; cursor:pointer">
+              <input type="checkbox" id="chk-line" checked onchange="renderScatter()" /> Show Best-Fit Line
+            </label>
+            <button class="btn-ghost" style="flex:0 0 auto; margin-left:auto" onclick="clearPoints()">🗑 Clear Canvas</button>
+          </div>
+
+          <div style="text-align:center">
+            <svg id="scatter-svg" viewBox="0 0 680 340" width="100%" style="max-width:680px; height:auto"></svg>
+          </div>
+
+          <div class="metric-grid" id="scatter-metrics"></div>
+
+          <!-- Linear Transformation Simulator -->
+          <div class="lab-panel">
+            <h4 style="margin-top:0">Live Origin &amp; Scale Transformation Test: <span class="mono">U = a₁ + b₁X, &nbsp; V = a₂ + b₂Y</span></h4>
+            <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:10px">Try setting <span class="mono">b₁ = 2, b₂ = −1</span> (2nd Incourse 2025 MCQ #9) or <span class="mono">b₁ = 2, b₂ = 3</span> (MCQ #10) to see how Covariance changes while |<em>r</em>| stays invariant!</p>
+            <div class="control-row" style="margin-bottom:8px">
+              <label>a₁: <input class="mini-input" type="number" step="any" id="t-a1" value="0" oninput="renderTransform()"></label>
+              <label>b₁: <input class="mini-input" type="number" step="any" id="t-b1" value="2" oninput="renderTransform()"></label>
+              <label>a₂: <input class="mini-input" type="number" step="any" id="t-a2" value="0" oninput="renderTransform()"></label>
+              <label>b₂: <input class="mini-input" type="number" step="any" id="t-b2" value="-1" oninput="renderTransform()"></label>
+            </div>
+            <div id="transform-out" class="formula-box" style="margin:0"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: CORRELATION RATIO -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Mihad Notes &amp; Final 2024/2025</div>
+            <h2>Correlation Ratio (η) &amp; Detecting Nonlinearity</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <p>Pearson's <em>r</em> only measures <strong>linear</strong> association—and fails when a relationship is curved (or when <em>X</em> is nominal and <em>Y</em> is quantitative). The <strong>Correlation Ratio (η<sub>yx</sub>)</strong> measures the <em>overall</em> (linear + nonlinear) strength of relationship by comparing between-group variation of group means to total variation:</p>
+
+        <div class="formula-box">
+          η²<sub>yx</sub> = [ Σ<sub>i</sub> n<sub>i</sub> (ȳ<sub>i</sub> − ȳ)² ] / [ Σ<sub>i</sub> Σ<sub>j</sub> (y<sub>ij</sub> − ȳ)² ] = (Between-Group Variation) / (Total Variation)<br>
+          0 ≤ η ≤ 1 &nbsp;&nbsp;|&nbsp;&nbsp; Always: η² ≥ r² (or |η| ≥ |r|) &nbsp;&nbsp;|&nbsp;&nbsp; Departure from Linearity = η² − r²
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag purple">Key Decision Rules (2nd Incourse 2025)</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>Nominal X vs. Quantitative Y:</strong> Use <strong>Correlation Ratio (η)</strong>.</li>
+              <li><strong>Nonlinear quantitative relationship:</strong> Use <strong>η</strong>, because <span class="mono">|η| &gt; |r|</span>.</li>
+              <li><strong>Strictly linear relationship:</strong> <span class="mono">η² = r²</span> (i.e., <span class="mono">η = |r|</span>).</li>
+              <li><strong>Asymmetry:</strong> Unlike <em>r</em>, generally <span class="mono">η<sub>yx</sub> ≠ η<sub>xy</sub></span>.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Worked Example (Mihad's Class Notes)</span>
+            <p style="font-size:13.8px">Suppose <span class="mono">X = 1: Y = {2, 4}</span> (ȳ₁ = 3); <span class="mono">X = 2: Y = {7, 9}</span> (ȳ₂ = 8); <span class="mono">X = 3: Y = {5, 3}</span> (ȳ₃ = 4). Overall mean <span class="mono">ȳ = 5</span>.</p>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li><strong>Between-Group SS:</strong> <span class="mono">2(3−5)² + 2(8−5)² + 2(4−5)² = 8 + 18 + 2 = 28</span></li>
+              <li><strong>Total SS:</strong> <span class="mono">(2−5)²+(4−5)²+(7−5)²+(9−5)²+(5−5)²+(3−5)² = 34</span></li>
+              <li><strong>η² = 28/34 = 0.824 ⇒ η = 0.907</strong> (very strong inverted-V curve!), while <strong>r = 0.17</strong>!</li>
+              <li>Departure from linearity: <span class="mono">η² − r² = 0.824 − 0.029 = 0.795</span> (strong nonlinearity).</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: PROOFS VAULT -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • High-Yield Proofs</div>
+            <h2>Proofs &amp; Derivations Vault (4 Core Theorems)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 1</span> <span class="exam-badge">2nd Incourse 2024</span> Prove that −1 ≤ r ≤ +1</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Define standardized variables u<sub>i</sub> = (x<sub>i</sub> − x̄) / s<sub>x</sub> and v<sub>i</sub> = (y<sub>i</sub> − ȳ) / s<sub>y</sub>.<br>
+            Note that Σu<sub>i</sub>² = n − 1,  Σv<sub>i</sub>² = n − 1,  and  Σ(u<sub>i</sub> v<sub>i</sub>) = (n − 1) · r.</div>
+            <div class="proof-step"><strong>Upper bound (r ≤ +1):</strong> Since a sum of squares is never negative:<br>
+            Σ(u<sub>i</sub> − v<sub>i</sub>)² ≥ 0  ⇒  Σu<sub>i</sub>² − 2Σu<sub>i</sub>v<sub>i</sub> + Σv<sub>i</sub>² ≥ 0<br>
+            (n − 1) − 2(n − 1)r + (n − 1) ≥ 0  ⇒  2(n − 1)(1 − r) ≥ 0  ⇒  1 − r ≥ 0  ⇒  <strong>r ≤ 1</strong>.</div>
+            <div class="proof-step"><strong>Lower bound (r ≥ −1):</strong> Similarly:<br>
+            Σ(u<sub>i</sub> + v<sub>i</sub>)² ≥ 0  ⇒  Σu<sub>i</sub>² + 2Σu<sub>i</sub>v<sub>i</sub> + Σv<sub>i</sub>² ≥ 0<br>
+            (n − 1) + 2(n − 1)r + (n − 1) ≥ 0  ⇒  2(n − 1)(1 + r) ≥ 0  ⇒  1 + r ≥ 0  ⇒  <strong>r ≥ −1</strong>.</div>
+            <div class="proof-step">Combining both inequalities gives <strong>−1 ≤ r ≤ +1</strong>.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 2</span> <span class="exam-badge">2nd Incourse 2025 Q3(b)</span> Correlation Coefficient is Independent of Origin &amp; Scale</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Let u<sub>i</sub> = a<sub>1</sub> + b<sub>1</sub>x<sub>i</sub> and v<sub>i</sub> = a<sub>2</sub> + b<sub>2</sub>y<sub>i</sub> (with b<sub>1</sub>, b<sub>2</sub> ≠ 0). Then ū = a<sub>1</sub> + b<sub>1</sub>x̄ and v̄ = a<sub>2</sub> + b<sub>2</sub>ȳ.</div>
+            <div class="proof-step">Deviations:  u<sub>i</sub> − ū = b<sub>1</sub>(x<sub>i</sub> − x̄),   v<sub>i</sub> − v̄ = b<sub>2</sub>(y<sub>i</sub> − ȳ).  (Origin shifts a<sub>1</sub>, a<sub>2</sub> cancel!)</div>
+            <div class="proof-step">r<sub>uv</sub> = Σ(u<sub>i</sub> − ū)(v<sub>i</sub> − v̄) / √[ Σ(u<sub>i</sub> − ū)² · Σ(v<sub>i</sub> − v̄)² ]<br>
+            = [ b<sub>1</sub> b<sub>2</sub> Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) ] / √[ b<sub>1</sub>² Σ(x<sub>i</sub> − x̄)² · b<sub>2</sub>² Σ(y<sub>i</sub> − ȳ)² ]<br>
+            = [ b<sub>1</sub> b<sub>2</sub> / (|b<sub>1</sub>| · |b<sub>2</sub>|) ] · r<sub>xy</sub>.</div>
+            <div class="proof-step">If b<sub>1</sub> and b<sub>2</sub> have the <strong>same sign</strong> (both + or both −), r<sub>uv</sub> = +r<sub>xy</sub>.<br>
+            If b<sub>1</sub> and b<sub>2</sub> have <strong>opposite signs</strong>, r<sub>uv</sub> = −r<sub>xy</sub> (same magnitude, flipped sign).  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 3</span> <span class="exam-badge">Final 2017 Q6(a)</span> For Any Two Distinct Data Pairs (n = 2), r = ±1</span></summary>
+          <div class="details-body">
+            <div class="proof-step">For (x<sub>1</sub>, y<sub>1</sub>) and (x<sub>2</sub>, y<sub>2</sub>):  x̄ = (x<sub>1</sub>+x<sub>2</sub>)/2,  ȳ = (y<sub>1</sub>+y<sub>2</sub>)/2.<br>
+            Thus x<sub>1</sub> − x̄ = (x<sub>1</sub>−x<sub>2</sub>)/2,  x<sub>2</sub> − x̄ = −(x<sub>1</sub>−x<sub>2</sub>)/2;  and  y<sub>1</sub> − ȳ = (y<sub>1</sub>−y<sub>2</sub>)/2,  y<sub>2</sub> − ȳ = −(y<sub>1</sub>−y<sub>2</sub>)/2.</div>
+            <div class="proof-step">Numerator: Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) = ¼(x<sub>1</sub>−x<sub>2</sub>)(y<sub>1</sub>−y<sub>2</sub>) + ¼(x<sub>1</sub>−x<sub>2</sub>)(y<sub>1</sub>−y<sub>2</sub>) = ½(x<sub>1</sub>−x<sub>2</sub>)(y<sub>1</sub>−y<sub>2</sub>).</div>
+            <div class="proof-step">Denominator: √[ ½(x<sub>1</sub>−x<sub>2</sub>)² · ½(y<sub>1</sub>−y<sub>2</sub>)² ] = ½ |x<sub>1</sub>−x<sub>2</sub>| · |y<sub>1</sub>−y<sub>2</sub>|.</div>
+            <div class="proof-step">Dividing numerator by denominator gives <strong>r = ±1</strong> (+1 if slope &gt; 0, −1 if slope &lt; 0).  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 4</span> If Two Variables are Independent, r = 0 (But Converse is False!)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">In expectation form: ρ = Cov(X, Y) / √[Var(X)Var(Y)] = [E(XY) − E(X)E(Y)] / √[Var(X)Var(Y)].</div>
+            <div class="proof-step">If X and Y are independent, E(XY) = E(X)·E(Y), so the numerator is 0 ⇒ <strong>ρ = 0</strong>.</div>
+            <div class="proof-step"><strong>Counterexample to converse:</strong> Let X ∈ {−2, −1, 0, 1, 2} and Y = X² ∈ {4, 1, 0, 1, 4}. Here x̄ = 0 and Σx<sub>i</sub>y<sub>i</sub> = −8 − 1 + 0 + 1 + 8 = 0 ⇒ r = 0, even though Y is 100% determined by X!</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 7: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-7">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 07 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2017–2025)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-7')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Verbatim 2nd Incourse 2025 Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Problems &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2022 Q6(b) &amp; Final 2025 [9 Marks]</span> Midterm vs. Final Exam Scores (Compute Pearson's r)</span></summary>
+          <div class="details-body">
+            <p><strong>Data (n = 7):</strong> Midterm (X): 79, 95, 81, 66, 87, 94, 59 &nbsp;|&nbsp; Final (Y): 85, 97, 78, 76, 94, 84, 67.</p>
+            <p><strong>Worked Solution:</strong></p>
+            <ul>
+              <li><strong>(i) Expectation:</strong> Positively related (students who perform well on the midterm generally perform well on the final).</li>
+              <li><strong>(ii) Scatter Plot:</strong> Points rise steadily from bottom-left (59, 67) to top-right (95, 97), so we expect <em>r</em> to be close to <strong>+1</strong> (load the <em>Final '22/'25</em> preset in Lab 1 above to view it!).</li>
+              <li><strong>(iii) Exact Computation:</strong><br>
+                <span class="mono">Σx = 561, Σy = 581, Σx² = 46,069, Σy² = 48,875, Σxy = 47,291</span><br>
+                <span class="mono">S<sub>xy</sub> = 47291 − (561 × 581)/7 = 47291 − 46563 = 728</span><br>
+                <span class="mono">S<sub>xx</sub> = 46069 − (561²)/7 = 46069 − 44960.14 = 1108.857</span><br>
+                <span class="mono">S<sub>yy</sub> = 48875 − (581²)/7 = 48875 − 48223 = 652</span><br>
+                <span class="mono">r = 728 / √(1108.857 × 652) = 728 / 850.28 = <strong>+0.8562</strong></span> (Strong positive linear correlation—consistent with parts i &amp; ii!).
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2025 Q5 [3 Marks]</span> Years of Schooling vs. Income: r = 0.64 vs. η = 0.80</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>(i) From Scatter Diagram:</strong> Moderate-to-strong positive upward trend (more years of schooling generally correspond to higher monthly income), with noticeable vertical spread.</li>
+              <li><strong>(ii) Slope of Ŷ = −43.68 + 8.66X:</strong> Each additional year of schooling is associated with an average increase of <strong>8.66 thousand Taka</strong> (Tk 8,660) in monthly income.</li>
+              <li><strong>(iii) r = 0.64 vs. η = 0.80 — Should you revise your comment?</strong> <strong>Yes!</strong> Because <span class="mono">η (0.80) &gt; |r| (0.64)</span> (and <span class="mono">η² − r² = 0.64 − 0.4096 = 0.2304</span>), the true relationship has a <strong>substantial nonlinear component</strong>. A simple straight line understates the overall strength of association between schooling and income.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2022 Q6(a) &amp; Final 2025 [3 Marks]</span> Predicting Correlation Direction for 6 Real-Life Pairs</span></summary>
+          <div class="details-body">
+            <ol style="margin-bottom:0">
+              <li>Grade of a student &amp; hours spent studying → <strong>Positive</strong></li>
+              <li>Income &amp; entertainment expenditures of households → <strong>Positive</strong></li>
+              <li>Price of a computer &amp; consumption of Coca-Cola → <strong>Zero (No correlation)</strong></li>
+              <li>SAT scores &amp; GPAs of students → <strong>Positive</strong></li>
+              <li>Stress level &amp; blood pressure of individuals → <strong>Positive</strong></li>
+              <li>Amount of fertilizer used &amp; yield of corn per acre → <strong>Positive</strong> (within normal agricultural range; may curve/decline at excessive levels)</li>
+            </ol>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2017 Q6(d) &amp; 2nd Incourse 2025 Q1(10)</span> Quick Conceptual Checks</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>Final 2017 Q6(d) — Researcher gets r = 1.23:</strong> This is <strong>mathematically impossible</strong> because Karl Pearson's correlation coefficient is strictly bounded in <span class="mono">[−1, +1]</span>. It means the researcher made a calculation or data-entry mistake.</li>
+              <li><strong>2nd Incourse 2025 MCQ #10 — Income doubled (2X), expenditure tripled (3Y), original r = 0.79:</strong> Because both scale multipliers (+2 and +3) are <em>positive</em>, the correlation coefficient remains <strong>unchanged at r = 0.79</strong>!</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l5_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l5_theme') || localStorage.getItem('ast101_l4_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l5_done') || '[]');
+    function syncProgress() {
+      const total = 7;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l5_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l5_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Interactive 4-Quadrant Scatter Lab ----------
+    const scatterPresets = {
+      children: { xLabel: "Age (Years)", yLabel: "Weight (Kg)", pts: [[7,12],[6,8],[8,12],[5,10],[6,11],[9,13]] },
+      midfinal: { xLabel: "Midterm Score", yLabel: "Final Exam Score", pts: [[79,85],[95,97],[81,78],[66,76],[87,94],[94,84],[59,67]] },
+      copier:   { xLabel: "Sales Calls (X)", yLabel: "Copiers Sold (Y)", pts: [[20,30],[40,60],[20,40],[30,60],[10,30],[10,40],[20,40],[20,50],[20,30],[30,70]] },
+      parabola: { xLabel: "X", yLabel: "Y = 20 − (X−5)²", pts: [[1,4],[2,11],[3,16],[4,19],[5,20],[6,19],[7,16],[8,11],[9,4]] },
+      neg:      { xLabel: "Price ($)", yLabel: "Demand (Units)", pts: [[10,92],[20,81],[30,74],[40,58],[50,49],[60,36],[70,22],[80,14]] }
+    };
+
+    let pts = [];
+    let curLabels = { xLabel: "X", yLabel: "Y" };
+    let bounds = { minX: 0, maxX: 10, minY: 0, maxY: 10 };
+    let lastStats = { cov: 0, r: 0, sx: 0, sy: 0 };
+
+    function loadScatterPreset(key, btn) {
+      if (btn) {
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      const p = scatterPresets[key];
+      pts = p.pts.map(a => [...a]);
+      curLabels = { xLabel: p.xLabel, yLabel: p.yLabel };
+      renderScatter();
+    }
+
+    function clearPoints() {
+      pts = [];
+      bounds = { minX: 0, maxX: 100, minY: 0, maxY: 100 };
+      curLabels = { xLabel: "X", yLabel: "Y" };
+      renderScatter();
+    }
+
+    function computeBivariate(arr) {
+      const n = arr.length;
+      if (n < 2) return null;
+      const mx = arr.reduce((s, p) => s + p[0], 0) / n;
+      const my = arr.reduce((s, p) => s + p[1], 0) / n;
+      let sxx = 0, syy = 0, sxy = 0;
+      arr.forEach(([x, y]) => {
+        sxx += (x - mx) ** 2;
+        syy += (y - my) ** 2;
+        sxy += (x - mx) * (y - my);
+      });
+      const cov = sxy / (n - 1);
+      const sx = Math.sqrt(sxx / (n - 1));
+      const sy = Math.sqrt(syy / (n - 1));
+      const r = (sxx > 0 && syy > 0) ? sxy / Math.sqrt(sxx * syy) : 0;
+      const slope = sxx > 0 ? sxy / sxx : 0;
+      const intercept = my - slope * mx;
+      return { n, mx, my, cov, sx, sy, r, slope, intercept };
+    }
+
+    function interpretR(r) {
+      const a = Math.abs(r);
+      const dir = r > 0.001 ? "Positive" : r < -0.001 ? "Negative" : "";
+      if (a < 0.001) return "No Linear Correlation";
+      if (a >= 0.999) return `Perfect ${dir}`;
+      if (a >= 0.75) return `Strong ${dir}`;
+      if (a >= 0.25) return `Intermediate ${dir}`;
+      return `Weak ${dir}`;
+    }
+
+    const SVG_W = 680, SVG_H = 340, PAD_L = 56, PAD_R = 24, PAD_T = 22, PAD_B = 42;
+    const PLOT_W = SVG_W - PAD_L - PAD_R, PLOT_H = SVG_H - PAD_T - PAD_B;
+
+    function renderScatter() {
+      const svg = document.getElementById('scatter-svg');
+      if (pts.length > 0) {
+        const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+        let mnX = Math.min(...xs), mxX = Math.max(...xs);
+        let mnY = Math.min(...ys), mxY = Math.max(...ys);
+        const dx = (mxX - mnX) || 10, dy = (mxY - mnY) || 10;
+        bounds = { minX: mnX - dx * 0.18, maxX: mxX + dx * 0.18, minY: mnY - dy * 0.18, maxY: mxY + dy * 0.18 };
+      }
+
+      const sx = x => PAD_L + ((x - bounds.minX) / (bounds.maxX - bounds.minX)) * PLOT_W;
+      const sy = y => PAD_T + PLOT_H - ((y - bounds.minY) / (bounds.maxY - bounds.minY)) * PLOT_H;
+
+      const st = computeBivariate(pts);
+      const showQuads = document.getElementById('chk-quads').checked;
+      const showLine = document.getElementById('chk-line').checked;
+
+      let out = '';
+
+      // Quadrant shading around (mx, my)
+      if (st && showQuads) {
+        const cx = sx(st.mx), cy = sy(st.my);
+        // QI (+): top-right
+        out += `<rect x="${cx}" y="${PAD_T}" width="${PAD_L+PLOT_W-cx}" height="${cy-PAD_T}" fill="rgba(5,150,105,0.08)"/>`;
+        // QIII (+): bottom-left
+        out += `<rect x="${PAD_L}" y="${cy}" width="${cx-PAD_L}" height="${PAD_T+PLOT_H-cy}" fill="rgba(5,150,105,0.08)"/>`;
+        // QII (-): top-left
+        out += `<rect x="${PAD_L}" y="${PAD_T}" width="${cx-PAD_L}" height="${cy-PAD_T}" fill="rgba(220,38,38,0.07)"/>`;
+        // QIV (-): bottom-right
+        out += `<rect x="${cx}" y="${cy}" width="${PAD_L+PLOT_W-cx}" height="${PAD_T+PLOT_H-cy}" fill="rgba(220,38,38,0.07)"/>`;
+
+        out += `<line x1="${cx}" y1="${PAD_T}" x2="${cx}" y2="${PAD_T+PLOT_H}" stroke="#2563eb" stroke-dasharray="5 4" stroke-width="1.6"/>`;
+        out += `<line x1="${PAD_L}" y1="${cy}" x2="${PAD_L+PLOT_W}" y2="${cy}" stroke="#2563eb" stroke-dasharray="5 4" stroke-width="1.6"/>`;
+        out += `<text x="${PAD_L+PLOT_W-8}" y="${PAD_T+16}" text-anchor="end" font-size="11" font-weight="700" fill="#059669">QI (+)</text>`;
+        out += `<text x="${PAD_L+8}" y="${PAD_T+16}" text-anchor="start" font-size="11" font-weight="700" fill="#dc2626">QII (−)</text>`;
+        out += `<text x="${PAD_L+8}" y="${PAD_T+PLOT_H-8}" text-anchor="start" font-size="11" font-weight="700" fill="#059669">QIII (+)</text>`;
+        out += `<text x="${PAD_L+PLOT_W-8}" y="${PAD_T+PLOT_H-8}" text-anchor="end" font-size="11" font-weight="700" fill="#dc2626">QIV (−)</text>`;
+      }
+
+      // Axes & Ticks
+      out += `<line x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${PAD_T+PLOT_H}" stroke="currentColor" opacity="0.45"/>`;
+      out += `<line x1="${PAD_L}" y1="${PAD_T+PLOT_H}" x2="${PAD_L+PLOT_W}" y2="${PAD_T+PLOT_H}" stroke="currentColor" opacity="0.45"/>`;
+      for (let i = 0; i <= 4; i++) {
+        const xv = bounds.minX + ((bounds.maxX - bounds.minX) * i) / 4;
+        const yv = bounds.minY + ((bounds.maxY - bounds.minY) * i) / 4;
+        out += `<text x="${sx(xv)}" y="${PAD_T+PLOT_H+16}" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">${Number(xv.toFixed(1))}</text>`;
+        out += `<text x="${PAD_L-8}" y="${sy(yv)+4}" text-anchor="end" font-size="10.5" fill="currentColor" opacity="0.75">${Number(yv.toFixed(1))}</text>`;
+      }
+      out += `<text x="${PAD_L+PLOT_W/2}" y="${SVG_H-6}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">${curLabels.xLabel}</text>`;
+      out += `<text x="16" y="${PAD_T+PLOT_H/2}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" transform="rotate(-90 16 ${PAD_T+PLOT_H/2})">${curLabels.yLabel}</text>`;
+
+      // Best-fit line
+      if (st && showLine && Math.abs(st.r) > 0.0001) {
+        const y1 = st.intercept + st.slope * bounds.minX;
+        const y2 = st.intercept + st.slope * bounds.maxX;
+        out += `<line x1="${sx(bounds.minX)}" y1="${sy(y1)}" x2="${sx(bounds.maxX)}" y2="${sy(y2)}" stroke="#7c3aed" stroke-width="2.4" opacity="0.85"/>`;
+      }
+
+      // Points
+      pts.forEach(([x, y], idx) => {
+        const px = sx(x), py = sy(y);
+        let col = '#2563eb';
+        if (st && showQuads) {
+          const prod = (x - st.mx) * (y - st.my);
+          col = prod >= 0 ? '#059669' : '#dc2626';
+        }
+        out += `<circle cx="${px}" cy="${py}" r="6" fill="${col}" stroke="#fff" stroke-width="1.8" style="cursor:pointer" data-idx="${idx}"><title>(${x.toFixed(1)}, ${y.toFixed(1)}) — Click to remove</title></circle>`;
+      });
+
+      if (!pts.length) {
+        out += `<text x="${SVG_W/2}" y="${SVG_H/2}" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">Click anywhere on the plot to place data points!</text>`;
+      }
+
+      svg.innerHTML = out;
+
+      // Metrics
+      if (st) {
+        lastStats = st;
+        const qPos = pts.filter(([x, y]) => (x - st.mx) * (y - st.my) >= 0).length;
+        const qNeg = pts.length - qPos;
+        document.getElementById('scatter-metrics').innerHTML = [
+          ["Pairs (n)", st.n],
+          ["Mean (x̄, ȳ)", `(${st.mx.toFixed(1)}, ${st.my.toFixed(1)})`],
+          ["QI/QIII (+) vs QII/QIV (−)", `${qPos} vs ${qNeg}`],
+          ["Cov(X, Y)", st.cov.toFixed(3)],
+          ["Pearson's r", st.r.toFixed(4)],
+          ["Strength", interpretR(st.r)]
+        ].map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+        renderTransform();
+      } else {
+        document.getElementById('scatter-metrics').innerHTML = `<div class="metric-tile"><span>Status</span><strong>Add ≥ 2 points</strong></div>`;
+        document.getElementById('transform-out').textContent = "Add at least 2 points to test linear transformations.";
+      }
+    }
+
+    document.getElementById('scatter-svg').addEventListener('click', (e) => {
+      if (e.target.tagName === 'circle' && e.target.dataset.idx !== undefined) {
+        pts.splice(parseInt(e.target.dataset.idx, 10), 1);
+        renderScatter();
+        return;
+      }
+      const svg = document.getElementById('scatter-svg');
+      const rect = svg.getBoundingClientRect();
+      const clickX = ((e.clientX - rect.left) / rect.width) * SVG_W;
+      const clickY = ((e.clientY - rect.top) / rect.height) * SVG_H;
+      if (clickX < PAD_L || clickX > PAD_L + PLOT_W || clickY < PAD_T || clickY > PAD_T + PLOT_H) return;
+      const dataX = bounds.minX + ((clickX - PAD_L) / PLOT_W) * (bounds.maxX - bounds.minX);
+      const dataY = bounds.minY + ((PAD_T + PLOT_H - clickY) / PLOT_H) * (bounds.maxY - bounds.minY);
+      pts.push([Number(dataX.toFixed(2)), Number(dataY.toFixed(2))]);
+      renderScatter();
+    });
+
+    function renderTransform() {
+      if (!lastStats || !pts.length || pts.length < 2) return;
+      const a1 = parseFloat(document.getElementById('t-a1').value) || 0;
+      const b1 = parseFloat(document.getElementById('t-b1').value) || 0;
+      const a2 = parseFloat(document.getElementById('t-a2').value) || 0;
+      const b2 = parseFloat(document.getElementById('t-b2').value) || 0;
+      const out = document.getElementById('transform-out');
+      if (b1 === 0 || b2 === 0) {
+        out.textContent = "Scale factors b₁ and b₂ must be non-zero (otherwise variance becomes 0).";
+        return;
+      }
+      const newCov = b1 * b2 * lastStats.cov;
+      const sign = (b1 * b2) > 0 ? 1 : -1;
+      const newR = sign * lastStats.r;
+      out.innerHTML = `Cov(U, V) = b₁·b₂·Cov(X, Y) = (${b1})(${b2})(${lastStats.cov.toFixed(3)}) = <strong>${newCov.toFixed(3)}</strong> (Scale-dependent!)<br>
+        r<sub>uv</sub> = (${sign > 0 ? '+1' : '−1'}) · r<sub>xy</sub> = <strong>${newR.toFixed(4)}</strong> &nbsp;(${sign > 0 ? 'Unchanged — same sign multipliers' : 'Same magnitude, FLIPPED sign because b₁·b₂ < 0!'})`;
+    }
+
+    loadScatterPreset('children', document.querySelector('#sec-4 .tab-btn'));
+
+    // ---------- Past Exam MCQ Arena (Verbatim 2nd Incourse 2025) ----------
+    const mcqData = [
+      {
+        tag: "2nd Incourse 2025 • MCQ #1",
+        q: "If a data set contains n paired values on two variables X and Y, then their plot is called:",
+        opts: ["Dendrogram", "Point diagram", "Scatter diagram", "Correlogram"],
+        ans: 2,
+        exp: "Paired observations (xᵢ, yᵢ) are displayed on a 2D Scatter diagram (scatter plot)."
+      },
+      {
+        tag: "2nd Incourse 2025 • MCQ #2",
+        q: "Which of the following measures can be used if one variable is qualitative nominal and the other is quantitative?",
+        opts: ["Pearson's product-moment correlation", "Somers' D-statistic", "Spearman rank correlation", "Correlation ratio (η)"],
+        ans: 3,
+        exp: "The Correlation Ratio (η) compares group means of the quantitative variable across categories of the nominal variable."
+      },
+      {
+        tag: "2nd Incourse 2025 • MCQ #4 & #7",
+        q: "For a nonlinear relationship between two quantitative variables, which measure is appropriate and how does it compare to r?",
+        opts: ["Correlation ratio η, with |η| > |r|", "Correlation ratio η, with |η| < |r|", "Pearson's r, with |η| = |r|", "Covariance only"],
+        ans: 0,
+        exp: "Always |η| ≥ |r|. When the relationship is nonlinear, η captures the curved pattern that linear r misses, so |η| > |r|."
+      },
+      {
+        tag: "2nd Incourse 2025 • MCQ #8",
+        q: "The correlation coefficient between X and Y is 0.48, covariance is 36, and Var(X) = 16. What is the standard deviation of Y?",
+        opts: ["10.15", "13.32", "16.50", "18.75"],
+        ans: 3,
+        exp: "s_x = √16 = 4. From r = Cov(X,Y)/(s_x · s_y) ⇒ 0.48 = 36 / (4 · s_y) ⇒ s_y = 36 / 1.92 = 18.75."
+      },
+      {
+        tag: "2nd Incourse 2025 • MCQ #9",
+        q: "The correlation coefficient between X and Y is 0.4. What is the correlation coefficient between 2X and (−Y)?",
+        opts: ["0.4", "-0.8", "-0.4", "0.8"],
+        ans: 2,
+        exp: "Here b₁ = +2 and b₂ = −1 have opposite signs, so r(2X, −Y) = −r(X, Y) = −0.4."
+      },
+      {
+        tag: "2nd Incourse 2025 • MCQ #10",
+        q: "In 2010, income and expenditure had r = 0.79. In 2020, income doubled and expenditure tripled. What happens to r?",
+        opts: ["Doubles to 1.58", "Becomes 6 × 0.79", "Remains unchanged at 0.79", "Drops to 0.395"],
+        ans: 2,
+        exp: "Multiplying by positive constants (+2 and +3) is a positive scale change; Pearson's r is invariant and remains 0.79."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

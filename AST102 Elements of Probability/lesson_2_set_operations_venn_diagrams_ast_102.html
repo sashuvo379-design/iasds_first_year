@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 2: Set Operations &amp; Venn Diagrams — AST 102: Elements of Probability (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              navy: '#1e3a8a',
+              teal: '#0d9488',
+              amber: '#d97706',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX for mathematical typesetting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Prevent display math overflow on small screens */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    /* Smooth slider styling */
+    input[type="range"] {
+      accent-color: #1e3a8a;
+    }
+
+    canvas {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVIGATION BAR WITH LIVE READING PROGRESS BAR              -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam Badges -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+          <span class="inline-flex items-center gap-1.5 font-bold text-[#1e3a8a]">
+            <span class="w-2 h-2 rounded-full bg-[#0d9488]"></span>
+            AST 102 • Module 1
+          </span>
+          <span class="text-slate-300">→</span>
+          <span class="text-slate-900 font-semibold">Lesson 2 of 14</span>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Est. 35 min
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <svg class="w-3.5 h-3.5 text-[#d97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            1st Incourse + Year Final
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Section Quick-Jump Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#1e3a8a] hover:bg-blue-50 transition-colors">1. Concepts</a>
+        <a href="#verbal-to-set" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#1e3a8a] hover:bg-blue-50 transition-colors">2. Verbal-to-Set</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#0d9488] hover:bg-teal-50 transition-colors">3. Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#1e3a8a] hover:bg-blue-50 transition-colors">4. Proofs &amp; Laws</a>
+        <a href="#exams" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#d97706] hover:bg-amber-50 transition-colors">5. Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#0d9488] hover:bg-teal-50 transition-colors">6. Quiz</a>
+      </nav>
+    </div>
+
+    <!-- Live Reading Progress Bar along bottom edge of navbar -->
+    <div class="w-full h-1 bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-[#1e3a8a] to-[#0d9488] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO BANNER                                                           -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#115e59] text-white py-12 sm:py-16 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-200 text-xs font-semibold tracking-wide uppercase mb-4">
+          ISRT • University of Dhaka • AST 102: Elements of Probability
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
+          Lesson 2: Set Operations &amp; Venn Diagrams
+        </h1>
+        <p class="text-blue-100 text-base sm:text-lg leading-relaxed mb-6">
+          Events are subsets of a sample space, which means probability runs on the algebra of sets. Drawing directly from <strong>Lectures 02–03, 06, 08</strong>, <strong>Sheldon Ross (Ch. 2.2)</strong>, and <strong>ISRT 2022–2025 Exams</strong>, you will master set notation, De Morgan's Laws, verbal translations, and 3-set Venn word problems.
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+          <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0d9488] hover:bg-teal-500 text-white font-semibold text-sm shadow-lg shadow-teal-950/30 transition-all">
+            Open Interactive Venn Lab
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </a>
+          <a href="#verbal-to-set" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+            Verbal-to-Set Cheat Sheet
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: CORE CONCEPTS & SET OPERATIONS                           -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0d9488]">Section 01</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Core Concepts &amp; Set Operations</h2>
+        </div>
+        <p class="text-sm text-slate-500">Sources: Lectures 02–03, 06, 08 &amp; Sheldon Ross Ch. 2.2</p>
+      </div>
+
+      <!-- 4 Fundamental Operations Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+        <!-- Card 1: Union -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-[#1e3a8a] text-xs font-bold">01 • Union ("OR")</span>
+            <span class="font-mono text-sm font-bold text-[#1e3a8a]">$A \cup B$</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Union of Two Events</h3>
+          <p class="text-sm text-slate-600 leading-relaxed mb-4">
+            The union $A \cup B$ is the event containing all outcomes that belong to <strong>$A$, or $B$, or both</strong>. It occurs whenever <em>at least one</em> of $A$ or $B$ occurs.
+          </p>
+          <div class="space-y-2.5 text-xs sm:text-sm">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <strong class="text-slate-900">Die Example (Class Note):</strong> $S = \{1,2,3,4,5,6\}$. Let $E = \{2,4,6\}$ (even) and $T = \{3,4,5,6\}$ (greater than 2). Then:
+              <div class="font-mono text-xs text-[#1e3a8a] mt-1">$E \cup T = \{2, 3, 4, 5, 6\}$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-teal-50/70 border border-teal-200">
+              <strong class="text-teal-950">Two-Child Family (Class Note):</strong> $S = \{BB, BG, GB, GG\}$. Let $B = \{BB, BG, GB\}$ (at least one boy) and $M = \{BB, GG\}$ (genders match). Then:
+              <div class="font-mono text-xs text-teal-900 mt-1">$B \cup M = \{BB, BG, GB, GG\} = S$ (exhaustive!)</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2: Intersection -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-[#1e3a8a] text-xs font-bold">02 • Intersection ("AND")</span>
+            <span class="font-mono text-sm font-bold text-[#1e3a8a]">$A \cap B$ or $AB$</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Intersection of Two Events</h3>
+          <p class="text-sm text-slate-600 leading-relaxed mb-4">
+            The intersection $A \cap B$ (often written compactly as $AB$ in Sheldon Ross) is the event containing all outcomes that are <strong>common to both $A$ and $B$</strong>. It occurs only when both $A$ and $B$ happen simultaneously.
+          </p>
+          <div class="space-y-2.5 text-xs sm:text-sm">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <strong class="text-slate-900">Die Example (Class Note):</strong> With $E = \{2,4,6\}$ and $T = \{3,4,5,6\}$, the outcomes that are both even AND greater than 2 are:
+              <div class="font-mono text-xs text-[#1e3a8a] mt-1">$E \cap T = \{4, 6\}$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-950">
+              <strong>Disjoint Condition:</strong> If $A$ and $B$ share no common outcomes, then $A \cap B = \emptyset$, and $A, B$ are called <strong>mutually exclusive</strong>.
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3: Complement -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-teal-50 text-[#0d9488] text-xs font-bold">03 • Complement ("NOT")</span>
+            <span class="font-mono text-sm font-bold text-[#0d9488]">$A'$, $A^c$, $\bar{A}$</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Complement of an Event</h3>
+          <p class="text-sm text-slate-600 leading-relaxed mb-4">
+            The complement of $A$ consists of <strong>all outcomes in $S$ that are NOT in $A$</strong>. Event $A^c$ occurs if and only if $A$ does not occur.
+          </p>
+          <div class="grid grid-cols-2 gap-2.5 text-xs font-mono">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center text-slate-800">$S^c = \emptyset$</div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center text-slate-800">$\emptyset^c = S$</div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center text-slate-800">$(A^c)^c = A$</div>
+            <div class="p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-center text-teal-900 font-semibold">$A \cap A^c = \emptyset,\; A \cup A^c = S$</div>
+          </div>
+        </article>
+
+        <!-- Card 4: Difference / Relative Complement -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-teal-50 text-[#0d9488] text-xs font-bold">04 • Difference ("ONLY A")</span>
+            <span class="font-mono text-sm font-bold text-[#0d9488]">$A \cap B'$ or $A \setminus B$</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Difference / Relative Complement</h3>
+          <p class="text-sm text-slate-600 leading-relaxed mb-4">
+            The set difference $A \setminus B = A \cap B'$ represents the event that <strong>"$A$ occurs, but $B$ does not occur."</strong> It removes the overlap $A \cap B$ from $A$.
+          </p>
+          <div class="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 text-xs sm:text-sm text-slate-700 space-y-1.5">
+            <p><strong class="text-[#1e3a8a]">Key Disjoint Partition of $A$:</strong></p>
+            <div class="text-center font-medium text-[#1e3a8a]">$A = (A \cap B') \cup (A \cap B) \implies P(A \cap B') = P(A) - P(A \cap B)$</div>
+            <p class="text-xs text-slate-600 pt-1"><strong>Example:</strong> For $E=\{2,4,6\}$ and $T=\{3,4,5,6\}$, $E \cap T' = \{2\}$ (even, but NOT greater than 2).</p>
+          </div>
+        </article>
+      </div>
+
+      <!-- Comparison Table: Mutually Exclusive vs. Complementary vs. Exhaustive -->
+      <div class="bg-white rounded-2xl border-2 border-amber-300 shadow-sm overflow-hidden">
+        <div class="bg-amber-50/80 px-6 py-4 border-b border-amber-200 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#d97706] text-white font-bold text-sm">★</span>
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800">ISRT Year Final 2024 Q2(b) Favorite Distinction</span>
+              <h3 class="text-base sm:text-lg font-bold text-slate-900">Mutually Exclusive vs. Complementary vs. Exhaustive Events</h3>
+            </div>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-5 font-bold">Property</th>
+                <th class="py-3.5 px-5 font-bold text-[#1e3a8a]">Mutually Exclusive</th>
+                <th class="py-3.5 px-5 font-bold text-[#0d9488]">Complementary</th>
+                <th class="py-3.5 px-5 font-bold text-slate-700">Collectively Exhaustive</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr>
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Set Condition</td>
+                <td class="py-3.5 px-5">$A \cap B = \emptyset$</td>
+                <td class="py-3.5 px-5">$A \cap B = \emptyset$ <strong>AND</strong> $A \cup B = S$</td>
+                <td class="py-3.5 px-5">$A_1 \cup A_2 \cup \dots \cup A_k = S$</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Probability Implication</td>
+                <td class="py-3.5 px-5">$P(A \cap B) = 0$; $P(A) + P(B) \le 1$</td>
+                <td class="py-3.5 px-5">$P(A \cap B) = 0$ and $P(A) + P(B) = 1$</td>
+                <td class="py-3.5 px-5">$P(\bigcup A_i) = 1$</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Die Example ($S=\{1..6\}$)</td>
+                <td class="py-3.5 px-5">$A=\{1,2\}$, $B=\{5,6\}$ (leaves out $\{3,4\}$)</td>
+                <td class="py-3.5 px-5">$A=\{1,3,5\}$, $B=\{2,4,6\}$</td>
+                <td class="py-3.5 px-5">$A=\{1,2,3,4\}$, $B=\{3,4,5,6\}$ (overlaps at $\{3,4\}$)</td>
+              </tr>
+              <tr class="bg-amber-50/40">
+                <td class="py-3.5 px-5 font-semibold text-amber-900">Exam Takeaway</td>
+                <td colspan="3" class="py-3.5 px-5 text-slate-800">
+                  <strong>All complementary events are mutually exclusive AND exhaustive</strong>, but <strong>mutually exclusive events need NOT be exhaustive</strong> (so they are not necessarily complementary).
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: VERBAL STATEMENTS TO SET NOTATION CHEAT SHEET            -->
+    <!-- =================================================================== -->
+    <section id="verbal-to-set" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0d9488]">Section 02 • Translation Mastery</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Verbal Statements to Set Notation (3 Events $A, B, C$)</h2>
+        </div>
+        <p class="text-sm text-slate-500">Sources: Lecture 06 &amp; Year Final 2025 Q2(a)</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-5">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-[#1e3a8a] text-white text-xs uppercase tracking-wider">
+                <th class="py-3.5 px-5 font-bold">Verbal Statement</th>
+                <th class="py-3.5 px-5 font-bold">Canonical Set Notation</th>
+                <th class="py-3.5 px-5 font-bold">Equivalent / Compact Form</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr class="hover:bg-slate-50/80">
+                <td class="py-3.5 px-5 font-semibold text-slate-900">At least one occurs</td>
+                <td class="py-3.5 px-5">$A \cup B \cup C$</td>
+                <td class="py-3.5 px-5">$(A^c \cap B^c \cap C^c)^c$</td>
+              </tr>
+              <tr class="hover:bg-slate-50/80">
+                <td class="py-3.5 px-5 font-semibold text-slate-900">None occur</td>
+                <td class="py-3.5 px-5">$A^c \cap B^c \cap C^c$</td>
+                <td class="py-3.5 px-5">$(A \cup B \cup C)^c$ (De Morgan)</td>
+              </tr>
+              <tr class="hover:bg-slate-50/80">
+                <td class="py-3.5 px-5 font-semibold text-slate-900">All three occur</td>
+                <td class="py-3.5 px-5">$A \cap B \cap C$</td>
+                <td class="py-3.5 px-5">$ABC$</td>
+              </tr>
+              <tr class="hover:bg-slate-50/80">
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Exactly one occurs</td>
+                <td class="py-3.5 px-5">$(A \cap B^c \cap C^c) \cup (A^c \cap B \cap C^c) \cup (A^c \cap B^c \cap C)$</td>
+                <td class="py-3.5 px-5">3 outer-petal atomic regions</td>
+              </tr>
+              <tr class="hover:bg-slate-50/80">
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Exactly two occur</td>
+                <td class="py-3.5 px-5">$(A \cap B \cap C^c) \cup (A \cap B^c \cap C) \cup (A^c \cap B \cap C)$</td>
+                <td class="py-3.5 px-5">3 pairwise-only lens regions</td>
+              </tr>
+              <tr class="hover:bg-slate-50/80">
+                <td class="py-3.5 px-5 font-semibold text-slate-900">At least two occur</td>
+                <td class="py-3.5 px-5">$(A \cap B \cap C^c) \cup (A \cap B^c \cap C) \cup (A^c \cap B \cap C) \cup (A \cap B \cap C)$</td>
+                <td class="py-3.5 px-5">$(A \cap B) \cup (B \cap C) \cup (A \cap C)$</td>
+              </tr>
+              <tr class="hover:bg-slate-50/80">
+                <td class="py-3.5 px-5 font-semibold text-slate-900">At most one occurs</td>
+                <td class="py-3.5 px-5">$(A^c \cap B^c \cap C^c) \cup (A \cap B^c \cap C^c) \cup (A^c \cap B \cap C^c) \cup (A^c \cap B^c \cap C)$</td>
+                <td class="py-3.5 px-5">$((A \cap B) \cup (B \cap C) \cup (A \cap C))^c$</td>
+              </tr>
+              <tr class="bg-amber-50/50 hover:bg-amber-50">
+                <td class="py-3.5 px-5 font-semibold text-amber-950">Not more than two occur simultaneously</td>
+                <td class="py-3.5 px-5">$(A \cap B \cap C)^c$</td>
+                <td class="py-3.5 px-5">$A^c \cup B^c \cup C^c$ (De Morgan)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Amber Exam Nuance Note -->
+      <div class="rounded-2xl border border-amber-300 bg-amber-50 p-5 flex items-start gap-3.5 shadow-sm">
+        <div class="w-8 h-8 rounded-xl bg-[#d97706] text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">!</div>
+        <div class="text-xs sm:text-sm text-amber-950 leading-relaxed space-y-1">
+          <p class="font-bold text-[#d97706] uppercase tracking-wide text-xs">Exam Nuance Note — "Not More Than Two"</p>
+          <p>
+            In probability, <strong>"not more than two occur simultaneously"</strong> means "not all three occur," which is $(A \cap B \cap C)^c$—this naturally includes <strong>0, 1, or 2</strong> events occurring (7 of the 8 Venn regions). If a question ever asks for <em>"at least one, but not more than two"</em> (strictly <strong>1 or 2</strong> events), you intersect with the union: $(A \cap B \cap C)^c \cap (A \cup B \cup C)$.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: INTERACTIVE VENN & SET OPERATIONS LAB (3-TAB WORKBENCH)  -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0d9488]">Section 03 • Hands-On Workbench</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Interactive Venn &amp; Set Operations Lab</h2>
+        </div>
+        <p class="text-sm text-slate-500">Click regions, solve 3-set surveys, and test De Morgan's Laws live</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Workbench Tabs -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-slate-200 bg-slate-50 p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="venn3" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#1e3a8a] text-white shadow-sm">
+            1. 3-Set Venn Explorer
+          </button>
+          <button type="button" role="tab" data-tab="survey" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            2. 3-Set Survey Solver (Whales)
+          </button>
+          <button type="button" role="tab" data-tab="demorgan" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            3. 2-Set Algebra &amp; De Morgan's
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: INTERACTIVE 3-SET VENN EXPLORER (PIXEL-ACCURATE CANVAS)  -->
+        <!-- =============================================================== -->
+        <div id="tab-venn3" class="lab-panel p-5 sm:p-6 space-y-5">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Clickable 3-Set Venn Explorer (8 Atomic Regions)</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Click or tap <strong>any of the 8 regions</strong> directly on the canvas (including the outside region $A' \cap B' \cap C'$) to toggle shading, or load an ISRT exam preset.</p>
+            </div>
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-xs font-bold text-[#0d9488] self-start">
+              Active Regions: <span id="venn3ActiveCount" class="text-base text-teal-900">0</span> / 8
+            </div>
+          </div>
+
+          <!-- Preset Buttons -->
+          <div class="flex flex-wrap gap-2">
+            <button type="button" data-preset="atLeastOne" class="venn3-preset px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all">At least one</button>
+            <button type="button" data-preset="exactlyOne" class="venn3-preset px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all">Exactly one</button>
+            <button type="button" data-preset="exactlyTwo" class="venn3-preset px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all">Exactly two</button>
+            <button type="button" data-preset="atMostOne" class="venn3-preset px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all">At most one</button>
+            <button type="button" data-preset="notMoreThanTwo" class="venn3-preset px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-[#1e3a8a] hover:text-[#1e3a8a] transition-all">Not more than two</button>
+            <button type="button" data-preset="deMorgan" class="venn3-preset px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-[#0d9488] hover:text-[#0d9488] transition-all">De Morgan: $(A \cup B \cup C)'$</button>
+            <button type="button" data-preset="clear" class="venn3-preset px-3 py-1.5 rounded-lg text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 transition-all">Clear All</button>
+          </div>
+
+          <!-- Canvas + Live Readout -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-7">
+              <div id="venn3CanvasContainer" class="relative w-full rounded-2xl border border-slate-200 bg-white p-2 shadow-inner overflow-hidden">
+                <canvas id="venn3Canvas" class="w-full block rounded-xl cursor-pointer"></canvas>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2 text-center">
+                Hovering or tapping highlights the exact atomic region using mathematical circle distance checks.
+              </p>
+            </div>
+
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-[#1e3a8a] mb-1">Simplified Expression</div>
+                <div id="venn3Simplified" class="text-sm sm:text-base font-bold text-slate-900 min-h-[1.75rem]">
+                  $\emptyset$ (No regions selected)
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Canonical Atomic Union</div>
+                <div id="venn3Canonical" class="text-xs sm:text-sm text-slate-800 leading-relaxed min-h-[3rem] overflow-x-auto">
+                  Click any region on the Venn diagram to inspect its set expression.
+                </div>
+              </div>
+
+              <!-- Quick Toggle Chips for All 8 Atomic Regions -->
+              <div class="p-4 rounded-xl bg-white border border-slate-200">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2.5">Toggle Atomic Regions Directly</div>
+                <div id="venn3RegionChips" class="grid grid-cols-2 gap-1.5">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: 3-SET SURVEY WORD PROBLEM SOLVER                         -->
+        <!-- =============================================================== -->
+        <div id="tab-survey" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">3-Set Survey Word Problem Solver</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Enter set totals and overlaps—or load an authentic ISRT / Ross preset—to compute all 8 Venn regions automatically.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" data-survey-preset="whales" class="survey-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1e3a8a] text-white shadow-sm transition-all">ISRT Final 2025: Whales</button>
+              <button type="button" data-survey-preset="ross" class="survey-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Ross: Suit / Shirt / Tie</button>
+              <button type="button" data-survey-preset="tv" class="survey-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Class Note: 60 TV Viewers</button>
+            </div>
+          </div>
+
+          <!-- Context Banner -->
+          <div id="surveyContextBanner" class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm text-amber-950 leading-relaxed">
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left: Inputs -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Set Counts &amp; Overlaps</div>
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                  <label class="block">
+                    <span id="lblA" class="font-semibold text-slate-700 block mb-1">|A| Giant Squids</span>
+                    <input id="inA" type="number" min="0" value="19" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                  <label class="block">
+                    <span id="lblB" class="font-semibold text-slate-700 block mb-1">|B| Captain Ahab</span>
+                    <input id="inB" type="number" min="0" value="24" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                  <label class="block">
+                    <span id="lblC" class="font-semibold text-slate-700 block mb-1">|C| Pollution</span>
+                    <input id="inC" type="number" min="0" value="20" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                  <label class="block">
+                    <span class="font-semibold text-slate-700 block mb-1">|A ∩ B ∩ C| (All 3)</span>
+                    <input id="inABC" type="number" min="0" value="6" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                  <label class="block">
+                    <span class="font-semibold text-slate-700 block mb-1">|A ∩ B| (Total)</span>
+                    <input id="inAB" type="number" min="0" value="11" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                  <label class="block">
+                    <span class="font-semibold text-slate-700 block mb-1">|B ∩ C| (Total)</span>
+                    <input id="inBC" type="number" min="0" value="9" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                  <label class="block">
+                    <span class="font-semibold text-slate-700 block mb-1">|A ∩ C| (Total)</span>
+                    <input id="inAC" type="number" min="0" value="13" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                  <label class="block">
+                    <span class="font-semibold text-slate-700 block mb-1">None (Outside)</span>
+                    <input id="inNone" type="number" min="0" value="5" class="survey-input w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]" />
+                  </label>
+                </div>
+                <div id="surveyWarning" class="hidden p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium"></div>
+              </div>
+
+              <!-- Computed Summary Metrics -->
+              <div class="grid grid-cols-2 gap-2.5 text-center">
+                <div class="p-3 rounded-xl bg-blue-50 border border-blue-200">
+                  <div class="text-[11px] font-semibold text-[#1e3a8a]">At Least One |A∪B∪C|</div>
+                  <div id="resUnion" class="text-xl font-extrabold text-[#1e3a8a] mt-0.5">36</div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-100 border border-slate-200">
+                  <div class="text-[11px] font-semibold text-slate-600">Total Surveyed |S|</div>
+                  <div id="resTotal" class="text-xl font-extrabold text-slate-900 mt-0.5">41</div>
+                </div>
+                <div class="p-3 rounded-xl bg-teal-50 border border-teal-200">
+                  <div id="resLblBnotA" class="text-[11px] font-semibold text-[#0d9488]">B but not A |B∩A'|</div>
+                  <div id="resBnotA" class="text-xl font-extrabold text-teal-900 mt-0.5">13</div>
+                </div>
+                <div class="p-3 rounded-xl bg-teal-50 border border-teal-200">
+                  <div id="resLblAorC" class="text-[11px] font-semibold text-[#0d9488]">A or C |A∪C|</div>
+                  <div id="resAorC" class="text-xl font-extrabold text-teal-900 mt-0.5">26</div>
+                </div>
+                <div class="p-3 rounded-xl bg-white border border-slate-200">
+                  <div class="text-[11px] font-semibold text-slate-500">Exactly One</div>
+                  <div id="resExact1" class="text-lg font-extrabold text-slate-800 mt-0.5">15</div>
+                </div>
+                <div class="p-3 rounded-xl bg-white border border-slate-200">
+                  <div class="text-[11px] font-semibold text-slate-500">Exactly Two</div>
+                  <div id="resExact2" class="text-lg font-extrabold text-slate-800 mt-0.5">15</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Dynamic 3-Circle SVG Venn Diagram + Step-by-Step Derivation -->
+            <div class="lg:col-span-7 space-y-4">
+              <div class="rounded-2xl border border-slate-200 bg-slate-50/50 p-3">
+                <svg id="surveySvg" viewBox="0 0 480 340" class="w-full h-auto" role="img" aria-label="Calculated 3-set Venn diagram">
+                  <!-- Universal Box -->
+                  <rect x="10" y="10" width="460" height="320" rx="16" fill="#ffffff" stroke="#94a3b8" stroke-width="2" />
+                  <text x="448" y="34" text-anchor="end" font-size="14" font-weight="800" fill="#475569">S</text>
+
+                  <!-- 3 Overlapping Circles -->
+                  <circle cx="195" cy="140" r="88" fill="#1e3a8a" fill-opacity="0.12" stroke="#1e3a8a" stroke-width="2.5" />
+                  <circle cx="285" cy="140" r="88" fill="#0d9488" fill-opacity="0.12" stroke="#0d9488" stroke-width="2.5" />
+                  <circle cx="240" cy="215" r="88" fill="#d97706" fill-opacity="0.12" stroke="#d97706" stroke-width="2.5" />
+
+                  <!-- Set Titles -->
+                  <text id="svgTitleA" x="112" y="48" text-anchor="middle" font-size="13" font-weight="800" fill="#1e3a8a">A: Giant Squids</text>
+                  <text id="svgTitleB" x="368" y="48" text-anchor="middle" font-size="13" font-weight="800" fill="#0d9488">B: Captain Ahab</text>
+                  <text id="svgTitleC" x="240" y="321" text-anchor="middle" font-size="13" font-weight="800" fill="#b45309">C: Pollution</text>
+
+                  <!-- 8 Region Values -->
+                  <text id="svgAonly" x="155" y="128" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="18" font-weight="800" fill="#1e3a8a">1</text>
+                  <text id="svgBonly" x="325" y="128" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="18" font-weight="800" fill="#0f766e">10</text>
+                  <text id="svgConly" x="240" y="262" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="18" font-weight="800" fill="#b45309">4</text>
+
+                  <text id="svgABonly" x="240" y="114" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="800" fill="#0f172a">5</text>
+                  <text id="svgAConly" x="192" y="196" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="800" fill="#0f172a">7</text>
+                  <text id="svgBConly" x="288" y="196" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="800" fill="#0f172a">3</text>
+
+                  <text id="svgABC" x="240" y="168" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="19" font-weight="800" fill="#0f172a">6</text>
+
+                  <!-- Outside / None -->
+                  <text x="58" y="294" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b">None:</text>
+                  <text id="svgNone" x="58" y="314" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="17" font-weight="800" fill="#475569">5</text>
+                </svg>
+              </div>
+
+              <!-- Step-by-Step Region Derivation -->
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-1.5">
+                <div class="font-bold text-slate-900 mb-1">Step-by-Step Inside-Out Region Derivation:</div>
+                <div id="surveyDerivationSteps" class="space-y-1 text-slate-700 font-mono text-xs leading-relaxed">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: 2-SET ALGEBRA & DE MORGAN'S VISUALIZER                   -->
+        <!-- =============================================================== -->
+        <div id="tab-demorgan" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">2-Set Algebra &amp; De Morgan's Law Visualizer</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Adjust $P(A)$, $P(B)$, and $P(A \cap B)$ within valid probability bounds. Click any formula card to highlight its region on the Venn diagram.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" data-dm-preset="defects" class="dm-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1e3a8a] text-white shadow-sm transition-all">ISRT 2025 Final Defects (0.1, 0.2, 0.05)</button>
+              <button type="button" data-dm-preset="incourse" class="dm-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">ISRT 2024/25 Incourse (1/3, 1/2, union 3/4)</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left: Sliders + 2-Set SVG -->
+            <div class="lg:col-span-6 space-y-5">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
+                <div>
+                  <div class="flex justify-between text-xs font-bold mb-1">
+                    <span class="text-[#1e3a8a]">$P(A)$</span>
+                    <span id="dmValA" class="font-mono text-slate-900">0.100</span>
+                  </div>
+                  <input id="dmSliderA" type="range" min="0" max="1" step="0.005" value="0.10" class="w-full" />
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs font-bold mb-1">
+                    <span class="text-[#0d9488]">$P(B)$</span>
+                    <span id="dmValB" class="font-mono text-slate-900">0.200</span>
+                  </div>
+                  <input id="dmSliderB" type="range" min="0" max="1" step="0.005" value="0.20" class="w-full" />
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs font-bold mb-1">
+                    <span class="text-slate-800">$P(A \cap B)$ <span id="dmBoundsHint" class="font-normal text-slate-500 ml-1">[0.000, 0.100]</span></span>
+                    <span id="dmValAB" class="font-mono text-slate-900">0.050</span>
+                  </div>
+                  <input id="dmSliderAB" type="range" min="0" max="0.10" step="0.005" value="0.05" class="w-full" />
+                </div>
+              </div>
+
+              <!-- 2-Set Interactive SVG with 4 Highlightable Atomic Regions -->
+              <div class="rounded-2xl border border-slate-200 bg-white p-3">
+                <svg id="dmSvg" viewBox="0 0 420 250" class="w-full h-auto" role="img" aria-label="2-set Venn diagram visualizer">
+                  <defs>
+                    <clipPath id="clipA"><circle cx="155" cy="128" r="76" /></clipPath>
+                    <clipPath id="clipB"><circle cx="265" cy="128" r="76" /></clipPath>
+                  </defs>
+
+                  <!-- Outside region (A' ∩ B') -->
+                  <rect id="dmRegOut" x="10" y="10" width="400" height="230" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" />
+                  <text x="394" y="32" text-anchor="end" font-size="13" font-weight="800" fill="#475569">S</text>
+
+                  <!-- Circle A base (A ∩ B') -->
+                  <circle id="dmRegAonly" cx="155" cy="128" r="76" fill="#ffffff" />
+                  <!-- Circle B base (A' ∩ B) -->
+                  <circle id="dmRegBonly" cx="265" cy="128" r="76" fill="#ffffff" />
+                  <!-- Intersection (A ∩ B) via clipPath -->
+                  <g clip-path="url(#clipA)">
+                    <circle id="dmRegAB" cx="265" cy="128" r="76" fill="#ffffff" />
+                  </g>
+
+                  <!-- Crisp Circle Borders -->
+                  <circle cx="155" cy="128" r="76" fill="none" stroke="#1e3a8a" stroke-width="2.5" />
+                  <circle cx="265" cy="128" r="76" fill="none" stroke="#0d9488" stroke-width="2.5" />
+
+                  <!-- Labels -->
+                  <text x="105" y="46" text-anchor="middle" font-size="14" font-weight="800" fill="#1e3a8a">A</text>
+                  <text x="315" y="46" text-anchor="middle" font-size="14" font-weight="800" fill="#0d9488">B</text>
+
+                  <!-- Live Numbers in all 4 Regions -->
+                  <text id="dmTxtAonly" x="128" y="133" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="800" fill="#1e3a8a">0.050</text>
+                  <text id="dmTxtAB" x="210" y="133" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="800" fill="#0f172a">0.050</text>
+                  <text id="dmTxtBonly" x="292" y="133" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" font-weight="800" fill="#0f766e">0.150</text>
+                  <text id="dmTxtOut" x="54" y="224" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="800" fill="#475569">0.750</text>
+                  <text x="54" y="208" text-anchor="middle" font-size="10" font-weight="700" fill="#64748b">A'∩B'</text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Right: Clickable Metric Cards -->
+            <div class="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3" id="dmCardsContainer">
+              <button type="button" data-highlight="union" class="dm-card text-left p-4 rounded-xl border-2 border-[#1e3a8a] bg-blue-50/70 transition-all">
+                <div class="text-xs font-bold text-[#1e3a8a]">At Least One: $P(A \cup B)$</div>
+                <div id="dmResUnion" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">0.250</div>
+                <div class="text-[11px] text-slate-500 mt-1">$P(A) + P(B) - P(A \cap B)$</div>
+              </button>
+
+              <button type="button" data-highlight="aOnly" class="dm-card text-left p-4 rounded-xl border border-slate-200 bg-white hover:border-[#1e3a8a] transition-all">
+                <div class="text-xs font-bold text-slate-700">$A$ but not $B$: $P(A \cap B')$</div>
+                <div id="dmResAonly" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">0.050</div>
+                <div class="text-[11px] text-slate-500 mt-1">$P(A) - P(A \cap B)$</div>
+              </button>
+
+              <button type="button" data-highlight="bOnly" class="dm-card text-left p-4 rounded-xl border border-slate-200 bg-white hover:border-[#1e3a8a] transition-all">
+                <div class="text-xs font-bold text-slate-700">$B$ but not $A$: $P(A' \cap B)$</div>
+                <div id="dmResBonly" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">0.150</div>
+                <div class="text-[11px] text-slate-500 mt-1">$P(B) - P(A \cap B)$</div>
+              </button>
+
+              <button type="button" data-highlight="neither" class="dm-card text-left p-4 rounded-xl border border-slate-200 bg-white hover:border-[#0d9488] transition-all">
+                <div class="text-xs font-bold text-[#0d9488]">De Morgan 1: $P(A' \cap B')$</div>
+                <div id="dmResNeither" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">0.750</div>
+                <div class="text-[11px] text-slate-500 mt-1">$= P((A \cup B)') = 1 - P(A \cup B)$</div>
+              </button>
+
+              <button type="button" data-highlight="notBoth" class="dm-card text-left p-4 rounded-xl border border-slate-200 bg-white hover:border-[#0d9488] transition-all">
+                <div class="text-xs font-bold text-[#0d9488]">De Morgan 2: $P(A' \cup B')$</div>
+                <div id="dmResNotBoth" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">0.950</div>
+                <div class="text-[11px] text-slate-500 mt-1">$= P((A \cap B)') = 1 - P(A \cap B)$</div>
+              </button>
+
+              <button type="button" data-highlight="xor" class="dm-card text-left p-4 rounded-xl border border-slate-200 bg-white hover:border-[#d97706] transition-all">
+                <div class="text-xs font-bold text-[#d97706]">Precisely One: $P(A \triangle B)$</div>
+                <div id="dmResXor" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">0.200</div>
+                <div class="text-[11px] text-slate-500 mt-1">$P(A) + P(B) - 2P(A \cap B)$</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: SET LAWS & PROOFS DRAWER                                 -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#1e3a8a]">Section 04 • Theoretical Rigor</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Set Laws &amp; Proofs Drawer</h2>
+        </div>
+        <p class="text-sm text-slate-500">Expand any derivation to review step-by-step proofs</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1: Commutative, Associative & Distributive Laws -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-blue-50 text-[#1e3a8a] text-[11px] font-bold mb-1">Law 1 • Ross Ch. 2.2</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Commutative, Associative &amp; Distributive Laws of Events</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <ul class="space-y-2">
+              <li><strong>Commutative Laws:</strong> $E \cup F = F \cup E$ and $EF = FE$.</li>
+              <li><strong>Associative Laws:</strong> $(E \cup F) \cup G = E \cup (F \cup G)$ and $(EF)G = E(FG)$.</li>
+              <li><strong>Distributive Laws:</strong>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center my-2">
+                  $$(E \cup F) \cap G = (E \cap G) \cup (F \cap G), \qquad (E \cap F) \cup G = (E \cup G) \cap (F \cup G)$$
+                </div>
+              </li>
+            </ul>
+            <p class="text-xs text-slate-600">
+              <strong>Visual Verification (Ross Ch. 2.2):</strong> Shade $E \cup F$ and intersect with $G$ on a 3-circle Venn diagram; the resulting region is identical to taking the lens $E \cap G$ together with the lens $F \cap G$.
+            </p>
+          </div>
+        </div>
+
+        <!-- Proof 2: De Morgan's Laws -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-teal-50 text-[#0d9488] text-[11px] font-bold mb-1">Law 2 • Essential Exam Identity</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">De Morgan's Laws (2 Events &amp; Generalization to $n$ Events)</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$(A \cup B)^c = A^c \cap B^c \qquad \text{and} \qquad (A \cap B)^c = A^c \cup B^c$$
+            </div>
+            <p><strong>Element-wise Proof of $(A \cup B)^c = A^c \cap B^c$:</strong></p>
+            <ol class="list-decimal list-inside space-y-1.5">
+              <li>Let $x \in (A \cup B)^c$. Then $x \notin (A \cup B)$, meaning $x$ is neither in $A$ nor in $B$. Thus $x \in A^c$ AND $x \in B^c$, so $x \in A^c \cap B^c$. Hence $(A \cup B)^c \subseteq A^c \cap B^c$.</li>
+              <li>Conversely, let $x \in A^c \cap B^c$. Then $x \notin A$ and $x \notin B$, so $x$ cannot belong to $A \cup B$. Thus $x \in (A \cup B)^c$. Hence $A^c \cap B^c \subseteq (A \cup B)^c$.</li>
+              <li>By mutual set inclusion, $(A \cup B)^c = A^c \cap B^c$. $\blacksquare$</li>
+            </ol>
+            <p><strong>Generalized to $n$ Events (Ross Ch. 2.2):</strong></p>
+            <div class="bg-teal-50 p-3 rounded-xl border border-teal-200 text-center text-teal-950">
+              $$\left(\bigcup_{i=1}^{n} E_i\right)^c = \bigcap_{i=1}^{n} E_i^c \qquad \text{and} \qquad \left(\bigcap_{i=1}^{n} E_i\right)^c = \bigcup_{i=1}^{n} E_i^c$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 3: Disjoint Decomposition & Addition Law -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-blue-50 text-[#1e3a8a] text-[11px] font-bold mb-1">Proof 3 • Lecture 08</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Disjoint Decomposition &amp; Addition Law of Probability</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>First, decompose $A$ and $B$ into mutually exclusive parts:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$A = (A \cap B') \cup (A \cap B) \implies P(A) = P(A \cap B') + P(A \cap B) \implies P(A \cap B') = P(A) - P(A \cap B)$$
+            </div>
+            <p>Similarly, $P(B \cap A') = P(B) - P(A \cap B)$. Now write $A \cup B$ as the union of <strong>three mutually exclusive events</strong>:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$A \cup B = (A \cap B') \cup (A \cap B) \cup (B \cap A')$$
+            </div>
+            <p>Applying Axiom 3 (additivity for disjoint events):</p>
+            <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 text-center text-[#1e3a8a]">
+              $$P(A \cup B) = [P(A) - P(A \cap B)] + P(A \cap B) + [P(B) - P(A \cap B)] = P(A) + P(B) - P(A \cap B) \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 4: Exactly One Event Formula -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-amber-50 text-amber-800 text-[11px] font-bold mb-1">Proof 4 • Ross Theoretical Ex. 12</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Probability That Exactly One of $A$ or $B$ Occurs</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>The event that <em>exactly one</em> (symmetric difference $A \triangle B$) of $A$ or $B$ occurs is the disjoint union $(A \cap B^c) \cup (A^c \cap B)$.</p>
+            <p>Since $(A \cap B^c) \cap (A^c \cap B) = \emptyset$, by Axiom 3 and the difference formula:</p>
+            <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-center text-amber-950">
+              $$P\big((A \cap B^c) \cup (A^c \cap B)\big) = P(A \cap B^c) + P(A^c \cap B) = \big(P(A) - P(A \cap B)\big) + \big(P(B) - P(A \cap B)\big)$$
+              $$= P(A) + P(B) - 2P(A \cap B) \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 5: PAST ISRT EXAM VAULT                                     -->
+    <!-- =================================================================== -->
+    <section id="exams" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#d97706]">Section 05 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Past ISRT Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-slate-500">Click any question to reveal its complete exam-ready solution</p>
+      </div>
+
+      <div class="space-y-5">
+
+        <!-- Exam 1: 1st Incourse 2022, Q2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-blue-100 text-[#1e3a8a] text-xs font-bold">1st Incourse 2022 • Q2 [3 pts]</span>
+              <span class="text-xs text-slate-400 font-medium">ISRT, University of Dhaka</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              Two coins are tossed simultaneously. Write down the complementary event for <em>"At least one head appears."</em> Draw a Venn diagram and shade the complementary event.
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <div class="space-y-2.5 leading-relaxed">
+                <p><strong>Sample Space:</strong> $S = \{HH, HT, TH, TT\}$.</p>
+                <p>Let $A$ be the event <em>"At least one head appears"</em>:</p>
+                <p class="font-mono text-xs bg-white p-2.5 rounded-lg border border-slate-200">$A = \{HH, HT, TH\}$</p>
+                <p><strong>Complementary Event ($A^c$):</strong> "No head appears" (i.e., both coins show tails):</p>
+                <p class="font-mono text-xs bg-teal-50 p-2.5 rounded-lg border border-teal-200 text-teal-900 font-bold">$A^c = \{TT\}$</p>
+              </div>
+              <!-- Inline SVG Shaded Venn Diagram -->
+              <div class="bg-white rounded-xl border border-slate-200 p-3">
+                <svg viewBox="0 0 280 155" class="w-full h-auto" aria-label="Venn diagram shading complement A^c = {TT}">
+                  <defs>
+                    <pattern id="hatchTeal" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                      <line x1="0" y1="0" x2="0" y2="8" stroke="#0d9488" stroke-width="2.5" stroke-opacity="0.45" />
+                    </pattern>
+                  </defs>
+                  <!-- Shaded Universal Box (represents A^c outside circle A) -->
+                  <rect x="8" y="8" width="264" height="139" rx="10" fill="url(#hatchTeal)" stroke="#1e3a8a" stroke-width="2" />
+                  <text x="258" y="26" text-anchor="end" font-size="13" font-weight="800" fill="#1e3a8a">S</text>
+                  <!-- Unshaded Circle A -->
+                  <circle cx="112" cy="78" r="50" fill="#ffffff" stroke="#1e3a8a" stroke-width="2.2" />
+                  <text x="112" y="54" text-anchor="middle" font-size="13" font-weight="800" fill="#1e3a8a">A</text>
+                  <text x="112" y="76" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#334155">HH, HT</text>
+                  <text x="112" y="94" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="600" fill="#334155">TH</text>
+                  <!-- Shaded Complement Label -->
+                  <rect x="186" y="64" width="62" height="44" rx="8" fill="#ffffff" fill-opacity="0.9" stroke="#0d9488" stroke-width="1.5" />
+                  <text x="217" y="82" text-anchor="middle" font-size="11" font-weight="800" fill="#0d9488">Aᶜ (Shaded)</text>
+                  <text x="217" y="100" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="800" fill="#0f172a">{TT}</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam 2: 1st Incourse 2024 Q3 & 2025 Q2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-blue-100 text-[#1e3a8a] text-xs font-bold">1st Incourse 2024 Q3 &amp; 2025 Q2 [3–6 pts]</span>
+              <span class="text-xs text-slate-400 font-medium">ISRT, University of Dhaka</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              Given $P(A) = \dfrac{1}{3}$, $P(B) = \dfrac{1}{2}$, and $P(A \cup B) = \dfrac{3}{4}$, find: (i) $P(A \cap B)$, (ii) $P(A' \cup B')$, (iii) $P(A' \cap B)$, and (iv) $P(A' \cap B')$.
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>(i) $P(A \cap B)$:</strong> Using the Addition Law $P(A \cup B) = P(A) + P(B) - P(A \cap B)$:
+              $$P(A \cap B) = \frac{1}{3} + \frac{1}{2} - \frac{3}{4} = \frac{4 + 6 - 9}{12} = \mathbf{\frac{1}{12}}$$
+            </p>
+            <p><strong>(ii) $P(A' \cup B')$:</strong> By De Morgan's Law, $A' \cup B' = (A \cap B)'$:
+              $$P(A' \cup B') = 1 - P(A \cap B) = 1 - \frac{1}{12} = \mathbf{\frac{11}{12}}$$
+            </p>
+            <p><strong>(iii) $P(A' \cap B)$:</strong> Using disjoint decomposition of $B$:
+              $$P(A' \cap B) = P(B) - P(A \cap B) = \frac{1}{2} - \frac{1}{12} = \frac{5}{12}$$
+            </p>
+            <p><strong>(iv) $P(A' \cap B')$:</strong> By De Morgan's Law, $A' \cap B' = (A \cup B)'$:
+              $$P(A' \cap B') = 1 - P(A \cup B) = 1 - \frac{3}{4} = \mathbf{\frac{1}{4}}$$
+            </p>
+          </div>
+        </div>
+
+        <!-- Exam 3: Year Final 2025, Q2(c) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2025 • Q2(c) [4 pts]</span>
+              <span class="text-xs text-slate-400 font-medium">ISRT, University of Dhaka</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              In a production process, items may have defect $A$ with probability $P(A) = 0.1$, defect $B$ with $P(B) = 0.2$, and both defects with $P(A \cap B) = 0.05$. Find the probability that a randomly selected item has: (i) at least one defect, (ii) defect $A$ but not $B$, (iii) none of the defects, and (iv) precisely one defect.
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2 leading-relaxed">
+            <p><strong>(i) At least one defect:</strong> $P(A \cup B) = P(A) + P(B) - P(A \cap B) = 0.1 + 0.2 - 0.05 = \mathbf{0.25}$.</p>
+            <p><strong>(ii) Defect $A$ but not $B$:</strong> $P(A \cap B') = P(A) - P(A \cap B) = 0.1 - 0.05 = \mathbf{0.05}$.</p>
+            <p><strong>(iii) None of the defects:</strong> $P(A' \cap B') = P((A \cup B)') = 1 - P(A \cup B) = 1 - 0.25 = \mathbf{0.75}$.</p>
+            <p><strong>(iv) Precisely one defect:</strong> $P(A \triangle B) = P(A) + P(B) - 2P(A \cap B) = 0.1 + 0.2 - 2(0.05) = \mathbf{0.20}$.</p>
+          </div>
+        </div>
+
+        <!-- Exam 4: Year Final 2025, Q2(d) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2025 • Q2(d) [3 pts]</span>
+              <span class="text-xs text-slate-400 font-medium">ISRT, University of Dhaka</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              A survey of whales on their fears revealed: 19 fear Giant Squids ($A$), 24 fear Captain Ahab ($B$), 20 fear Pollution ($C$), 6 fear all three, 11 fear both Ahab and Giant Squids, 3 fear Pollution and Ahab <em>only</em>, 4 fear Pollution <em>only</em>, and 5 fear none of these. Find the number of whales who fear: (i) at least one of the three, (ii) Captain Ahab but not Giant Squids, and (iii) Giant Squids or Pollution.
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>Step 1 — Fill all 8 Venn regions from the center outward:</strong></p>
+            <ul class="list-disc list-inside space-y-1 font-mono text-xs bg-white p-3.5 rounded-xl border border-slate-200">
+              <li>All three: |A ∩ B ∩ C| = 6</li>
+              <li>A and B only: |A ∩ B ∩ C'| = 11 − 6 = 5</li>
+              <li>B and C only (given): |A' ∩ B ∩ C| = 3</li>
+              <li>C only (given): |A' ∩ B' ∩ C| = 4</li>
+              <li>A and C only: |A ∩ B' ∩ C| = |C| − (6 + 3 + 4) = 20 − 13 = 7</li>
+              <li>A only: |A ∩ B' ∩ C'| = |A| − (6 + 5 + 7) = 19 − 18 = 1</li>
+              <li>B only: |A' ∩ B ∩ C'| = |B| − (6 + 5 + 3) = 24 − 14 = 10</li>
+              <li>None (given): |A' ∩ B' ∩ C'| = 5  (Total surveyed = 36 + 5 = 41)</li>
+            </ul>
+            <p><strong>Step 2 — Answer the three questions:</strong></p>
+            <ul class="list-disc list-inside space-y-1">
+              <li><strong>(i) At least one ($|A \cup B \cup C|$):</strong> $1 + 10 + 4 + 5 + 7 + 3 + 6 = \mathbf{36}$.</li>
+              <li><strong>(ii) Captain Ahab but not Giant Squids ($|B \cap A'|$):</strong> $10 + 3 = \mathbf{13}$ (equivalently $|B| - |A \cap B| = 24 - 11 = 13$).</li>
+              <li><strong>(iii) Giant Squids or Pollution ($|A \cup C|$):</strong> $|A| + |C| - |A \cap C| = 19 + 20 - (6 + 7) = \mathbf{26}$.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 6: QUICK MASTERY CHECK (5-QUESTION QUIZ)                    -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#0d9488]">Section 06 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Quick Mastery Check</h2>
+            <p class="text-sm text-slate-500 mt-1">Verify your mastery of set operations, De Morgan's Laws, and Venn diagrams.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-[#1e3a8a] text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-teal-300">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER WITH LESSON NAVIGATION                                         -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-slate-200 bg-white mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+        ← Previous: Lesson 1 (Sample Spaces)
+      </div>
+      <div class="text-slate-500 text-center">
+        <strong class="text-slate-800">AST 102: Elements of Probability</strong> • ISRT, University of Dhaka
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-blue-50 text-[#1e3a8a] font-semibold border border-blue-200">
+        Next: Lesson 3 (Combinatorial Analysis &amp; Counting) →
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         UTILITY: SAFE KATEX RENDERING
+      ------------------------------------------------------------------- */
+      function safeRenderMath(rootEl) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(rootEl || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX auto-render skipped:', err);
+        }
+      }
+
+      /* -------------------------------------------------------------------
+         1. READING PROGRESS BAR
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      /* -------------------------------------------------------------------
+         2. ACCORDIONS (PROOFS & EXAM VAULT)
+      ------------------------------------------------------------------- */
+      document.querySelectorAll('.accordion-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.rounded-2xl');
+          const panel = card ? card.querySelector('.accordion-panel') : null;
+          const icon = btn.querySelector('.accordion-icon');
+          const labelSpan = btn.querySelector('span');
+          if (!panel) return;
+
+          const isOpen = !panel.classList.contains('hidden');
+          if (isOpen) {
+            panel.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            if (labelSpan && labelSpan.textContent === 'Hide Model Solution') {
+              labelSpan.textContent = 'Show Model Solution';
+            }
+          } else {
+            panel.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+            if (labelSpan && labelSpan.textContent === 'Show Model Solution') {
+              labelSpan.textContent = 'Hide Model Solution';
+            }
+            safeRenderMath(panel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         3. LAB TAB SWITCHER
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#1e3a8a]', 'text-white', 'shadow-sm');
+            t.classList.add('text-slate-600', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-[#1e3a8a]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-slate-600', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const activePanel = document.getElementById('tab-' + target);
+          if (activePanel) {
+            activePanel.classList.remove('hidden');
+            if (target === 'venn3') {
+              resizeAndDrawVenn3();
+            }
+            safeRenderMath(activePanel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. TAB 1: PIXEL-ACCURATE 3-SET VENN EXPLORER (HTML5 CANVAS)
+         Bitmask encoding for the 8 atomic regions:
+           bit 0 (1): in A
+           bit 1 (2): in B
+           bit 2 (4): in C
+           0 = A'∩B'∩C' (Outside)
+           1 = A∩B'∩C'  (Only A)
+           2 = A'∩B∩C'  (Only B)
+           3 = A∩B∩C'   (A and B only)
+           4 = A'∩B'∩C  (Only C)
+           5 = A∩B'∩C   (A and C only)
+           6 = A'∩B∩C   (B and C only)
+           7 = A∩B∩C    (All 3)
+      ------------------------------------------------------------------- */
+      const REGIONS = [
+        { mask: 0, latex: "A' \\cap B' \\cap C'", label: "A'∩B'∩C' (None)" },
+        { mask: 1, latex: "A \\cap B' \\cap C'",  label: "A∩B'∩C' (Only A)" },
+        { mask: 2, latex: "A' \\cap B \\cap C'",  label: "A'∩B∩C' (Only B)" },
+        { mask: 4, latex: "A' \\cap B' \\cap C",  label: "A'∩B'∩C (Only C)" },
+        { mask: 3, latex: "A \\cap B \\cap C'",   label: "A∩B∩C' (A,B only)" },
+        { mask: 5, latex: "A \\cap B' \\cap C",   label: "A∩B'∩C (A,C only)" },
+        { mask: 6, latex: "A' \\cap B \\cap C",   label: "A'∩B∩C (B,C only)" },
+        { mask: 7, latex: "A \\cap B \\cap C",    label: "A∩B∩C (All 3)" }
+      ];
+
+      const VENN3_PRESETS = {
+        atLeastOne:     { masks: [1, 2, 3, 4, 5, 6, 7], expr: '$A \\cup B \\cup C$ (At least one occurs)' },
+        exactlyOne:     { masks: [1, 2, 4],             expr: '$(A \\cap B^c \\cap C^c) \\cup (A^c \\cap B \\cap C^c) \\cup (A^c \\cap B^c \\cap C)$ (Exactly one)' },
+        exactlyTwo:     { masks: [3, 5, 6],             expr: '$(A \\cap B \\cap C^c) \\cup (A \\cap B^c \\cap C) \\cup (A^c \\cap B \\cap C)$ (Exactly two)' },
+        atMostOne:      { masks: [0, 1, 2, 4],          expr: '$((A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C))^c$ (At most one)' },
+        notMoreThanTwo: { masks: [0, 1, 2, 3, 4, 5, 6], expr: '$(A \\cap B \\cap C)^c = A^c \\cup B^c \\cup C^c$ (Not more than two)' },
+        deMorgan:       { masks: [0],                   expr: '$(A \\cup B \\cup C)^c = A^c \\cap B^c \\cap C^c$ (De Morgan — None)' },
+        clear:          { masks: [],                    expr: '$\\emptyset$ (No regions selected)' }
+      };
+
+      const venn3State = new Set([1, 2, 4]); // Start with "Exactly one" shaded for immediate visual appeal
+      let venn3HoverMask = -1;
+
+      const venn3Canvas = document.getElementById('venn3Canvas');
+      const venn3Container = document.getElementById('venn3CanvasContainer');
+      const venn3Ctx = venn3Canvas.getContext('2d');
+
+      // Logical geometry in normalized coordinates (aspect ratio 520 x 360)
+      const LOG_W = 520;
+      const LOG_H = 360;
+      const CIRCLES = {
+        A: { cx: 212, cy: 146, r: 92 },
+        B: { cx: 308, cy: 146, r: 92 },
+        C: { cx: 260, cy: 224, r: 92 }
+      };
+
+      // Offscreen buffer for pixel-exact shading
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = LOG_W;
+      offCanvas.height = LOG_H;
+      const offCtx = offCanvas.getContext('2d');
+
+      function getRegionMaskAt(lx, ly) {
+        // Check universal box padding (12px margin)
+        if (lx < 12 || lx > LOG_W - 12 || ly < 12 || ly > LOG_H - 12) return -1;
+        let mask = 0;
+        const dA = (lx - CIRCLES.A.cx) ** 2 + (ly - CIRCLES.A.cy) ** 2;
+        const dB = (lx - CIRCLES.B.cx) ** 2 + (ly - CIRCLES.B.cy) ** 2;
+        const dC = (lx - CIRCLES.C.cx) ** 2 + (ly - CIRCLES.C.cy) ** 2;
+        if (dA <= CIRCLES.A.r ** 2) mask |= 1;
+        if (dB <= CIRCLES.B.r ** 2) mask |= 2;
+        if (dC <= CIRCLES.C.r ** 2) mask |= 4;
+        return mask;
+      }
+
+      function drawVenn3() {
+        const dpr = window.devicePixelRatio || 1;
+        const dispW = venn3Canvas.width / dpr;
+        const dispH = venn3Canvas.height / dpr;
+        if (dispW <= 0 || dispH <= 0) return;
+
+        // 1. Pixel-accurate shading onto offscreen logical buffer
+        const imgData = offCtx.createImageData(LOG_W, LOG_H);
+        const data = imgData.data;
+
+        const rA2 = CIRCLES.A.r * CIRCLES.A.r;
+        const rB2 = CIRCLES.B.r * CIRCLES.B.r;
+        const rC2 = CIRCLES.C.r * CIRCLES.C.r;
+
+        for (let y = 12; y < LOG_H - 12; y++) {
+          const dyA = (y - CIRCLES.A.cy) * (y - CIRCLES.A.cy);
+          const dyB = (y - CIRCLES.B.cy) * (y - CIRCLES.B.cy);
+          const dyC = (y - CIRCLES.C.cy) * (y - CIRCLES.C.cy);
+          for (let x = 12; x < LOG_W - 12; x++) {
+            let mask = 0;
+            if ((x - CIRCLES.A.cx) * (x - CIRCLES.A.cx) + dyA <= rA2) mask |= 1;
+            if ((x - CIRCLES.B.cx) * (x - CIRCLES.B.cx) + dyB <= rB2) mask |= 2;
+            if ((x - CIRCLES.C.cx) * (x - CIRCLES.C.cx) + dyC <= rC2) mask |= 4;
+
+            const idx = (y * LOG_W + x) * 4;
+            const isSelected = venn3State.has(mask);
+            const isHovered = (mask === venn3HoverMask);
+
+            if (isSelected) {
+              // Vibrant teal fill (#0d9488) with hover brightening
+              data[idx]     = isHovered ? 15  : 13;
+              data[idx + 1] = isHovered ? 165 : 148;
+              data[idx + 2] = isHovered ? 152 : 136;
+              data[idx + 3] = isHovered ? 140 : 105;
+            } else if (isHovered) {
+              // Subtle navy hover preview
+              data[idx]     = 30;
+              data[idx + 1] = 58;
+              data[idx + 2] = 138;
+              data[idx + 3] = 35;
+            } else {
+              // Clean white/slate canvas background
+              data[idx]     = mask === 0 ? 248 : 255;
+              data[idx + 1] = mask === 0 ? 250 : 255;
+              data[idx + 2] = mask === 0 ? 252 : 255;
+              data[idx + 3] = 255;
+            }
+          }
+        }
+        offCtx.putImageData(imgData, 0, 0);
+
+        // 2. Render scaled offscreen buffer + crisp vector outlines & labels
+        venn3Ctx.save();
+        venn3Ctx.scale(dpr, dpr);
+        venn3Ctx.clearRect(0, 0, dispW, dispH);
+        venn3Ctx.drawImage(offCanvas, 0, 0, dispW, dispH);
+
+        const sx = dispW / LOG_W;
+        const sy = dispH / LOG_H;
+
+        // Universal box S border
+        venn3Ctx.strokeStyle = '#94a3b8';
+        venn3Ctx.lineWidth = 2;
+        venn3Ctx.beginPath();
+        venn3Ctx.roundRect(12 * sx, 12 * sy, (LOG_W - 24) * sx, (LOG_H - 24) * sy, 12 * sx);
+        venn3Ctx.stroke();
+
+        // Circle outlines
+        const circleStyles = [
+          { c: CIRCLES.A, color: '#1e3a8a', label: 'A', lx: 118, ly: 66 },
+          { c: CIRCLES.B, color: '#0d9488', label: 'B', lx: 402, ly: 66 },
+          { c: CIRCLES.C, color: '#d97706', label: 'C', lx: 260, ly: 336 }
+        ];
+
+        circleStyles.forEach(({ c, color, label, lx, ly }) => {
+          venn3Ctx.beginPath();
+          venn3Ctx.arc(c.cx * sx, c.cy * sy, c.r * sx, 0, Math.PI * 2);
+          venn3Ctx.strokeStyle = color;
+          venn3Ctx.lineWidth = 2.6;
+          venn3Ctx.stroke();
+
+          venn3Ctx.font = `800 ${Math.max(13, Math.round(16 * sx))}px Inter, sans-serif`;
+          venn3Ctx.fillStyle = color;
+          venn3Ctx.textAlign = 'center';
+          venn3Ctx.textBaseline = 'middle';
+          venn3Ctx.fillText(label, lx * sx, ly * sy);
+        });
+
+        // Label S in top-right corner
+        venn3Ctx.font = `800 ${Math.max(12, Math.round(15 * sx))}px Inter, sans-serif`;
+        venn3Ctx.fillStyle = '#475569';
+        venn3Ctx.textAlign = 'right';
+        venn3Ctx.fillText('S', (LOG_W - 24) * sx, 34 * sy);
+
+        // Subtle region tags inside each of the 8 regions
+        const tagCoords = [
+          { mask: 1, x: 168, y: 136, txt: "AB'C'" },
+          { mask: 2, x: 352, y: 136, txt: "A'BC'" },
+          { mask: 4, x: 260, y: 274, txt: "A'B'C" },
+          { mask: 3, x: 260, y: 116, txt: "ABC'" },
+          { mask: 5, x: 204, y: 206, txt: "AB'C" },
+          { mask: 6, x: 316, y: 206, txt: "A'BC" },
+          { mask: 7, x: 260, y: 174, txt: "ABC" },
+          { mask: 0, x: 64,  y: 326, txt: "A'B'C'" }
+        ];
+
+        venn3Ctx.font = `700 ${Math.max(9, Math.round(11 * sx))}px JetBrains Mono, monospace`;
+        venn3Ctx.textAlign = 'center';
+        tagCoords.forEach(t => {
+          venn3Ctx.fillStyle = venn3State.has(t.mask) ? '#0f172a' : '#64748b';
+          venn3Ctx.fillText(t.txt, t.x * sx, t.y * sy);
+        });
+
+        venn3Ctx.restore();
+      }
+
+      function resizeAndDrawVenn3() {
+        const containerW = venn3Container.clientWidth - 16;
+        if (containerW <= 0) return;
+        const dpr = window.devicePixelRatio || 1;
+        const dispW = containerW;
+        const dispH = Math.round(dispW * (LOG_H / LOG_W));
+        venn3Canvas.style.width = dispW + 'px';
+        venn3Canvas.style.height = dispH + 'px';
+        venn3Canvas.width = Math.round(dispW * dpr);
+        venn3Canvas.height = Math.round(dispH * dpr);
+        drawVenn3();
+      }
+
+      function updateVenn3Readout() {
+        const activeArr = Array.from(venn3State).sort((a, b) => a - b);
+        document.getElementById('venn3ActiveCount').textContent = activeArr.length;
+
+        // Check if current selection matches a known preset or universal set
+        let simplifiedText = 'Custom combination of ' + activeArr.length + ' atomic region(s)';
+        if (activeArr.length === 8) {
+          simplifiedText = '$S$ (Sure / Universal Event — all 8 regions)';
+        } else {
+          for (const key in VENN3_PRESETS) {
+            const p = VENN3_PRESETS[key].masks;
+            if (p.length === activeArr.length && p.every((val, i) => val === activeArr[i])) {
+              simplifiedText = VENN3_PRESETS[key].expr;
+              break;
+            }
+          }
+        }
+        const simpEl = document.getElementById('venn3Simplified');
+        simpEl.innerHTML = simplifiedText;
+
+        const canEl = document.getElementById('venn3Canonical');
+        if (activeArr.length === 0) {
+          canEl.innerHTML = '$\\emptyset$';
+        } else {
+          const parts = activeArr.map(m => {
+            const r = REGIONS.find(item => item.mask === m);
+            return `(${r.latex})`;
+          });
+          canEl.innerHTML = `$${parts.join(' \\cup ')}$`;
+        }
+
+        // Update direct toggle chips
+        const chipsWrap = document.getElementById('venn3RegionChips');
+        chipsWrap.innerHTML = REGIONS.map(r => {
+          const active = venn3State.has(r.mask);
+          return `
+            <button type="button" data-mask="${r.mask}"
+              class="venn3-chip px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-semibold border text-left transition-all ${
+                active
+                  ? 'bg-teal-600 text-white border-teal-700 shadow-xs'
+                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-teal-400'
+              }">
+              ${r.label}
+            </button>
+          `;
+        }).join('');
+
+        chipsWrap.querySelectorAll('.venn3-chip').forEach(chip => {
+          chip.addEventListener('click', () => {
+            const m = parseInt(chip.getAttribute('data-mask'), 10);
+            if (venn3State.has(m)) venn3State.delete(m);
+            else venn3State.add(m);
+            drawVenn3();
+            updateVenn3Readout();
+          });
+        });
+
+        safeRenderMath(simpEl);
+        safeRenderMath(canEl);
+      }
+
+      function getCanvasLogicalPos(evt) {
+        const rect = venn3Canvas.getBoundingClientRect();
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+        const lx = ((clientX - rect.left) / rect.width) * LOG_W;
+        const ly = ((clientY - rect.top) / rect.height) * LOG_H;
+        return { lx, ly };
+      }
+
+      venn3Canvas.addEventListener('click', (evt) => {
+        const { lx, ly } = getCanvasLogicalPos(evt);
+        const mask = getRegionMaskAt(lx, ly);
+        if (mask >= 0) {
+          if (venn3State.has(mask)) venn3State.delete(mask);
+          else venn3State.add(mask);
+          drawVenn3();
+          updateVenn3Readout();
+        }
+      });
+
+      venn3Canvas.addEventListener('mousemove', (evt) => {
+        const { lx, ly } = getCanvasLogicalPos(evt);
+        const mask = getRegionMaskAt(lx, ly);
+        if (mask !== venn3HoverMask) {
+          venn3HoverMask = mask;
+          drawVenn3();
+        }
+      });
+
+      venn3Canvas.addEventListener('mouseleave', () => {
+        if (venn3HoverMask !== -1) {
+          venn3HoverMask = -1;
+          drawVenn3();
+        }
+      });
+
+      document.querySelectorAll('.venn3-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-preset');
+          const preset = VENN3_PRESETS[key];
+          if (!preset) return;
+          venn3State.clear();
+          preset.masks.forEach(m => venn3State.add(m));
+          drawVenn3();
+          updateVenn3Readout();
+        });
+      });
+
+      window.addEventListener('resize', resizeAndDrawVenn3);
+
+      /* -------------------------------------------------------------------
+         5. TAB 2: 3-SET SURVEY WORD PROBLEM SOLVER
+      ------------------------------------------------------------------- */
+      const SURVEY_PRESETS = {
+        whales: {
+          titleA: 'Giant Squids', titleB: 'Captain Ahab', titleC: 'Pollution',
+          A: 19, B: 24, C: 20, AB: 11, BC: 9, AC: 13, ABC: 6, None: 5,
+          banner: '<strong>ISRT Year Final 2025, Q2(d) — Whales Survey:</strong> Giant Squids=19, Captain Ahab=24, Pollution=20, All 3=6, Ahab∩Squids=11, Pollution∩Ahab only=3 (⇒ |B∩C|=3+6=9), Pollution only=4 (⇒ |A∩C only|=20−4−3−6=7 ⇒ |A∩C|=13), None=5.'
+        },
+        ross: {
+          titleA: 'Suit', titleB: 'Shirt', titleC: 'Tie',
+          A: 22, B: 30, C: 42, AB: 8, BC: 5, AC: 10, ABC: 3, None: 26,
+          banner: '<strong>Sheldon Ross — Suit / Shirt / Tie Survey (100 Customers):</strong> 22 bought a Suit (A), 30 a Shirt (B), 42 a Tie (C), 8 Suit &amp; Shirt, 10 Suit &amp; Tie, 5 Shirt &amp; Tie, 3 bought all three, and 26 bought none.'
+        },
+        tv: {
+          titleA: 'Program A', titleB: 'Program B', titleC: 'Program C',
+          A: 30, B: 28, C: 28, AB: 8, BC: 11, AC: 12, ABC: 0, None: 5,
+          banner: '<strong>AST 102 Class Note — 60 TV Viewers:</strong> 30 liked Program A, 28 liked B, 28 liked C, 8 liked A &amp; B, 12 liked A &amp; C, 11 liked B &amp; C, and 0 liked all three (leaving 5 who liked none).'
+        }
+      };
+
+      let currentSurveyLabels = { A: 'Giant Squids', B: 'Captain Ahab', C: 'Pollution' };
+
+      function computeSurvey() {
+        const A    = Math.max(0, parseInt(document.getElementById('inA').value, 10) || 0);
+        const B    = Math.max(0, parseInt(document.getElementById('inB').value, 10) || 0);
+        const C    = Math.max(0, parseInt(document.getElementById('inC').value, 10) || 0);
+        const AB   = Math.max(0, parseInt(document.getElementById('inAB').value, 10) || 0);
+        const BC   = Math.max(0, parseInt(document.getElementById('inBC').value, 10) || 0);
+        const AC   = Math.max(0, parseInt(document.getElementById('inAC').value, 10) || 0);
+        const ABC  = Math.max(0, parseInt(document.getElementById('inABC').value, 10) || 0);
+        const None = Math.max(0, parseInt(document.getElementById('inNone').value, 10) || 0);
+
+        const abOnly = AB - ABC;
+        const bcOnly = BC - ABC;
+        const acOnly = AC - ABC;
+        const aOnly  = A - abOnly - acOnly - ABC;
+        const bOnly  = B - abOnly - bcOnly - ABC;
+        const cOnly  = C - acOnly - bcOnly - ABC;
+
+        const regions = [aOnly, bOnly, cOnly, abOnly, bcOnly, acOnly, ABC, None];
+        const hasNegative = regions.some(v => v < 0);
+        const warnEl = document.getElementById('surveyWarning');
+        if (hasNegative) {
+          warnEl.textContent = 'Warning: One or more derived Venn regions is negative. Check that overlaps do not exceed individual set totals.';
+          warnEl.classList.remove('hidden');
+        } else {
+          warnEl.classList.add('hidden');
+        }
+
+        const union = aOnly + bOnly + cOnly + abOnly + bcOnly + acOnly + ABC;
+        const total = union + None;
+        const bNotA = bOnly + bcOnly;
+        const aOrC  = A + C - AC;
+        const exact1 = aOnly + bOnly + cOnly;
+        const exact2 = abOnly + bcOnly + acOnly;
+
+        // Update SVG values
+        document.getElementById('svgAonly').textContent = aOnly;
+        document.getElementById('svgBonly').textContent = bOnly;
+        document.getElementById('svgConly').textContent = cOnly;
+        document.getElementById('svgABonly').textContent = abOnly;
+        document.getElementById('svgBConly').textContent = bcOnly;
+        document.getElementById('svgAConly').textContent = acOnly;
+        document.getElementById('svgABC').textContent = ABC;
+        document.getElementById('svgNone').textContent = None;
+
+        // Update metric cards
+        document.getElementById('resUnion').textContent = union;
+        document.getElementById('resTotal').textContent = total;
+        document.getElementById('resBnotA').textContent = bNotA;
+        document.getElementById('resAorC').textContent = aOrC;
+        document.getElementById('resExact1').textContent = exact1;
+        document.getElementById('resExact2').textContent = exact2;
+
+        // Update step-by-step derivation
+        document.getElementById('surveyDerivationSteps').innerHTML = `
+          <div>1. Center |A∩B∩C| = <strong>${ABC}</strong></div>
+          <div>2. Pairwise-only: |A∩B∩C'| = ${AB}−${ABC} = <strong>${abOnly}</strong>, |B∩C∩A'| = ${BC}−${ABC} = <strong>${bcOnly}</strong>, |A∩C∩B'| = ${AC}−${ABC} = <strong>${acOnly}</strong></div>
+          <div>3. Single-only: Only A = ${A}−(${abOnly}+${acOnly}+${ABC}) = <strong>${aOnly}</strong>; Only B = ${B}−(${abOnly}+${bcOnly}+${ABC}) = <strong>${bOnly}</strong>; Only C = ${C}−(${acOnly}+${bcOnly}+${ABC}) = <strong>${cOnly}</strong></div>
+          <div>4. Union |A∪B∪C| = ${aOnly}+${bOnly}+${cOnly}+${abOnly}+${bcOnly}+${acOnly}+${ABC} = <strong>${union}</strong> &nbsp;|&nbsp; Total = ${union}+${None} = <strong>${total}</strong></div>
+        `;
+      }
+
+      function loadSurveyPreset(key) {
+        const p = SURVEY_PRESETS[key];
+        if (!p) return;
+        currentSurveyLabels = { A: p.titleA, B: p.titleB, C: p.titleC };
+        document.getElementById('inA').value = p.A;
+        document.getElementById('inB').value = p.B;
+        document.getElementById('inC').value = p.C;
+        document.getElementById('inAB').value = p.AB;
+        document.getElementById('inBC').value = p.BC;
+        document.getElementById('inAC').value = p.AC;
+        document.getElementById('inABC').value = p.ABC;
+        document.getElementById('inNone').value = p.None;
+
+        document.getElementById('lblA').textContent = `|A| ${p.titleA}`;
+        document.getElementById('lblB').textContent = `|B| ${p.titleB}`;
+        document.getElementById('lblC').textContent = `|C| ${p.titleC}`;
+        document.getElementById('svgTitleA').textContent = `A: ${p.titleA}`;
+        document.getElementById('svgTitleB').textContent = `B: ${p.titleB}`;
+        document.getElementById('svgTitleC').textContent = `C: ${p.titleC}`;
+        document.getElementById('resLblBnotA').textContent = `${p.titleB} not ${p.titleA}`;
+        document.getElementById('resLblAorC').textContent = `${p.titleA} or ${p.titleC}`;
+        document.getElementById('surveyContextBanner').innerHTML = p.banner;
+
+        document.querySelectorAll('.survey-preset-btn').forEach(b => {
+          const active = b.getAttribute('data-survey-preset') === key;
+          b.className = active
+            ? 'survey-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1e3a8a] text-white shadow-sm transition-all'
+            : 'survey-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+        });
+
+        computeSurvey();
+      }
+
+      document.querySelectorAll('.survey-input').forEach(inp => {
+        inp.addEventListener('input', computeSurvey);
+      });
+      document.querySelectorAll('.survey-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => loadSurveyPreset(btn.getAttribute('data-survey-preset')));
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 3: 2-SET ALGEBRA & DE MORGAN'S VISUALIZER
+      ------------------------------------------------------------------- */
+      const dmSliderA  = document.getElementById('dmSliderA');
+      const dmSliderB  = document.getElementById('dmSliderB');
+      const dmSliderAB = document.getElementById('dmSliderAB');
+      let dmActiveHighlight = 'union';
+
+      const DM_HIGHLIGHT_MAP = {
+        union:   { out: false, aOnly: true,  bOnly: true,  ab: true  },
+        aOnly:   { out: false, aOnly: true,  bOnly: false, ab: false },
+        bOnly:   { out: false, aOnly: false, bOnly: true,  ab: false },
+        neither: { out: true,  aOnly: false, bOnly: false, ab: false },
+        notBoth: { out: true,  aOnly: true,  bOnly: true,  ab: false },
+        xor:     { out: false, aOnly: true,  bOnly: true,  ab: false }
+      };
+
+      function updateDeMorganUI() {
+        const pA = parseFloat(dmSliderA.value);
+        const pB = parseFloat(dmSliderB.value);
+        const minAB = Math.max(0, +(pA + pB - 1).toFixed(4));
+        const maxAB = Math.min(pA, pB);
+
+        dmSliderAB.min = minAB.toFixed(4);
+        dmSliderAB.max = maxAB.toFixed(4);
+        let pAB = parseFloat(dmSliderAB.value);
+        if (pAB < minAB) pAB = minAB;
+        if (pAB > maxAB) pAB = maxAB;
+        dmSliderAB.value = pAB.toFixed(4);
+
+        const pUnion   = +(pA + pB - pAB).toFixed(4);
+        const pAonly   = +(pA - pAB).toFixed(4);
+        const pBonly   = +(pB - pAB).toFixed(4);
+        const pNeither = +(1 - pUnion).toFixed(4);
+        const pNotBoth = +(1 - pAB).toFixed(4);
+        const pXor     = +(pA + pB - 2 * pAB).toFixed(4);
+
+        document.getElementById('dmValA').textContent = pA.toFixed(3);
+        document.getElementById('dmValB').textContent = pB.toFixed(3);
+        document.getElementById('dmValAB').textContent = pAB.toFixed(3);
+        document.getElementById('dmBoundsHint').textContent = `[${minAB.toFixed(3)}, ${maxAB.toFixed(3)}]`;
+
+        document.getElementById('dmResUnion').textContent = pUnion.toFixed(3);
+        document.getElementById('dmResAonly').textContent = pAonly.toFixed(3);
+        document.getElementById('dmResBonly').textContent = pBonly.toFixed(3);
+        document.getElementById('dmResNeither').textContent = pNeither.toFixed(3);
+        document.getElementById('dmResNotBoth').textContent = pNotBoth.toFixed(3);
+        document.getElementById('dmResXor').textContent = pXor.toFixed(3);
+
+        document.getElementById('dmTxtAonly').textContent = pAonly.toFixed(3);
+        document.getElementById('dmTxtAB').textContent = pAB.toFixed(3);
+        document.getElementById('dmTxtBonly').textContent = pBonly.toFixed(3);
+        document.getElementById('dmTxtOut').textContent = pNeither.toFixed(3);
+
+        // Apply SVG region fills based on active highlighted card
+        const cfg = DM_HIGHLIGHT_MAP[dmActiveHighlight] || DM_HIGHLIGHT_MAP.union;
+        const fillOn = '#99f6e4'; // crisp teal highlight
+        document.getElementById('dmRegOut').setAttribute('fill', cfg.out ? fillOn : '#f8fafc');
+        document.getElementById('dmRegAonly').setAttribute('fill', cfg.aOnly ? fillOn : '#ffffff');
+        document.getElementById('dmRegBonly').setAttribute('fill', cfg.bOnly ? fillOn : '#ffffff');
+        document.getElementById('dmRegAB').setAttribute('fill', cfg.ab ? '#5eead4' : '#ffffff');
+      }
+
+      [dmSliderA, dmSliderB, dmSliderAB].forEach(s => {
+        s.addEventListener('input', updateDeMorganUI);
+      });
+
+      document.querySelectorAll('.dm-card').forEach(card => {
+        card.addEventListener('click', () => {
+          dmActiveHighlight = card.getAttribute('data-highlight');
+          document.querySelectorAll('.dm-card').forEach(c => {
+            c.classList.remove('border-2', 'border-[#1e3a8a]', 'bg-blue-50/70');
+            c.classList.add('border', 'border-slate-200', 'bg-white');
+          });
+          card.classList.remove('border', 'border-slate-200', 'bg-white');
+          card.classList.add('border-2', 'border-[#1e3a8a]', 'bg-blue-50/70');
+          updateDeMorganUI();
+        });
+      });
+
+      document.querySelectorAll('.dm-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-dm-preset');
+          if (p === 'defects') {
+            dmSliderA.value = '0.10';
+            dmSliderB.value = '0.20';
+            dmSliderAB.value = '0.05';
+          } else if (p === 'incourse') {
+            dmSliderA.value = (1 / 3).toFixed(4);
+            dmSliderB.value = '0.50';
+            dmSliderAB.value = (1 / 12).toFixed(4);
+          }
+          document.querySelectorAll('.dm-preset-btn').forEach(b => {
+            const active = b === btn;
+            b.className = active
+              ? 'dm-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#1e3a8a] text-white shadow-sm transition-all'
+              : 'dm-preset-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          updateDeMorganUI();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. SECTION 6: 5-QUESTION INTERACTIVE MASTERY QUIZ
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: "1. By De Morgan's Law, the event $(A \\cup B)'$ is identical to:",
+          options: [
+            "$A' \\cup B'$",
+            "$A' \\cap B'$",
+            "$A \\cap B'$",
+            "$(A \\cap B)'$"
+          ],
+          correct: 1,
+          explanation: "De Morgan's First Law states that the complement of a union is the intersection of the complements: $(A \\cup B)' = A' \\cap B'$ (neither $A$ nor $B$ occurs)."
+        },
+        {
+          q: "2. Which statement accurately distinguishes mutually exclusive events from complementary events? (Year Final 2024 Q2b)",
+          options: [
+            "Mutually exclusive events always satisfy $P(A) + P(B) = 1$.",
+            "Complementary events can overlap if their union equals $S$.",
+            "Complementary events are always both mutually exclusive and exhaustive, whereas mutually exclusive events need not be exhaustive.",
+            "There is no difference; the two terms are completely synonymous."
+          ],
+          correct: 2,
+          explanation: "Complementary events satisfy both $A \\cap B = \\emptyset$ (mutually exclusive) and $A \\cup B = S$ (exhaustive). Mutually exclusive events only require $A \\cap B = \\emptyset$."
+        },
+        {
+          q: "3. For three events $A, B, C$, which compact set expression represents 'At most one of the three events occurs'?",
+          options: [
+            "$(A \\cap B \\cap C)^c$",
+            "$(A \\cup B \\cup C)^c$",
+            "$((A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C))^c$",
+            "$(A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C)$"
+          ],
+          correct: 2,
+          explanation: "'At most one' is the exact complement of 'At least two'. Since 'At least two' is $(A \\cap B) \\cup (B \\cap C) \\cup (A \\cap C)$, its complement gives 'At most one' (0 or 1 events)."
+        },
+        {
+          q: "4. Given $P(A) = 0.45$, $P(B) = 0.35$, and $P(A \\cap B) = 0.15$, what is $P(A \\cap B')$?",
+          options: [
+            "0.20",
+            "0.30",
+            "0.65",
+            "0.50"
+          ],
+          correct: 1,
+          explanation: "Using disjoint decomposition, $P(A \\cap B') = P(A) - P(A \\cap B) = 0.45 - 0.15 = 0.30$."
+        },
+        {
+          q: "5. In a 3-set Venn survey with $|A|=19, |B|=24, |C|=20, |A \\cap B|=11, |B \\cap C|=9, |A \\cap C|=13,$ and $|A \\cap B \\cap C|=6$, how many elements are in $A$ ONLY ($|A \\cap B' \\cap C'|$)?",
+          options: [
+            "1",
+            "4",
+            "5",
+            "7"
+          ],
+          correct: 0,
+          explanation: "$|A \\cap B \\cap C'| = 11 - 6 = 5$ and $|A \\cap B' \\cap C| = 13 - 6 = 7$. Subtracting all overlaps inside $A$: $|A \\text{ only}| = 19 - (5 + 7 + 6) = 1$."
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optionsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-white border-slate-200 text-slate-700 hover:border-[#1e3a8a] hover:bg-blue-50/40';
+            if (answered) {
+              if (oIdx === item.correct) {
+                cls = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold';
+              } else if (oIdx === userAnswers[qIdx]) {
+                cls = 'bg-rose-50 border-rose-400 text-rose-900 font-semibold';
+              } else {
+                cls = 'bg-slate-50 border-slate-200 text-slate-400';
+              }
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-slate-900 text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optionsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        safeRenderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         8. INITIALIZATION ON WINDOW LOAD
+      ------------------------------------------------------------------- */
+      window.addEventListener('load', () => {
+        resizeAndDrawVenn3();
+        updateVenn3Readout();
+        loadSurveyPreset('whales');
+        updateDeMorganUI();
+        renderQuiz();
+        updateScrollProgress();
+        safeRenderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 11: Spectral Theorem & Quadratic Forms | Linear Algebra (MATH 106)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent-1: #2563eb;
+      --accent-2: #e11d48;
+      --accent-3: #059669;
+      --accent-4: #d97706;
+      --accent-purple: #7c3aed;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --sidebar-w: 270px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-card: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --primary: #60a5fa;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --primary-hover: #93c5fd;
+      --accent-1: #60a5fa;
+      --accent-2: #fb7185;
+      --accent-3: #34d399;
+      --accent-4: #fbbf24;
+      --accent-purple: #a78bfa;
+      --success: #34d399;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --warning: #fbbf24;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .brand-badge {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #e11d48, #d97706);
+      color: #fff; font-weight: 800; font-size: 13px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-title { font-size: 14px; font-weight: 700; line-height: 1.25; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+
+    .progress-box { background: var(--bg-subtle); border-radius: 10px; padding: 12px; margin-bottom: 18px; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-bar { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #e11d48, #d97706); transition: width 0.35s ease; }
+
+    .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin: 12px 8px 6px; }
+    .nav-links { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+    .nav-links a {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px;
+      color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      width: 20px; height: 20px; border-radius: 6px; background: var(--bg-subtle);
+      font-size: 11px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;
+    }
+    .nav-links a.active .nav-num { background: var(--primary); color: #fff; }
+
+    .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .theme-btn {
+      width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .theme-btn:hover { border-color: var(--primary); }
+
+    /* Mobile Header */
+    .mobile-bar {
+      display: none; position: fixed; top: 0; left: 0; right: 0; height: 54px;
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 0 16px; align-items: center; justify-content: space-between; z-index: 120;
+    }
+    .menu-btn {
+      background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Main */
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 80px; max-width: 1120px; }
+
+    /* Hero */
+    .hero {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 32px; box-shadow: var(--shadow); margin-bottom: 32px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #e11d48, #d97706, #7c3aed);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--primary-soft); color: var(--primary); }
+    .pill.neutral { background: var(--bg-subtle); color: var(--text-muted); }
+    .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .hero-desc { color: var(--text-muted); font-size: 15px; max-width: 780px; margin-bottom: 18px; }
+    .guiding-quote {
+      border-left: 3.5px solid var(--accent-2); background: var(--primary-soft);
+      padding: 12px 16px; border-radius: 0 10px 10px 0; font-size: 14px; margin-bottom: 20px;
+    }
+    .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+    .obj-item { background: var(--bg-subtle); padding: 10px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 8px; }
+    .obj-check { color: var(--success); font-weight: 800; }
+
+    /* Sections & Cards */
+    section { margin-bottom: 44px; scroll-margin-top: 24px; }
+    .sec-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .sec-title { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; display: flex; align-items: center; gap: 10px; }
+    .sec-tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary); color: #fff; }
+    .mark-btn {
+      font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); cursor: pointer;
+    }
+    .mark-btn.done { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow); margin-bottom: 18px;
+    }
+    .card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; }
+    .formula-box {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 16px; margin: 10px 0; overflow-x: auto;
+    }
+    .callout { border-radius: 10px; padding: 12px 16px; font-size: 13.5px; margin-top: 12px; }
+    .callout.warn { background: var(--warning-bg); border-left: 3.5px solid var(--warning); }
+    .callout.info { background: var(--primary-soft); border-left: 3.5px solid var(--primary); }
+    .callout.good { background: var(--success-bg); border-left: 3.5px solid var(--success); }
+
+    /* Interactive Conic Lab */
+    .lab-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; align-items: start; }
+    .canvas-wrap { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    #conicCanvas { width: 100%; height: auto; display: block; }
+    .canvas-hint {
+      font-size: 12px; color: var(--text-muted); padding: 8px 12px; border-top: 1px solid var(--border);
+      background: var(--bg-card); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+    }
+    .controls-panel { display: flex; flex-direction: column; gap: 12px; }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-btn {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text); cursor: pointer;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    .qf-inputs {
+      background: var(--bg-subtle); padding: 12px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+    }
+    .qf-inputs input {
+      width: 54px; padding: 5px; text-align: center; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text);
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    }
+    .slider-box {
+      background: var(--bg-subtle); padding: 10px 12px; border-radius: 10px;
+      display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600;
+    }
+    .telemetry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-box { background: var(--bg-subtle); padding: 9px 11px; border-radius: 9px; border: 1px solid var(--border); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 700; margin-top: 2px; }
+
+    /* Stepper */
+    .proof-steps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .proof-step {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-subtle); opacity: 0.3; transition: all 0.25s;
+    }
+    .proof-step.revealed { opacity: 1; background: var(--bg-card); border-color: var(--primary); }
+    .proof-step .step-reason { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    th {
+      background: var(--bg-subtle); font-weight: 700; font-size: 12.5px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+    }
+
+    /* Solvers */
+    .solver-input {
+      padding: 6px 7px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+      text-align: center;
+    }
+    .mat-grid-3 {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+      background: var(--bg-subtle); padding: 10px; border-radius: 10px; margin-bottom: 10px;
+    }
+    .mat-grid-3 input { width: 100%; }
+    .btn-primary {
+      padding: 9px 16px; border-radius: 8px; border: none; background: var(--primary);
+      color: #fff; font-weight: 600; font-size: 13.5px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-weight: 600; font-size: 12.5px; cursor: pointer;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .solver-output {
+      margin-top: 12px; background: var(--bg-subtle); border-radius: 10px;
+      padding: 14px 16px; font-size: 13px; max-height: 460px; overflow-y: auto;
+    }
+    .step-line { padding: 7px 0; border-bottom: 1px dashed var(--border); }
+    .step-line:last-child { border-bottom: none; }
+    .mat-inline {
+      display: inline-grid; gap: 3px 9px; padding: 5px 10px;
+      border-left: 2px solid var(--text); border-right: 2px solid var(--text); border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; text-align: right;
+      vertical-align: middle; margin: 4px 0;
+    }
+
+    /* True/False & Exam Cards */
+    .tf-item, .exam-card {
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      margin-bottom: 14px; background: var(--bg-card);
+    }
+    .tf-meta { font-size: 11.5px; font-weight: 700; color: var(--accent-purple); margin-bottom: 4px; }
+    .tf-q { font-size: 14.5px; font-weight: 500; margin-bottom: 10px; }
+    .tf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tf-btn {
+      padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-weight: 700; font-size: 12.5px; cursor: pointer;
+    }
+    .tf-btn.selected-correct { background: var(--success); color: #fff; border-color: var(--success); }
+    .tf-btn.selected-wrong { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .tf-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 13px; display: none; }
+    .tf-feedback.show { display: block; }
+    .tf-feedback.correct { background: var(--success-bg); border-left: 3px solid var(--success); }
+    .tf-feedback.wrong { background: var(--danger-bg); border-left: 3px solid var(--danger); }
+
+    .exam-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .exam-badge { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary-soft); color: var(--primary); }
+    .exam-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .reveal-box {
+      margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+      background: var(--bg-subtle); font-size: 13.5px; display: none;
+    }
+    .reveal-box.show { display: block; }
+
+    .lesson-footer {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding-top: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+    }
+
+    @media (max-width: 960px) { .lab-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 820px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); top: 54px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 74px 18px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Bar -->
+  <div class="mobile-bar">
+    <strong>MATH 106 &middot; Lesson 11</strong>
+    <button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">Menu</button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">L11</div>
+      <div>
+        <div class="brand-title">Linear Algebra</div>
+        <div class="brand-sub">MATH 106 / AST 107 &middot; DU IASDS</div>
+      </div>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson 11 Mastery</span>
+        <span id="progText">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <div class="nav-label">Lesson Sections</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#orientation" class="active"><span class="nav-num">0</span> Orientation</a></li>
+      <li><a href="#lab"><span class="nav-num">1</span> Principal Axes Conic Lab</a></li>
+      <li><a href="#spectral"><span class="nav-num">2</span> Spectral Theorem</a></li>
+      <li><a href="#qf-theory"><span class="nav-num">3</span> Quadratic Forms &amp; Tests</a></li>
+      <li><a href="#dictionary"><span class="nav-num">4</span> Geometric Dictionary</a></li>
+      <li><a href="#solvers"><span class="nav-num">5</span> Interactive Solvers</a></li>
+      <li><a href="#exam-arena"><span class="nav-num">6</span> DU Past-Exam Arena</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">Switch to Dark Mode</button>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center;">
+        Module 4 of 4 &middot; Lesson 11 of 12
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- 0. Orientation -->
+    <section id="orientation" class="hero">
+      <div class="pill-row">
+        <span class="pill">Module 4: Eigen-Theory &amp; Decompositions</span>
+        <span class="pill neutral">Lesson 11 of 12</span>
+        <span class="pill neutral">Finals Heavyweight (6+ Marks)</span>
+        <span class="pill neutral">MATH106_EV_3 &middot; MATH106_quadraticform &middot; Anton 7.2&ndash;7.4</span>
+      </div>
+      <h1>Spectral Theorem &amp; Quadratic Forms</h1>
+      <p class="hero-desc">
+        Real symmetric matrices ($A = A^T$) are the crown jewels of Linear Algebra: they always have real eigenvalues,
+        orthogonal eigenvectors, and decompose cleanly as $A = PDP^T$. That single fact powers the <strong>Principal Axes Theorem</strong>,
+        eliminating cross-product terms from quadratic forms $Q = \mathbf{x}^T A \mathbf{x}$ and driving PCA, covariance matrices, and multivariable optimization.
+      </p>
+      <div class="guiding-quote">
+        <strong>Core Geometric Insight (MATH106_quadraticform):</strong> Cross-product terms like $4x_1 x_2$ simply mean a conic or surface is
+        <em>tilted</em> away from the coordinate axes. An orthogonal change of variable $\mathbf{x} = P\mathbf{y}$ rotates your axes onto the eigenvectors so $Q = \sum \lambda_i y_i^2$!
+      </div>
+      <div class="obj-grid">
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Orthogonally diagonalize symmetric $A = PDP^T$ (with Gram-Schmidt inside repeated eigenspaces)</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Convert quadratic forms $Q$ into $\mathbf{x}^T A \mathbf{x}$ and eliminate cross terms</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Classify definiteness via Eigenvalue Test &amp; Leading Principal Minors</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Connect definiteness to ellipses/hyperbolas, Hessians, and covariance matrices</span></div>
+      </div>
+    </section>
+
+    <!-- 1. Visual Intuition Lab -->
+    <section id="lab">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">LAB</span> 1. Interactive Conic &amp; Principal Axes Rotation Lab</h2>
+        <button class="mark-btn" data-sec="lab" onclick="toggleDone('lab', this)">Mark Complete</button>
+      </div>
+
+      <div class="card">
+        <div class="lab-layout">
+          <div>
+            <div class="canvas-wrap">
+              <canvas id="conicCanvas" width="560" height="440"></canvas>
+              <div class="canvas-hint">
+                <span>Curve: $ax_1^2 + 2bx_1x_2 + cx_2^2 = 6$ &nbsp;|&nbsp; Dashed arrows = Principal Axes (Eigenvectors)</span>
+                <span>Slide to rotate into standard form!</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-panel">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">LECTURE QUADRATIC FORM PRESETS</div>
+              <div class="preset-row">
+                <button class="chip-btn" onclick="setQF(2, 2, 2)">Pos. Def. ($2x_1^2+2x_1x_2+2x_2^2$)</button>
+                <button class="chip-btn" onclick="setQF(5, -4, 8)">Practice Q1 ($5x^2-4xy+8y^2$)</button>
+                <button class="chip-btn" onclick="setQF(1, 4, -1)">Indefinite (Hyperbola)</button>
+                <button class="chip-btn" onclick="setQF(1, 2, 1)">Pos. Semidef. (Lines)</button>
+                <button class="chip-btn" onclick="setQF(-3, 2, -3)">Neg. Def. (Empty)</button>
+              </div>
+            </div>
+
+            <div class="qf-inputs">
+              <input id="qf_a" type="number" step="0.5" value="2" oninput="drawConicLab()"> $x_1^2 +$
+              <input id="qf_2b" type="number" step="0.5" value="2" oninput="drawConicLab()"> $x_1 x_2 +$
+              <input id="qf_c" type="number" step="0.5" value="2" oninput="drawConicLab()"> $x_2^2 = 6$
+            </div>
+
+            <div class="slider-box">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Rotate to Principal Axes ($t =$ <span id="rotLbl">0.00</span>)</span>
+                <button class="chip-btn" onclick="animateRot()">&#9654; Animate $\mathbf{x} = P\mathbf{y}$</button>
+              </div>
+              <input type="range" id="rotSlider" min="0" max="1" step="0.02" value="0" oninput="drawConicLab()">
+            </div>
+
+            <div class="telemetry">
+              <div class="stat-box">
+                <div class="stat-label">Eigenvalues $\lambda_1, \lambda_2$</div>
+                <div class="stat-val" id="qfEigs">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Principal Minors $\Delta_1, \Delta_2$</div>
+                <div class="stat-val" id="qfMinors">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Definiteness</div>
+                <div class="stat-val" id="qfClass">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Level Curve ($Q = 6$)</div>
+                <div class="stat-val" id="qfCurve">&mdash;</div>
+              </div>
+            </div>
+
+            <div class="callout info" style="margin-top:0; font-size:12.5px;" id="qfDiagEq"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. The Spectral Theorem -->
+    <section id="spectral">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">THEOREM</span> 2. The Spectral Theorem ($A = PDP^T$)</h2>
+        <button class="mark-btn" data-sec="spectral" onclick="toggleDone('spectral', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>2.1 Three Equivalent Statements</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+            For a real $n\times n$ matrix $A$, the following are equivalent:
+          </p>
+          <div class="formula-box">
+            (i) $A$ is <strong>orthogonally diagonalizable</strong> ($P^T A P = D$ with $P^T = P^{-1}$)<br>
+            (ii) $A$ has an <strong>orthonormal set of $n$ eigenvectors</strong><br>
+            (iii) $A$ is <strong>symmetric</strong> ($A = A^T$)
+          </div>
+          <ul style="padding-left:18px; font-size:13px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
+            <li>Every real symmetric matrix has <strong>all real eigenvalues</strong> and is <strong>never defective</strong> ($GM = AM$ always!).</li>
+            <li>Eigenvectors from <em>different</em> eigenspaces are <strong>automatically orthogonal</strong>.</li>
+            <li><strong>Spectral Decomposition:</strong> $A = PDP^T = \lambda_1\mathbf{p}_1\mathbf{p}_1^T + \dots + \lambda_n\mathbf{p}_n\mathbf{p}_n^T$.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>2.2 3-Step Algorithm: Orthogonal Diagonalization</h3>
+          <ol style="padding-left:18px; font-size:13.5px; color:var(--text-muted); display:flex; flex-direction:column; gap:7px;">
+            <li><strong>Find a basis for each eigenspace</strong> of $A$ by solving $(\lambda I - A)\mathbf{x} = \mathbf{0}$.</li>
+            <li><strong>Apply Gram-Schmidt within each eigenspace separately</strong> (if $\dim E_\lambda \ge 2$, orthogonalize its basis; if $\dim E_\lambda = 1$, just normalize to unit length!).</li>
+            <li><strong>Assemble $P = [\mathbf{p}_1 \cdots \mathbf{p}_n]$:</strong> Then $P^T A P = D = \text{diag}(\lambda_1, \dots, \lambda_n)$ in matching order.</li>
+          </ol>
+          <div class="callout good" style="font-size:12.5px;">
+            <strong>Why we don't need Gram-Schmidt across different eigenvalues:</strong> Cross-eigenspace orthogonality is guaranteed automatically for symmetric $A$!
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Proof Stepper -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div>
+            <strong>Interactive Proofs: Symmetry Necessity &amp; Automatic Cross-Eigenspace Orthogonality</strong>
+            <span class="exam-badge" style="margin-left:6px;">MATH106_EV_3 Slide 10 &middot; Anton Thm 7.2.1</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-primary" onclick="nextProofStep()">Next Proof Step</button>
+            <button class="btn-outline" onclick="resetProof()">Reset</button>
+          </div>
+        </div>
+        <div class="proof-steps" id="proofSteps">
+          <div class="proof-step revealed">
+            <div class="step-reason">Proof 1: If $A$ is orthogonally diagonalizable ($P^T A P = D$), then $A$ MUST be symmetric</div>
+            Multiply by $P$ on the left and $P^T$ on the right: $A = PDP^T$. Taking the transpose (since $D^T = D$):
+            $$A^T = (PDP^T)^T = (P^T)^T D^T P^T = PDP^T = A.$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Proof 2: Distinct eigenvalues of symmetric $A$ give orthogonal eigenvectors</div>
+            Suppose $A\mathbf{v}_1 = \lambda_1\mathbf{v}_1$ and $A\mathbf{v}_2 = \lambda_2\mathbf{v}_2$ with $\lambda_1 \neq \lambda_2$. Compute $\mathbf{v}_1^T A \mathbf{v}_2$ two ways:
+            $$\mathbf{v}_1^T (A\mathbf{v}_2) = \lambda_2 (\mathbf{v}_1^T\mathbf{v}_2), \qquad (A^T\mathbf{v}_1)^T\mathbf{v}_2 = (A\mathbf{v}_1)^T\mathbf{v}_2 = \lambda_1 (\mathbf{v}_1^T\mathbf{v}_2).$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Subtract the two expressions</div>
+            $$(\lambda_1 - \lambda_2)(\mathbf{v}_1^T\mathbf{v}_2) = 0.$$
+            Since $\lambda_1 \neq \lambda_2$, we must have $\mathbf{v}_1^T\mathbf{v}_2 = 0$, i.e., $\mathbf{v}_1 \perp \mathbf{v}_2$. $\blacksquare$
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Quadratic Forms & Definiteness Tests -->
+    <section id="qf-theory">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">QUADRATIC FORMS</span> 3. Principal Axes Theorem &amp; Definiteness Classification</h2>
+        <button class="mark-btn" data-sec="qf" onclick="toggleDone('qf', this)">Mark Complete</button>
+      </div>
+
+      <div class="card">
+        <h3>3.1 Reading Off Symmetric $A$ &amp; Eliminating Cross Terms</h3>
+        <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:8px;">
+          Every quadratic form $Q(\mathbf{x}) = \mathbf{x}^T A \mathbf{x}$ has a unique symmetric matrix $A$:
+          <strong>diagonal entries</strong> = coefficients of $x_i^2$; <strong>off-diagonal entries</strong> = <em>half</em> the coefficients of $x_i x_j$.
+          Setting $\mathbf{x} = P\mathbf{y}$ (where $P$ orthogonally diagonalizes $A$) gives:
+        </p>
+        <div class="formula-box">
+          $$Q(\mathbf{x}) = \mathbf{x}^T A \mathbf{x} = \mathbf{y}^T (P^T A P)\mathbf{y} = \mathbf{y}^T D \mathbf{y} = \lambda_1 y_1^2 + \lambda_2 y_2^2 + \dots + \lambda_n y_n^2$$
+        </div>
+        <p style="font-size:13px; color:var(--text-muted);">
+          <strong>Range Preservation:</strong> Because $P$ is invertible (an orthogonal rotation), the set of values attained by $Q$ is completely unchanged—so sign behavior, maxima, and minima can be read directly off the eigenvalues!
+        </p>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Classification</th>
+              <th>Definition ($\forall \mathbf{x}\neq\mathbf{0}$)</th>
+              <th>Eigenvalue Test (Thm 7.3.2)</th>
+              <th>Leading Principal Minors $\Delta_1, \Delta_2, \dots, \Delta_n$</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Positive Definite (PD)</strong></td>
+              <td>$\mathbf{x}^T A\mathbf{x} &gt; 0$</td>
+              <td>All $\lambda_i &gt; 0$</td>
+              <td>$+, +, +, \dots$ (all strictly positive)</td>
+            </tr>
+            <tr>
+              <td><strong>Negative Definite (ND)</strong></td>
+              <td>$\mathbf{x}^T A\mathbf{x} &lt; 0$</td>
+              <td>All $\lambda_i &lt; 0$</td>
+              <td>$-, +, -, +, \dots$ (strictly alternating, starting $-$)</td>
+            </tr>
+            <tr>
+              <td><strong>Positive Semidefinite (PSD)</strong></td>
+              <td>$\mathbf{x}^T A\mathbf{x} \ge 0$</td>
+              <td>All $\lambda_i \ge 0$ (at least one $0$)</td>
+              <td>All principal minors $\ge 0$ (singular, $\det A = 0$)</td>
+            </tr>
+            <tr>
+              <td><strong>Negative Semidefinite (NSD)</strong></td>
+              <td>$\mathbf{x}^T A\mathbf{x} \le 0$</td>
+              <td>All $\lambda_i \le 0$ (at least one $0$)</td>
+              <td>Nonpositive/nonnegative alternating, $\det A = 0$</td>
+            </tr>
+            <tr>
+              <td><strong>Indefinite</strong></td>
+              <td>Takes both $+$ and $-$ values</td>
+              <td>Mixed signs (at least one $+$ &amp; one $-$)</td>
+              <td>Neither PD nor ND (e.g., both $+$ and $-$ appear)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warn" style="margin-top:0;">
+        <strong>Classic Exam Trap (Slide 22):</strong> The signs of the <em>entries</em> of $A$ tell you <strong>nothing</strong> about definiteness!
+        For example, $A = \begin{bmatrix} 3 & 1 & 1 \\ 1 & 0 & 2 \\ 1 & 2 & 0 \end{bmatrix}$ has all entries $\ge 0$, yet its eigenvalues are $4, 1, -2$ (<strong>indefinite</strong>)!
+      </div>
+    </section>
+
+    <!-- 4. Geometric Dictionary -->
+    <section id="dictionary">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">MAP</span> 4. Geometric &amp; Statistical Dictionary</h2>
+        <button class="mark-btn" data-sec="dictionary" onclick="toggleDone('dictionary', this)">Mark Complete</button>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Algebraic / Matrix Fact</th>
+              <th>Geometry ($z = \mathbf{x}^T A\mathbf{x}$ &amp; Conic $Q=k$)</th>
+              <th>Statistics / Data Science Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Positive Definite (all $\lambda_i &gt; 0$)</td>
+              <td>Upward bowl (unique min at $\mathbf{0}$); level curve is an <strong>ellipse</strong></td>
+              <td>Unique OLS minimum ($X^T X$ PD); Mahalanobis confidence ellipses</td>
+            </tr>
+            <tr>
+              <td>Negative Definite (all $\lambda_i &lt; 0$)</td>
+              <td>Downward dome (unique max at $\mathbf{0}$); $Q=k&gt;0$ is empty</td>
+              <td>Local maximum in multivariable optimization (Hessian ND)</td>
+            </tr>
+            <tr>
+              <td>Indefinite (mixed $\lambda_i$)</td>
+              <td><strong>Saddle</strong> surface; level curve is a <strong>hyperbola</strong></td>
+              <td>Saddle point in optimization</td>
+            </tr>
+            <tr>
+              <td>Positive Semidefinite ($\lambda_i \ge 0$)</td>
+              <td>Trough with flat zero-curvature valley along $\lambda = 0$</td>
+              <td><strong>Every covariance matrix $\Sigma$</strong> is PSD ($\text{Var}(\mathbf{a}^T X) = \mathbf{a}^T\Sigma\mathbf{a} \ge 0$)</td>
+            </tr>
+            <tr>
+              <td>Principal Axes $\mathbf{p}_1, \dots, \mathbf{p}_n$</td>
+              <td>Symmetry axes of the ellipse/ellipsoid (semi-axes $= \sqrt{k/\lambda_i}$)</td>
+              <td><strong>PCA directions</strong> (eigenvectors of $\Sigma$); $\lambda_i$ = variance explained</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Interactive Solvers -->
+    <section id="solvers">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">TOOLS</span> 5. Interactive Step-by-Step Solvers</h2>
+        <button class="mark-btn" data-sec="solvers" onclick="toggleDone('solvers', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Solver A: 2x2 Orthogonal Diagonalizer -->
+        <div class="card">
+          <h3>Solver A: $2\times 2$ Orthogonal Diagonalizer ($P^T A P = D$)</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            For $Q = a x_1^2 + (2b) x_1 x_2 + c x_2^2$, builds symmetric $A$, finds orthonormal $P$, and eliminates the cross term.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadOD2(3, 2, 3)">EV_3 Practice ($3x_1^2+2x_1x_2+3x_2^2$)</button>
+            <button class="chip-btn" onclick="loadOD2(5, -4, 8)">QF Practice Q1 ($5,-4,8$)</button>
+            <button class="chip-btn" onclick="loadOD2(2, 2, 2)">QF Ex. ($2,2,2$)</button>
+            <button class="chip-btn" onclick="loadOD2(1, 2, 1)">Semidef. ($1,2,1$)</button>
+          </div>
+          <div class="qf-inputs" style="margin-bottom:10px;">
+            <input id="od_a" type="number" step="any" value="3"> $x_1^2 +$
+            <input id="od_2b" type="number" step="any" value="2"> $x_1 x_2 +$
+            <input id="od_c" type="number" step="any" value="3"> $x_2^2$
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runOD2Solver()">Orthogonally Diagonalize &amp; Simplify $Q$</button>
+          <div class="solver-output" id="od2Out"></div>
+        </div>
+
+        <!-- Solver B: 3x3 Leading Principal Minors Classifier -->
+        <div class="card">
+          <h3>Solver B: $3\times 3$ Symmetric Definiteness Classifier</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Enter a symmetric $3\times 3$ matrix $A$ to compute leading principal minors $\Delta_1, \Delta_2, \Delta_3$ and classify definiteness.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadPM3([4,2,2, 2,4,2, 2,2,4])">EV_3 Ex. (PD)</button>
+            <button class="chip-btn" onclick="loadPM3([3,1,1, 1,0,2, 1,2,0])">QF Ex. 4 (All &ge;0, Indef!)</button>
+            <button class="chip-btn" onclick="loadPM3([1,-2,0, -2,0,2, 0,2,-1])">Final 2025 Q2(c) (Indef.)</button>
+            <button class="chip-btn" onclick="loadPM3([-2,1,0, 1,-2,1, 0,1,-2])">Neg. Definite</button>
+          </div>
+          <div class="mat-grid-3">
+            <input class="solver-input" id="pm00" type="number" step="any" value="3">
+            <input class="solver-input" id="pm01" type="number" step="any" value="1">
+            <input class="solver-input" id="pm02" type="number" step="any" value="1">
+            <input class="solver-input" id="pm10" type="number" step="any" value="1">
+            <input class="solver-input" id="pm11" type="number" step="any" value="0">
+            <input class="solver-input" id="pm12" type="number" step="any" value="2">
+            <input class="solver-input" id="pm20" type="number" step="any" value="1">
+            <input class="solver-input" id="pm21" type="number" step="any" value="2">
+            <input class="solver-input" id="pm22" type="number" step="any" value="0">
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runPM3Solver()">Compute $\Delta_1, \Delta_2, \Delta_3$ &amp; Classify</button>
+          <div class="solver-output" id="pm3Out"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. DU Past-Exam Arena -->
+    <section id="exam-arena">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">EXAM ARENA</span> 6. DU Past-Exam Practice (2017&ndash;2025)</h2>
+        <button class="mark-btn" data-sec="exam" onclick="toggleDone('exam', this)">Mark Complete</button>
+      </div>
+
+      <!-- Part A: True/False -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+          <div>
+            <h3 style="margin-bottom:2px;">Part A: True / False Conceptual Traps</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Core Spectral Theorem &amp; Quadratic Form concepts from the lecture slides.</p>
+          </div>
+          <div class="pill" id="tfScore">Score: 0 / 5</div>
+        </div>
+        <div id="tfContainer"></div>
+      </div>
+
+      <!-- Part B: Written Past Exam Problems -->
+      <h3 style="margin:22px 0 12px; font-size:18px;">Part B: Written Exam Problems (Interactive Checks, Hints &amp; Solutions)</h3>
+
+      <!-- Problem 1: Final 2025 Q2(c) / QF Example 2 -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 1: Orthogonal Change of Variables Eliminating Cross Terms</strong>
+          <span class="exam-badge">Final 2025 Q2(c) (6 Marks) &middot; QF Slides Ex. 2</span>
+        </div>
+        <p style="font-size:14px;">
+          Find an orthogonal change of variables that eliminates the cross-product terms in the quadratic form
+          $Q = x_1^2 - x_3^2 - 4x_1 x_2 + 4x_2 x_3$, and express $Q$ in terms of the new variables $y_1, y_2, y_3$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint1')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol1')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="hint1">
+          <strong>Hint:</strong> Build symmetric $A = \begin{bmatrix} 1 & -2 & 0 \\ -2 & 0 & 2 \\ 0 & 2 & -1 \end{bmatrix}$. Its characteristic polynomial factors cleanly as $\lambda(\lambda+3)(\lambda-3) = 0$!
+        </div>
+        <div class="reveal-box" id="sol1">
+          <strong>Solution:</strong><br>
+          1. Symmetric matrix: $A = \begin{bmatrix} 1 & -2 & 0 \\ -2 & 0 & 2 \\ 0 & 2 & -1 \end{bmatrix}$.<br>
+          2. Eigenvalues: $\det(\lambda I - A) = \lambda^3 - 9\lambda = \lambda(\lambda + 3)(\lambda - 3) = 0 \implies \lambda_1 = 0,\; \lambda_2 = -3,\; \lambda_3 = 3$.<br>
+          3. Unit eigenvectors (automatically orthogonal because eigenvalues are distinct!):
+          $$\mathbf{p}_1 = \frac{1}{3}\begin{bmatrix} 2 \\ 1 \\ 2 \end{bmatrix},\quad \mathbf{p}_2 = \frac{1}{3}\begin{bmatrix} -1 \\ -2 \\ 2 \end{bmatrix},\quad \mathbf{p}_3 = \frac{1}{3}\begin{bmatrix} -2 \\ 2 \\ 1 \end{bmatrix}.$$
+          4. Substitution $\mathbf{x} = P\mathbf{y}$ with $P = [\mathbf{p}_1\;\mathbf{p}_2\;\mathbf{p}_3]$ eliminates all cross terms:
+          $$Q = \mathbf{y}^T(P^T A P)\mathbf{y} = \mathbf{-3y_2^2 + 3y_3^2} \quad (\text{indefinite}).$$
+        </div>
+      </div>
+
+      <!-- Problem 2: Final 2025 Q2(a) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 2: Matrix Form of a General Quadratic Equation</strong>
+          <span class="exam-badge">Final 2025 Q2(a) (3 Marks)</span>
+        </div>
+        <p style="font-size:14px;">
+          Express the quadratic equation $y^2 + 7x - 8y - 5 = 0$ in the matrix form $\mathbf{x}' A \mathbf{x} + K\mathbf{x} + f = 0$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol2')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol2">
+          <strong>Solution:</strong><br>
+          Let $\mathbf{x} = \begin{bmatrix} x \\ y \end{bmatrix}$. Here the $x^2$ and $xy$ terms have coefficient $0$, and the $y^2$ term has coefficient $1$:
+          $$\begin{bmatrix} x & y \end{bmatrix}\begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}\begin{bmatrix} x \\ y \end{bmatrix} + \begin{bmatrix} 7 & -8 \end{bmatrix}\begin{bmatrix} x \\ y \end{bmatrix} + (-5) = 0.$$
+          So $A = \begin{bmatrix} 0 & 0 \\ 0 & 1 \end{bmatrix}$, $K = \begin{bmatrix} 7 & -8 \end{bmatrix}$, and $f = -5$.
+        </div>
+      </div>
+
+      <!-- Problem 3: MATH106_EV_3 Orthogonal Diagonalization with Repeated Eigenvalue -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 3: Orthogonal Diagonalization with Gram-Schmidt Inside $E_2$</strong>
+          <span class="exam-badge">MATH106_EV_3 Slides 13&ndash;16</span>
+        </div>
+        <p style="font-size:14px;">
+          Find an orthogonal matrix $P$ that orthogonally diagonalizes the symmetric matrix
+          $A = \begin{bmatrix} 4 & 2 & 2 \\ 2 & 4 & 2 \\ 2 & 2 & 4 \end{bmatrix}$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint3')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol3')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="hint3">
+          <strong>Hint:</strong> Eigenvalues are $\lambda = 2, 2, 8$. Inside the 2D eigenspace $E_2$ ($x_1+x_2+x_3=0$), the raw basis $\{(-1,1,0)^T, (-1,0,1)^T\}$ is NOT orthogonal—run Gram-Schmidt on them!
+        </div>
+        <div class="reveal-box" id="sol3">
+          <strong>Solution:</strong><br>
+          1. $\det(\lambda I - A) = (\lambda - 2)^2(\lambda - 8) = 0 \implies \lambda = 2, 2, 8$.<br>
+          2. For $\lambda = 2$: $x_1 + x_2 + x_3 = 0 \implies$ raw basis $\mathbf{u}_1 = (-1, 1, 0)^T$, $\mathbf{u}_2 = (-1, 0, 1)^T$.<br>
+          Apply Gram-Schmidt inside $E_2$:
+          $$\mathbf{v}_1 = \frac{1}{\sqrt{2}}\begin{bmatrix} -1 \\ 1 \\ 0 \end{bmatrix}, \quad \mathbf{q}_2 = \mathbf{u}_2 - \frac{1}{2}\mathbf{u}_1 = \begin{bmatrix} -1/2 \\ -1/2 \\ 1 \end{bmatrix} \implies \mathbf{v}_2 = \frac{1}{\sqrt{6}}\begin{bmatrix} -1 \\ -1 \\ 2 \end{bmatrix}.$$
+          3. For $\lambda = 8$: $x_1 = x_2 = x_3 \implies \mathbf{v}_3 = \frac{1}{\sqrt{3}}(1, 1, 1)^T$ (already orthogonal to $\mathbf{v}_1, \mathbf{v}_2$!).<br>
+          4. Assemble $P = [\mathbf{v}_1\;\mathbf{v}_2\;\mathbf{v}_3]$: then $P^T A P = \text{diag}(2, 2, 8)$. &#10003;
+        </div>
+      </div>
+
+      <!-- Problem 4: Lecture Practice Q1 (5x^2 - 4xy + 8y^2) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 4: Matrix Representation &amp; Classification via Principal Minors</strong>
+          <span class="exam-badge">QF Slides Practice Q1</span>
+        </div>
+        <p style="font-size:14px;">
+          Write $Q = 5x^2 - 4xy + 8y^2$ in the form $\mathbf{x}^T A\mathbf{x}$, find its leading principal minors $\Delta_1, \Delta_2$, and classify its definiteness.
+        </p>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:600;">Quick check — enter $\Delta_1, \Delta_2$:</span>
+          <input type="text" id="ansPM" class="solver-input" style="width:110px;" placeholder="d1, d2" />
+          <button class="btn-primary" onclick="checkPM()">Check</button>
+          <span id="pmMsg" style="font-size:13px; font-weight:600;"></span>
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol4')">Show Full Solution</button>
+          <button class="btn-outline" onclick="loadOD2(5, -4, 8); location.href='#solvers';">Diagonalize in Solver A</button>
+        </div>
+        <div class="reveal-box" id="sol4">
+          <strong>Solution:</strong><br>
+          1. Symmetric matrix: $A = \begin{bmatrix} 5 & -2 \\ -2 & 8 \end{bmatrix}$ (off-diagonal $= \frac{1}{2}(-4) = -2$).<br>
+          2. Leading principal minors: $\Delta_1 = 5 &gt; 0$ and $\Delta_2 = \det(A) = 40 - 4 = \mathbf{36} &gt; 0$.<br>
+          3. Pattern $+, + \implies$ <strong>Positive Definite</strong>! (Eigenvalues are $\lambda = 4, 9$, so $Q = 4y_1^2 + 9y_2^2$.)
+        </div>
+      </div>
+    </section>
+
+    <footer class="lesson-footer">
+      <div style="font-size:13px; color:var(--text-muted);">
+        &larr; Lesson 10: Eigenvalues, Eigenvectors, Diagonalization &amp; Cayley-Hamilton
+      </div>
+      <div style="font-size:13px; font-weight:600; color:var(--primary);">
+        Course Finale next &rarr; Lesson 12: Matrix Square Roots (Cholesky) &amp; Singular Value Decomposition (SVD)
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    /* ============== THEME TOGGLE ============== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('themeBtn').textContent = isDark ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+      localStorage.setItem('la_theme', isDark ? 'light' : 'dark');
+      drawConicLab();
+    }
+    (function initTheme(){
+      if (localStorage.getItem('la_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeBtn').textContent = 'Switch to Light Mode';
+      }
+    })();
+
+    /* ============== PROGRESS TRACKER ============== */
+    const sections = ['lab', 'spectral', 'qf', 'dictionary', 'solvers', 'exam'];
+    let doneState = JSON.parse(localStorage.getItem('la_l11_done') || '{}');
+    function updateProgressUI() {
+      let count = 0;
+      sections.forEach(s => {
+        const btn = document.querySelector(`.mark-btn[data-sec="${s}"]`);
+        if (doneState[s]) { count++; if (btn) { btn.classList.add('done'); btn.textContent = 'Completed \u2713'; } }
+        else if (btn) { btn.classList.remove('done'); btn.textContent = 'Mark Complete'; }
+      });
+      const pct = Math.round((count / sections.length) * 100);
+      document.getElementById('progText').textContent = pct + '%';
+      document.getElementById('progFill').style.width = pct + '%';
+    }
+    function toggleDone(sec) {
+      doneState[sec] = !doneState[sec];
+      localStorage.setItem('la_l11_done', JSON.stringify(doneState));
+      updateProgressUI();
+    }
+    updateProgressUI();
+
+    /* ============== SCROLL SPY ============== */
+    const navAnchors = document.querySelectorAll('#navLinks a');
+    window.addEventListener('scroll', () => {
+      let cur = 'orientation';
+      document.querySelectorAll('main section').forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) cur = sec.id;
+      });
+      navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    });
+
+    /* ============== 2x2 SYMMETRIC EIGEN HELPER ============== */
+    function symEigen2(a, b, c) {
+      const tr = a + c, det = a * c - b * b;
+      const disc = Math.sqrt(Math.max(0, (a - c) * (a - c) + 4 * b * b));
+      const l1 = (tr + disc) / 2, l2 = (tr - disc) / 2;
+      let theta = 0;
+      if (Math.abs(b) > 1e-8) {
+        theta = 0.5 * Math.atan2(2 * b, a - c);
+      } else if (c > a) {
+        theta = Math.PI / 2;
+      }
+      return { l1, l2, theta, det };
+    }
+
+    /* ============== INTERACTIVE CONIC & PRINCIPAL AXES LAB ============== */
+    const canvas = document.getElementById('conicCanvas');
+    const ctx = canvas.getContext('2d');
+    const SCALE = 52, OX = canvas.width / 2, OY = canvas.height / 2;
+    const K_LEVEL = 6;
+    let rotAnimId = null;
+
+    function toC(x, y) { return { cx: OX + x * SCALE, cy: OY - y * SCALE }; }
+    function setQF(a, twoB, c) {
+      document.getElementById('qf_a').value = a;
+      document.getElementById('qf_2b').value = twoB;
+      document.getElementById('qf_c').value = c;
+      document.getElementById('rotSlider').value = 0;
+      drawConicLab();
+    }
+    function animateRot() {
+      if (rotAnimId) cancelAnimationFrame(rotAnimId);
+      const sl = document.getElementById('rotSlider');
+      let t = parseFloat(sl.value) > 0.5 ? 0 : 0;
+      function step() {
+        t += 0.025;
+        if (t >= 1) { sl.value = 1; drawConicLab(); rotAnimId = null; return; }
+        sl.value = t.toFixed(2);
+        drawConicLab();
+        rotAnimId = requestAnimationFrame(step);
+      }
+      step();
+    }
+
+    function drawConicLab() {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const a = parseFloat(document.getElementById('qf_a').value) || 0;
+      const twoB = parseFloat(document.getElementById('qf_2b').value) || 0;
+      const c = parseFloat(document.getElementById('qf_c').value) || 0;
+      const b = twoB / 2;
+      const t = parseFloat(document.getElementById('rotSlider').value);
+      document.getElementById('rotLbl').textContent = t.toFixed(2);
+
+      const eig = symEigen2(a, b, c);
+      const rotAngle = (1 - t) * eig.theta; // 0 when t=1 (aligned with axes!)
+
+      const gridCol = dark ? '#1e293b' : '#e2e8f0';
+      const axisCol = dark ? '#64748b' : '#94a3b8';
+      const cCurve = dark ? '#60a5fa' : '#2563eb';
+      const cAx1 = dark ? '#fb7185' : '#e11d48';
+      const cAx2 = dark ? '#34d399' : '#059669';
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Grid & Axes
+      ctx.strokeStyle = gridCol; ctx.lineWidth = 1;
+      for (let i = -6; i <= 6; i++) {
+        let p = toC(i, 0); ctx.beginPath(); ctx.moveTo(p.cx, 0); ctx.lineTo(p.cx, canvas.height); ctx.stroke();
+        p = toC(0, i); ctx.beginPath(); ctx.moveTo(0, p.cy); ctx.lineTo(canvas.width, p.cy); ctx.stroke();
+      }
+      ctx.strokeStyle = axisCol; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(0, OY); ctx.lineTo(canvas.width, OY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(OX, 0); ctx.lineTo(OX, canvas.height); ctx.stroke();
+
+      // Draw Principal Axes rotated by rotAngle
+      const cosA = Math.cos(rotAngle), sinA = Math.sin(rotAngle);
+      ctx.save(); ctx.setLineDash([6, 4]); ctx.lineWidth = 1.8;
+      ctx.strokeStyle = cAx1;
+      let p1 = toC(-5*cosA, -5*sinA), p2 = toC(5*cosA, 5*sinA);
+      ctx.beginPath(); ctx.moveTo(p1.cx, p1.cy); ctx.lineTo(p2.cx, p2.cy); ctx.stroke();
+      ctx.strokeStyle = cAx2;
+      p1 = toC(5*sinA, -5*cosA); p2 = toC(-5*sinA, 5*cosA);
+      ctx.beginPath(); ctx.moveTo(p1.cx, p1.cy); ctx.lineTo(p2.cx, p2.cy); ctx.stroke();
+      ctx.restore();
+
+      // Plot level set l1*u^2 + l2*v^2 = K_LEVEL rotated by rotAngle
+      const l1 = eig.l1, l2 = eig.l2;
+      const plotRot = (u, v) => toC(u*cosA - v*sinA, u*sinA + v*cosA);
+
+      ctx.save(); ctx.strokeStyle = cCurve; ctx.lineWidth = 3;
+      if (l1 > 1e-5 && l2 > 1e-5) {
+        // Ellipse
+        const rx = Math.sqrt(K_LEVEL / l1), ry = Math.sqrt(K_LEVEL / l2);
+        ctx.beginPath();
+        for (let i = 0; i <= 140; i++) {
+          const ang = (i / 140) * Math.PI * 2;
+          const pt = plotRot(rx * Math.cos(ang), ry * Math.sin(ang));
+          if (i === 0) ctx.moveTo(pt.cx, pt.cy); else ctx.lineTo(pt.cx, pt.cy);
+        }
+        ctx.stroke();
+      } else if (l1 * l2 < -1e-5) {
+        // Hyperbola
+        const posFirst = l1 > 0;
+        const rPos = Math.sqrt(K_LEVEL / (posFirst ? l1 : l2));
+        const rNeg = Math.sqrt(K_LEVEL / Math.abs(posFirst ? l2 : l1));
+        [-1, 1].forEach(sign => {
+          ctx.beginPath();
+          for (let i = -40; i <= 40; i++) {
+            const s = i * 0.06;
+            const csh = sign * rPos * Math.cosh(s), snh = rNeg * Math.sinh(s);
+            const pt = posFirst ? plotRot(csh, snh) : plotRot(snh, csh);
+            if (i === -40) ctx.moveTo(pt.cx, pt.cy); else ctx.lineTo(pt.cx, pt.cy);
+          }
+          ctx.stroke();
+        });
+      } else if ((l1 > 1e-5 && Math.abs(l2) <= 1e-5) || (l2 > 1e-5 && Math.abs(l1) <= 1e-5)) {
+        // Parallel lines (PSD)
+        const d = Math.sqrt(K_LEVEL / Math.max(l1, l2));
+        [-d, d].forEach(val => {
+          const q1 = l1 > 1e-5 ? plotRot(val, -6) : plotRot(-6, val);
+          const q2 = l1 > 1e-5 ? plotRot(val, 6) : plotRot(6, val);
+          ctx.beginPath(); ctx.moveTo(q1.cx, q1.cy); ctx.lineTo(q2.cx, q2.cy); ctx.stroke();
+        });
+      } else {
+        ctx.fillStyle = dark ? '#f87171' : '#dc2626';
+        ctx.font = '700 14px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('No real graph for Q = 6 > 0 (Negative Definite / Semidefinite)', OX, OY - 16);
+      }
+      ctx.restore();
+
+      // Telemetry
+      document.getElementById('qfEigs').textContent = `${l1.toFixed(2)}, ${l2.toFixed(2)}`;
+      document.getElementById('qfMinors').textContent = `\u0394\u2081=${a.toFixed(1)}, \u0394\u2082=${eig.det.toFixed(1)}`;
+      let cls = '', curve = '';
+      if (l1 > 1e-5 && l2 > 1e-5) {
+        cls = '<span style="color:var(--success)">Positive Definite</span>';
+        curve = `Ellipse (a=${Math.sqrt(K_LEVEL/l1).toFixed(2)}, b=${Math.sqrt(K_LEVEL/l2).toFixed(2)})`;
+      } else if (l1 < -1e-5 && l2 < -1e-5) {
+        cls = '<span style="color:var(--danger)">Negative Definite</span>';
+        curve = 'Empty (Q < 0)';
+      } else if (l1 * l2 < -1e-5) {
+        cls = '<span style="color:var(--warning)">Indefinite</span>';
+        curve = 'Hyperbola (Saddle)';
+      } else if (l1 >= -1e-5 && l2 >= -1e-5) {
+        cls = '<span style="color:var(--primary)">Pos. Semidefinite</span>';
+        curve = 'Parallel Lines';
+      } else {
+        cls = '<span style="color:var(--accent-purple)">Neg. Semidefinite</span>';
+        curve = 'Empty (Q \u2264 0)';
+      }
+      document.getElementById('qfClass').innerHTML = cls;
+      document.getElementById('qfCurve').textContent = curve;
+      document.getElementById('qfDiagEq').innerHTML =
+        `<strong>Rotated Principal-Axes Form:</strong> Q = <strong>${l1.toFixed(2)}y<sub>1</sub>&sup2; ${l2>=0?'+ '+l2.toFixed(2):'&minus; '+(-l2).toFixed(2)}y<sub>2</sub>&sup2;</strong> (rotation angle &theta; = ${(eig.theta*180/Math.PI).toFixed(1)}&deg;)`;
+    }
+    drawConicLab();
+
+    /* ============== PROOF STEPPER ============== */
+    let curStep = 1;
+    function nextProofStep() {
+      const steps = document.querySelectorAll('#proofSteps .proof-step');
+      if (curStep < steps.length) { steps[curStep].classList.add('revealed'); curStep++; }
+    }
+    function resetProof() {
+      document.querySelectorAll('#proofSteps .proof-step').forEach((el, i) => el.classList.toggle('revealed', i === 0));
+      curStep = 1;
+    }
+
+    function fmtN(n) {
+      if (Math.abs(n) < 1e-7) return '0';
+      if (Math.abs(n - Math.round(n)) < 1e-5) return String(Math.round(n));
+      return n.toFixed(3);
+    }
+    function matHTML(M) {
+      const cols = M[0].length;
+      let h = `<span class="mat-inline" style="grid-template-columns:repeat(${cols},auto);">`;
+      M.forEach(r => r.forEach(v => { h += `<span>${fmtN(v)}</span>`; }));
+      return h + '</span>';
+    }
+
+    /* ============== SOLVER A: 2x2 ORTHOGONAL DIAGONALIZER ============== */
+    function loadOD2(a, twoB, c) {
+      document.getElementById('od_a').value = a;
+      document.getElementById('od_2b').value = twoB;
+      document.getElementById('od_c').value = c;
+      runOD2Solver();
+    }
+    function runOD2Solver() {
+      const a = parseFloat(document.getElementById('od_a').value)||0;
+      const twoB = parseFloat(document.getElementById('od_2b').value)||0;
+      const c = parseFloat(document.getElementById('od_c').value)||0;
+      const b = twoB / 2;
+      const eig = symEigen2(a, b, c);
+      const cs = Math.cos(eig.theta), sn = Math.sin(eig.theta);
+      const P = [[cs, -sn], [sn, cs]];
+      const D = [[eig.l1, 0], [0, eig.l2]];
+
+      let cls = 'Indefinite';
+      if (eig.l1 > 1e-6 && eig.l2 > 1e-6) cls = 'Positive Definite';
+      else if (eig.l1 < -1e-6 && eig.l2 < -1e-6) cls = 'Negative Definite';
+      else if (eig.l1 >= -1e-6 && eig.l2 >= -1e-6) cls = 'Positive Semidefinite';
+      else if (eig.l1 <= 1e-6 && eig.l2 <= 1e-6) cls = 'Negative Semidefinite';
+
+      document.getElementById('od2Out').innerHTML = `
+        <div class="step-line"><strong>1. Symmetric Matrix A:</strong> ${matHTML([[a, b],[b, c]])}</div>
+        <div class="step-line"><strong>2. Eigenvalues:</strong> &lambda;<sub>1</sub> = <strong>${fmtN(eig.l1)}</strong>, &lambda;<sub>2</sub> = <strong>${fmtN(eig.l2)}</strong> &rArr; <strong style="color:var(--primary)">${cls}</strong></div>
+        <div class="step-line"><strong>3. Orthogonal Matrix P (P<sup>T</sup>AP = D):</strong><br>P = ${matHTML(P)} &nbsp; D = ${matHTML(D)}</div>
+        <div class="step-line"><strong>4. Cross-Term-Free Form:</strong> Q = <strong style="color:var(--success)">${fmtN(eig.l1)}y<sub>1</sub>&sup2; ${eig.l2>=0?'+ '+fmtN(eig.l2):'&minus; '+fmtN(-eig.l2)}y<sub>2</sub>&sup2;</strong></div>
+      `;
+    }
+    runOD2Solver();
+
+    /* ============== SOLVER B: 3x3 LEADING PRINCIPAL MINORS ============== */
+    function loadPM3(arr) {
+      for (let r = 0; r < 3; r++)
+        for (let c = 0; c < 3; c++) document.getElementById(`pm${r}${c}`).value = arr[r*3+c];
+      runPM3Solver();
+    }
+    function runPM3Solver() {
+      const A = [0,1,2].map(r => [0,1,2].map(c => parseFloat(document.getElementById(`pm${r}${c}`).value)||0));
+      const d1 = A[0][0];
+      const d2 = A[0][0]*A[1][1] - A[0][1]*A[1][0];
+      const d3 = A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1])
+               - A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0])
+               + A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+
+      const sym = Math.abs(A[0][1]-A[1][0])<1e-6 && Math.abs(A[0][2]-A[2][0])<1e-6 && Math.abs(A[1][2]-A[2][1])<1e-6;
+      let verdict = '';
+      if (!sym) {
+        verdict = '<span style="color:var(--danger)">Warning: Matrix A is not symmetric!</span>';
+      } else if (d1 > 1e-7 && d2 > 1e-7 && d3 > 1e-7) {
+        verdict = '<strong style="color:var(--success)">Positive Definite (+, +, +)</strong> &mdash; all eigenvalues &gt; 0!';
+      } else if (d1 < -1e-7 && d2 > 1e-7 && d3 < -1e-7) {
+        verdict = '<strong style="color:var(--danger)">Negative Definite (&minus;, +, &minus;)</strong> &mdash; all eigenvalues &lt; 0!';
+      } else if (Math.abs(d3) > 1e-7 || (d2 < -1e-7)) {
+        verdict = '<strong style="color:var(--warning)">Indefinite</strong> &mdash; mixed eigenvalue signs (saddle)!';
+      } else {
+        verdict = '<strong style="color:var(--primary)">Singular (&Delta;<sub>3</sub> = 0):</strong> Semidefinite or Indefinite (check eigenvalues directly).';
+      }
+
+      document.getElementById('pm3Out').innerHTML = `
+        <div class="step-line"><strong>1. Leading Principal Minors:</strong><br>
+          &Delta;<sub>1</sub> = det[a<sub>11</sub>] = <strong>${fmtN(d1)}</strong><br>
+          &Delta;<sub>2</sub> = det(top-left 2&times;2) = <strong>${fmtN(d2)}</strong><br>
+          &Delta;<sub>3</sub> = det(A) = <strong>${fmtN(d3)}</strong>
+        </div>
+        <div class="step-line"><strong>2. Classification:</strong> ${verdict}</div>
+      `;
+    }
+    runPM3Solver();
+
+    /* ============== TRUE / FALSE EXAM QUIZ ============== */
+    const tfData = [
+      {
+        src: "MATH106_quadraticform Slide 22",
+        q: "If every entry of a real symmetric matrix A is nonnegative, then A must be positive semidefinite.",
+        ans: false,
+        exp: "FALSE! Famous counterexample from Slide 22: A = [[3,1,1],[1,0,2],[1,2,0]] has all entries \u2265 0, yet has eigenvalue \u03BB = \u22122 (indefinite)!"
+      },
+      {
+        src: "MATH106_quadraticform Slide 14",
+        q: "Every positive definite or negative definite symmetric matrix is invertible.",
+        ans: true,
+        exp: "TRUE. All eigenvalues are strictly positive (or strictly negative), so 0 is not an eigenvalue and det(A) = \u220F \u03BB_i \u2260 0."
+      },
+      {
+        src: "MATH106_quadraticform Slide 30",
+        q: "Every covariance matrix \u03A3 in statistics is symmetric and positive semidefinite.",
+        ans: true,
+        exp: "TRUE. For any vector a, a^T \u03A3 a = Var(a^T X) \u2265 0, because variance can never be negative."
+      },
+      {
+        src: "MATH106_EV_3 Slide 11",
+        q: "A real symmetric matrix can sometimes be defective (non-diagonalizable) if it has repeated eigenvalues.",
+        ans: false,
+        exp: "FALSE! By the Spectral Theorem, EVERY real symmetric matrix is orthogonally diagonalizable (GM = AM always, never defective)."
+      },
+      {
+        src: "MATH106_quadraticform Slide 11",
+        q: "An orthogonal change of variable x = Py changes the maximum and minimum values of the quadratic form x^T A x on the unit sphere.",
+        ans: false,
+        exp: "FALSE. Since ||Py|| = ||y||, an orthogonal substitution preserves both the unit sphere and the entire range of Q!"
+      }
+    ];
+
+    let tfResults = {};
+    const tfContainer = document.getElementById('tfContainer');
+    tfData.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'tf-item';
+      div.innerHTML = `
+        <div class="tf-meta">${item.src}</div>
+        <div class="tf-q">${idx + 1}. ${item.q}</div>
+        <div class="tf-actions">
+          <button class="tf-btn" id="tf-${idx}-t" onclick="answerTF(${idx}, true)">True</button>
+          <button class="tf-btn" id="tf-${idx}-f" onclick="answerTF(${idx}, false)">False</button>
+        </div>
+        <div class="tf-feedback" id="tf-fb-${idx}"></div>
+      `;
+      tfContainer.appendChild(div);
+    });
+
+    function answerTF(idx, choice) {
+      const item = tfData[idx];
+      const isCorrect = choice === item.ans;
+      tfResults[idx] = isCorrect;
+      const btnT = document.getElementById(`tf-${idx}-t`), btnF = document.getElementById(`tf-${idx}-f`);
+      btnT.className = 'tf-btn'; btnF.className = 'tf-btn';
+      (choice ? btnT : btnF).classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+      const fb = document.getElementById(`tf-fb-${idx}`);
+      fb.className = `tf-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+      fb.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Not quite.'}</strong> ${item.exp}`;
+      const score = Object.values(tfResults).filter(Boolean).length;
+      document.getElementById('tfScore').textContent = `Score: ${score} / ${tfData.length}`;
+    }
+
+    function checkPM() {
+      const raw = document.getElementById('ansPM').value.replace(/\s/g, '');
+      const msg = document.getElementById('pmMsg');
+      if (raw === '5,36') {
+        msg.style.color = 'var(--success)'; msg.textContent = '\u2713 Correct! \u0394\u2081 = 5 > 0 and \u0394\u2082 = 5(8) \u2212 (-2)\u00B2 = 36 > 0 (Positive Definite).';
+      } else {
+        msg.style.color = 'var(--danger)'; msg.textContent = '\u2717 Remember: off-diagonal entry is HALF of -4 (so b = -2)!';
+      }
+    }
+    function toggleBox(id) { document.getElementById(id).classList.toggle('show'); }
+  </script>
+</body>
+</html>

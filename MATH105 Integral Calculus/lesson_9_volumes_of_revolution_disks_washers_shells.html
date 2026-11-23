@@ -1,0 +1,3509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 9: Volumes of Revolution — Disks, Washers &amp; Shells | MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK ACADEMIC GLASSMORPHISM THEME (MATH 105)
+       ========================================================================== */
+    :root {
+      --bg-page: #0f172a;
+      --bg-nav: #0b1120;
+      --bg-card: #1e293b;
+      --bg-card-glass: rgba(30, 41, 59, 0.82);
+      --bg-subtle: #151f32;
+      --bg-deep: #0b1120;
+      --border: rgba(148, 163, 184, 0.15);
+      --border-strong: rgba(148, 163, 184, 0.28);
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --cyan: #38bdf8;
+      --cyan-soft: rgba(56, 189, 248, 0.14);
+      --cyan-border: rgba(56, 189, 248, 0.38);
+
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --emerald-border: rgba(52, 211, 153, 0.36);
+
+      --amber: #f59e0b;
+      --amber-light: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.36);
+
+      --rose: #f43f5e;
+      --rose-light: #fb7185;
+      --rose-soft: rgba(244, 63, 94, 0.14);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.42);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-w: 272px;
+      --header-h: 60px;
+      --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* ==========================================================================
+       MOBILE TOP HEADER (< 920px)
+       ========================================================================== */
+    .mobile-header {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 45;
+      height: var(--header-h);
+      background: rgba(11, 17, 32, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .mobile-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .mobile-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mobile-pct {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--emerald-light);
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       APP SHELL & FIXED/STICKY SIDEBAR
+       ========================================================================== */
+    .app-shell {
+      display: flex;
+      max-width: 1480px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border);
+      padding: 22px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 40;
+      transition: transform 0.28s ease;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.78);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active { display: block; }
+
+    .sidebar-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 4px;
+    }
+
+    .course-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+
+    .sidebar-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .progress-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 13px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-pct {
+      font-family: var(--font-mono);
+      color: var(--emerald-light);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--cyan), var(--emerald));
+      transition: width 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .nav-label {
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.83rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+      line-height: 1.35;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .nav-link.active {
+      background: var(--cyan-soft);
+      color: var(--cyan);
+      border-color: var(--cyan-border);
+      font-weight: 600;
+    }
+
+    .nav-check {
+      margin-left: auto;
+      color: var(--emerald-light);
+      font-weight: 800;
+      font-size: 0.86rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .nav-link.done .nav-check { opacity: 1; }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .lesson-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .lesson-nav-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+      background: var(--cyan-soft);
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 28px 34px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 42px;
+    }
+
+    .lesson-hero {
+      background: linear-gradient(135deg, #0b1120 0%, #172554 50%, #0f766e 100%);
+      border: 1px solid var(--cyan-border);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-hero::after {
+      content: "";
+      position: absolute;
+      right: -55px;
+      top: -55px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(16, 185, 129, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(11, 17, 32, 0.48);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .lesson-hero h1 {
+      font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .lesson-hero p {
+      max-width: 830px;
+      color: rgba(241, 245, 249, 0.92);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background: rgba(11, 17, 32, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       SECTIONS & GLASS CARDS
+       ========================================================================== */
+    .section-block {
+      scroll-margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+
+    .section-desc {
+      font-size: 0.91rem;
+      color: var(--text-muted);
+      max-width: 780px;
+    }
+
+    .card {
+      background: var(--bg-card-glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ==========================================================================
+       BUTTONS, PRESETS, SEGMENTED CONTROLS & SLIDERS
+       ========================================================================== */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #0b1120;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+      color: #0b1120;
+    }
+
+    .btn-sm {
+      padding: 7px 11px;
+      font-size: 0.78rem;
+    }
+
+    .preset-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .preset-btn {
+      padding: 9px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.81rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      text-align: left;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+    }
+
+    .preset-btn.active {
+      background: var(--cyan-soft);
+      border-color: var(--cyan);
+      color: var(--text-primary);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.22);
+    }
+
+    .preset-sub {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      color: var(--amber-light);
+      text-transform: uppercase;
+    }
+
+    .controls-bar {
+      display: grid;
+      grid-template-columns: minmax(250px, 1.15fr) repeat(3, minmax(170px, 1fr));
+      gap: 14px;
+      align-items: end;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      background: var(--bg-deep);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+    }
+
+    .seg-btn {
+      padding: 9px 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+    }
+
+    .seg-btn.active-cyan {
+      background: var(--cyan);
+      color: #0b1120;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+    }
+
+    .seg-btn.active-emerald {
+      background: var(--emerald);
+      color: #052e16;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    /* ==========================================================================
+       SECTION 1: DUAL CANVAS 2D + 3D SOLID OF REVOLUTION
+       ========================================================================== */
+    .dual-canvas-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .canvas-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .canvas-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      padding: 0 2px;
+    }
+
+    .canvas-pill {
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+      padding: 2px 9px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--amber-light);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 11;
+      min-height: 290px;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.79rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch-cyan { background: var(--cyan); }
+    .swatch-emerald { background: var(--emerald); }
+    .swatch-amber { background: var(--amber); }
+    .swatch-rose { background: var(--rose); }
+
+    /* Telemetry 4-Card Bar */
+    .telemetry-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .tele-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow-x: auto;
+    }
+
+    .tele-card.cyan { background: var(--cyan-soft); border-color: var(--cyan-border); }
+    .tele-card.emerald { background: var(--emerald-soft); border-color: var(--emerald-border); }
+    .tele-card.amber { background: var(--amber-soft); border-color: var(--amber-border); }
+
+    .tele-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .tele-val {
+      font-family: var(--font-mono);
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .tele-sub {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       SECTION 2: SHIFTED-AXIS RADIUS LAB
+       ========================================================================== */
+    .shifted-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.32fr) minmax(300px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .quick-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .quick-chip {
+      padding: 5px 11px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-deep);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.77rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+
+    .quick-chip:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .quick-chip.active {
+      background: var(--amber-soft);
+      border-color: var(--amber);
+      color: var(--amber-light);
+    }
+
+    .overlap-warning {
+      display: none;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .overlap-warning.show { display: block; }
+
+    .compare-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .compare-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-x: auto;
+    }
+
+    .compare-card.washer { border-top: 3px solid var(--cyan); }
+    .compare-card.shell { border-top: 3px solid var(--emerald); }
+
+    .equiv-banner {
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--emerald-light);
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY, MASTER TABLE & EXAM TRAPS
+       ========================================================================== */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .theory-card {
+      background: var(--bg-card-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theory-card h3 {
+      font-size: 1.06rem;
+      font-weight: 700;
+    }
+
+    .formula-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    .formula-box.emerald { border-left-color: var(--emerald); }
+
+    .ref-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    table.ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+      background: var(--bg-subtle);
+    }
+
+    table.ref-table th, table.ref-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    table.ref-table th {
+      background: var(--bg-deep);
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    table.ref-table tr:last-child td { border-bottom: none; }
+
+    .traps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 14px;
+    }
+
+    .trap-card {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .trap-card-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--rose-light);
+    }
+
+    /* ==========================================================================
+       SECTION 4: ISRT PAST-EXAM VAULT
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 15px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #0b1120;
+    }
+
+    .vault-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .exam-card {
+      background: var(--bg-card-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .exam-card.hidden { display: none; }
+    .exam-card.reviewed-card { border-color: var(--emerald-border); }
+
+    .exam-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exam-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .marks-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-light);
+    }
+
+    .exam-prompt {
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+
+    .review-check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--emerald-border);
+      background: var(--emerald-soft);
+      color: var(--emerald-light);
+      font-size: 0.79rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .review-check-label input {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--emerald);
+      cursor: pointer;
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+    }
+
+    .hint-box.open { display: block; }
+
+    .solution-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .solution-box.open { display: flex; }
+
+    .sol-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--emerald);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.91rem;
+      overflow-x: auto;
+    }
+
+    .sol-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--emerald-light);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       SECTION 5: QUICK MASTERY CHECK (QUIZ)
+       ========================================================================== */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-card-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--emerald-light);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-card-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-qnum {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.89rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--cyan);
+      background: var(--cyan-soft);
+    }
+
+    .quiz-opt.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .quiz-opt.wrong {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: var(--emerald-soft); border: 1px solid var(--emerald-border); }
+    .quiz-feedback.err { background: var(--rose-soft); border: 1px solid var(--rose-border); }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 60;
+      background: #1e293b;
+      border: 1px solid var(--cyan-border);
+      color: var(--text-primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1180px) {
+      .controls-bar { grid-template-columns: repeat(2, 1fr); }
+      .dual-canvas-grid, .shifted-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 920px) {
+      .mobile-header { display: flex; }
+      .sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        height: calc(100vh - var(--header-h));
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { padding: 22px 20px 56px; }
+      .section-block { scroll-margin-top: calc(var(--header-h) + 16px); }
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .controls-bar { grid-template-columns: 1fr; }
+      .main-content { padding: 16px 14px 48px; }
+      .card, .exam-card, .theory-card, .quiz-card { padding: 16px; }
+      .lesson-hero { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <div class="mobile-header-left">
+      <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-title">MATH 105 &bull; Lesson 9: Volumes of Revolution</span>
+    </div>
+    <span class="mobile-pct" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- APP SHELL -->
+  <div class="app-shell">
+
+    <!-- STICKY LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Lesson 9 navigation">
+      <div class="sidebar-brand">
+        <span class="course-badge">MATH 105 &bull; Module 3 &bull; Lesson 9</span>
+        <div class="sidebar-title">Volumes of Revolution</div>
+        <div class="sidebar-sub">Sections 6.2 &amp; 6.3 &bull; ISRT, DU</div>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Mastery Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-caption" id="progressCaption">0/13 items (0/8 Vault, 0/5 Quiz)</p>
+      </div>
+
+      <nav>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list" id="sidebarNav">
+          <li>
+            <a class="nav-link active" href="#section-sandbox" data-section="section-sandbox">
+              <span>1. 3D Revolution Sandbox</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-shifted" data-section="section-shifted">
+              <span>2. Shifted-Axis Radius Lab</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-theory" data-section="section-theory">
+              <span>3. Core Theory &amp; Traps</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-vault" data-section="section-vault">
+              <span>4. ISRT Past-Exam Vault</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-quiz" data-section="section-quiz">
+              <span>5. Quick Mastery Check</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button type="button" class="lesson-nav-btn" id="prevLessonBtn">
+          <span>&larr; Previous</span>
+          <span class="mono" style="color:var(--text-muted);">Lesson 8</span>
+        </button>
+        <button type="button" class="lesson-nav-btn" id="nextLessonBtn">
+          <span>Next Lesson &rarr;</span>
+          <span class="mono" style="color:var(--cyan);">Lesson 10</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="lesson-hero">
+        <div class="hero-eyebrow">Module 3: Geometric &amp; Physical Applications &bull; Sections 6.2 &amp; 6.3</div>
+        <h1>Lesson 9: Volumes of Revolution &mdash; Disks, Washers &amp; Cylindrical Shells</h1>
+        <p>
+          Revolve 2D regions around coordinate and shifted axes in real time, peel back a single 3D washer ring or cylindrical shell sleeve, verify Washer = Shell equivalence numerically, and master all 8 high-yield ISRT exam problems.
+        </p>
+        <div class="hero-pills">
+          <span class="hero-pill">Disks &amp; Washers ($\perp$ to Axis)</span>
+          <span class="hero-pill">Cylindrical Shells ($\parallel$ to Axis)</span>
+          <span class="hero-pill">Shifted Axes ($x=9, y=-2, y=3$)</span>
+          <span class="hero-pill">Torus Volume $2\pi^2 a^2 b$</span>
+          <span class="hero-pill">8 Solved ISRT Problems</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 1: 3D SOLID-OF-REVOLUTION SANDBOX
+           ==================================================================== -->
+      <section class="section-block" id="section-sandbox">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 1 &bull; Interactive 2D + 3D Sandbox</span>
+            <h2>1. 3D Solid-of-Revolution Sandbox</h2>
+          </div>
+          <p class="section-desc">
+            Pick an ISRT exam solid, toggle between perpendicular Disk/Washer rings (cyan) and parallel Cylindrical Shell sleeves (emerald), and adjust the cutaway sweep and 3D tilt.
+          </p>
+        </div>
+
+        <div class="card">
+          <!-- 5 ISRT Presets -->
+          <div class="preset-strip" id="revPresets">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Controls Bar -->
+          <div class="controls-bar">
+            <div class="control-group">
+              <span class="control-label">Integration Method</span>
+              <div class="segmented" role="group" aria-label="Method selector">
+                <button type="button" class="seg-btn active-cyan" id="btnMethodWasher">Disk / Washer ($\perp$)</button>
+                <button type="button" class="seg-btn" id="btnMethodShell">Shell ($\parallel$)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="sliceSlider">
+                <span>Slice Position</span>
+                <span class="control-value" id="sliceValDisplay">50%</span>
+              </label>
+              <input type="range" id="sliceSlider" min="3" max="97" step="1" value="50" />
+              <button type="button" class="btn btn-sm btn-primary" id="animSliceBtn">&#9654; Animate Slice</button>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="sweepSlider">
+                <span>Revolution Sweep</span>
+                <span class="control-value" id="sweepValDisplay">300&deg;</span>
+              </label>
+              <input type="range" id="sweepSlider" min="30" max="360" step="5" value="300" />
+              <span style="font-size:0.73rem;color:var(--text-muted);">Default 300&deg; cutaway view</span>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="tiltSlider">
+                <span>3D Tilt Angle</span>
+                <span class="control-value" id="tiltValDisplay">24&deg;</span>
+              </label>
+              <input type="range" id="tiltSlider" min="10" max="45" step="1" value="24" />
+              <span style="font-size:0.73rem;color:var(--text-muted);">Adjust elevation pitch</span>
+            </div>
+          </div>
+
+          <!-- Dual HiDPI Canvases -->
+          <div class="dual-canvas-grid">
+            <div class="canvas-panel">
+              <div class="canvas-title-bar">
+                <span>2D Cross-Section Profile &amp; Active Strip</span>
+                <span class="canvas-pill" id="axisBadge2D">Axis: x = 9 (Vertical)</span>
+              </div>
+              <div class="canvas-wrapper" id="canvas2DWrap">
+                <canvas id="canvas2D" aria-label="2D region and representative strip"></canvas>
+              </div>
+            </div>
+
+            <div class="canvas-panel">
+              <div class="canvas-title-bar">
+                <span>3D Revolved Solid &amp; Peeled Element</span>
+                <span class="canvas-pill" id="elementBadge3D">Element: 3D Disk (⊥)</span>
+              </div>
+              <div class="canvas-wrapper" id="canvas3DWrap">
+                <canvas id="canvas3D" aria-label="3D solid of revolution cutaway projection"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="canvas-legend">
+            <span class="legend-item"><span class="swatch swatch-cyan"></span> Disk / Washer Strip &amp; 3D Ring ($\perp$ to Axis)</span>
+            <span class="legend-item"><span class="swatch swatch-emerald"></span> Cylindrical Shell Strip &amp; 3D Sleeve ($\parallel$ to Axis)</span>
+            <span class="legend-item"><span class="swatch swatch-amber"></span> Axis of Revolution</span>
+            <span class="legend-item"><span class="swatch swatch-rose"></span> Inner Radius / Hole ($R_{\text{in}}$)</span>
+          </div>
+
+          <!-- Live 4-Card Telemetry Bar -->
+          <div class="telemetry-grid">
+            <div class="tele-card cyan" id="teleCard1">
+              <span class="tele-label">1. Axis &amp; Orientation</span>
+              <span class="tele-val" id="teleOrient">&perp; to axis &rarr; Disk (dy)</span>
+              <span class="tele-sub" id="teleAxisSub">Vertical axis x = 9</span>
+            </div>
+            <div class="tele-card">
+              <span class="tele-label">2. Element Dimensions at Slice</span>
+              <span class="tele-val" id="teleDims" style="font-size:0.88rem;"></span>
+              <span class="tele-sub" id="teleSlicePos">At y = 1.50</span>
+            </div>
+            <div class="tele-card">
+              <span class="tele-label">3. Active Integral Formula</span>
+              <span class="tele-val" id="teleFormula" style="font-size:0.86rem;"></span>
+              <span class="tele-sub" id="teleMethodNote">Exact analytical setup</span>
+            </div>
+            <div class="tele-card emerald">
+              <span class="tele-label">4. Exact &amp; Numeric Volume</span>
+              <span class="tele-val" id="teleVolume"></span>
+              <span class="tele-sub" id="teleVolDec">Both methods give identical V</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 2: SHIFTED-AXIS RADIUS CALCULATOR & EQUIVALENCE LAB
+           ==================================================================== -->
+      <section class="section-block" id="section-shifted">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 2 &bull; Shifted-Axis Equivalence Lab</span>
+            <h2>2. Shifted-Axis Radius Calculator &amp; Equivalence Lab</h2>
+          </div>
+          <p class="section-desc">
+            Revolve the classic region $R$ under $y = x^2$ (above $y = 0$, $x \in [0, 2]$) around any shifted horizontal ($y = c$) or vertical ($x = c$) axis to see distance brackets update live and verify Washer $V$ = Shell $V$.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="shifted-grid">
+            <!-- Canvas -->
+            <div>
+              <div class="canvas-wrapper" id="shiftedCanvasWrap">
+                <canvas id="shiftedCanvas" aria-label="Shifted axis distance brackets canvas"></canvas>
+              </div>
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-cyan"></span> Outer Radius $R_{\text{out}}$</span>
+                <span class="legend-item"><span class="swatch swatch-rose"></span> Inner Radius $R_{\text{in}}$</span>
+                <span class="legend-item"><span class="swatch swatch-emerald"></span> Shell Radius $r$</span>
+                <span class="legend-item"><span class="swatch swatch-amber"></span> Movable Axis ($y=c$ or $x=c$)</span>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div style="display:flex;flex-direction:column;gap:15px;">
+              <div class="control-group">
+                <span class="control-label">Axis Orientation</span>
+                <div class="segmented" role="group" aria-label="Shifted axis type">
+                  <button type="button" class="seg-btn active-cyan" id="btnAxisHoriz">Horizontal ($y = c$)</button>
+                  <button type="button" class="seg-btn" id="btnAxisVert">Vertical ($x = c$)</button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="axisCSlider">
+                  <span id="axisCLabel">Axis Position ($y = c$)</span>
+                  <span class="control-value" id="axisCVal">y = -2.0</span>
+                </label>
+                <input type="range" id="axisCSlider" min="-3" max="6" step="0.25" value="-2" />
+              </div>
+
+              <div class="control-group">
+                <span class="control-label">Quick Exam Axis Presets</span>
+                <div class="quick-chip-row" id="axisQuickChips">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <div class="overlap-warning" id="overlapWarning">
+                <strong>&#9888; Axis Cuts Through Region $R$!</strong>
+                Revolving around an interior line causes the solid to self-intersect. Move $c$ outside the region ($y \le 0$ or $y \ge 4$; $x \le 0$ or $x \ge 2$) for a standard non-overlapping volume.
+              </div>
+
+              <div class="formula-box" id="shiftedRuleSummary" style="font-size:0.86rem;">
+                <!-- Dynamic radius rule -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Side-by-Side Washer vs Shell Comparison -->
+          <div class="compare-grid">
+            <div class="compare-card washer" id="shiftedWasherCard">
+              <!-- Populated by JS -->
+            </div>
+            <div class="compare-card shell" id="shiftedShellCard">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="equiv-banner" id="shiftedEquivBanner">
+            <span>&#10003; Numerical Equivalence Verified (Simpson's Rule)</span>
+            <span id="shiftedEquivNums">Washer V = 53.6165 = Shell V = 53.6165</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 3: CORE THEORY, DECISION MATRIX & ISRT EXAM TRAPS
+           ==================================================================== -->
+      <section class="section-block" id="section-theory">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 3 &bull; Exam-Ready Foundations</span>
+            <h2>3. Core Theory, Decision Matrix &amp; ISRT Exam Traps</h2>
+          </div>
+          <p class="section-desc">
+            The perpendicular ($\perp$) vs. parallel ($\parallel$) cross-section distinction, the master 4-case formula matrix, and the 4 classic ISRT exam pitfalls.
+          </p>
+        </div>
+
+        <!-- Side-by-Side Conceptual Cards -->
+        <div class="theory-grid">
+          <article class="theory-card">
+            <h3 style="color:var(--cyan);">Method of Disks &amp; Washers (Section 6.2)</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
+              Cross-sections are taken <strong>perpendicular ($\perp$)</strong> to the axis of revolution. Each thin rectangular strip rotates into a flat circular disk (no gap) or washer ring (gap between region and axis):
+            </p>
+            <div class="formula-box">
+              $$V = \int_a^b \pi\Big(\big[R_{\text{out}}\big]^2 - \big[R_{\text{in}}\big]^2\Big)\,du$$
+            </div>
+            <p style="font-size:0.84rem;color:var(--text-muted);">
+              <strong>Integration variable:</strong> Matches the axis direction! Horizontal axis ($x$-axis or $y=c$) $\implies dx$. Vertical axis ($y$-axis or $x=c$) $\implies dy$.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <h3 style="color:var(--emerald-light);">Method of Cylindrical Shells (Section 6.3)</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
+              Cross-sections are taken <strong>parallel ($\parallel$)</strong> to the axis of revolution. Each thin strip rotates into a hollow cylindrical sleeve of circumference $2\pi r$, height $h$, and thickness $du$:
+            </p>
+            <div class="formula-box emerald">
+              $$V = \int_a^b 2\pi \cdot (\text{radius } r)\cdot(\text{height } h)\,du$$
+            </div>
+            <p style="font-size:0.84rem;color:var(--text-muted);">
+              <strong>Integration variable:</strong> <em>Opposite</em> to the axis direction! Vertical axis ($y$-axis or $x=c$) $\implies dx$. Horizontal axis ($x$-axis or $y=c$) $\implies dy$.
+            </p>
+          </article>
+        </div>
+
+        <!-- Master 4-Case Formula Table -->
+        <div class="card">
+          <h3 style="margin-bottom:12px;font-size:1.06rem;">Master 4-Case Formula Table (Coordinate &amp; Shifted Axes)</h3>
+          <div class="ref-table-wrap">
+            <table class="ref-table">
+              <thead>
+                <tr>
+                  <th>Axis of Revolution</th>
+                  <th>Disk / Washer Method ($\perp$ to Axis)</th>
+                  <th>Cylindrical Shell Method ($\parallel$ to Axis)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>$x$-axis</strong> ($y = 0$)</td>
+                  <td><strong>$dx$:</strong> $\displaystyle \pi\int_a^b \big([f_{\text{out}}(x)]^2 - [g_{\text{in}}(x)]^2\big)\,dx$</td>
+                  <td><strong>$dy$:</strong> $\displaystyle 2\pi\int_c^d y\,\big[w_{\text{right}}(y) - v_{\text{left}}(y)\big]\,dy$</td>
+                </tr>
+                <tr>
+                  <td><strong>$y$-axis</strong> ($x = 0$)</td>
+                  <td><strong>$dy$:</strong> $\displaystyle \pi\int_c^d \big([w_{\text{out}}(y)]^2 - [v_{\text{in}}(y)]^2\big)\,dy$</td>
+                  <td><strong>$dx$:</strong> $\displaystyle 2\pi\int_a^b x\,\big[f_{\text{top}}(x) - g_{\text{bot}}(x)\big]\,dx$</td>
+                </tr>
+                <tr>
+                  <td><strong>Horizontal</strong> ($y = c$)</td>
+                  <td><strong>$dx$:</strong> $\displaystyle \pi\int_a^b \big(|f_{\text{out}}(x) - c|^2 - |g_{\text{in}}(x) - c|^2\big)\,dx$</td>
+                  <td><strong>$dy$:</strong> $\displaystyle 2\pi\int_{y_1}^{y_2} |y - c|\,\big[w_{\text{right}}(y) - v_{\text{left}}(y)\big]\,dy$</td>
+                </tr>
+                <tr>
+                  <td><strong>Vertical</strong> ($x = c$)</td>
+                  <td><strong>$dy$:</strong> $\displaystyle \pi\int_{y_1}^{y_2} \big(|w_{\text{out}}(y) - c|^2 - |v_{\text{in}}(y) - c|^2\big)\,dy$</td>
+                  <td><strong>$dx$:</strong> $\displaystyle 2\pi\int_a^b |x - c|\,\big[f_{\text{top}}(x) - g_{\text{bot}}(x)\big]\,dx$</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4 Rose-Accented ISRT Exam Traps -->
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:12px;color:var(--rose-light);">&#9888; 4 High-Yield ISRT Exam Traps</h3>
+          <div class="traps-grid">
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 1: $(R - r)^2 \ne R^2 - r^2$</div>
+              <p>
+                Always square the outer radius $R_{\text{out}}$ and inner radius $R_{\text{in}}$ <strong>separately</strong> before subtracting! Writing $\pi\int (R_{\text{out}} - R_{\text{in}})^2$ computes the wrong cross-sectional area.
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 2: Negative Radius on Shifted Axes</div>
+              <p>
+                Radii must be non-negative distances: always compute <strong>Top &minus; Bottom</strong> or <strong>Right &minus; Left</strong>. Around $x = 9$ (with $x \le 9$), the shell radius is $9 - x$, NOT $x - 9$.
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 3: Mixing Up $dx$ and $dy$</div>
+              <p>
+                Disk/Washer integrates along the axis's <em>own</em> variable ($y=c \to dx$, $x=c \to dy$). Cylindrical Shells integrates along the <em>opposite</em> variable ($x=c \to dx$, $y=c \to dy$)!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 4: Half-Height vs. Full-Height Curves</div>
+              <p>
+                For symmetric curves like the torus circle $x^2 + y^2 = a^2$, the upper half is $y = +\sqrt{a^2-x^2}$ and lower half is $y = -\sqrt{a^2-x^2}$, so the full vertical shell height is $2\sqrt{a^2-x^2}$, NOT $\sqrt{a^2-x^2}$!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 4: ISRT PAST-EXAM VAULT (8 FILTERABLE PROBLEMS)
+           ==================================================================== -->
+      <section class="section-block" id="section-vault">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 4 &bull; ISRT Past-Exam Vault</span>
+            <h2>4. ISRT Past-Exam Vault (8 Solved Problems)</h2>
+          </div>
+          <p class="section-desc">
+            Filter by source, test yourself with hints, reveal full step-by-step KaTeX derivations, and check "Mark Reviewed" to update your Mastery Progress bar.
+          </p>
+        </div>
+
+        <div class="filter-tabs" id="vaultFilters" role="tablist" aria-label="Filter exam problems">
+          <button type="button" class="filter-tab active" data-filter="all">All (8)</button>
+          <button type="button" class="filter-tab" data-filter="final">Final (3)</button>
+          <button type="button" class="filter-tab" data-filter="inc2">2nd Incourse (3)</button>
+          <button type="button" class="filter-tab" data-filter="notes">Class Notes (2)</button>
+        </div>
+
+        <div class="vault-list" id="vaultList">
+
+          <!-- Vault 1 -->
+          <article class="exam-card" data-vid="v1" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q1(b) &amp; 2nd Incourse 2025 Q1(a)</span>
+              <span class="marks-badge">2 Marks &bull; Conceptual</span>
+            </div>
+            <div class="exam-prompt">
+              Briefly explain the difference between the method of disks (or washers) and the method of cylindrical shells in terms of how cross sections are taken.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v1" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Contrast the orientation of the slicing planes/rectangles relative to the axis of revolution: perpendicular ($\perp$) vs. parallel ($\parallel$).
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Exam-Ready Answer</div>
+                &bull; <strong>Method of Disks / Washers:</strong> Cross sections (thin slices) are taken <strong>perpendicular ($\perp$)</strong> to the axis of revolution. Revolving each perpendicular strip produces a flat circular disk (or washer ring if there is a gap), with volume element $dV = \pi(R_{\text{out}}^2 - R_{\text{in}}^2)\,du$.<br /><br />
+                &bull; <strong>Method of Cylindrical Shells:</strong> Cross sections (thin strips) are taken <strong>parallel ($\parallel$)</strong> to the axis of revolution. Revolving each parallel strip produces a thin hollow cylindrical shell, with volume element $dV = 2\pi r h\,du$.
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="exam-card" data-vid="v2" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 Q4(b) &amp; 2nd Incourse 2025 Q1(b)</span>
+              <span class="marks-badge">4&ndash;5 Marks &bull; Vertical Shifted Axis $x = 9$</span>
+            </div>
+            <div class="exam-prompt">
+              Find the volume of the solid that results when the region enclosed by $y = \sqrt{x}$, $y = 0$, and $x = 9$ is revolved about the line $x = 9$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v2" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Both methods are clean! For Disks ($dy$): $R(y) = 9 - y^2$ on $[0, 3]$. For Shells ($dx$): $r(x) = 9 - x$ and $h(x) = \sqrt{x}$ on $[0, 9]$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Method 1: Disk Method ($dy$, $\perp$ to $x = 9$)</div>
+                Rewriting $y = \sqrt{x}$ as $x = y^2$ ($0 \le y \le 3$), there is no gap between the region and $x = 9$, so $R(y) = 9 - y^2$:
+                $$V = \pi\int_0^3 (9 - y^2)^2\,dy = \pi\int_0^3 (81 - 18y^2 + y^4)\,dy = \pi\left[81y - 6y^3 + \frac{y^5}{5}\right]_0^3$$
+                $$= \pi\left(243 - 162 + \frac{243}{5}\right) = \pi\left(81 + \frac{243}{5}\right) = \frac{648\pi}{5}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Method 2: Cylindrical Shell Method ($dx$, $\parallel$ to $x = 9$)</div>
+                For $0 \le x \le 9$, shell radius is $r(x) = 9 - x$ and height is $h(x) = \sqrt{x}$:
+                $$V = 2\pi\int_0^9 (9 - x)\sqrt{x}\,dx = 2\pi\int_0^9 (9x^{1/2} - x^{3/2})\,dx = 2\pi\left[6x^{3/2} - \frac{2}{5}x^{5/2}\right]_0^9$$
+                $$= 2\pi\left(6\cdot 27 - \frac{2}{5}\cdot 243\right) = 2\pi\left(162 - \frac{486}{5}\right) = \frac{648\pi}{5} \approx 407.15.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="exam-card" data-vid="v3" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 Q4(c) &amp; Final 2024 Q4(c)</span>
+              <span class="marks-badge">4 Marks &bull; Horizontal Shifted Axis $y = -2$</span>
+            </div>
+            <div class="exam-prompt">
+              Use cylindrical shells to find the volume of the solid generated when the region $R$ under $y = x^2$ and above the $x$-axis over $[0, 2]$ is revolved about the line $y = -2$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v3" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Horizontal shells ($dy$) run over $y \in [0, 4]$ with radius $r(y) = y - (-2) = y + 2$ and horizontal length $h(y) = 2 - \sqrt{y}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Cylindrical Shell Setup ($dy$, $\parallel$ to $y = -2$)</div>
+                Since $y = x^2 \implies x = \sqrt{y}$ for $y \in [0, 4]$, a horizontal strip at height $y$ has radius $r = y - (-2) = y + 2$ and length $h = 2 - \sqrt{y}$:
+                $$V = 2\pi\int_0^4 (y + 2)(2 - \sqrt{y})\,dy = 2\pi\int_0^4 \left(2y - y^{3/2} + 4 - 2y^{1/2}\right)dy$$
+                $$= 2\pi\left[y^2 - \frac{2}{5}y^{5/2} + 4y - \frac{4}{3}y^{3/2}\right]_0^4 = 2\pi\left(16 - \frac{64}{5} + 16 - \frac{32}{3}\right) = \frac{256\pi}{15}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Washer Verification ($dx$, $\perp$ to $y = -2$)</div>
+                With $R_{\text{out}} = x^2 + 2$ and $R_{\text{in}} = 2$ on $[0, 2]$:
+                $$V = \pi\int_0^2 \left[(x^2 + 2)^2 - 2^2\right]dx = \pi\int_0^2 (x^4 + 4x^2)\,dx = \pi\left[\frac{x^5}{5} + \frac{4x^3}{3}\right]_0^2 = \pi\left(\frac{32}{5} + \frac{32}{3}\right) = \frac{256\pi}{15}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="exam-card" data-vid="v4" data-category="inc2">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2025 Q2</span>
+              <span class="marks-badge">4 Marks &bull; Torus Volume</span>
+            </div>
+            <div class="exam-prompt">
+              Formulate an integral (and evaluate as bonus) to find the volume of the torus obtained by revolving the circle $x^2 + y^2 = a^2$ about the line $x = b$, where $b &gt; a &gt; 0$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v4" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For Shells ($dx$), radius is $b - x$ and full vertical height is $2\sqrt{a^2 - x^2}$ over $[-a, a]$. Note that $x\sqrt{a^2 - x^2}$ is an odd function on $[-a, a]$!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Formulation 1: Cylindrical Shells ($dx$) + Full Evaluation</div>
+                For $x \in [-a, a]$, shell radius is $r(x) = b - x$ and full height is $h(x) = \sqrt{a^2-x^2} - (-\sqrt{a^2-x^2}) = 2\sqrt{a^2 - x^2}$:
+                $$V = \int_{-a}^{a} 2\pi(b - x)\cdot 2\sqrt{a^2 - x^2}\,dx = 4\pi b\int_{-a}^{a} \sqrt{a^2 - x^2}\,dx - 4\pi\underbrace{\int_{-a}^{a} x\sqrt{a^2 - x^2}\,dx}_{=\,0\text{ (odd function)}}$$
+                Since $\int_{-a}^{a}\sqrt{a^2 - x^2}\,dx = \frac{1}{2}\pi a^2$ (area of a semicircle of radius $a$):
+                $$V = 4\pi b\left(\frac{\pi a^2}{2}\right) = 2\pi^2 a^2 b.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Formulation 2: Washer Method ($dy$)</div>
+                For $y \in [-a, a]$, $R_{\text{out}} = b + \sqrt{a^2 - y^2}$ and $R_{\text{in}} = b - \sqrt{a^2 - y^2}$:
+                $$V = \pi\int_{-a}^{a} \left[\left(b + \sqrt{a^2 - y^2}\right)^2 - \left(b - \sqrt{a^2 - y^2}\right)^2\right]dy = 4\pi b\int_{-a}^{a} \sqrt{a^2 - y^2}\,dy = 2\pi^2 a^2 b.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="exam-card" data-vid="v5" data-category="inc2">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2020/2021 Q2</span>
+              <span class="marks-badge">5 Marks &bull; Dual Disk &amp; Shell Proof</span>
+            </div>
+            <div class="exam-prompt">
+              Consider the region $R$ bounded by $y = \cos x$, $y = 0$, $x = 0$, and $x = \frac{\pi}{2}$. Find the volume of the solid obtained by revolving $R$ about the $y$-axis using <strong>both</strong> the Disk Method and the Shell Method.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v5" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Shell ($dx$) uses 1 pass of IBP on $\int_0^{\pi/2} x\cos x\,dx$. Disk ($dy$) gives $\pi\int_0^1 (\cos^{-1}y)^2\,dy$ — substitute $y = \cos t$ to turn it into $\pi\int_0^{\pi/2} t^2\sin t\,dt$!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Method 1: Cylindrical Shell Method ($dx$)</div>
+                $$V = 2\pi\int_0^{\pi/2} x\cos x\,dx = 2\pi\big[x\sin x + \cos x\big]_0^{\pi/2} = 2\pi\left[\left(\frac{\pi}{2} + 0\right) - (0 + 1)\right] = \pi^2 - 2\pi.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Method 2: Disk Method ($dy$)</div>
+                Since $x = \cos^{-1}y$ for $y \in [0, 1]$:
+                $$V = \pi\int_0^1 (\cos^{-1}y)^2\,dy.$$
+                Let $y = \cos t \implies dy = -\sin t\,dt$ ($y=0 \Rightarrow t=\frac{\pi}{2}$, $y=1 \Rightarrow t=0$):
+                $$V = \pi\int_0^{\pi/2} t^2\sin t\,dt = \pi\big[-t^2\cos t + 2t\sin t + 2\cos t\big]_0^{\pi/2} = \pi\big[(0 + \pi + 0) - (0 + 0 + 2)\big] = \pi^2 - 2\pi.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="exam-card" data-vid="v6" data-category="inc2">
+            <div class="exam-meta">
+              <span class="exam-badge">ISRT Exam Q1(a) &mdash; Dual Shifted Axes</span>
+              <span class="marks-badge">10 Marks &bull; Washer + Shell</span>
+            </div>
+            <div class="exam-prompt">
+              The region $R$ is bounded by $y = e^{-x}$, $y = \sqrt{x + 1}$, $x = 0$, and $x = 1$. Write the integral and find the volume $V$ of the solid obtained by revolving $R$ about:<br />
+              <strong>(i)</strong> $y = -1$ using the Washer Method &qquad <strong>(ii)</strong> $x = -1$ using the Shell Method.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v6" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> On $[0, 1]$, $\sqrt{x+1} \ge e^{-x}$. For (i) $R_{\text{out}} = \sqrt{x+1}+1$ and $R_{\text{in}} = e^{-x}+1$. For (ii) $r(x) = x + 1$ and $h(x) = \sqrt{x+1} - e^{-x}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Part (i): Revolved about $y = -1$ (Washer Method, $dx$)</div>
+                $$V = \pi\int_0^1 \left[\left(\sqrt{x+1} + 1\right)^2 - \left(e^{-x} + 1\right)^2\right]dx = \pi\int_0^1 \left(x + 1 + 2(x+1)^{1/2} - e^{-2x} - 2e^{-x}\right)dx$$
+                $$= \pi\left[\frac{x^2}{2} + x + \frac{4}{3}(x+1)^{3/2} + \frac{1}{2}e^{-2x} + 2e^{-x}\right]_0^1 = \pi\left[\left(\frac{3}{2} + \frac{8\sqrt{2}}{3} + \frac{1}{2e^2} + \frac{2}{e}\right) - \left(\frac{4}{3} + \frac{1}{2} + 2\right)\right]$$
+                $$= \pi\left(\frac{8\sqrt{2} - 7}{3} + \frac{1}{2e^2} + \frac{2}{e}\right).$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (ii): Revolved about $x = -1$ (Shell Method, $dx$)</div>
+                $$V = 2\pi\int_0^1 (x + 1)\left(\sqrt{x+1} - e^{-x}\right)dx = 2\pi\int_0^1 (x+1)^{3/2}\,dx - 2\pi\int_0^1 (x+1)e^{-x}\,dx$$
+                $$= 2\pi\left[\frac{2}{5}(x+1)^{5/2}\right]_0^1 - 2\pi\big[-(x+2)e^{-x}\big]_0^1 = 2\pi\left[\frac{8\sqrt{2}-2}{5} - \left(2 - \frac{3}{e}\right)\right]$$
+                $$= 2\pi\left(\frac{8\sqrt{2} - 12}{5} + \frac{3}{e}\right).$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 7 -->
+          <article class="exam-card" data-vid="v7" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes (Ashraful &amp; Adib Ex 40)</span>
+              <span class="marks-badge">Horizontal Shifted Axis $y = 3$</span>
+            </div>
+            <div class="exam-prompt">
+              Find the volume of the solid obtained when the region enclosed by $y = \sqrt{x}$, $y = 0$, and $x = 9$ is revolved about the line $y = 3$ using the Washer Method.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v7" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Because the axis $y = 3$ lies <strong>above</strong> the region, the outer boundary is $y = 0$ ($R_{\text{out}} = 3$) and the inner boundary is $y = \sqrt{x}$ ($R_{\text{in}} = 3 - \sqrt{x}$)!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Identify Outer &amp; Inner Radii from $y = 3$</div>
+                On $x \in [0, 9]$, $0 \le \sqrt{x} \le 3$:
+                $$R_{\text{out}} = 3 - 0 = 3, \qquad R_{\text{in}} = 3 - \sqrt{x}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate Washer Integral ($dx$)</div>
+                $$V = \pi\int_0^9 \left[3^2 - (3 - \sqrt{x})^2\right]dx = \pi\int_0^9 \left(9 - (9 - 6\sqrt{x} + x)\right)dx = \pi\int_0^9 \left(6x^{1/2} - x\right)dx$$
+                $$= \pi\left[4x^{3/2} - \frac{x^2}{2}\right]_0^9 = \pi\left(4\cdot 27 - \frac{81}{2}\right) = \pi\left(108 - \frac{81}{2}\right) = \frac{135\pi}{2}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 8 -->
+          <article class="exam-card" data-vid="v8" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes (Adib &amp; Ashraful Ex 12)</span>
+              <span class="marks-badge">Shell Method + $u$-Substitution</span>
+            </div>
+            <div class="exam-prompt">
+              Use cylindrical shells to find the volume of the solid generated when the region under $y = e^{x^2}$ over $[1, \sqrt{3}]$ above the $x$-axis is revolved about the $y$-axis.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v8" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Shell ($dx$) introduces the factor $x$ in $2\pi x e^{x^2}\,dx$, which makes the substitution $u = x^2$ ($du = 2x\,dx$) effortless!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Cylindrical Shell Setup ($dx$)</div>
+                For $x \in [1, \sqrt{3}]$, radius $r(x) = x$ and height $h(x) = e^{x^2}$:
+                $$V = \int_1^{\sqrt{3}} 2\pi x\, e^{x^2}\,dx.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Substitute $u = x^2$ and evaluate</div>
+                Let $u = x^2 \implies du = 2x\,dx$. Limits: $x = 1 \Rightarrow u = 1$, $x = \sqrt{3} \Rightarrow u = 3$:
+                $$V = \pi\int_1^3 e^u\,du = \pi\big[e^u\big]_1^3 = \pi\left(e^3 - e\right) \approx 54.56.$$
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 5: QUICK MASTERY CHECK (5 INTERACTIVE MCQS)
+           ==================================================================== -->
+      <section class="section-block" id="section-quiz">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 5 &bull; Self-Assessment</span>
+            <h2>5. Quick Mastery Check (5 Questions)</h2>
+          </div>
+          <p class="section-desc">
+            Check your mastery of cross-section orientation, shifted-axis radii, choosing shells over washers, the torus volume, and the washer squaring trap.
+          </p>
+        </div>
+
+        <div class="quiz-topbar">
+          <div class="score-pill">
+            <span>Score:</span>
+            <span id="quizScore">0 / 5</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="resetQuizBtn">&#8634; Reset Quiz</button>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+
+          <!-- Q1 -->
+          <div class="quiz-card" data-qid="q1" data-answer="a">
+            <div class="quiz-qnum">Question 1 &bull; Cross-Section Orientation (Final 2024 Q1b)</div>
+            <div>How are representative cross-sections taken relative to the axis of revolution in the <strong>Washer Method</strong> vs. the <strong>Cylindrical Shell Method</strong>?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">Washers: <strong>perpendicular ($\perp$)</strong>; Shells: <strong>parallel ($\parallel$)</strong></button>
+              <button type="button" class="quiz-opt" data-val="b">Washers: <strong>parallel ($\parallel$)</strong>; Shells: <strong>perpendicular ($\perp$)</strong></button>
+              <button type="button" class="quiz-opt" data-val="c">Both take cross-sections perpendicular ($\perp$) to the axis</button>
+              <button type="button" class="quiz-opt" data-val="d">Washers always use $dx$; Shells always use $dy$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-card" data-qid="q2" data-answer="c">
+            <div class="quiz-qnum">Question 2 &bull; Shifted-Axis Radius ($x = 9$ and $y = -2$)</div>
+            <div>When the region under $y = \sqrt{x}$ on $[0, 9]$ is revolved about $x = 9$ using <strong>Cylindrical Shells ($dx$)</strong>, what is the shell radius $r(x)$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$r(x) = x$</button>
+              <button type="button" class="quiz-opt" data-val="b">$r(x) = x - 9$</button>
+              <button type="button" class="quiz-opt" data-val="c">$r(x) = 9 - x$</button>
+              <button type="button" class="quiz-opt" data-val="d">$r(x) = 9 + x$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-card" data-qid="q3" data-answer="b">
+            <div class="quiz-qnum">Question 3 &bull; Why Choose Shells for $y = e^{x^2}$ about the $y$-Axis?</div>
+            <div>Why is the <strong>Cylindrical Shell Method ($dx$)</strong> dramatically better than Disks/Washers for revolving $y = e^{x^2}$ ($x \in [1, \sqrt{3}]$) about the $y$-axis?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">Because $e^{x^2}$ has an elementary antiderivative in $x$</button>
+              <button type="button" class="quiz-opt" data-val="b">Because the shell factor $2\pi x$ enables the clean substitution $u = x^2$ ($du = 2x\,dx$)</button>
+              <button type="button" class="quiz-opt" data-val="c">Because Disks cannot be used for vertical axes</button>
+              <button type="button" class="quiz-opt" data-val="d">Because $y = e^{x^2}$ is not invertible on $[1, \sqrt{3}]$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-card" data-qid="q4" data-answer="d">
+            <div class="quiz-qnum">Question 4 &bull; Torus Volume Formula (2nd Incourse 2025 Q2)</div>
+            <div>Revolving the circle $x^2 + y^2 = a^2$ about the line $x = b$ ($b &gt; a &gt; 0$) produces a torus of exact volume:</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\pi^2 a^2 b$</button>
+              <button type="button" class="quiz-opt" data-val="b">$4\pi^2 a b^2$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\dfrac{4}{3}\pi a^3 b$</button>
+              <button type="button" class="quiz-opt" data-val="d">$2\pi^2 a^2 b$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-card" data-qid="q5" data-answer="a">
+            <div class="quiz-qnum">Question 5 &bull; The Washer Squaring Trap</div>
+            <div>The region under $y = x^2$ and above $y = 0$ on $[0, 2]$ is revolved about $y = -2$. Which Washer integral is <strong>correct</strong>?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\displaystyle \pi\int_0^2 \Big[(x^2 + 2)^2 - 2^2\Big]\,dx$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\displaystyle \pi\int_0^2 \Big[(x^2 + 2) - 2\Big]^2\,dx$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\displaystyle \pi\int_0^2 \Big[(x^2 - 2)^2 - 2^2\Big]\,dx$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\displaystyle 2\pi\int_0^2 \Big[(x^2 + 2)^2 - 2^2\Big]\,dx$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Non-blocking Toast -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX RENDER HELPER, SIMPSON'S RULE & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      function simpson(fn, a, b, N) {
+        if (Math.abs(b - a) < 1e-12) return 0;
+        const steps = N % 2 === 0 ? N : N + 1;
+        const h = (b - a) / steps;
+        let sum = fn(a) + fn(b);
+        for (let i = 1; i < steps; i++) {
+          sum += (i % 2 === 0 ? 2 : 4) * fn(a + i * h);
+        }
+        return (h / 3) * sum;
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2800);
+      }
+
+      /* ----------------------------------------------------------------------
+         2. HIDPI CANVAS & 2D/3D PROJECTION UTILITIES
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(250, Math.floor(rect.width));
+        const h = Math.max(210, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function niceStep(range, ticks) {
+        const rough = Math.max(range, 1e-6) / ticks;
+        const p10 = Math.pow(10, Math.floor(Math.log10(rough)));
+        const norm = rough / p10;
+        const m = norm > 5 ? 10 : norm > 2 ? 5 : norm > 1 ? 2 : 1;
+        return m * p10;
+      }
+
+      function drawGridAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax) {
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = '#0b1120';
+        ctx.fillRect(0, 0, w, h);
+
+        const xStep = niceStep(xMax - xMin, 5);
+        const yStep = niceStep(yMax - yMin, 5);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.font = '500 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#94a3b8';
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let xv = Math.ceil(xMin / xStep) * xStep; xv <= xMax + 1e-9; xv += xStep) {
+          const px = toX(xv);
+          ctx.beginPath(); ctx.moveTo(px, pad.top); ctx.lineTo(px, h - pad.bottom); ctx.stroke();
+          ctx.fillText(Math.abs(xv) < 1e-9 ? '0' : Number(xv.toFixed(1)).toString(), px, h - pad.bottom + 6);
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let yv = Math.ceil(yMin / yStep) * yStep; yv <= yMax + 1e-9; yv += yStep) {
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(w - pad.right, py); ctx.stroke();
+          ctx.fillText(Math.abs(yv) < 1e-9 ? '0' : Number(yv.toFixed(1)).toString(), pad.left - 7, py);
+        }
+
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.5;
+        if (yMin <= 0 && yMax >= 0) {
+          const y0 = toY(0);
+          ctx.beginPath(); ctx.moveTo(pad.left, y0); ctx.lineTo(w - pad.right, y0); ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          const x0 = toX(0);
+          ctx.beginPath(); ctx.moveTo(x0, pad.top); ctx.lineTo(x0, h - pad.bottom); ctx.stroke();
+        }
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.18)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pad.left, pad.top, plotW, plotH);
+
+        return { toX, toY };
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 1: 5 ISRT EXAM PRESETS FOR 2D + 3D SANDBOX
+         ---------------------------------------------------------------------- */
+      const revPresets = [
+        {
+          id: 'f25_q4b',
+          tag: 'Final 2025 Q4b',
+          shortName: 'y=√x about x=9',
+          axisType: 'vertical',
+          axisVal: 9,
+          axisLabel: 'x = 9',
+          xRange: [-0.8, 10.5],
+          yRange: [-0.4, 3.6],
+          exactVolTex: '\\frac{648\\pi}{5}',
+          exactVolNum: (648 * Math.PI) / 5,
+          // Region polygon for 2D fill & 3D profile contour
+          getProfilePts() {
+            const pts = [];
+            for (let i = 0; i <= 40; i++) {
+              const x = (i / 40) * 9;
+              pts.push([x, Math.sqrt(x)]);
+            }
+            pts.push([9, 0]);
+            pts.push([0, 0]);
+            return pts;
+          },
+          // Outer surface curves for 3D wireframe (list of polylines in (x,y))
+          get3DCurves() {
+            const c1 = [];
+            for (let i = 0; i <= 26; i++) {
+              const x = (i / 26) * 9;
+              c1.push([x, Math.sqrt(x)]);
+            }
+            const c2 = [[0, 0], [9, 0]];
+            return [c1, c2];
+          },
+          washer: {
+            varName: 'y',
+            dom: [0, 3],
+            isDisk: true,
+            formulaTex: 'V = \\pi\\int_0^3 (9 - y^2)^2\\,dy',
+            slice(y) {
+              const xL = y * y;
+              return { x1: xL, x2: 9, y, rOut: 9 - xL, rIn: 0, dimTex: `R(y) = 9 - y^2 = ${(9 - xL).toFixed(2)}` };
+            }
+          },
+          shell: {
+            varName: 'x',
+            dom: [0, 9],
+            formulaTex: 'V = 2\\pi\\int_0^9 (9 - x)\\sqrt{x}\\,dx',
+            slice(x) {
+              const h = Math.sqrt(x);
+              return { x, y1: 0, y2: h, r: 9 - x, h, dimTex: `r = ${(9 - x).toFixed(2)},\\; h = ${h.toFixed(2)}` };
+            }
+          }
+        },
+        {
+          id: 'f25_q4c',
+          tag: 'Final 2025 Q4c',
+          shortName: 'y=x² about y=-2',
+          axisType: 'horizontal',
+          axisVal: -2,
+          axisLabel: 'y = -2',
+          xRange: [-0.4, 2.5],
+          yRange: [-2.8, 4.6],
+          exactVolTex: '\\frac{256\\pi}{15}',
+          exactVolNum: (256 * Math.PI) / 15,
+          getProfilePts() {
+            const pts = [];
+            for (let i = 0; i <= 36; i++) {
+              const x = (i / 36) * 2;
+              pts.push([x, x * x]);
+            }
+            pts.push([2, 0]);
+            pts.push([0, 0]);
+            return pts;
+          },
+          get3DCurves() {
+            const c1 = [];
+            for (let i = 0; i <= 24; i++) {
+              const x = (i / 24) * 2;
+              c1.push([x, x * x]);
+            }
+            const c2 = [[0, 0], [2, 0]];
+            return [c1, c2];
+          },
+          washer: {
+            varName: 'x',
+            dom: [0, 2],
+            isDisk: false,
+            formulaTex: 'V = \\pi\\int_0^2 \\big[(x^2+2)^2 - 2^2\\big]\\,dx',
+            slice(x) {
+              const yT = x * x;
+              return { x, y1: 0, y2: yT, rOut: yT + 2, rIn: 2, dimTex: `R_{\\text{out}} = ${(yT + 2).toFixed(2)},\\; R_{\\text{in}} = 2.00` };
+            }
+          },
+          shell: {
+            varName: 'y',
+            dom: [0, 4],
+            formulaTex: 'V = 2\\pi\\int_0^4 (y + 2)(2 - \\sqrt{y})\\,dy',
+            slice(y) {
+              const xL = Math.sqrt(y);
+              const h = 2 - xL;
+              return { y, x1: xL, x2: 2, r: y + 2, h, dimTex: `r = ${(y + 2).toFixed(2)},\\; h = ${h.toFixed(2)}` };
+            }
+          }
+        },
+        {
+          id: 'inc25_torus',
+          tag: '2nd Incourse 2025 Q2',
+          shortName: 'Torus (a=1, b=2.5)',
+          axisType: 'vertical',
+          axisVal: 2.5,
+          axisLabel: 'x = 2.5',
+          xRange: [-1.5, 3.2],
+          yRange: [-1.5, 1.5],
+          exactVolTex: '5\\pi^2',
+          exactVolNum: 5 * Math.PI * Math.PI,
+          getProfilePts() {
+            const pts = [];
+            for (let i = 0; i <= 60; i++) {
+              const t = (i / 60) * Math.PI * 2;
+              pts.push([Math.cos(t), Math.sin(t)]);
+            }
+            return pts;
+          },
+          get3DCurves() {
+            const c = [];
+            for (let i = 0; i <= 36; i++) {
+              const t = (i / 36) * Math.PI * 2;
+              c.push([Math.cos(t), Math.sin(t)]);
+            }
+            return [c];
+          },
+          washer: {
+            varName: 'y',
+            dom: [-0.98, 0.98],
+            isDisk: false,
+            formulaTex: 'V = \\pi\\int_{-1}^{1} \\big[(2.5+\\sqrt{1-y^2})^2 - (2.5-\\sqrt{1-y^2})^2\\big]\\,dy',
+            slice(y) {
+              const sq = Math.sqrt(Math.max(0, 1 - y * y));
+              return { x1: -sq, x2: sq, y, rOut: 2.5 + sq, rIn: 2.5 - sq, dimTex: `R_{\\text{out}} = ${(2.5 + sq).toFixed(2)},\\; R_{\\text{in}} = ${(2.5 - sq).toFixed(2)}` };
+            }
+          },
+          shell: {
+            varName: 'x',
+            dom: [-0.98, 0.98],
+            formulaTex: 'V = 2\\pi\\int_{-1}^{1} (2.5 - x)\\cdot 2\\sqrt{1 - x^2}\\,dx',
+            slice(x) {
+              const sq = Math.sqrt(Math.max(0, 1 - x * x));
+              return { x, y1: -sq, y2: sq, r: 2.5 - x, h: 2 * sq, dimTex: `r = ${(2.5 - x).toFixed(2)},\\; h = ${(2 * sq).toFixed(2)}` };
+            }
+          }
+        },
+        {
+          id: 'inc20_cos',
+          tag: '2nd Incourse 2020 Q2',
+          shortName: 'y=cos x about y-axis',
+          axisType: 'vertical',
+          axisVal: 0,
+          axisLabel: 'x = 0 (y-axis)',
+          xRange: [-0.3, 1.9],
+          yRange: [-0.2, 1.25],
+          exactVolTex: '\\pi^2 - 2\\pi',
+          exactVolNum: Math.PI * Math.PI - 2 * Math.PI,
+          getProfilePts() {
+            const pts = [];
+            for (let i = 0; i <= 40; i++) {
+              const x = (i / 40) * (Math.PI / 2);
+              pts.push([x, Math.cos(x)]);
+            }
+            pts.push([Math.PI / 2, 0]);
+            pts.push([0, 0]);
+            return pts;
+          },
+          get3DCurves() {
+            const c = [];
+            for (let i = 0; i <= 26; i++) {
+              const x = (i / 26) * (Math.PI / 2);
+              c.push([x, Math.cos(x)]);
+            }
+            return [c];
+          },
+          washer: {
+            varName: 'y',
+            dom: [0, 1],
+            isDisk: true,
+            formulaTex: 'V = \\pi\\int_0^1 (\\cos^{-1}y)^2\\,dy',
+            slice(y) {
+              const xR = Math.acos(Math.max(0, Math.min(1, y)));
+              return { x1: 0, x2: xR, y, rOut: xR, rIn: 0, dimTex: `R(y) = \\cos^{-1}y = ${xR.toFixed(2)}` };
+            }
+          },
+          shell: {
+            varName: 'x',
+            dom: [0, Math.PI / 2],
+            formulaTex: 'V = 2\\pi\\int_0^{\\pi/2} x\\cos x\\,dx',
+            slice(x) {
+              const h = Math.cos(x);
+              return { x, y1: 0, y2: h, r: x, h, dimTex: `r = ${x.toFixed(2)},\\; h = \\cos x = ${h.toFixed(2)}` };
+            }
+          }
+        },
+        {
+          id: 'notes_ex40',
+          tag: 'Class Notes Ex 40',
+          shortName: 'y=√x about y=3',
+          axisType: 'horizontal',
+          axisVal: 3,
+          axisLabel: 'y = 3',
+          xRange: [-0.8, 10.2],
+          yRange: [-0.5, 3.8],
+          exactVolTex: '\\frac{135\\pi}{2}',
+          exactVolNum: (135 * Math.PI) / 2,
+          getProfilePts() {
+            const pts = [];
+            for (let i = 0; i <= 40; i++) {
+              const x = (i / 40) * 9;
+              pts.push([x, Math.sqrt(x)]);
+            }
+            pts.push([9, 0]);
+            pts.push([0, 0]);
+            return pts;
+          },
+          get3DCurves() {
+            const c1 = [];
+            for (let i = 0; i <= 26; i++) {
+              const x = (i / 26) * 9;
+              c1.push([x, Math.sqrt(x)]);
+            }
+            const c2 = [[0, 0], [9, 0]];
+            return [c1, c2];
+          },
+          washer: {
+            varName: 'x',
+            dom: [0, 9],
+            isDisk: false,
+            formulaTex: 'V = \\pi\\int_0^9 \\big[3^2 - (3 - \\sqrt{x})^2\\big]\\,dx',
+            slice(x) {
+              const yT = Math.sqrt(x);
+              return { x, y1: 0, y2: yT, rOut: 3, rIn: 3 - yT, dimTex: `R_{\\text{out}} = 3.00,\\; R_{\\text{in}} = ${(3 - yT).toFixed(2)}` };
+            }
+          },
+          shell: {
+            varName: 'y',
+            dom: [0, 3],
+            formulaTex: 'V = 2\\pi\\int_0^3 (3 - y)(9 - y^2)\\,dy',
+            slice(y) {
+              const xL = y * y;
+              const h = 9 - xL;
+              return { y, x1: xL, x2: 9, r: 3 - y, h, dimTex: `r = ${(3 - y).toFixed(2)},\\; h = ${h.toFixed(2)}` };
+            }
+          }
+        }
+      ];
+
+      const revState = {
+        idx: 0,
+        method: 'washer', // 'washer' | 'shell'
+        slicePct: 50,
+        sweepDeg: 300,
+        tiltDeg: 24,
+        animating: false,
+        rafId: null,
+        lastTs: 0
+      };
+
+      const canvas2D = document.getElementById('canvas2D');
+      const canvas3D = document.getElementById('canvas3D');
+      const revPresetsEl = document.getElementById('revPresets');
+      const sliceSlider = document.getElementById('sliceSlider');
+      const sweepSlider = document.getElementById('sweepSlider');
+      const tiltSlider = document.getElementById('tiltSlider');
+      const animSliceBtn = document.getElementById('animSliceBtn');
+
+      function buildRevPresets() {
+        revPresetsEl.innerHTML = revPresets.map((p, i) => `
+          <button type="button" class="preset-btn ${i === revState.idx ? 'active' : ''}" data-ridx="${i}">
+            <span class="preset-sub">${p.tag}</span>
+            <span>${i + 1}. ${p.shortName}</span>
+          </button>
+        `).join('');
+
+        revPresetsEl.querySelectorAll('.preset-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            stopSliceAnim();
+            revState.idx = parseInt(btn.dataset.ridx, 10);
+            revState.slicePct = 50;
+            sliceSlider.value = 50;
+            visitedSections.sandbox = true;
+            updateProgress();
+            renderSandbox();
+          });
+        });
+      }
+
+      function draw2DProfile(pr, sliceVal, sl) {
+        const { ctx, w, h } = setupCanvas(canvas2D);
+        const pad = { top: 22, right: 20, bottom: 30, left: 42 };
+        const { toX, toY } = drawGridAxes(ctx, w, h, pad, pr.xRange[0], pr.xRange[1], pr.yRange[0], pr.yRange[1]);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+
+        // 1. Shaded 2D Region R
+        const pts = pr.getProfilePts();
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.17)';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        pts.forEach(([x, y], i) => {
+          if (i === 0) ctx.moveTo(toX(x), toY(y));
+          else ctx.lineTo(toX(x), toY(y));
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // 2. Dashed Amber Axis of Revolution + Rotation Arrow
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2.4;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        if (pr.axisType === 'vertical') {
+          const ax = toX(pr.axisVal);
+          ctx.moveTo(ax, pad.top);
+          ctx.lineTo(ax, h - pad.bottom);
+        } else {
+          const ay = toY(pr.axisVal);
+          ctx.moveTo(pad.left, ay);
+          ctx.lineTo(w - pad.right, ay);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Small rotation loop icon near axis
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.6;
+        if (pr.axisType === 'vertical') {
+          const ax = toX(pr.axisVal);
+          const ry = pad.top + 18;
+          ctx.beginPath();
+          ctx.ellipse(ax, ry, 14, 5, 0, 0.25 * Math.PI, 1.85 * Math.PI);
+          ctx.stroke();
+        } else {
+          const ay = toY(pr.axisVal);
+          const rx = w - pad.right - 22;
+          ctx.beginPath();
+          ctx.ellipse(rx, ay, 5, 14, 0, -0.35 * Math.PI, 1.25 * Math.PI);
+          ctx.stroke();
+        }
+
+        // 3. Active Representative Strip (Cyan for Washer/Disk, Emerald for Shell)
+        const isWasher = revState.method === 'washer';
+        const isHorizStrip = (pr.axisType === 'vertical' && isWasher) || (pr.axisType === 'horizontal' && !isWasher);
+        const stripFill = isWasher ? 'rgba(56, 189, 248, 0.55)' : 'rgba(16, 185, 129, 0.55)';
+        const stripStroke = isWasher ? '#38bdf8' : '#34d399';
+
+        ctx.fillStyle = stripFill;
+        ctx.strokeStyle = stripStroke;
+        ctx.lineWidth = 2;
+
+        if (isHorizStrip) {
+          const py = toY(sl.y);
+          const px1 = toX(sl.x1);
+          const px2 = toX(sl.x2);
+          ctx.fillRect(Math.min(px1, px2), py - 4.5, Math.abs(px2 - px1), 9);
+          ctx.strokeRect(Math.min(px1, px2), py - 4.5, Math.abs(px2 - px1), 9);
+
+          // Radius bracket to axis
+          if (!isWasher) {
+            // Horizontal shell -> vertical radius r to horizontal axis y = axisVal
+            const axY = toY(pr.axisVal);
+            const midX = (px1 + px2) / 2;
+            ctx.strokeStyle = '#34d399';
+            ctx.lineWidth = 1.6;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(midX, py); ctx.lineTo(midX, axY); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#34d399';
+            ctx.font = '700 11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`r=${sl.r.toFixed(2)}`, midX + 5, (py + axY) / 2);
+          } else if (sl.rIn > 0.01) {
+            // Draw inner hole dashed rose line
+            const axX = toX(pr.axisVal);
+            const nearX = Math.abs(sl.x1 - pr.axisVal) < Math.abs(sl.x2 - pr.axisVal) ? toX(sl.x1) : toX(sl.x2);
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(nearX, py); ctx.lineTo(axX, py); ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        } else {
+          const px = toX(sl.x);
+          const py1 = toY(sl.y1);
+          const py2 = toY(sl.y2);
+          ctx.fillRect(px - 4.5, Math.min(py1, py2), 9, Math.abs(py2 - py1));
+          ctx.strokeRect(px - 4.5, Math.min(py1, py2), 9, Math.abs(py2 - py1));
+
+          if (!isWasher) {
+            // Vertical shell -> horizontal radius r to vertical axis x = axisVal
+            const axX = toX(pr.axisVal);
+            const midY = (py1 + py2) / 2;
+            ctx.strokeStyle = '#34d399';
+            ctx.lineWidth = 1.6;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(px, midY); ctx.lineTo(axX, midY); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#34d399';
+            ctx.font = '700 11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`r=${sl.r.toFixed(2)}`, (px + axX) / 2, midY - 4);
+          } else if (sl.rIn > 0.01) {
+            const axY = toY(pr.axisVal);
+            const nearY = Math.abs(sl.y1 - pr.axisVal) < Math.abs(sl.y2 - pr.axisVal) ? toY(sl.y1) : toY(sl.y2);
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(px, nearY); ctx.lineTo(px, axY); ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+
+        ctx.restore();
+      }
+
+      function draw3DSolid(pr, sl) {
+        const { ctx, w, h } = setupCanvas(canvas3D);
+        ctx.fillStyle = '#0b1120';
+        ctx.fillRect(0, 0, w, h);
+
+        const sweepRad = (revState.sweepDeg * Math.PI) / 180;
+        const tiltRad = (revState.tiltDeg * Math.PI) / 180;
+        const yawRad = pr.axisType === 'vertical' ? 0.32 : -0.48;
+
+        // Compute normalized local coordinates centered on the solid's axis midpoint
+        const prof = pr.getProfilePts();
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        prof.forEach(([x, y]) => {
+          if (x < minX) minX = x; if (x > maxX) maxX = x;
+          if (y < minY) minY = y; if (y > maxY) maxY = y;
+        });
+
+        const cx = pr.axisType === 'vertical' ? pr.axisVal : (minX + maxX) / 2;
+        const cy = pr.axisType === 'horizontal' ? pr.axisVal : (minY + maxY) / 2;
+
+        // Max radius and axial span to auto-scale cleanly
+        let maxR = 0.5;
+        let maxAx = 0.5;
+        prof.forEach(([x, y]) => {
+          if (pr.axisType === 'vertical') {
+            maxR = Math.max(maxR, Math.abs(x - pr.axisVal));
+            maxAx = Math.max(maxAx, Math.abs(y - cy));
+          } else {
+            maxR = Math.max(maxR, Math.abs(y - pr.axisVal));
+            maxAx = Math.max(maxAx, Math.abs(x - cx));
+          }
+        });
+
+        // Aspect normalization so tall/wide solids (like x in [0,9], y in [0,3]) look balanced
+        const xScaleNorm = pr.axisType === 'vertical' ? 1 / maxR : 1 / Math.max(maxAx, maxR * 0.7);
+        const yScaleNorm = pr.axisType === 'vertical' ? 0.85 / Math.max(maxAx, 0.5) : 1 / maxR;
+        const radScaleNorm = pr.axisType === 'vertical' ? xScaleNorm : yScaleNorm;
+
+        const cosY = Math.cos(yawRad), sinY = Math.sin(yawRad);
+        const cosP = Math.cos(tiltRad), sinP = Math.sin(tiltRad);
+        const pxScale = Math.min(w, h) * 0.34;
+        const originX = w * 0.5;
+        const originY = h * 0.52;
+
+        function projectRevolved(x, y, phi) {
+          let lx, ly, lz;
+          if (pr.axisType === 'vertical') {
+            const r = (x - pr.axisVal) * radScaleNorm;
+            lx = r * Math.cos(phi);
+            ly = (y - cy) * yScaleNorm;
+            lz = r * Math.sin(phi);
+          } else {
+            const r = (y - pr.axisVal) * radScaleNorm;
+            lx = (x - cx) * xScaleNorm;
+            ly = r * Math.cos(phi);
+            lz = r * Math.sin(phi);
+          }
+          // Camera Yaw then Pitch
+          const rx = lx * cosY + lz * sinY;
+          const rz = -lx * sinY + lz * cosY;
+          const ry = ly * cosP - rz * sinP;
+          return [originX + rx * pxScale, originY - ry * pxScale];
+        }
+
+        // 1. Draw subtle 3D Axis of Revolution (Amber dashed)
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.75)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        if (pr.axisType === 'vertical') {
+          const p1 = projectRevolved(pr.axisVal, minY - (maxY - minY) * 0.2, 0);
+          const p2 = projectRevolved(pr.axisVal, maxY + (maxY - minY) * 0.2, 0);
+          ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]);
+        } else {
+          const p1 = projectRevolved(minX - (maxX - minX) * 0.2, pr.axisVal, 0);
+          const p2 = projectRevolved(maxX + (maxX - minX) * 0.2, pr.axisVal, 0);
+          ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 2. Draw Translucent Wireframe Lathe Shell of the Revolved Solid
+        const curves = pr.get3DCurves();
+        const meridianCount = 14;
+        const ringSamples = 36;
+
+        // Parallels (latitude rings)
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.19)';
+        ctx.lineWidth = 1;
+        curves.forEach((pts) => {
+          const stepIdx = Math.max(1, Math.floor(pts.length / 7));
+          for (let i = 0; i < pts.length; i += stepIdx) {
+            const [px, py] = pts[i];
+            ctx.beginPath();
+            for (let k = 0; k <= ringSamples; k++) {
+              const phi = (k / ringSamples) * sweepRad;
+              const [sx, sy] = projectRevolved(px, py, phi);
+              if (k === 0) ctx.moveTo(sx, sy);
+              else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+          }
+          // Meridians (longitude ribs)
+          for (let m = 0; m <= meridianCount; m++) {
+            const phi = (m / meridianCount) * sweepRad;
+            const isEdge = m === 0 || m === meridianCount;
+            ctx.strokeStyle = isEdge ? 'rgba(56, 189, 248, 0.45)' : 'rgba(148, 163, 184, 0.16)';
+            ctx.lineWidth = isEdge ? 1.5 : 1;
+            ctx.beginPath();
+            pts.forEach(([px, py], idx) => {
+              const [sx, sy] = projectRevolved(px, py, phi);
+              if (idx === 0) ctx.moveTo(sx, sy);
+              else ctx.lineTo(sx, sy);
+            });
+            ctx.stroke();
+          }
+        });
+
+        // Draw cutaway profile caps at phi = 0 and phi = sweepRad
+        [0, sweepRad].forEach((phi) => {
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.42)';
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          prof.forEach(([px, py], i) => {
+            const [sx, sy] = projectRevolved(px, py, phi);
+            if (i === 0) ctx.moveTo(sx, sy);
+            else ctx.lineTo(sx, sy);
+          });
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        });
+
+        // 3. Draw the Single Peeled 3D Element (Disk/Washer in Cyan OR Shell in Emerald)
+        const arcN = 48;
+        if (revState.method === 'washer') {
+          // Draw annular ring between outer & inner profile endpoints at sl.y (vertical axis) or sl.x (horizontal axis)
+          const pOut = pr.axisType === 'vertical'
+            ? (Math.abs(sl.x1 - pr.axisVal) >= Math.abs(sl.x2 - pr.axisVal) ? [sl.x1, sl.y] : [sl.x2, sl.y])
+            : (Math.abs(sl.y1 - pr.axisVal) >= Math.abs(sl.y2 - pr.axisVal) ? [sl.x, sl.y1] : [sl.x, sl.y2]);
+          const pIn = pr.axisType === 'vertical'
+            ? (Math.abs(sl.x1 - pr.axisVal) < Math.abs(sl.x2 - pr.axisVal) ? [sl.x1, sl.y] : [sl.x2, sl.y])
+            : (Math.abs(sl.y1 - pr.axisVal) < Math.abs(sl.y2 - pr.axisVal) ? [sl.x, sl.y1] : [sl.x, sl.y2]);
+
+          // Annular face fill
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.42)';
+          ctx.beginPath();
+          for (let k = 0; k <= arcN; k++) {
+            const phi = (k / arcN) * sweepRad;
+            const [sx, sy] = projectRevolved(pOut[0], pOut[1], phi);
+            if (k === 0) ctx.moveTo(sx, sy);
+            else ctx.lineTo(sx, sy);
+          }
+          for (let k = arcN; k >= 0; k--) {
+            const phi = (k / arcN) * sweepRad;
+            const [sx, sy] = projectRevolved(pIn[0], pIn[1], phi);
+            ctx.lineTo(sx, sy);
+          }
+          ctx.closePath();
+          ctx.fill();
+
+          // Bright cyan outer rim
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 2.6;
+          ctx.beginPath();
+          for (let k = 0; k <= arcN; k++) {
+            const phi = (k / arcN) * sweepRad;
+            const [sx, sy] = projectRevolved(pOut[0], pOut[1], phi);
+            if (k === 0) ctx.moveTo(sx, sy);
+            else ctx.lineTo(sx, sy);
+          }
+          ctx.stroke();
+
+          // Rose inner hole rim if washer
+          if (sl.rIn > 0.01) {
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            for (let k = 0; k <= arcN; k++) {
+              const phi = (k / arcN) * sweepRad;
+              const [sx, sy] = projectRevolved(pIn[0], pIn[1], phi);
+              if (k === 0) ctx.moveTo(sx, sy);
+              else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+          }
+        } else {
+          // Cylindrical Shell Sleeve (Emerald)
+          const pA = pr.axisType === 'vertical' ? [sl.x, sl.y1] : [sl.x1, sl.y];
+          const pB = pr.axisType === 'vertical' ? [sl.x, sl.y2] : [sl.x2, sl.y];
+
+          // Sleeve body quads
+          const segs = 36;
+          for (let k = 0; k < segs; k++) {
+            const phi1 = (k / segs) * sweepRad;
+            const phi2 = ((k + 1) / segs) * sweepRad;
+            const a1 = projectRevolved(pA[0], pA[1], phi1);
+            const a2 = projectRevolved(pA[0], pA[1], phi2);
+            const b2 = projectRevolved(pB[0], pB[1], phi2);
+            const b1 = projectRevolved(pB[0], pB[1], phi1);
+
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.34)';
+            ctx.beginPath();
+            ctx.moveTo(a1[0], a1[1]);
+            ctx.lineTo(a2[0], a2[1]);
+            ctx.lineTo(b2[0], b2[1]);
+            ctx.lineTo(b1[0], b1[1]);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          // Top & bottom emerald rims
+          ctx.strokeStyle = '#34d399';
+          ctx.lineWidth = 2.5;
+          [pA, pB].forEach((pt) => {
+            ctx.beginPath();
+            for (let k = 0; k <= arcN; k++) {
+              const phi = (k / arcN) * sweepRad;
+              const [sx, sy] = projectRevolved(pt[0], pt[1], phi);
+              if (k === 0) ctx.moveTo(sx, sy);
+              else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+          });
+
+          // Cutaway vertical/horizontal edge lines of shell
+          [0, sweepRad].forEach((phi) => {
+            const a = projectRevolved(pA[0], pA[1], phi);
+            const b = projectRevolved(pB[0], pB[1], phi);
+            ctx.beginPath();
+            ctx.moveTo(a[0], a[1]);
+            ctx.lineTo(b[0], b[1]);
+            ctx.stroke();
+          });
+        }
+
+        // Subtle label in corner of 3D canvas
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(`Sweep: ${revState.sweepDeg}° | Tilt: ${revState.tiltDeg}°`, 12, 10);
+      }
+
+      function renderSandbox() {
+        const pr = revPresets[revState.idx];
+        const cfg = pr[revState.method];
+        const [dMin, dMax] = cfg.dom;
+        const sliceVal = dMin + (revState.slicePct / 100) * (dMax - dMin);
+        const sl = cfg.slice(sliceVal);
+
+        // Update Preset & Method Button Styling
+        revPresetsEl.querySelectorAll('.preset-btn').forEach((b, i) => b.classList.toggle('active', i === revState.idx));
+        const btnW = document.getElementById('btnMethodWasher');
+        const btnS = document.getElementById('btnMethodShell');
+        btnW.className = `seg-btn ${revState.method === 'washer' ? 'active-cyan' : ''}`;
+        btnS.className = `seg-btn ${revState.method === 'shell' ? 'active-emerald' : ''}`;
+
+        document.getElementById('sliceValDisplay').textContent = `${Math.round(revState.slicePct)}%`;
+        document.getElementById('sweepValDisplay').innerHTML = `${revState.sweepDeg}&deg;`;
+        document.getElementById('tiltValDisplay').innerHTML = `${revState.tiltDeg}&deg;`;
+
+        document.getElementById('axisBadge2D').textContent = `Axis: ${pr.axisLabel} (${pr.axisType === 'vertical' ? 'Vertical' : 'Horizontal'})`;
+        document.getElementById('elementBadge3D').textContent = revState.method === 'washer'
+          ? (cfg.isDisk ? 'Element: 3D Disk (⊥)' : 'Element: 3D Washer Ring (⊥)')
+          : 'Element: 3D Cylindrical Shell (∥)';
+
+        // Draw Canvases
+        draw2DProfile(pr, sliceVal, sl);
+        draw3DSolid(pr, sl);
+
+        // Update 4-Card Telemetry Bar
+        const tc1 = document.getElementById('teleCard1');
+        tc1.className = `tele-card ${revState.method === 'washer' ? 'cyan' : 'emerald'}`;
+        document.getElementById('teleOrient').innerHTML = revState.method === 'washer'
+          ? `&perp; to axis &rarr; ${cfg.isDisk ? 'Disk' : 'Washer'} ($d${cfg.varName}$)`
+          : `&parallel; to axis &rarr; Shell ($d${cfg.varName}$)`;
+        document.getElementById('teleAxisSub').textContent = `Revolved about ${pr.axisLabel}`;
+
+        const dimEl = document.getElementById('teleDims');
+        dimEl.innerHTML = `$${sl.dimTex}$`;
+        document.getElementById('teleSlicePos').textContent = `At ${cfg.varName} = ${sliceVal.toFixed(2)} (on [${dMin.toFixed(2)}, ${dMax.toFixed(2)}])`;
+
+        const formEl = document.getElementById('teleFormula');
+        const fKey = `${revState.idx}-${revState.method}`;
+        if (formEl.dataset.fkey !== fKey) {
+          formEl.innerHTML = `$${cfg.formulaTex}$`;
+          formEl.dataset.fkey = fKey;
+          renderMath(formEl);
+        }
+
+        const volEl = document.getElementById('teleVolume');
+        if (volEl.dataset.vkey !== String(revState.idx)) {
+          volEl.innerHTML = `$V = ${pr.exactVolTex} \\approx ${pr.exactVolNum.toFixed(2)}$`;
+          volEl.dataset.vkey = String(revState.idx);
+          renderMath(volEl);
+        }
+
+        renderMath(document.getElementById('teleOrient'));
+        renderMath(dimEl);
+      }
+
+      function stopSliceAnim() {
+        revState.animating = false;
+        if (revState.rafId) cancelAnimationFrame(revState.rafId);
+        revState.rafId = null;
+        animSliceBtn.innerHTML = '&#9654; Animate Slice';
+      }
+
+      function stepSliceAnim(ts) {
+        if (!revState.animating) return;
+        if (!revState.lastTs) revState.lastTs = ts;
+        const dt = Math.min(0.05, (ts - revState.lastTs) / 1000);
+        revState.lastTs = ts;
+
+        revState.slicePct += 24 * dt;
+        if (revState.slicePct >= 97) revState.slicePct = 3;
+        sliceSlider.value = revState.slicePct;
+        renderSandbox();
+        revState.rafId = requestAnimationFrame(stepSliceAnim);
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2: SHIFTED-AXIS RADIUS CALCULATOR & EQUIVALENCE LAB
+         ---------------------------------------------------------------------- */
+      const shiftState = {
+        orient: 'horiz', // 'horiz' (y = c) | 'vert' (x = c)
+        c: -2
+      };
+
+      const shiftedCanvas = document.getElementById('shiftedCanvas');
+      const axisCSlider = document.getElementById('axisCSlider');
+      const axisQuickChips = document.getElementById('axisQuickChips');
+
+      function syncShiftControls() {
+        if (shiftState.orient === 'horiz') {
+          axisCSlider.min = '-3';
+          axisCSlider.max = '6';
+          axisCSlider.step = '0.25';
+          shiftState.c = -2;
+          axisCSlider.value = '-2';
+          axisQuickChips.innerHTML = [-2, 0, 4, 5].map((v) =>
+            `<button type="button" class="quick-chip ${v === shiftState.c ? 'active' : ''}" data-cval="${v}">y = ${v}</button>`
+          ).join('');
+        } else {
+          axisCSlider.min = '-3';
+          axisCSlider.max = '5';
+          axisCSlider.step = '0.25';
+          shiftState.c = 2;
+          axisCSlider.value = '2';
+          axisQuickChips.innerHTML = [-1, 0, 2, 4].map((v) =>
+            `<button type="button" class="quick-chip ${v === shiftState.c ? 'active' : ''}" data-cval="${v}">x = ${v}</button>`
+          ).join('');
+        }
+
+        axisQuickChips.querySelectorAll('.quick-chip').forEach((ch) => {
+          ch.addEventListener('click', () => {
+            shiftState.c = parseFloat(ch.dataset.cval);
+            axisCSlider.value = shiftState.c;
+            visitedSections.shifted = true;
+            updateProgress();
+            renderShiftedLab();
+          });
+        });
+      }
+
+      function renderShiftedLab() {
+        const isH = shiftState.orient === 'horiz';
+        const c = shiftState.c;
+
+        document.getElementById('btnAxisHoriz').className = `seg-btn ${isH ? 'active-cyan' : ''}`;
+        document.getElementById('btnAxisVert').className = `seg-btn ${!isH ? 'active-emerald' : ''}`;
+        document.getElementById('axisCLabel').textContent = isH ? 'Horizontal Axis (y = c)' : 'Vertical Axis (x = c)';
+        document.getElementById('axisCVal').textContent = isH ? `y = ${c.toFixed(2)}` : `x = ${c.toFixed(2)}`;
+
+        axisQuickChips.querySelectorAll('.quick-chip').forEach((ch) => {
+          ch.classList.toggle('active', Math.abs(parseFloat(ch.dataset.cval) - c) < 1e-6);
+        });
+
+        // Overlap Check: Region R is x in [0, 2], y in [0, x^2] (so y in [0, 4])
+        const cutsInterior = isH ? (c > 0.001 && c < 3.999) : (c > 0.001 && c < 1.999);
+        document.getElementById('overlapWarning').classList.toggle('show', cutsInterior);
+
+        // Draw Canvas
+        const { ctx, w, h } = setupCanvas(shiftedCanvas);
+        const pad = { top: 22, right: 22, bottom: 30, left: 44 };
+        const xRange = isH ? [-0.6, 2.8] : [-3.5, 5.5];
+        const yRange = isH ? [-3.5, 6.5] : [-0.6, 4.8];
+        const { toX, toY } = drawGridAxes(ctx, w, h, pad, xRange[0], xRange[1], yRange[0], yRange[1]);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+
+        // Fill region R under y = x^2 on [0, 2]
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(0));
+        for (let i = 0; i <= 80; i++) {
+          const x = (i / 80) * 2;
+          ctx.lineTo(toX(x), toY(x * x));
+        }
+        ctx.lineTo(toX(2), toY(0));
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Movable dashed amber axis
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2.6;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        if (isH) {
+          ctx.moveTo(pad.left, toY(c));
+          ctx.lineTo(w - pad.right, toY(c));
+        } else {
+          ctx.moveTo(toX(c), pad.top);
+          ctx.lineTo(toX(c), h - pad.bottom);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Distance Brackets at representative sample point
+        if (!cutsInterior) {
+          if (isH) {
+            const xs = 1.5;
+            const ys = xs * xs; // 2.25
+            const pxOut = toX(xs);
+            const pxIn = toX(1.75);
+            const yAxisPx = toY(c);
+
+            // R_out bracket (Cyan)
+            const yOutEnd = c <= 0 ? toY(ys) : toY(0);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(pxOut, yAxisPx); ctx.lineTo(pxOut, yOutEnd); ctx.stroke();
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = '700 11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('R_out', pxOut - 6, (yAxisPx + yOutEnd) / 2);
+
+            // R_in bracket (Rose)
+            const yInEnd = c <= 0 ? toY(0) : toY(1.75 * 1.75);
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(pxIn, yAxisPx); ctx.lineTo(pxIn, yInEnd); ctx.stroke();
+            ctx.fillStyle = '#fb7185';
+            ctx.textAlign = 'left';
+            ctx.fillText('R_in', pxIn + 6, (yAxisPx + yInEnd) / 2);
+
+            // Shell radius r bracket (Emerald) at y = 1.6
+            const ySh = 1.6;
+            const pxSh = toX(0.6);
+            ctx.strokeStyle = '#34d399';
+            ctx.lineWidth = 2.2;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(pxSh, yAxisPx); ctx.lineTo(pxSh, toY(ySh)); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#34d399';
+            ctx.textAlign = 'right';
+            ctx.fillText('r(y)', pxSh - 5, (yAxisPx + toY(ySh)) / 2);
+          } else {
+            const ys = 1.8;
+            const xCurve = Math.sqrt(ys);
+            const xAxisPx = toX(c);
+
+            // R_out bracket (Cyan)
+            const xOutEnd = c <= 0 ? toX(2) : toX(xCurve);
+            const pyOut = toY(ys);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(xAxisPx, pyOut); ctx.lineTo(xOutEnd, pyOut); ctx.stroke();
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = '700 11px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('R_out', (xAxisPx + xOutEnd) / 2, pyOut - 4);
+
+            // R_in bracket (Rose)
+            const pyIn = toY(0.8);
+            const xInEnd = c <= 0 ? toX(Math.sqrt(0.8)) : toX(2);
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(xAxisPx, pyIn); ctx.lineTo(xInEnd, pyIn); ctx.stroke();
+            ctx.fillStyle = '#fb7185';
+            ctx.textBaseline = 'top';
+            ctx.fillText('R_in', (xAxisPx + xInEnd) / 2, pyIn + 4);
+
+            // Shell radius r(x) (Emerald)
+            const pySh = toY(3.2);
+            const pxSh = toX(1.85);
+            ctx.strokeStyle = '#34d399';
+            ctx.lineWidth = 2.2;
+            ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(xAxisPx, pySh); ctx.lineTo(pxSh, pySh); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#34d399';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('r(x)', (xAxisPx + pxSh) / 2, pySh - 4);
+          }
+        }
+
+        ctx.restore();
+
+        // Formulas & Numerical Verification
+        const cStr = Number(c.toFixed(2)).toString();
+        const ruleEl = document.getElementById('shiftedRuleSummary');
+        const wCard = document.getElementById('shiftedWasherCard');
+        const sCard = document.getElementById('shiftedShellCard');
+        const eqBanner = document.getElementById('shiftedEquivBanner');
+
+        if (cutsInterior) {
+          ruleEl.innerHTML = `Axis ${isH ? `y = ${cStr}` : `x = ${cStr}`} slices inside $R$. Move $c$ outside the region to evaluate non-overlapping Washer &amp; Shell formulas.`;
+          wCard.innerHTML = `<span class="tele-label" style="color:var(--cyan);">Washer Setup</span><div style="color:var(--text-muted);font-size:0.86rem;">Paused while axis intersects interior of $R$.</div>`;
+          sCard.innerHTML = `<span class="tele-label" style="color:var(--emerald-light);">Shell Setup</span><div style="color:var(--text-muted);font-size:0.86rem;">Paused while axis intersects interior of $R$.</div>`;
+          eqBanner.style.opacity = '0.45';
+          document.getElementById('shiftedEquivNums').textContent = 'Move axis outside R to verify';
+        } else {
+          eqBanner.style.opacity = '1';
+          let vWasher = 0, vShell = 0;
+          let wTex = '', sTex = '', ruleTex = '';
+
+          if (isH) {
+            if (c <= 0) {
+              const absC = Math.abs(c);
+              const plusC = absC === 0 ? '' : ` + ${Number(absC.toFixed(2))}`;
+              vWasher = Math.PI * simpson((x) => Math.pow(x * x - c, 2) - Math.pow(0 - c, 2), 0, 2, 120);
+              vShell = 2 * Math.PI * simpson((y) => (y - c) * (2 - Math.sqrt(y)), 0, 4, 120);
+              ruleTex = `Axis is <strong>below</strong> $R$ ($y = ${cStr} \\le 0$): $R_{\\text{out}} = x^2${plusC}$, $R_{\\text{in}} = ${Number(absC.toFixed(2))}$, $r(y) = y${plusC}$.`;
+              wTex = `V = \\pi\\int_0^2 \\left[(x^2${plusC})^2 - (${Number(absC.toFixed(2))})^2\\right]dx`;
+              sTex = `V = 2\\pi\\int_0^4 (y${plusC})(2 - \\sqrt{y})\\,dy`;
+            } else {
+              // c >= 4 (axis above R)
+              vWasher = Math.PI * simpson((x) => Math.pow(c - 0, 2) - Math.pow(c - x * x, 2), 0, 2, 120);
+              vShell = 2 * Math.PI * simpson((y) => (c - y) * (2 - Math.sqrt(y)), 0, 4, 120);
+              ruleTex = `Axis is <strong>above</strong> $R$ ($y = ${cStr} \\ge 4$): $R_{\\text{out}} = ${cStr}$, $R_{\\text{in}} = ${cStr} - x^2$, $r(y) = ${cStr} - y$.`;
+              wTex = `V = \\pi\\int_0^2 \\left[${cStr}^2 - (${cStr} - x^2)^2\\right]dx`;
+              sTex = `V = 2\\pi\\int_0^4 (${cStr} - y)(2 - \\sqrt{y})\\,dy`;
+            }
+          } else {
+            if (c <= 0) {
+              const absC = Math.abs(c);
+              const plusC = absC === 0 ? '' : ` + ${Number(absC.toFixed(2))}`;
+              vWasher = Math.PI * simpson((y) => Math.pow(2 - c, 2) - Math.pow(Math.sqrt(y) - c, 2), 0, 4, 120);
+              vShell = 2 * Math.PI * simpson((x) => (x - c) * (x * x), 0, 2, 120);
+              ruleTex = `Axis is <strong>left</strong> of $R$ ($x = ${cStr} \\le 0$): $R_{\\text{out}} = ${(2 - c).toFixed(2)}$, $R_{\\text{in}} = \\sqrt{y}${plusC}$, $r(x) = x${plusC}$.`;
+              wTex = `V = \\pi\\int_0^4 \\left[(${Number((2 - c).toFixed(2))})^2 - (\\sqrt{y}${plusC})^2\\right]dy`;
+              sTex = `V = 2\\pi\\int_0^2 (x${plusC})\\,x^2\\,dx`;
+            } else {
+              // c >= 2 (axis right of R)
+              vWasher = Math.PI * simpson((y) => Math.pow(c - Math.sqrt(y), 2) - Math.pow(c - 2, 2), 0, 4, 120);
+              vShell = 2 * Math.PI * simpson((x) => (c - x) * (x * x), 0, 2, 120);
+              ruleTex = `Axis is <strong>right</strong> of $R$ ($x = ${cStr} \\ge 2$): $R_{\\text{out}} = ${cStr} - \\sqrt{y}$, $R_{\\text{in}} = ${Number((c - 2).toFixed(2))}$, $r(x) = ${cStr} - x$.`;
+              wTex = `V = \\pi\\int_0^4 \\left[(${cStr} - \\sqrt{y})^2 - (${Number((c - 2).toFixed(2))})^2\\right]dy`;
+              sTex = `V = 2\\pi\\int_0^2 (${cStr} - x)\\,x^2\\,dx`;
+            }
+          }
+
+          ruleEl.innerHTML = ruleTex;
+          wCard.innerHTML = `
+            <span class="tele-label" style="color:var(--cyan);">Washer Method (${isH ? 'dx' : 'dy'})</span>
+            <div>$$${wTex}$$</div>
+            <div class="mono" style="font-size:0.84rem;color:var(--cyan);">Numeric V = ${vWasher.toFixed(4)}</div>
+          `;
+          sCard.innerHTML = `
+            <span class="tele-label" style="color:var(--emerald-light);">Cylindrical Shell Method (${isH ? 'dy' : 'dx'})</span>
+            <div>$$${sTex}$$</div>
+            <div class="mono" style="font-size:0.84rem;color:var(--emerald-light);">Numeric V = ${vShell.toFixed(4)}</div>
+          `;
+          document.getElementById('shiftedEquivNums').textContent =
+            `Washer V = ${vWasher.toFixed(4)}  =  Shell V = ${vShell.toFixed(4)}`;
+        }
+
+        renderMath(ruleEl);
+        renderMath(wCard);
+        renderMath(sCard);
+      }
+
+      /* ----------------------------------------------------------------------
+         5. MASTERY PROGRESS TRACKING (8 VAULT + 5 QUIZ = 13 ITEMS)
+         ---------------------------------------------------------------------- */
+      const reviewedVault = new Set();
+      const quizResults = { q1: null, q2: null, q3: null, q4: null, q5: null };
+      const visitedSections = { sandbox: false, shifted: false, theory: false };
+
+      function updateProgress() {
+        const quizAnsweredCorrect = Object.values(quizResults).filter((v) => v === true).length;
+        const done = reviewedVault.size + quizAnsweredCorrect;
+        const pct = Math.round((done / 13) * 100);
+
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressCaption').textContent =
+          `${done}/13 items (${reviewedVault.size}/8 Vault, ${quizAnsweredCorrect}/5 Quiz)`;
+
+        document.querySelector('[data-section="section-sandbox"]').classList.toggle('done', visitedSections.sandbox);
+        document.querySelector('[data-section="section-shifted"]').classList.toggle('done', visitedSections.shifted);
+        document.querySelector('[data-section="section-theory"]').classList.toggle('done', visitedSections.theory);
+        document.querySelector('[data-section="section-vault"]').classList.toggle('done', reviewedVault.size === 8);
+        document.querySelector('[data-section="section-quiz"]').classList.toggle('done', quizAnsweredCorrect === 5);
+      }
+
+      const quizExplanations = {
+        q1: 'In the <strong>Disk/Washer Method</strong>, cross-sections are taken <strong>perpendicular ($\perp$)</strong> to the axis of revolution; in <strong>Cylindrical Shells</strong>, cross-sections are taken <strong>parallel ($\parallel$)</strong> to the axis.',
+        q2: 'Since the region lies to the left of $x = 9$ ($0 \le x \le 9$), the positive horizontal distance from a vertical strip at $x$ to the axis $x = 9$ is $r(x) = 9 - x$.',
+        q3: 'With Shells ($dx$), the circumference factor $2\pi x$ gives $2\pi\int_1^{\sqrt{3}} x e^{x^2}\,dx$, where $u = x^2$ ($du = 2x\,dx$) integrates immediately to $\pi(e^3 - e)$.',
+        q4: 'Both Shell ($dx$) and Washer ($dy$) reduce to $4\pi b\int_{-a}^a \sqrt{a^2 - t^2}\,dt = 4\pi b\left(\frac{\pi a^2}{2}\right) = 2\pi^2 a^2 b$.',
+        q5: 'Around $y = -2$, $R_{\text{out}} = x^2 - (-2) = x^2 + 2$ and $R_{\text{in}} = 0 - (-2) = 2$. Square each radius separately before subtracting: $\pi\int_0^2 [(x^2+2)^2 - 2^2]\,dx$.'
+      };
+
+      /* ----------------------------------------------------------------------
+         6. DOM INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile Drawer
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+
+        function setSidebar(open) {
+          sidebar.classList.toggle('open', open);
+          sidebarOverlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+
+        menuToggle.addEventListener('click', () => setSidebar(!sidebar.classList.contains('open')));
+        sidebarOverlay.addEventListener('click', () => setSidebar(false));
+        document.querySelectorAll('.nav-link').forEach((l) => l.addEventListener('click', () => setSidebar(false)));
+
+        document.getElementById('prevLessonBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 8 — Area Between Curves (lesson8_area_between_curves.html)');
+        });
+        document.getElementById('nextLessonBtn').addEventListener('click', () => {
+          showToast('Next Up: Lesson 10 — Arc Length, Surface Area, Work & Centroids');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('.section-block');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === id));
+              if (id === 'section-theory' && !visitedSections.theory) {
+                visitedSections.theory = true;
+                updateProgress();
+              }
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Controls
+        document.getElementById('btnMethodWasher').addEventListener('click', () => {
+          revState.method = 'washer';
+          visitedSections.sandbox = true;
+          updateProgress();
+          renderSandbox();
+        });
+
+        document.getElementById('btnMethodShell').addEventListener('click', () => {
+          revState.method = 'shell';
+          visitedSections.sandbox = true;
+          updateProgress();
+          renderSandbox();
+        });
+
+        sliceSlider.addEventListener('input', () => {
+          stopSliceAnim();
+          revState.slicePct = parseFloat(sliceSlider.value);
+          visitedSections.sandbox = true;
+          updateProgress();
+          renderSandbox();
+        });
+
+        sweepSlider.addEventListener('input', () => {
+          revState.sweepDeg = parseInt(sweepSlider.value, 10);
+          visitedSections.sandbox = true;
+          updateProgress();
+          renderSandbox();
+        });
+
+        tiltSlider.addEventListener('input', () => {
+          revState.tiltDeg = parseInt(tiltSlider.value, 10);
+          visitedSections.sandbox = true;
+          updateProgress();
+          renderSandbox();
+        });
+
+        animSliceBtn.addEventListener('click', () => {
+          visitedSections.sandbox = true;
+          updateProgress();
+          if (revState.animating) {
+            stopSliceAnim();
+          } else {
+            revState.animating = true;
+            revState.lastTs = 0;
+            animSliceBtn.textContent = '❚❚ Pause';
+            revState.rafId = requestAnimationFrame(stepSliceAnim);
+          }
+        });
+
+        // Section 2 Shifted-Axis Controls
+        document.getElementById('btnAxisHoriz').addEventListener('click', () => {
+          shiftState.orient = 'horiz';
+          syncShiftControls();
+          visitedSections.shifted = true;
+          updateProgress();
+          renderShiftedLab();
+        });
+
+        document.getElementById('btnAxisVert').addEventListener('click', () => {
+          shiftState.orient = 'vert';
+          syncShiftControls();
+          visitedSections.shifted = true;
+          updateProgress();
+          renderShiftedLab();
+        });
+
+        axisCSlider.addEventListener('input', () => {
+          shiftState.c = parseFloat(axisCSlider.value);
+          visitedSections.shifted = true;
+          updateProgress();
+          renderShiftedLab();
+        });
+
+        // Section 4 Vault Filters, Hints, Solutions & Mark Reviewed
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const examCards = document.querySelectorAll('.exam-card');
+
+        filterTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            filterTabs.forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+            const f = tab.dataset.filter;
+            examCards.forEach((card) => {
+              card.classList.toggle('hidden', f !== 'all' && card.dataset.category !== f);
+            });
+          });
+        });
+
+        examCards.forEach((card) => {
+          const hintBtn = card.querySelector('.hint-toggle');
+          const hintBox = card.querySelector('.hint-box');
+          const solBtn = card.querySelector('.sol-toggle');
+          const solBox = card.querySelector('.solution-box');
+          const cb = card.querySelector('.review-cb');
+
+          hintBtn.addEventListener('click', () => {
+            const open = hintBox.classList.toggle('open');
+            hintBtn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            if (open) renderMath(hintBox);
+          });
+
+          solBtn.addEventListener('click', () => {
+            const open = solBox.classList.toggle('open');
+            solBtn.textContent = open ? 'Hide Solution' : 'Show Step-by-Step Solution';
+            if (open) renderMath(solBox);
+          });
+
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) {
+              reviewedVault.add(vid);
+              card.classList.add('reviewed-card');
+            } else {
+              reviewedVault.delete(vid);
+              card.classList.remove('reviewed-card');
+            }
+            updateProgress();
+          });
+        });
+
+        // Section 5 Quick Mastery Check Quiz
+        function updateQuizScoreUI() {
+          const score = Object.values(quizResults).filter((v) => v === true).length;
+          document.getElementById('quizScore').textContent = `${score} / 5`;
+        }
+
+        document.querySelectorAll('.quiz-card').forEach((card) => {
+          const qid = card.dataset.qid;
+          const ans = card.dataset.answer;
+          const opts = card.querySelectorAll('.quiz-opt');
+          const fb = card.querySelector('.quiz-feedback');
+
+          opts.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const ok = btn.dataset.val === ans;
+              opts.forEach((b) => {
+                b.disabled = true;
+                if (b.dataset.val === ans) b.classList.add('correct');
+              });
+              if (!ok) btn.classList.add('wrong');
+
+              quizResults[qid] = ok;
+              updateQuizScoreUI();
+              updateProgress();
+
+              fb.className = `quiz-feedback show ${ok ? 'ok' : 'err'}`;
+              fb.innerHTML = `<strong>${ok ? 'Correct!' : 'Not quite.'}</strong> ${quizExplanations[qid]}`;
+              renderMath(fb);
+            });
+          });
+        });
+
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          Object.keys(quizResults).forEach((k) => { quizResults[k] = null; });
+          document.querySelectorAll('.quiz-opt').forEach((b) => {
+            b.disabled = false;
+            b.classList.remove('correct', 'wrong');
+          });
+          document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+            fb.className = 'quiz-feedback';
+            fb.innerHTML = '';
+          });
+          updateQuizScoreUI();
+          updateProgress();
+        });
+
+        // Initial Render
+        buildRevPresets();
+        syncShiftControls();
+        renderSandbox();
+        renderShiftedLab();
+        updateProgress();
+        renderMath(document.body);
+
+        // ResizeObserver for HiDPI canvases
+        const ro = new ResizeObserver(() => {
+          renderSandbox();
+          renderShiftedLab();
+        });
+        ro.observe(document.getElementById('canvas2DWrap'));
+        ro.observe(document.getElementById('canvas3DWrap'));
+        ro.observe(document.getElementById('shiftedCanvasWrap'));
+      });
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        renderSandbox();
+        renderShiftedLab();
+      });
+    })();
+  </script>
+</body>
+</html>

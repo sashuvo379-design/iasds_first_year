@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 13: Multivariable Limits, Partial Derivatives &amp; Differentials | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #065f46 0%, #0284c7 52%, #6d28d9 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .slider-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+      .slider-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 13: Multivariable Limits &amp; Partials</h2>
+      <p>Module 5 of 5 &bull; Several Variables</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Core Theory &amp; Theorems</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 13.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">Year Final 2025 Q6(c)</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 13 of 15</span>
+        <span class="hero-badge">Module 5 Kickoff &bull; Multivariable Calculus</span>
+        <span class="hero-badge">Interactive 3D Web Lab</span>
+      </div>
+      <h1>Multivariable Limits, Partial Derivatives, Clairaut's Theorem &amp; Total Differentials</h1>
+      <p>
+        Step into 3D surfaces $z = f(x, y)$! Approach $(0, 0)$ along different paths to catch limits that don't exist,
+        slice 3D surfaces to visualize partial derivatives $f_x$ and $f_y$, verify Clairaut's mixed-partial symmetry,
+        and compare exact change $\Delta z$ against the total differential $dz$.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-path', this)">2D Path-Limit Tester</button>
+          <button class="tab-btn" onclick="switchTab('tab-slice', this)">3D Surface Slicer ($f_x$ &amp; $f_y$)</button>
+          <button class="tab-btn" onclick="switchTab('tab-dz', this)">Total Differential $dz$ vs. $\Delta z$</button>
+        </div>
+
+        <!-- TAB 1: 2D PATH LIMIT TESTER -->
+        <div id="tab-path" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="pathCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="pathFunc">Choose 2D Limit at $(0, 0)$ (Ashraful's Notes)</label>
+                <select id="pathFunc" onchange="drawPathCanvas()">
+                  <option value="dne">DNE: f(x,y) = [(x&sup2; - y&sup2;) / (x&sup2; + y&sup2;)]&sup2; (Path-Dependent!)</option>
+                  <option value="exists">EXISTS (= 0): f(x,y) = 5x&sup2;y / (x&sup2; + y&sup2;) (&epsilon;-&delta; Proof)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Approach Angle $\theta$ (Path $y = x\tan\theta$)</span><span id="pathAngVal">0&deg; (x-axis)</span></label>
+                <input type="range" id="pathAngSlider" min="0" max="90" step="5" value="0" oninput="drawPathCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span>Distance $r = \sqrt{x^2 + y^2} \to 0$</span><span id="pathRVal">0.40</span></label>
+                <input type="range" id="pathRSlider" min="0.02" max="1.2" step="0.02" value="0.4" oninput="drawPathCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-outline" onclick="setPathAng(0)">x-axis ($y=0$)</button>
+                <button class="btn btn-outline" onclick="setPathAng(45)">Line $y = x$</button>
+                <button class="btn btn-outline" onclick="setPathAng(90)">y-axis ($x=0$)</button>
+              </div>
+              <div class="readout-card" id="pathReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: 3D SURFACE SLICER -->
+        <div id="tab-slice" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="sliceCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="surfSelect">Choose 3D Surface (Lecture 13)</label>
+                <select id="surfSelect" onchange="drawSliceCanvas()">
+                  <option value="hemi">Hemisphere: z = &radic;(4 - x&sup2; - y&sup2;) [Final 2025]</option>
+                  <option value="parab">Parabolic Sheet: z = 0.5x&sup2; + 0.8y [Lecture 13]</option>
+                  <option value="saddle">Hyperbolic Saddle: z = 0.4(x&sup2; - y&sup2;)</option>
+                </select>
+              </div>
+              <div class="slider-grid">
+                <div class="control-group">
+                  <label><span>Freeze $x_0$</span><span id="sxVal">1.0</span></label>
+                  <input type="range" id="sxSlider" min="-1.2" max="1.2" step="0.1" value="1.0" oninput="drawSliceCanvas()" />
+                </div>
+                <div class="control-group">
+                  <label><span>Freeze $y_0$</span><span id="syVal">1.0</span></label>
+                  <input type="range" id="sySlider" min="-1.2" max="1.2" step="0.1" value="1.0" oninput="drawSliceCanvas()" />
+                </div>
+              </div>
+              <div class="readout-card" id="sliceReadout"></div>
+              <p style="font-size: 0.78rem; color: var(--text-muted);">
+                <strong>Slice Colors:</strong> <span style="color:#2563eb; font-weight:700;">Blue slice</span> = $y$ frozen (slope is $f_x$);
+                <span style="color:#059669; font-weight:700;">Green slice</span> = $x$ frozen (slope is $f_y$).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: TOTAL DIFFERENTIAL DZ VS DELTA Z -->
+        <div id="tab-dz" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="dzCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label><span>Hemisphere $z = \sqrt{4 - x^2 - y^2}$ at $(1, 1)$</span></label>
+              </div>
+              <div class="slider-grid">
+                <div class="control-group">
+                  <label><span>Step $dx = \Delta x$</span><span id="dzDxVal">0.01</span></label>
+                  <input type="range" id="dzDxSlider" min="-0.25" max="0.25" step="0.01" value="0.01" oninput="drawDzCanvas()" />
+                </div>
+                <div class="control-group">
+                  <label><span>Step $dy = \Delta y$</span><span id="dzDyVal">-0.03</span></label>
+                  <input type="range" id="dzDySlider" min="-0.25" max="0.25" step="0.01" value="-0.03" oninput="drawDzCanvas()" />
+                </div>
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="snapFinal25Dz()">Snap to Final 2025: (1.01, 0.97)</button>
+              </div>
+              <div class="readout-card" id="dzReadout"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory (Lecture 13 Slides + Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Multivariable Limits ($\varepsilon$-$\delta$ vs. Two-Path Test)</h3>
+        <p>
+          In 2D, $(x, y) \to (a, b)$ can happen along <em>infinitely many paths</em> (lines, parabolas, spirals).
+          <strong>$\varepsilon$-$\delta$ Definition:</strong> $\lim_{(x,y)\to(a,b)} f(x,y) = L$ means for every $\varepsilon > 0$ there exists $\delta > 0$ such that
+          $$0 < \sqrt{(x - a)^2 + (y - b)^2} < \delta \implies |f(x, y) - L| < \varepsilon$$
+        </p>
+        <div class="callout note-bn">
+          <strong>Ashraful's Limit Existence Rule (Two-Path Test):</strong>
+          যেকোনো curve দিয়ে $(a, b)$-এর দিকে নিলে limit অবশ্যই <strong>একই (same)</strong> আসতে হবে! যদি দুটি ভিন্ন path (যেমন $y = 0$ আর $y = x$) বরাবর ভিন্ন ভিন্ন মান আসে, তবে <strong>limit exist করে না (DNE)</strong>।
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Partial Derivatives &amp; Clairaut's Theorem (Mixed Partials)</h3>
+        <p>
+          To differentiate $z = f(x, y)$ with respect to $x$, hold $y$ constant; to differentiate with respect to $y$, hold $x$ constant:
+          $$f_x(x, y) = \frac{\partial f}{\partial x} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x, y) - f(x, y)}{\Delta x}, \qquad f_y(x, y) = \frac{\partial f}{\partial y} = \lim_{\Delta y \to 0} \frac{f(x, y + \Delta y) - f(x, y)}{\Delta y}$$
+          <strong>Clairaut's Theorem (Equality of Mixed Partials):</strong> If $f_{xy}$ and $f_{yx}$ are both continuous on an open disk around $(a, b)$, then <strong>$f_{xy}(a, b) = f_{yx}(a, b)$</strong> (order of differentiation doesn't matter!).
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>2.3 Total Differential &amp; Differentiability (Lecture 13 Definitions &amp; Theorem 13.4)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Concept (Lecture 13 Slides)</th>
+                <th>Exact Mathematical Statement</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Total Differential ($dz$)</strong></td>
+                <td>For $z = f(x, y)$ with $dx = \Delta x,\; dy = \Delta y$:
+                  $$dz = \frac{\partial z}{\partial x}dx + \frac{\partial z}{\partial y}dy = f_x(x, y)\,dx + f_y(x, y)\,dy$$
+                  Extends naturally to 3+ variables: $dw = w_x dx + w_y dy + w_z dz + w_u du$.</td>
+              </tr>
+              <tr>
+                <td><strong>Definition of Differentiability</strong></td>
+                <td>$z = f(x, y)$ is <strong>differentiable</strong> at $(x_0, y_0)$ if $\Delta z$ can be written as:
+                  $$\Delta z = f_x(x_0, y_0)\Delta x + f_y(x_0, y_0)\Delta y + \varepsilon_1 \Delta x + \varepsilon_2 \Delta y$$
+                  where both $\varepsilon_1 \to 0$ and $\varepsilon_2 \to 0$ as $(\Delta x, \Delta y) \to (0, 0)$.</td>
+              </tr>
+              <tr>
+                <td><strong>Theorem 13.4 (Sufficient Condition)</strong></td>
+                <td>If $f_x$ and $f_y$ are <strong>continuous</strong> in an open region $R$, then $f$ is <strong>differentiable</strong> on $R$.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout note-bn">
+          <strong>Ashraful's Intuition for $dz$:</strong>
+          $f_x$ দেয় $y$-কে stop করে $x$-এর change; $f_y$ দেয় $x$-কে stop করে $y$-এর change। কিন্তু reality-তে $x$ ও $y$ একসাথে change হয় — তাই total change-এর linear approximation হলো $dz = \frac{\partial z}{\partial x}dx + \frac{\partial z}{\partial y}dy$!
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Lecture 13 &amp; Class Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: Epsilon-Delta Proof of 5x^2y / (x^2+y^2) -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; 2D $\varepsilon$-$\delta$ Proof</span>
+            <h3 style="margin-top: 6px;">Example 1: Prove $\displaystyle\lim_{(x,y)\to(0,0)} \frac{5x^2 y}{x^2 + y^2} = 0$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Use the 2D $\varepsilon$-$\delta$ definition to prove the limit equals $0$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Write $|f(x, y) - 0|$:</strong> $\left|\dfrac{5x^2 y}{x^2 + y^2} - 0\right| = \dfrac{5x^2 |y|}{x^2 + y^2}$.</div>
+          <div class="step-item"><strong>Step 2 — Use Key Inequality $\frac{x^2}{x^2+y^2} \le 1$:</strong> Since $0 \le x^2 \le x^2 + y^2$, we have $\dfrac{x^2}{x^2 + y^2} \le 1$, so $\dfrac{5x^2 |y|}{x^2 + y^2} \le 5|y|$.</div>
+          <div class="step-item"><strong>Step 3 — Bound $|y|$ by Distance $\delta$:</strong> Since $|y| = \sqrt{y^2} \le \sqrt{x^2 + y^2} < \delta$, we get $|f(x, y) - 0| \le 5\sqrt{x^2 + y^2} < 5\delta$.</div>
+          <div class="step-item"><strong>Step 4 — Choose $\delta = \frac{\varepsilon}{5}$:</strong> Whenever $0 < \sqrt{x^2 + y^2} < \delta = \dfrac{\varepsilon}{5}$, we have $|f(x, y) - 0| < 5\left(\dfrac{\varepsilon}{5}\right) = \varepsilon$. $\blacksquare$</div>
+        </div>
+      </div>
+
+      <!-- Example 2: Clairaut's Theorem for ye^x + x ln z -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Higher Mixed Partials</span>
+            <h3 style="margin-top: 6px;">Example 2: Show $f_{xzz} = f_{zxz} = f_{zzx}$ for $f(x, y, z) = y e^x + x \ln z$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Verify mixed partial equality up to third order for $f(x, y, z) = y e^x + x \ln z$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — First Partials:</strong> $f_x = y e^x + \ln z$ &nbsp; and &nbsp; $f_z = \dfrac{x}{z}$.</div>
+          <div class="step-item"><strong>Step 2 — Second Partials:</strong> $f_{xz} = \dfrac{\partial}{\partial z}(y e^x + \ln z) = \dfrac{1}{z}$; &nbsp; $f_{zx} = \dfrac{\partial}{\partial x}\!\left(\dfrac{x}{z}\right) = \dfrac{1}{z}$; &nbsp; $f_{zz} = \dfrac{\partial}{\partial z}\!\left(\dfrac{x}{z}\right) = -\dfrac{x}{z^2}$.</div>
+          <div class="step-item"><strong>Step 3 — Third Partials:</strong> $f_{xzz} = \frac{\partial}{\partial z}(\frac{1}{z}) = -\frac{1}{z^2}$, &nbsp; $f_{zxz} = \frac{\partial}{\partial z}(\frac{1}{z}) = -\frac{1}{z^2}$, &nbsp; $f_{zzx} = \frac{\partial}{\partial x}(-\frac{x}{z^2}) = -\frac{1}{z^2}$. All three equal <strong>$-\dfrac{1}{z^2}$</strong>! $\blacksquare$</div>
+        </div>
+      </div>
+
+      <!-- Example 3: Lecture 13 Differentiability Proof for x^2 + 3y -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 13 Slide &bull; Definition of Differentiability</span>
+            <h3 style="margin-top: 6px;">Example 3: Prove $f(x, y) = x^2 + 3y$ is Differentiable Everywhere</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Use the definition of differentiability ($\Delta z = f_x \Delta x + f_y \Delta y + \varepsilon_1\Delta x + \varepsilon_2\Delta y$) directly.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Expand $\Delta z$:</strong> $\Delta z = f(x + \Delta x, y + \Delta y) - f(x, y) = (x^2 + 2x\Delta x + \Delta x^2) + 3(y + \Delta y) - (x^2 + 3y) = 2x\Delta x + 3\Delta y + (\Delta x)\Delta x + 0(\Delta y)$.</div>
+          <div class="step-item"><strong>Step 2 — Match with Definition:</strong> Since $f_x(x, y) = 2x$ and $f_y(x, y) = 3$, we identify <strong>$\varepsilon_1 = \Delta x$</strong> and <strong>$\varepsilon_2 = 0$</strong>.</div>
+          <div class="step-item"><strong>Step 3 — Check Limits:</strong> As $(\Delta x, \Delta y) \to (0, 0)$, both $\varepsilon_1 = \Delta x \to 0$ and $\varepsilon_2 = 0 \to 0$. Hence $f$ is differentiable everywhere in $\mathbb{R}^2$. $\blacksquare$</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam &amp; Lecture 13 Vault</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: Year Final 2025 Q6(c) & Lecture 13 Slide -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2025 Q6(c) &amp; Lecture 13 Slide</span>
+          <span class="pill pill-amber">4 Marks (Exact Slide Repeat!)</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Use the differential $dz$ to approximate the change in $z = \sqrt{4 - x^2 - y^2}$ as $(x, y)$ moves from $(1, 1)$ to $(1.01, 0.97)$. Compare this approximation with the exact change $\Delta z$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> $dx = \Delta x = 1.01 - 1 = +0.01$ and $dy = \Delta y = 0.97 - 1 = -0.03$. Compute $z_x$ and $z_y$ at $(1, 1)$ where $\sqrt{4 - 1 - 1} = \sqrt{2}$!
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          1. Compute partial derivatives:
+          $$\frac{\partial z}{\partial x} = \frac{-x}{\sqrt{4 - x^2 - y^2}}, \qquad \frac{\partial z}{\partial y} = \frac{-y}{\sqrt{4 - x^2 - y^2}}$$
+          2. At $(1, 1)$ with $dx = 0.01$ and $dy = -0.03$:
+          $$dz = -\frac{1}{\sqrt{2}}(0.01) - \frac{1}{\sqrt{2}}(-0.03) = \frac{0.02}{\sqrt{2}} = 0.01\sqrt{2} \approx \mathbf{0.01414}$$
+          3. Exact change $\Delta z$:
+          $$\Delta z = \sqrt{4 - (1.01)^2 - (0.97)^2} - \sqrt{4 - 1^2 - 1^2} = \sqrt{2.0390} - \sqrt{2} \approx 1.42794 - 1.41421 \approx \mathbf{0.01372}$$
+          The differential $dz \approx 0.0141$ closely approximates the exact change $\Delta z \approx 0.0137$ (difference $\approx 0.0004$)!
+        </div>
+      </div>
+
+      <!-- Exam Q2: Lecture 13 Box Volume Error -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-blue">Lecture 13 Slide &bull; Error Propagation</span>
+          <span class="pill pill-purple">4 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> The possible error in measuring each dimension of a rectangular box is $\pm 0.1\text{ mm}$. The dimensions are $x = 50\text{ cm}$, $y = 20\text{ cm}$, and $z = 15\text{ cm}$. Use $dV$ to estimate the propagated error and relative error in the volume $V = xyz$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          Convert units first: $0.1\text{ mm} = 0.01\text{ cm}$, so $dx = dy = dz = \pm 0.01\text{ cm}$.<br />
+          Total differential of $V = xyz$:
+          $$dV = yz\,dx + xz\,dy + xy\,dz$$
+          Substitute $x = 50, y = 20, z = 15$:
+          $$dV = (20)(15)(\pm 0.01) + (50)(15)(\pm 0.01) + (50)(20)(\pm 0.01) = (300 + 750 + 1000)(\pm 0.01) = \mathbf{\pm 20.5\text{ cm}^3}$$
+          Exact volume is $V = 50 \times 20 \times 15 = 15{,}000\text{ cm}^3$, so the relative error is $\dfrac{dV}{V} = \dfrac{\pm 20.5}{15{,}000} \approx \mathbf{\pm 0.00137}$ (or $\pm 0.14\%$).
+        </div>
+      </div>
+
+      <!-- Exam Q3: Two-Path DNE Proof -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-blue">Ashraful's Notes &bull; Two-Path Limit DNE</span>
+          <span class="pill pill-purple">3 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Show that $\displaystyle\lim_{(x,y)\to(0,0)} \left(\frac{x^2 - y^2}{x^2 + y^2}\right)^2$ does not exist.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Full Proof</button>
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Proof:</strong><br />
+          &bull; <strong>Path 1 (Along the $x$-axis, $y = 0$, $x \ne 0$):</strong>
+          $$\lim_{x \to 0} \left(\frac{x^2 - 0}{x^2 + 0}\right)^2 = \lim_{x \to 0} (1)^2 = \mathbf{1}$$
+          &bull; <strong>Path 2 (Along the line $y = x$, $x \ne 0$):</strong>
+          $$\lim_{x \to 0} \left(\frac{x^2 - x^2}{x^2 + x^2}\right)^2 = \lim_{x \to 0} \left(\frac{0}{2x^2}\right)^2 = \mathbf{0}$$
+          Since two different paths toward $(0, 0)$ yield different limits ($1 \ne 0$), the limit <strong>does not exist</strong>. $\blacksquare$
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawPathCanvas();
+      drawSliceCanvas();
+      drawDzCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-path') drawPathCanvas();
+      if (id === 'tab-slice') drawSliceCanvas();
+      if (id === 'tab-dz') drawDzCanvas();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        amber: '#d97706',
+        red: '#dc2626'
+      };
+    }
+
+    /* ================= TAB 1: 2D PATH-LIMIT TESTER ================= */
+    function setPathAng(deg) {
+      document.getElementById('pathAngSlider').value = deg;
+      drawPathCanvas();
+    }
+
+    function drawPathCanvas() {
+      const canvas = document.getElementById('pathCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('pathFunc').value;
+      const deg = parseFloat(document.getElementById('pathAngSlider').value);
+      const r = parseFloat(document.getElementById('pathRSlider').value);
+      const rad = deg * Math.PI / 180;
+      document.getElementById('pathAngVal').textContent = deg === 0 ? '0° (x-axis)' : (deg === 45 ? '45° (y = x)' : (deg === 90 ? '90° (y-axis)' : `${deg}°`));
+      document.getElementById('pathRVal').textContent = r.toFixed(2);
+
+      const c = getColors();
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Left half: xy-domain with approach ray; Right half: f(x,y) height vs distance r
+      const cx = 165, cy = 185, Rscale = 115;
+      // Domain axes
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(25, cy); ctx.lineTo(305, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, 35); ctx.lineTo(cx, 335); ctx.stroke();
+
+      // Unit disk circle
+      ctx.strokeStyle = c.grid; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(cx, cy, Rscale, 0, Math.PI*2); ctx.stroke();
+
+      // Approach ray
+      const rx = Math.cos(rad), ry = Math.sin(rad);
+      ctx.strokeStyle = c.purple; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + rx*Rscale*1.15, cy - ry*Rscale*1.15); ctx.stroke();
+
+      // Active point (x, y)
+      const x = r * rx, y = r * ry;
+      ctx.fillStyle = c.red;
+      ctx.beginPath(); ctx.arc(cx + x*Rscale, cy - y*Rscale, 6, 0, Math.PI*2); ctx.fill();
+
+      ctx.fillStyle = c.text; ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.fillText('xy-Plane Approach Ray', 85, 24);
+
+      // Right half: Value along ray vs r
+      const ox = 360, oy = 290, pw = 225, ph = 220;
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(ox, oy - ph); ctx.lineTo(ox, oy); ctx.lineTo(ox + pw, oy); ctx.stroke();
+      ctx.fillText('f(r cos θ, r sin θ) as r → 0', ox + 25, 24);
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillText('r = 0', ox - 8, oy + 16);
+      ctx.fillText('r = 1.2', ox + pw - 20, oy + 16);
+
+      const evalF = (rv) => {
+        const xv = rv * rx, yv = rv * ry;
+        const d = xv*xv + yv*yv;
+        if (mode === 'dne') return Math.pow((xv*xv - yv*yv) / d, 2);
+        return (5 * xv * xv * yv) / d;
+      };
+
+      const yMax = mode === 'dne' ? 1.3 : 2.5;
+      ctx.strokeStyle = c.blue; ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 1; i <= 120; i++) {
+        const rv = (i / 120) * 1.2;
+        const val = evalF(rv);
+        const sx = ox + (rv / 1.2) * pw;
+        const sy = oy - (val / yMax) * ph;
+        if (i === 1) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+      }
+      ctx.stroke();
+
+      const curVal = evalF(r);
+      const limRay = mode === 'dne' ? Math.pow(Math.cos(2*rad), 2) : 0;
+      ctx.fillStyle = c.red;
+      ctx.beginPath(); ctx.arc(ox + (r / 1.2) * pw, oy - (curVal / yMax) * ph, 6, 0, Math.PI*2); ctx.fill();
+
+      // Limit dot on y-axis
+      ctx.fillStyle = mode === 'dne' ? c.amber : c.green;
+      ctx.beginPath(); ctx.arc(ox, oy - (limRay / yMax) * ph, 6.5, 0, Math.PI*2); ctx.fill();
+
+      document.getElementById('pathReadout').innerHTML = `
+        <div class="readout-row"><span>Point (x, y):</span><strong>(${x.toFixed(3)}, ${y.toFixed(3)})</strong></div>
+        <div class="readout-row"><span>Current Value f(x, y):</span><strong>${curVal.toFixed(4)}</strong></div>
+        <div class="readout-row"><span>Limit Along θ = ${deg}°:</span><span class="pill ${mode==='dne' ? 'pill-amber' : 'pill-green'}">${limRay.toFixed(4)}</span></div>
+        <div class="readout-row"><span>Overall 2D Limit:</span>${mode==='dne' ? '<span class="pill pill-red">DNE (Depends on θ!)</span>' : '<span class="pill pill-green">EXISTS = 0 (All paths → 0)</span>'}</div>
+      `;
+    }
+
+    /* ================= TAB 2: 3D SURFACE SLICER ================= */
+    function drawSliceCanvas() {
+      const canvas = document.getElementById('sliceCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('surfSelect').value;
+      const x0 = parseFloat(document.getElementById('sxSlider').value);
+      const y0 = parseFloat(document.getElementById('sySlider').value);
+      document.getElementById('sxVal').textContent = x0.toFixed(1);
+      document.getElementById('syVal').textContent = y0.toFixed(1);
+
+      const c = getColors();
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cx = canvas.width / 2, cy = canvas.height / 2 + 45;
+      const yaw = 0.65, pitch = 0.45, scale = 78;
+      const proj = (x, y, z) => {
+        const rx = x * Math.cos(yaw) - y * Math.sin(yaw);
+        const ry = x * Math.sin(yaw) + y * Math.cos(yaw);
+        return [cx + rx * scale, cy - (z * Math.cos(pitch) - ry * Math.sin(pitch)) * scale];
+      };
+
+      let f, fx, fy, name;
+      if (mode === 'hemi') {
+        f = (x, y) => { const d = 4 - x*x - y*y; return d >= 0 ? Math.sqrt(d) : null; };
+        fx = (x, y) => -x / Math.sqrt(4 - x*x - y*y);
+        fy = (x, y) => -y / Math.sqrt(4 - x*x - y*y);
+        name = 'z = √(4 - x² - y²)';
+      } else if (mode === 'parab') {
+        f = (x, y) => 0.5*x*x + 0.8*y + 0.5;
+        fx = (x, y) => x;
+        fy = (x, y) => 0.8;
+        name = 'z = 0.5x² + 0.8y + 0.5';
+      } else {
+        f = (x, y) => 0.4*(x*x - y*y) + 0.8;
+        fx = (x, y) => 0.8*x;
+        fy = (x, y) => -0.8*y;
+        name = 'z = 0.4(x² - y²) + 0.8';
+      }
+
+      // Draw wireframe grid
+      ctx.strokeStyle = c.grid; ctx.lineWidth = 1.2;
+      for (let g = -1.4; g <= 1.41; g += 0.35) {
+        ctx.beginPath(); let s1 = false;
+        for (let t = -1.4; t <= 1.41; t += 0.1) {
+          const z = f(t, g);
+          if (z !== null) { const [sx, sy] = proj(t, g, z); if (!s1) { ctx.moveTo(sx, sy); s1 = true; } else ctx.lineTo(sx, sy); }
+        }
+        ctx.stroke();
+
+        ctx.beginPath(); let s2 = false;
+        for (let t = -1.4; t <= 1.41; t += 0.1) {
+          const z = f(g, t);
+          if (z !== null) { const [sx, sy] = proj(g, t, z); if (!s2) { ctx.moveTo(sx, sy); s2 = true; } else ctx.lineTo(sx, sy); }
+        }
+        ctx.stroke();
+      }
+
+      // Blue slice: y = y0 frozen (shows f_x)
+      ctx.strokeStyle = c.blue; ctx.lineWidth = 3; ctx.beginPath();
+      let sb = false;
+      for (let t = -1.4; t <= 1.41; t += 0.06) {
+        const z = f(t, y0);
+        if (z !== null) { const [sx, sy] = proj(t, y0, z); if (!sb) { ctx.moveTo(sx, sy); sb = true; } else ctx.lineTo(sx, sy); }
+      }
+      ctx.stroke();
+
+      // Green slice: x = x0 frozen (shows f_y)
+      ctx.strokeStyle = c.green; ctx.lineWidth = 3; ctx.beginPath();
+      let sg = false;
+      for (let t = -1.4; t <= 1.41; t += 0.06) {
+        const z = f(x0, t);
+        if (z !== null) { const [sx, sy] = proj(x0, t, z); if (!sg) { ctx.moveTo(sx, sy); sg = true; } else ctx.lineTo(sx, sy); }
+      }
+      ctx.stroke();
+
+      // Point P(x0, y0, z0)
+      const z0 = f(x0, y0);
+      const [px, py] = proj(x0, y0, z0);
+      ctx.fillStyle = c.red;
+      ctx.beginPath(); ctx.arc(px, py, 6.5, 0, Math.PI*2); ctx.fill();
+
+      const vx = fx(x0, y0), vy = fy(x0, y0);
+      document.getElementById('sliceReadout').innerHTML = `
+        <div class="readout-row"><span>Surface Point:</span><strong>(${x0.toFixed(1)}, ${y0.toFixed(1)}, ${z0.toFixed(3)})</strong></div>
+        <div class="readout-row"><span>Partial f_x (Blue Slice Slope):</span><span class="pill pill-blue">${vx.toFixed(3)}</span></div>
+        <div class="readout-row"><span>Partial f_y (Green Slice Slope):</span><span class="pill pill-green">${vy.toFixed(3)}</span></div>
+      `;
+    }
+
+    /* ================= TAB 3: DZ VS DELTA Z ================= */
+    function snapFinal25Dz() {
+      document.getElementById('dzDxSlider').value = 0.01;
+      document.getElementById('dzDySlider').value = -0.03;
+      drawDzCanvas();
+    }
+
+    function drawDzCanvas() {
+      const canvas = document.getElementById('dzCanvas');
+      const ctx = canvas.getContext('2d');
+      const dx = parseFloat(document.getElementById('dzDxSlider').value);
+      const dy = parseFloat(document.getElementById('dzDySlider').value);
+      document.getElementById('dzDxVal').textContent = dx.toFixed(2);
+      document.getElementById('dzDyVal').textContent = dy.toFixed(2);
+      const c = getColors();
+
+      const z0 = Math.sqrt(2);
+      const x1 = 1 + dx, y1 = 1 + dy;
+      const zExact = Math.sqrt(Math.max(0.01, 4 - x1*x1 - y1*y1));
+      const deltaZ = zExact - z0;
+      const fx = -1 / Math.sqrt(2), fy = -1 / Math.sqrt(2);
+      const dzX = fx * dx, dzY = fy * dy;
+      const dz = dzX + dzY;
+
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Visual bar chart comparing fx*dx, fy*dy, Total dz, Exact Delta z
+      const items = [
+        { label: 'f_x · dx', val: dzX, color: c.blue },
+        { label: 'f_y · dy', val: dzY, color: c.green },
+        { label: 'Total dz', val: dz, color: c.purple },
+        { label: 'Exact Δz', val: deltaZ, color: c.amber }
+      ];
+      const midY = 185;
+      const maxAbs = Math.max(0.05, ...items.map(i => Math.abs(i.val))) * 1.25;
+      const pxScale = 120 / maxAbs;
+
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(40, midY); ctx.lineTo(canvas.width - 30, midY); ctx.stroke();
+
+      const barW = 85, gap = 42, startX = 75;
+      items.forEach((it, idx) => {
+        const bx = startX + idx * (barW + gap);
+        const bh = it.val * pxScale;
+        ctx.fillStyle = it.color;
+        if (bh >= 0) ctx.fillRect(bx, midY - bh, barW, bh);
+        else ctx.fillRect(bx, midY, barW, -bh);
+
+        ctx.fillStyle = c.text; ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText(it.label, bx + 12, 338);
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.fillText(it.val.toFixed(4), bx + 16, bh >= 0 ? midY - bh - 8 : midY - bh + 16);
+      });
+
+      document.getElementById('dzReadout').innerHTML = `
+        <div class="readout-row"><span>New Point (1+dx, 1+dy):</span><strong>(${x1.toFixed(2)}, ${y1.toFixed(2)})</strong></div>
+        <div class="readout-row"><span>Differential dz = f_x dx + f_y dy:</span><strong style="color:var(--accent);">${dz.toFixed(5)}</strong></div>
+        <div class="readout-row"><span>Exact Change Δz:</span><strong style="color:var(--warning);">${deltaZ.toFixed(5)}</strong></div>
+        <div class="readout-row"><span>Approximation Error |Δz - dz|:</span><span class="pill pill-green">${Math.abs(deltaZ - dz).toFixed(5)}</span></div>
+      `;
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. Why does lim((x,y) → (0,0)) [(x² - y²) / (x² + y²)]² NOT exist? (Ashraful\'s Notes)',
+        opts: [
+          'Because the denominator is always negative',
+          'Because approaching along y = 0 gives 1, while approaching along y = x gives 0',
+          'Because it approaches +∞ along every path',
+          'Because it is not a polynomial'
+        ],
+        ans: 1,
+        exp: 'Two different paths toward (0, 0) produce different limits (1 ≠ 0), so by the Two-Path Test the limit DNE.'
+      },
+      {
+        q: '2. In the ε-δ proof of lim((x,y) → (0,0)) 5x²y / (x² + y²) = 0, what choice of δ works for any ε > 0?',
+        opts: ['δ = 5ε', 'δ = ε / 5', 'δ = ε²', 'δ = 1'],
+        ans: 1,
+        exp: 'Since |5x²y / (x²+y²)| ≤ 5|y| ≤ 5√(x²+y²) < 5δ, choosing δ = ε/5 ensures the error is < ε.'
+      },
+      {
+        q: '3. For z = 2x sin y - 3x²y², what is the total differential dz? (Lecture 13 Slide)',
+        opts: [
+          '(2 sin y - 6xy²) dx + (2x cos y - 6x²y) dy',
+          '(2 cos y - 6xy²) dx + (2x sin y - 6x²y) dy',
+          '(2 sin y - 3x²y²) dx + (2x cos y - 3x²y²) dy',
+          '2 sin y dx - 6x²y dy'
+        ],
+        ans: 0,
+        exp: '∂z/∂x = 2 sin y - 6xy² and ∂z/∂y = 2x cos y - 6x²y, giving dz = (2 sin y - 6xy²) dx + (2x cos y - 6x²y) dy.'
+      },
+      {
+        q: '4. By Theorem 13.4, what is a sufficient condition for z = f(x, y) to be differentiable on an open region R?',
+        opts: [
+          'f(x, y) is continuous on R',
+          'f_x and f_y exist at a single point',
+          'f_x and f_y are continuous on R',
+          'f_xy = 0 everywhere on R'
+        ],
+        ans: 2,
+        exp: 'Theorem 13.4 states that if the partial derivatives f_x and f_y are continuous on an open region R, then f is differentiable on R.'
+      },
+      {
+        q: '5. Using dz for z = √(4 - x² - y²) from (1, 1) to (1.01, 0.97), what is the approximate change dz? (Final 2025 Q6c)',
+        opts: ['0.0141', '-0.0141', '0.0283', '0.0400'],
+        ans: 0,
+        exp: 'dz = (-1/√2)(0.01) + (-1/√2)(-0.03) = 0.02/√2 = 0.01√2 ≈ 0.0141.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      drawPathCanvas();
+      drawSliceCanvas();
+      drawDzCanvas();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

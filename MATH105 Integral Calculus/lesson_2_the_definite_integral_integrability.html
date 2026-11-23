@@ -1,0 +1,3223 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MATH 105 • Lesson 2: The Definite Integral &amp; Integrability</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & THEME VARIABLES
+       ========================================================================== */
+    :root {
+      --bg-page: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+
+      --accent: #4f46e5;
+      --accent-dark: #3730a3;
+      --accent-soft: #eef2ff;
+      --accent-border: #c7d2fe;
+
+      --emerald: #059669;
+      --emerald-soft: #ecfdf5;
+      --emerald-border: #a7f3d0;
+
+      --rose: #e11d48;
+      --rose-soft: #fff1f2;
+      --rose-border: #fecdd3;
+
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 28px rgba(15, 23, 42, 0.08);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-w: 284px;
+      --header-h: 64px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0b1120;
+      --bg-surface: #111827;
+      --bg-subtle: #1e293b;
+      --border: #1f2937;
+      --border-strong: #334155;
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --accent: #818cf8;
+      --accent-dark: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.16);
+      --accent-border: rgba(129, 140, 248, 0.35);
+
+      --emerald: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --emerald-border: rgba(52, 211, 153, 0.32);
+
+      --rose: #fb7185;
+      --rose-soft: rgba(244, 63, 94, 0.14);
+      --rose-border: rgba(251, 113, 133, 0.32);
+
+      --amber: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.32);
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
+    }
+
+    code, .mono {
+      font-family: var(--font-mono);
+    }
+
+    button, select, input {
+      font-family: inherit;
+    }
+
+    /* ==========================================================================
+       TOP HEADER
+       ========================================================================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--header-h);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    [data-theme="dark"] .brand-badge {
+      color: var(--accent);
+    }
+
+    .header-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ==========================================================================
+       APP SHELL & STICKY SIDEBAR
+       ========================================================================== */
+    .app-shell {
+      display: flex;
+      max-width: 1440px;
+      margin: 0 auto;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .sidebar {
+      position: sticky;
+      top: var(--header-h);
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 30;
+      transition: transform 0.28s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 6px;
+    }
+
+    .sidebar-course {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-lesson-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-dark);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    [data-theme="dark"] .sidebar-lesson-badge {
+      color: var(--accent);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    .progress-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-pct {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--accent-dark), var(--accent), var(--emerald));
+      transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .nav-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 10px;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .nav-link.active {
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      border-color: var(--accent-border);
+      font-weight: 600;
+    }
+
+    [data-theme="dark"] .nav-link.active {
+      color: var(--accent);
+    }
+
+    .nav-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-link.active .nav-num {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .nav-check {
+      margin-left: auto;
+      color: var(--emerald);
+      font-weight: 700;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link.done .nav-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      font-size: 0.77rem;
+      color: var(--text-muted);
+    }
+
+    .sidebar-footer strong {
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 28px 32px 68px;
+      display: flex;
+      flex-direction: column;
+      gap: 38px;
+    }
+
+    .lesson-hero {
+      background: linear-gradient(135deg, #312e81 0%, #4f46e5 55%, #059669 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(255, 255, 255, 0.16);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .lesson-hero h1 {
+      font-size: clamp(1.6rem, 2.8vw, 2.25rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .lesson-hero p {
+      max-width: 780px;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 0.97rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background: rgba(15, 23, 42, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    /* ==========================================================================
+       SECTIONS & CARDS
+       ========================================================================== */
+    .section-block {
+      scroll-margin-top: calc(var(--header-h) + 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+
+    .section-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      max-width: 740px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ==========================================================================
+       INTERACTIVE LAB LAYOUT & CONTROLS
+       ========================================================================== */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.42fr) minmax(300px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .canvas-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      min-height: 300px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      padding: 0 4px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch-pos { background: var(--emerald); }
+    .swatch-neg { background: var(--rose); }
+    .swatch-indigo { background: var(--accent); }
+    .swatch-amber { background: var(--amber); }
+    .swatch-curve { background: var(--accent); border-radius: 999px; }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    select.styled-select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    select.styled-select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 0.78rem;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      background: var(--bg-subtle);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .segmented.cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .seg-btn {
+      padding: 7px 6px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .seg-btn.active {
+      background: var(--bg-surface);
+      color: var(--accent);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .special-mode-box {
+      display: none;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .special-mode-box.visible {
+      display: flex;
+    }
+
+    .special-mode-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--rose);
+      letter-spacing: 0.03em;
+    }
+
+    /* Diagnostic & Readout Panels */
+    .diagnostic-panel {
+      margin-top: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .diag-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--border-strong);
+    }
+
+    .verdict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .verdict-badge.yes {
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      color: var(--emerald);
+    }
+
+    .verdict-badge.no {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      color: var(--rose);
+    }
+
+    .diag-reason {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .readout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 12px;
+    }
+
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-card.accent {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+    }
+
+    .metric-card.emerald {
+      background: var(--emerald-soft);
+      border-color: var(--emerald-border);
+    }
+
+    .metric-card.rose {
+      background: var(--rose-soft);
+      border-color: var(--rose-border);
+    }
+
+    .metric-card.amber {
+      background: var(--amber-soft);
+      border-color: var(--amber-border);
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .inequality-banner {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .ineq-formula {
+      font-family: var(--font-mono);
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .ineq-tag {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--emerald);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ==========================================================================
+       CORE THEORY CARDS, TABLES & EXPANDABLE PROOF
+       ========================================================================== */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .theory-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theory-card h3 {
+      font-size: 1.06rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .formula-banner {
+      background: var(--bg-subtle);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      overflow-x: auto;
+    }
+
+    .ref-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    table.ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background: var(--bg-surface);
+    }
+
+    table.ref-table th, table.ref-table td {
+      padding: 11px 13px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    table.ref-table th {
+      background: var(--bg-subtle);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    table.ref-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pill-yes {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .pill-no {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: var(--rose-soft);
+      color: var(--rose);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .proof-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .proof-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .proof-steps {
+      display: none;
+      margin-top: 16px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .proof-steps.open {
+      display: flex;
+    }
+
+    .proof-step {
+      background: var(--bg-subtle);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      overflow-x: auto;
+    }
+
+    .exam-trap-box {
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-left: 5px solid var(--amber);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .exam-trap-title {
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--amber);
+    }
+
+    .trap-list {
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.91rem;
+    }
+
+    /* ==========================================================================
+       PAST-EXAM VAULT & STEPPER
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 15px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .filter-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .vault-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .exam-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .exam-card.hidden {
+      display: none;
+    }
+
+    .exam-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exam-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-dark);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .exam-badge {
+      color: var(--accent);
+    }
+
+    .topic-pill {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .exam-prompt {
+      font-size: 0.97rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      color: var(--text-primary);
+    }
+
+    .hint-box.open {
+      display: block;
+    }
+
+    .solution-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .solution-box.open {
+      display: flex;
+    }
+
+    .sol-step {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--emerald);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.91rem;
+      overflow-x: auto;
+    }
+
+    .sol-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--emerald);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       QUICK MASTERY CHECK (QUIZ)
+       ========================================================================== */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-qnum {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.89rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .quiz-opt.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .quiz-opt.wrong {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .quiz-feedback.ok {
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .quiz-feedback.err {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1060px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-content {
+        padding: 22px 20px 56px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .menu-btn {
+        display: inline-flex;
+      }
+      .header-subtitle {
+        display: none;
+      }
+      .sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        height: calc(100vh - var(--header-h));
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .top-header {
+        padding: 0 12px;
+      }
+      .main-content {
+        padding: 16px 14px 48px;
+      }
+      .card, .exam-card, .theory-card, .quiz-card {
+        padding: 16px;
+      }
+      .lesson-hero {
+        padding: 20px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP HEADER
+       ======================================================================== -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="brand-badge">MATH 105 &bull; Lesson 2 of 17</span>
+      <span class="header-subtitle">ISRT, University of Dhaka &mdash; The Definite Integral &amp; Integrability</span>
+    </div>
+
+    <div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
+        <span id="themeIcon" aria-hidden="true">&#9790;</span>
+        <span id="themeText">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ========================================================================
+       APP SHELL
+       ======================================================================== -->
+  <div class="app-shell">
+
+    <!-- STICKY LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Lesson 2 navigation">
+      <div class="sidebar-brand">
+        <div class="sidebar-course">MATH 105 &bull; Integral Calculus</div>
+        <span class="sidebar-lesson-badge">Lesson 2 &bull; Module 1</span>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Mastery Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-caption" id="progressCaption">Test integrability &amp; complete the mastery check.</p>
+      </div>
+
+      <nav>
+        <div class="nav-label">Lesson 2 Sections</div>
+        <ul class="nav-list" id="sidebarNav">
+          <li>
+            <a class="nav-link active" href="#section-lab1" data-section="section-lab1">
+              <span class="nav-num">1</span>
+              <span>Integrability Tester Lab</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-lab2" data-section="section-lab2">
+              <span class="nav-num">2</span>
+              <span>Max&ndash;Min Bounding Sandbox</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-theory" data-section="section-theory">
+              <span class="nav-num">3</span>
+              <span>Core Theory &amp; Traps</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-vault" data-section="section-vault">
+              <span class="nav-num">4</span>
+              <span>ISRT Past-Exam Vault</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-quiz" data-section="section-quiz">
+              <span class="nav-num">5</span>
+              <span>Quick Mastery Check</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <strong>1st In-course &amp; Final Essential</strong>
+        Covers Anton Sec. 5.5, irregular partitions, mesh size, Dirichlet's function, and ISRT 2024&ndash;2025 integrability &amp; bounding questions.
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="lesson-hero">
+        <div class="hero-eyebrow">Module 1: Foundations of Integration</div>
+        <h1>Lesson 2: The Definite Integral &amp; Integrability</h1>
+        <p>
+          Explore irregular partitions and mesh size $\max \Delta x_k \to 0$, test when discontinuous or unbounded functions are Riemann integrable, and visualize the Max&ndash;Min Bounding Theorem $m(b-a) \le \int_a^b f(x)\,dx \le M(b-a)$.
+        </p>
+        <div class="hero-pills">
+          <span class="hero-pill">Mesh Size $\max \Delta x_k$</span>
+          <span class="hero-pill">Boundedness &amp; Discontinuities</span>
+          <span class="hero-pill">Max&ndash;Min Bounding Theorem</span>
+          <span class="hero-pill">7 Solved ISRT Exam Problems</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 1: INTERACTIVE INTEGRABILITY TESTER & PARTITION LAB
+           ==================================================================== -->
+      <section class="section-block" id="section-lab1">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 1 &bull; Interactive Lab 1</span>
+            <h2>Integrability Tester &amp; Partition Lab</h2>
+          </div>
+          <p class="section-desc">
+            Inspect 6 classic ISRT exam functions under regular or irregular partitions and see why bounded finite jumps converge while unbounded asymptotes and Dirichlet's function fail.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="lab-grid">
+            <!-- Canvas -->
+            <div class="canvas-panel">
+              <div class="canvas-wrapper" id="intCanvasWrap">
+                <canvas id="intCanvas" aria-label="Integrability tester graph"></canvas>
+              </div>
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-pos"></span> Positive Rectangles ($f \ge 0$)</span>
+                <span class="legend-item"><span class="swatch swatch-neg"></span> Negative Rectangles ($f &lt; 0$)</span>
+                <span class="legend-item"><span class="swatch swatch-curve"></span> Graph $y = f(x)$</span>
+                <span class="legend-item"><span class="swatch swatch-amber"></span> Sample Points $x_k^*$</span>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-panel">
+              <div class="control-group">
+                <label class="control-label" for="intFnSelect">
+                  <span>Select Exam / Class-Note Function</span>
+                </label>
+                <select id="intFnSelect" class="styled-select">
+                  <option value="0">1) Continuous: f(x) = cos(3x) on [-3, 3]</option>
+                  <option value="1">2) Piecewise Continuous (Final 2025 Q1a): {0, x≤0; x², x>0} on [-2, 2]</option>
+                  <option value="2">3) Bounded Jump (1st Incourse 2024 Q4c): {x/|x|, x≠0; 0, x=0} on [-3, 3]</option>
+                  <option value="3">4) Single-Point Hole (1st Incourse 2024 Q3): {2, 0≤x<1; 0, x=1} on [0, 1]</option>
+                  <option value="4">5) Unbounded Asymptote (Final 2024 Q1c): {1/x², x≠0; 0, x=0} on [-1, 1]</option>
+                  <option value="5">6) Dirichlet Function (Class Notes): {1, x∈ℚ; 0, x∉ℚ} on [0, 2]</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="intNSlider">
+                  <span>Subintervals ($n$)</span>
+                  <span class="control-value" id="intNDisplay">n = 16</span>
+                </label>
+                <input type="range" id="intNSlider" min="4" max="80" value="16" />
+              </div>
+
+              <div class="control-group">
+                <div class="control-label">
+                  <span>Partition Type</span>
+                  <button type="button" class="btn btn-sm" id="rerollBtn" style="display:none;">&#8635; Re-roll Widths</button>
+                </div>
+                <div class="segmented" role="group" aria-label="Partition type">
+                  <button type="button" class="seg-btn active" data-part="regular">Regular (Equal $\Delta x$)</button>
+                  <button type="button" class="seg-btn" data-part="irregular">Irregular (Random $\Delta x_k$)</button>
+                </div>
+              </div>
+
+              <div class="control-group" id="standardSampleGroup">
+                <span class="control-label">Sample Point Rule ($x_k^*$)</span>
+                <div class="segmented cols-3" role="group" aria-label="Sample point rule">
+                  <button type="button" class="seg-btn" data-sample="left">Left</button>
+                  <button type="button" class="seg-btn active" data-sample="right">Right</button>
+                  <button type="button" class="seg-btn" data-sample="mid">Midpoint</button>
+                </div>
+              </div>
+
+              <!-- Special Mode: Asymptote Blow-up for 1/x^2 -->
+              <div class="special-mode-box" id="asymptoteModeBox">
+                <div class="special-mode-title">Unbounded Asymptote Test ($x \to 0$)</div>
+                <p style="font-size:0.82rem;color:var(--text-secondary);">
+                  In Definition 5.5.1, the limit must be finite for <em>every</em> choice of $x_k^*$. Toggle below to pick $x_k^*$ near $0$ inside the subinterval containing $0$:
+                </p>
+                <div class="btn-row">
+                  <button type="button" class="btn btn-sm" id="asymptoteToggleBtn">Enable "Near Asymptote" $x_k^*$</button>
+                </div>
+              </div>
+
+              <!-- Special Mode: Dirichlet Rational vs Irrational -->
+              <div class="special-mode-box" id="dirichletModeBox">
+                <div class="special-mode-title">Dirichlet Sample-Point Paradox</div>
+                <p style="font-size:0.82rem;color:var(--text-secondary);">
+                  Every subinterval contains both rationals and irrationals. Switch sample choices to watch $S_n$ jump between $2$ and $0$:
+                </p>
+                <div class="segmented" role="group" aria-label="Dirichlet sample points">
+                  <button type="button" class="seg-btn active" data-dir="rational">All Rational $x_k^*$ ($S_n = 2$)</button>
+                  <button type="button" class="seg-btn" data-dir="irrational">All Irrational $x_k^*$ ($S_n = 0$)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Diagnostic Panel -->
+          <div class="diagnostic-panel">
+            <div class="diag-top">
+              <span class="verdict-badge yes" id="diagVerdict">&#10003; INTEGRABLE</span>
+              <div class="diag-reason" id="diagReason">Continuous on $[-3, 3]$, so guaranteed integrable by Theorem 5.5.2.</div>
+            </div>
+
+            <div class="readout-grid">
+              <div class="metric-card" id="diagBoundedCard">
+                <span class="metric-label">Bounded on $[a,b]$?</span>
+                <span class="metric-value" id="diagBounded">Yes</span>
+                <span class="metric-sub" id="diagBoundedSub">$-1 \le f(x) \le 1$</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Discontinuities</span>
+                <span class="metric-value" id="diagDisc">None</span>
+                <span class="metric-sub" id="diagDiscSub">Continuous everywhere</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-label">Mesh Size $\max(\Delta x_k)$</span>
+                <span class="metric-value" id="diagMesh">0.3750</span>
+                <span class="metric-sub" id="diagMeshSub">Regular partition</span>
+              </div>
+              <div class="metric-card accent" id="diagSumCard">
+                <span class="metric-label">Live Riemann Sum $S_n$</span>
+                <span class="metric-value" id="diagSum">0.0000</span>
+                <span class="metric-sub" id="diagSumSub">Converges as $\max\Delta x_k \to 0$</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 2: MAX-MIN INTEGRAL BOUNDING SANDBOX
+           ==================================================================== -->
+      <section class="section-block" id="section-lab2">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 2 &bull; Interactive Lab 2</span>
+            <h2>Max&ndash;Min Integral Bounding Sandbox</h2>
+          </div>
+          <p class="section-desc">
+            Visualize $m(b-a) \le \int_a^b f(x)\,dx \le M(b-a)$ geometrically using the lower rectangle $m(b-a)$ and upper rectangle $M(b-a)$ without needing an antiderivative.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="lab-grid">
+            <!-- Canvas -->
+            <div class="canvas-panel">
+              <div class="canvas-wrapper" id="boundCanvasWrap">
+                <canvas id="boundCanvas" aria-label="Max-min integral bounding visualization"></canvas>
+              </div>
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-indigo"></span> Lower Rectangle $m(b-a)$</span>
+                <span class="legend-item"><span class="swatch swatch-amber"></span> Upper Rectangle $M(b-a)$</span>
+                <span class="legend-item"><span class="swatch swatch-pos"></span> True Integral Area $\int_a^b f(x)\,dx$</span>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-panel">
+              <div class="control-group">
+                <label class="control-label" for="boundPresetSelect">
+                  <span>ISRT Exam / Class-Note Preset</span>
+                </label>
+                <select id="boundPresetSelect" class="styled-select">
+                  <option value="0">1) Final 2025 Q1b: f(x) = √(x³ + 2) on [0, 3]</option>
+                  <option value="1">2) 1st In-course 2025 Q2: f(x) = √(x⁴ + 4) on [0, 3]</option>
+                  <option value="2">3) Class Notes (Sign Test): f(x) = √x / (1 - x) on [2, 3]</option>
+                  <option value="3">4) Class Notes (Geometric): f(x) = 2 + √(9 - x²) on [-3, 0]</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="boundASlider">
+                  <span>Lower Limit ($a$)</span>
+                  <span class="control-value" id="boundADisplay">a = 0.00</span>
+                </label>
+                <input type="range" id="boundASlider" min="-1" max="2.8" step="0.1" value="0" />
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="boundBSlider">
+                  <span>Upper Limit ($b$)</span>
+                  <span class="control-value" id="boundBDisplay">b = 3.00</span>
+                </label>
+                <input type="range" id="boundBSlider" min="-0.8" max="3.5" step="0.1" value="3" />
+              </div>
+
+              <div class="btn-row">
+                <button type="button" class="btn btn-sm btn-primary" id="resetBoundBtn">&#8634; Reset to Exam Interval</button>
+              </div>
+
+              <div class="formula-banner" id="boundNoteBox" style="font-size:0.86rem;">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Readout Cards -->
+          <div class="readout-grid" style="margin-top: 16px;">
+            <div class="metric-card">
+              <span class="metric-label">Minimum $m$ on $[a,b]$</span>
+              <span class="metric-value" id="bReadM">1.4142</span>
+              <span class="metric-sub" id="bReadMNote">Global min on $[a,b]$</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Maximum $M$ on $[a,b]$</span>
+              <span class="metric-value" id="bReadMax">5.3852</span>
+              <span class="metric-sub" id="bReadMaxNote">Global max on $[a,b]$</span>
+            </div>
+            <div class="metric-card accent">
+              <span class="metric-label">Lower Bound $m(b-a)$</span>
+              <span class="metric-value" id="bReadLower">4.2426</span>
+              <span class="metric-sub" id="bReadLowerExact">$3\sqrt{2}$</span>
+            </div>
+            <div class="metric-card emerald">
+              <span class="metric-label">True Integral (Simpson's)</span>
+              <span class="metric-value" id="bReadTrue">8.7745</span>
+              <span class="metric-sub" id="bReadTrueExact">Numerical value</span>
+            </div>
+            <div class="metric-card amber">
+              <span class="metric-label">Upper Bound $M(b-a)$</span>
+              <span class="metric-value" id="bReadUpper">16.1555</span>
+              <span class="metric-sub" id="bReadUpperExact">$3\sqrt{29}$</span>
+            </div>
+          </div>
+
+          <!-- Live Inequality Verification Banner -->
+          <div class="inequality-banner">
+            <span class="ineq-formula" id="ineqFormulaText">4.2426 &le; 8.7745 &le; 16.1555</span>
+            <span class="ineq-tag">&#10003; Bounding Theorem Verified</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 3: CORE THEORY, THEOREMS & EXAM TRAPS
+           ==================================================================== -->
+      <section class="section-block" id="section-theory">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 3 &bull; Exam-Ready Theory</span>
+            <h2>Core Theory, Theorems &amp; ISRT Exam Traps</h2>
+          </div>
+          <p class="section-desc">
+            Master the exact formal definitions, integrability criteria, integral properties, and the Riemann-sum proof of the Bounding Theorem.
+          </p>
+        </div>
+
+        <div class="theory-grid">
+          <!-- Card 1: Def 5.5.1 -->
+          <article class="theory-card">
+            <h3>1. Partition, Mesh Size &amp; Definite Integral (Def 5.5.1)</h3>
+            <p>
+              A <strong>partition</strong> $P$ divides $[a, b]$ into $n$ subintervals $[x_0, x_1], [x_1, x_2], \dots, [x_{n-1}, x_n]$ of widths $\Delta x_k = x_k - x_{k-1}$ (not necessarily equal). Its <strong>mesh size</strong> is $\max \Delta x_k$.
+            </p>
+            <div class="formula-banner">
+              $$\int_a^b f(x)\,dx = \lim_{\max \Delta x_k \to 0} \sum_{k=1}^{n} f(x_k^*)\,\Delta x_k$$
+            </div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
+              <strong>Crucial requirement:</strong> $f$ is <strong>Riemann integrable</strong> on $[a, b]$ if and only if this limit exists as a finite real number and is <strong>independent</strong> of both the choice of partition $P$ and the sample points $x_k^* \in [x_{k-1}, x_k]$.
+            </p>
+          </article>
+
+          <!-- Card 2: Properties -->
+          <article class="theory-card">
+            <h3>2. Essential Properties of Definite Integrals</h3>
+            <div class="formula-banner" style="font-size:0.92rem;">
+              <div><strong>Zero-width:</strong> $\displaystyle \int_a^a f(x)\,dx = 0$</div>
+              <div style="margin-top:6px;"><strong>Reversed limits:</strong> $\displaystyle \int_b^a f(x)\,dx = -\int_a^b f(x)\,dx$</div>
+              <div style="margin-top:6px;"><strong>Additivity:</strong> $\displaystyle \int_a^b f(x)\,dx = \int_a^c f(x)\,dx + \int_c^b f(x)\,dx$</div>
+              <div style="margin-top:6px;"><strong>Linearity:</strong> $\displaystyle \int_a^b [c_1 f(x) \pm c_2 g(x)]\,dx = c_1\int_a^b f \pm c_2\int_a^b g$</div>
+              <div style="margin-top:6px;"><strong>Comparison / Sign:</strong> If $f(x) \ge g(x)$ on $[a,b]$, then $\displaystyle \int_a^b f \ge \int_a^b g$.</div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Integrability Decision Matrix (Theorems 5.5.2 & 5.5.8) -->
+        <div class="card">
+          <h3 style="margin-bottom: 12px; font-size: 1.05rem;">3. Integrability Decision Matrix (Theorems 5.5.2 &amp; 5.5.8)</h3>
+          <div class="ref-table-wrap">
+            <table class="ref-table">
+              <thead>
+                <tr>
+                  <th>Condition on $f$ over Closed Interval $[a, b]$</th>
+                  <th>Integrable?</th>
+                  <th>Theorem / Justification</th>
+                  <th>Classic ISRT Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Continuous</strong> on $[a, b]$</td>
+                  <td><span class="pill-yes">Integrable</span></td>
+                  <td>Theorem 5.5.2 (Continuity $\implies$ Integrability)</td>
+                  <td>$\cos(3x)$, or $f(x)=\{0, x\le 0;\, x^2, x>0\}$</td>
+                </tr>
+                <tr>
+                  <td><strong>Bounded</strong> with <strong>finitely many</strong> discontinuities</td>
+                  <td><span class="pill-yes">Integrable</span></td>
+                  <td>Theorem 5.5.8(a) (Finite jumps/holes have zero area)</td>
+                  <td>$f(x) = x/|x|$ on $[-3, 3]$; $f(x)=2$ ($x<1$), $0$ ($x=1$)</td>
+                </tr>
+                <tr>
+                  <td><strong>Unbounded</strong> (vertical asymptote) or <strong>undefined</strong> on part of $[a,b]$</td>
+                  <td><span class="pill-no">Not Integrable</span></td>
+                  <td>Theorem 5.5.8(b) (Unbounded $\implies$ Not Integrable)</td>
+                  <td>$1/x$, $1/x^2$ on $[-1, 1]$, $\ln x$ on $[-3, 3]$</td>
+                </tr>
+                <tr>
+                  <td><strong>Bounded</strong> with <strong>infinitely many dense</strong> discontinuities</td>
+                  <td><span class="pill-no">Usually Not</span></td>
+                  <td>Riemann sum depends on sample point $x_k^*$</td>
+                  <td>Dirichlet function $D(x) = \{1, x\in\mathbb{Q};\, 0, x\notin\mathbb{Q}\}$</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Expandable Proof of Max-Min Bounding Theorem -->
+        <div class="proof-box">
+          <div class="proof-header">
+            <div>
+              <h3 style="font-size:1.05rem;">4. Proof of the Max&ndash;Min Bounding Theorem (via Riemann Sums)</h3>
+              <p style="font-size:0.86rem;color:var(--text-secondary);">
+                If $f$ is integrable on $[a, b]$ and $m \le f(x) \le M$ for all $x \in [a, b]$, then $m(b-a) \le \int_a^b f(x)\,dx \le M(b-a)$.
+              </p>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" id="toggleProofBtn">Expand Step-by-Step Proof</button>
+          </div>
+
+          <div class="proof-steps" id="proofSteps">
+            <div class="proof-step">
+              <strong>Step 1 (Pointwise Inequality):</strong> Let $P$ be any partition of $[a, b]$ with subinterval widths $\Delta x_k > 0$ and arbitrary sample points $x_k^* \in [x_{k-1}, x_k]$. Since $m \le f(x) \le M$ everywhere on $[a, b]$:
+              $$m \le f(x_k^*) \le M \qquad \text{for every } k = 1, 2, \dots, n.$$
+            </div>
+            <div class="proof-step">
+              <strong>Step 2 (Multiply by $\Delta x_k > 0$ and Sum):</strong> Multiplying through by $\Delta x_k > 0$ preserves the inequalities. Summing from $k = 1$ to $n$:
+              $$\sum_{k=1}^{n} m\,\Delta x_k \le \sum_{k=1}^{n} f(x_k^*)\,\Delta x_k \le \sum_{k=1}^{n} M\,\Delta x_k.$$
+            </div>
+            <div class="proof-step">
+              <strong>Step 3 (Collapse Telescoping Partition Widths):</strong> Since $\sum_{k=1}^{n} \Delta x_k = (x_1 - x_0) + (x_2 - x_1) + \dots + (x_n - x_{n-1}) = b - a$:
+              $$m(b - a) \le \sum_{k=1}^{n} f(x_k^*)\,\Delta x_k \le M(b - a).$$
+            </div>
+            <div class="proof-step">
+              <strong>Step 4 (Take Limit as $\max \Delta x_k \to 0$):</strong> Since $f$ is integrable, the middle Riemann sum converges to $\int_a^b f(x)\,dx$, while the constant left and right bounds remain unchanged:
+              $$m(b - a) \le \int_a^b f(x)\,dx \le M(b - a). \qquad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- High-Yield ISRT Exam Traps -->
+        <div class="exam-trap-box">
+          <div class="exam-trap-title">&#9888; High-Yield ISRT Exam Traps</div>
+          <ul class="trap-list">
+            <li>
+              <strong>Domain Trap ($\ln x$ on $[-3, 3]$):</strong> In 1st In-course 2024 Q4(b), $f(x) = \ln x$ is <em>not even defined</em> for $x \le 0$ (and is unbounded as $x \to 0^+$). State <strong>both</strong> reasons for full marks!
+            </li>
+            <li>
+              <strong>Single-Point Modification Trap:</strong> Redefining a function at one point (like setting $f(1) = 0$ instead of $2$ in 1st In-course 2024 Q3) does <strong>not</strong> change the value of $\int_a^b f(x)\,dx$, because a single vertical line has width $\Delta x_n \to 0$ and zero area.
+            </li>
+            <li>
+              <strong>"Do Not Attempt to Solve the Integral":</strong> On bounding questions (Final 2025 Q1b, 1st In-course 2025 Q2), integrands like $\sqrt{x^3 + 2}$ and $\sqrt{x^4 + 4}$ have <em>no elementary antiderivative</em>. Always check monotonicity ($f'(x) \ge 0$) to find $m = f(a)$ and $M = f(b)$, then multiply by $(b - a)$.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 4: ISRT PAST-EXAM VAULT
+           ==================================================================== -->
+      <section class="section-block" id="section-vault">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 4 &bull; ISRT Past-Exam Vault</span>
+            <h2>Authentic ISRT Exam &amp; Class-Note Problems</h2>
+          </div>
+          <p class="section-desc">
+            Filter by exam type, check a hint if stuck, and reveal the complete exam-ready solution.
+          </p>
+        </div>
+
+        <div class="filter-tabs" id="vaultFilters" role="tablist" aria-label="Filter exam problems">
+          <button type="button" class="filter-tab active" data-filter="all">All (7)</button>
+          <button type="button" class="filter-tab" data-filter="incourse">1st In-course (3)</button>
+          <button type="button" class="filter-tab" data-filter="final">Final (3)</button>
+          <button type="button" class="filter-tab" data-filter="notes">Class Notes (1)</button>
+        </div>
+
+        <div class="vault-list" id="vaultList">
+
+          <!-- Problem 1 -->
+          <article class="exam-card" data-category="incourse">
+            <div class="exam-meta">
+              <span class="exam-badge">1st In-course 2024 &bull; Q3 &bull; 5 Marks</span>
+              <span class="topic-pill">Riemann Sum &amp; Single-Point Discontinuity</span>
+            </div>
+            <div class="exam-prompt">
+              Define a function $f$ on $[0, 2]$ by
+              $$f(x) = \begin{cases} 2, & 0 \le x &lt; 1 \\ 0, & x = 1. \end{cases}$$
+              Use the Riemann sum to show that $\displaystyle \int_0^1 f(x)\,dx = 2$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Take an arbitrary partition $0 = x_0 &lt; x_1 &lt; \dots &lt; x_n = 1$. On the first $n-1$ subintervals, $f(x_k^*) = 2$ always. Split into two cases for the final sample point $x_n^* \in [x_{n-1}, 1]$: either $x_n^* &lt; 1$ or $x_n^* = 1$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Set up an arbitrary partition of $[0, 1]$</div>
+                Let $P = \{0 = x_0 &lt; x_1 &lt; \dots &lt; x_n = 1\}$ be any partition of $[0, 1]$ with subinterval widths $\Delta x_k = x_k - x_{k-1}$ and sample points $x_k^* \in [x_{k-1}, x_k]$. Note that $\sum_{k=1}^{n} \Delta x_k = 1 - 0 = 1$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Case 1 &mdash; Last sample point $x_n^* &lt; 1$</div>
+                Then every sample point satisfies $0 \le x_k^* &lt; 1$, so $f(x_k^*) = 2$ for all $k = 1, \dots, n$:
+                $$S_n = \sum_{k=1}^{n} f(x_k^*)\Delta x_k = \sum_{k=1}^{n} 2\,\Delta x_k = 2\sum_{k=1}^{n} \Delta x_k = 2(1) = 2.$$
+                Hence $\lim_{\max \Delta x_k \to 0} S_n = 2$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Case 2 &mdash; Last sample point $x_n^* = 1$</div>
+                Here $f(x_k^*) = 2$ for $k = 1, \dots, n-1$, while $f(x_n^*) = f(1) = 0$:
+                $$S_n = \sum_{k=1}^{n-1} 2\,\Delta x_k + 0 \cdot \Delta x_n = 2(1 - \Delta x_n) = 2 - 2\Delta x_n.$$
+                Since $0 &lt; \Delta x_n \le \max \Delta x_k$, taking the limit as $\max \Delta x_k \to 0$ gives $\Delta x_n \to 0$, so:
+                $$\lim_{\max \Delta x_k \to 0} (2 - 2\Delta x_n) = 2 - 0 = 2.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Conclusion</div>
+                In both cases the limit is $2$, independent of the partition and sample points. Therefore, $\displaystyle \int_0^1 f(x)\,dx = 2$.
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 2 -->
+          <article class="exam-card" data-category="incourse">
+            <div class="exam-meta">
+              <span class="exam-badge">1st In-course 2024 &bull; Q4 &bull; 6 Marks</span>
+              <span class="topic-pill">Integrability Testing</span>
+            </div>
+            <div class="exam-prompt">
+              Determine whether the following functions are integrable on $[-3, 3]$ or not (explain with proper reasoning):
+              $$\text{(a)}\; f(x) = \frac{1}{x}, \qquad \text{(b)}\; f(x) = \ln x, \qquad \text{(c)}\; f(x) = \begin{cases} \dfrac{x}{|x|}, & x \ne 0 \\ 0, & x = 0. \end{cases}$$
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Check boundedness and domain on $[-3, 3]$ first! Recall Theorem 5.5.8: unbounded $\implies$ not integrable; bounded + finitely many discontinuities $\implies$ integrable.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">(a) $f(x) = 1/x$ on $[-3, 3]$ &rarr; NOT Integrable</div>
+                As $x \to 0^+$, $1/x \to +\infty$, and as $x \to 0^-$, $1/x \to -\infty$. Because $f(x)$ is <strong>unbounded</strong> on $[-3, 3]$ (and undefined at $x = 0$), by Theorem 5.5.8(b) it is <strong>not integrable</strong> on $[-3, 3]$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">(b) $f(x) = \ln x$ on $[-3, 3]$ &rarr; NOT Integrable</div>
+                The natural logarithm $\ln x$ is <strong>not defined</strong> for $x \le 0$ (the entire subinterval $[-3, 0]$ lies outside its domain) and is also <strong>unbounded</strong> as $x \to 0^+$ ($\ln x \to -\infty$). Hence it is <strong>not integrable</strong> on $[-3, 3]$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">(c) $f(x) = \{x/|x|,\; x\ne 0;\; 0,\; x=0\}$ on $[-3, 3]$ &rarr; INTEGRABLE</div>
+                Observe that $f(x) = -1$ for $x \in [-3, 0)$, $f(0) = 0$, and $f(x) = 1$ for $x \in (0, 3]$. Thus:
+                <br />1. $f$ is <strong>bounded</strong> on $[-3, 3]$ since $-1 \le f(x) \le 1$ for all $x \in [-3, 3]$.
+                <br />2. $f$ has only <strong>one (finitely many)</strong> discontinuity, a jump at $x = 0$.
+                <br />By Theorem 5.5.8(a), $f$ is <strong>integrable</strong> on $[-3, 3]$ (and in fact $\int_{-3}^3 f(x)\,dx = -3 + 3 = 0$).
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 3 -->
+          <article class="exam-card" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 &bull; Q1(c) &bull; 2 Marks</span>
+              <span class="topic-pill">Unbounded Discontinuity</span>
+            </div>
+            <div class="exam-prompt">
+              Determine whether the function
+              $$f(x) = \begin{cases} \dfrac{1}{x^2}, & x \ne 0 \\ 0, & x = 0 \end{cases}$$
+              is integrable on $[-1, 1]$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Defining $f(0) = 0$ makes $f$ defined everywhere on $[-1, 1]$, but does it make $f$ <em>bounded</em> near $x = 0$?
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Justification &amp; Verdict &rarr; NOT Integrable</div>
+                Even though $f(0) = 0$ is defined at $x = 0$, we have $\displaystyle \lim_{x \to 0} \frac{1}{x^2} = +\infty$. Therefore, $f$ is <strong>unbounded</strong> on $[-1, 1]$ (there is no finite $M$ such that $|f(x)| \le M$ for all $x \in [-1, 1]$).
+                <br />By Theorem 5.5.8(b), every Riemann integrable function on $[a, b]$ must be bounded. Hence $f$ is <strong>not integrable</strong> on $[-1, 1]$.
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 4 -->
+          <article class="exam-card" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 &bull; Q1(a) &bull; 2 Marks</span>
+              <span class="topic-pill">Piecewise Continuity</span>
+            </div>
+            <div class="exam-prompt">
+              Is the function
+              $$f(x) = \begin{cases} 0, & x \le 0 \\ x^2, & x &gt; 0 \end{cases}$$
+              integrable over every closed interval $[a, b]$? Justify.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Check continuity at the junction point $x = 0$ by comparing $\lim_{x\to 0^-} f(x)$, $\lim_{x\to 0^+} f(x)$, and $f(0)$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Check continuity on $(-\infty, \infty)$</div>
+                For $x &lt; 0$, $f(x) = 0$ is constant (continuous). For $x &gt; 0$, $f(x) = x^2$ is a polynomial (continuous). At the junction $x = 0$:
+                $$\lim_{x \to 0^-} f(x) = 0, \qquad \lim_{x \to 0^+} f(x) = \lim_{x \to 0^+} x^2 = 0, \qquad f(0) = 0.$$
+                Since all three values are equal, $f$ is <strong>continuous at $x = 0$</strong>, and therefore continuous on all of $\mathbb{R}$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply Theorem 5.5.2 &rarr; YES, Integrable</div>
+                Because $f$ is continuous on every closed interval $[a, b] \subset \mathbb{R}$, by Theorem 5.5.2, $f$ is <strong>integrable over every closed interval $[a, b]$</strong>.
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 5 -->
+          <article class="exam-card" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 &bull; Q1(b) &bull; 2 Marks</span>
+              <span class="topic-pill">Max&ndash;Min Bounding</span>
+            </div>
+            <div class="exam-prompt">
+              Find the maximum and minimum values of $\sqrt{x^3 + 2}$ for $0 \le x \le 3$. Use these values to find bounds on the value of the integral $\displaystyle \int_0^3 \sqrt{x^3 + 2}\,dx$. (Do not attempt to solve the integral.)
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Since $x^3 + 2$ is strictly increasing on $[0, 3]$, the minimum occurs at $x = 0$ and the maximum at $x = 3$. Multiply both by $(b - a) = 3$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Find $m$ and $M$ on $[0, 3]$</div>
+                Let $f(x) = \sqrt{x^3 + 2}$. Since $f'(x) = \frac{3x^2}{2\sqrt{x^3+2}} \ge 0$ on $[0, 3]$, $f$ is strictly increasing on $[0, 3]$:
+                $$m = f(0) = \sqrt{0^3 + 2} = \sqrt{2}, \qquad M = f(3) = \sqrt{3^3 + 2} = \sqrt{29}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply the Bounding Theorem</div>
+                With $a = 0$, $b = 3$, and $b - a = 3$:
+                $$m(b - a) \le \int_0^3 \sqrt{x^3 + 2}\,dx \le M(b - a)$$
+                $$3\sqrt{2} \le \int_0^3 \sqrt{x^3 + 2}\,dx \le 3\sqrt{29} \qquad (\approx 4.243 \le I \le 16.155).$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 6 -->
+          <article class="exam-card" data-category="incourse">
+            <div class="exam-meta">
+              <span class="exam-badge">1st In-course 2025 &bull; Q2 &bull; 2 Marks</span>
+              <span class="topic-pill">Max&ndash;Min Bounding</span>
+            </div>
+            <div class="exam-prompt">
+              Find the maximum and minimum values of $\sqrt{x^4 + 4}$ for $0 \le x \le 3$. Use these values to find bounds on the value of the integral $\displaystyle \int_0^3 \sqrt{x^4 + 4}\,dx$. (Do not attempt to solve the integral.)
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> $f(x) = \sqrt{x^4 + 4}$ is increasing on $[0, 3]$. Compute $f(0) = \sqrt{4} = 2$ and $f(3) = \sqrt{81 + 4} = \sqrt{85}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Find $m$ and $M$ on $[0, 3]$</div>
+                Let $f(x) = \sqrt{x^4 + 4}$. Since $f'(x) = \frac{2x^3}{\sqrt{x^4+4}} \ge 0$ on $[0, 3]$, $f$ is increasing on $[0, 3]$:
+                $$m = f(0) = \sqrt{0 + 4} = 2, \qquad M = f(3) = \sqrt{3^4 + 4} = \sqrt{85}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply the Bounding Theorem</div>
+                Since $b - a = 3 - 0 = 3$:
+                $$2(3) \le \int_0^3 \sqrt{x^4 + 4}\,dx \le 3\sqrt{85} \implies 6 \le \int_0^3 \sqrt{x^4 + 4}\,dx \le 3\sqrt{85}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 7 -->
+          <article class="exam-card" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &bull; Conceptual &amp; Geometric</span>
+              <span class="topic-pill">Dirichlet &amp; Geometry</span>
+            </div>
+            <div class="exam-prompt">
+              <strong>(a)</strong> Prove that Dirichlet's function $D(x) = \begin{cases} 1, & x \in \mathbb{Q} \\ 0, & x \notin \mathbb{Q} \end{cases}$ is <strong>not</strong> Riemann integrable on $[a, b]$ ($a &lt; b$).<br />
+              <strong>(b)</strong> Evaluate $\displaystyle \int_{-3}^{0} \left(2 + \sqrt{9 - x^2}\right)dx$ using elementary geometry.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For (a), use the density of $\mathbb{Q}$ and $\mathbb{R}\setminus\mathbb{Q}$ in every subinterval $[x_{k-1}, x_k]$. For (b), split the integral into a rectangle of height $2$ plus a quarter-circle of radius $3$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Part (a): Proof that Dirichlet's Function is NOT Integrable</div>
+                Let $P$ be any partition of $[a, b]$. Every non-empty subinterval $[x_{k-1}, x_k]$ contains both rational and irrational numbers:
+                <br />&bull; If we choose every $x_k^* \in \mathbb{Q}$, then $D(x_k^*) = 1$, so $S_n = \sum_{k=1}^n 1\cdot\Delta x_k = b - a \to b - a$.
+                <br />&bull; If we choose every $x_k^* \notin \mathbb{Q}$, then $D(x_k^*) = 0$, so $S_n = \sum_{k=1}^n 0\cdot\Delta x_k = 0 \to 0$.
+                <br />Since $b - a \ne 0$, the limit depends on the choice of sample points $x_k^*$, violating Definition 5.5.1. Thus $D(x)$ is <strong>not integrable</strong> on $[a, b]$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (b): Geometric Evaluation of $\int_{-3}^{0} (2 + \sqrt{9 - x^2})\,dx$</div>
+                By linearity:
+                $$\int_{-3}^{0} \left(2 + \sqrt{9 - x^2}\right)dx = \int_{-3}^{0} 2\,dx + \int_{-3}^{0} \sqrt{9 - x^2}\,dx.$$
+                &bull; $\int_{-3}^{0} 2\,dx$ is the area of a rectangle of width $3$ and height $2$: $\text{Area} = 3 \times 2 = 6$.
+                <br />&bull; $y = \sqrt{9 - x^2}$ on $[-3, 0]$ is the upper-left quarter of the circle $x^2 + y^2 = 9$ (radius $r = 3$): $\text{Area} = \frac{1}{4}\pi(3)^2 = \frac{9\pi}{4}$.
+                $$\therefore\; \int_{-3}^{0} \left(2 + \sqrt{9 - x^2}\right)dx = \frac{9\pi}{4} + 6.$$
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 5: QUICK MASTERY CHECK
+           ==================================================================== -->
+      <section class="section-block" id="section-quiz">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 5 &bull; Self-Assessment</span>
+            <h2>Quick Mastery Check</h2>
+          </div>
+          <p class="section-desc">
+            Verify your mastery of integrability, bounds, and definite integral properties with 5 exam-style multiple-choice questions.
+          </p>
+        </div>
+
+        <div class="quiz-topbar">
+          <div class="score-pill">
+            <span>Score:</span>
+            <span id="quizScore">0 / 5</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="resetQuizBtn">&#8634; Reset Quiz</button>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+
+          <!-- Q1 -->
+          <div class="quiz-card" data-qid="q1" data-answer="c">
+            <div class="quiz-qnum">Question 1 &bull; Bounded Jump vs. Unbounded Asymptote</div>
+            <div>Which of the following functions is <strong>Riemann integrable</strong> on the closed interval $[-2, 2]$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$f(x) = \dfrac{1}{x}$ (with $f(0) = 0$)</button>
+              <button type="button" class="quiz-opt" data-val="b">$f(x) = \ln(x + 1)$</button>
+              <button type="button" class="quiz-opt" data-val="c">$f(x) = \begin{cases} x/|x|, & x \ne 0 \\ 5, & x = 0 \end{cases}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$f(x) = \begin{cases} 1/x^2, & x \ne 0 \\ 0, & x = 0 \end{cases}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-card" data-qid="q2" data-answer="b">
+            <div class="quiz-qnum">Question 2 &bull; Max&ndash;Min Bounding Theorem</div>
+            <div>Using the Max&ndash;Min Bounding Theorem on $[0, 3]$, which inequality correctly bounds $\displaystyle \int_0^3 \sqrt{x^4 + 4}\,dx$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$2 \le \int_0^3 \sqrt{x^4 + 4}\,dx \le \sqrt{85}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$6 \le \int_0^3 \sqrt{x^4 + 4}\,dx \le 3\sqrt{85}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$4 \le \int_0^3 \sqrt{x^4 + 4}\,dx \le 85$</button>
+              <button type="button" class="quiz-opt" data-val="d">$12 \le \int_0^3 \sqrt{x^4 + 4}\,dx \le 3\sqrt{85}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-card" data-qid="q3" data-answer="a">
+            <div class="quiz-qnum">Question 3 &bull; Changing $f(x)$ at Finitely Many Points</div>
+            <div>Suppose $\int_0^4 f(x)\,dx = 10$. If we create a new function $g(x)$ by changing the value of $f(x)$ at $x = 1, 2, 3$ to $999$, what is $\int_0^4 g(x)\,dx$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">Still $10$ (changing finitely many points does not change the integral)</button>
+              <button type="button" class="quiz-opt" data-val="b">$10 + 3(999) = 3007$</button>
+              <button type="button" class="quiz-opt" data-val="c">$g$ is no longer integrable because it is discontinuous</button>
+              <button type="button" class="quiz-opt" data-val="d">Cannot be determined without knowing $f(1), f(2), f(3)$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-card" data-qid="q4" data-answer="d">
+            <div class="quiz-qnum">Question 4 &bull; Why Dirichlet's Function Fails Definition 5.5.1</div>
+            <div>Even though Dirichlet's function $D(x) = \{1,\; x\in\mathbb{Q};\; 0,\; x\notin\mathbb{Q}\}$ is bounded between $0$ and $1$, why is it <strong>not</strong> integrable on $[0, 2]$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">Because $D(x)$ has a vertical asymptote at $x = 1$</button>
+              <button type="button" class="quiz-opt" data-val="b">Because the mesh size $\max \Delta x_k$ cannot approach $0$</button>
+              <button type="button" class="quiz-opt" data-val="c">Because $D(x)$ is not defined on all of $[0, 2]$</button>
+              <button type="button" class="quiz-opt" data-val="d">Because the Riemann sum depends on the sample points $x_k^*$ (gives $2$ for rationals, $0$ for irrationals)</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-card" data-qid="q5" data-answer="c">
+            <div class="quiz-qnum">Question 5 &bull; Reversed Limits &amp; Additivity Property</div>
+            <div>Given that $\displaystyle \int_{-2}^{1} f(x)\,dx = 2$ and $\displaystyle \int_{1}^{3} f(x)\,dx = -6$, find $\displaystyle \int_{3}^{-2} f(x)\,dx$.</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$-4$</button>
+              <button type="button" class="quiz-opt" data-val="b">$-8$</button>
+              <button type="button" class="quiz-opt" data-val="c">$4$</button>
+              <button type="button" class="quiz-opt" data-val="d">$8$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX SAFE RENDER HELPER
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      /* ----------------------------------------------------------------------
+         2. THEME TOGGLE & CANVAS COLOR PALETTE
+         ---------------------------------------------------------------------- */
+      const rootEl = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const themeText = document.getElementById('themeText');
+
+      function getColors() {
+        const dark = rootEl.getAttribute('data-theme') === 'dark';
+        return {
+          bg: dark ? '#111827' : '#f8fafc',
+          grid: dark ? 'rgba(148, 163, 184, 0.14)' : 'rgba(15, 23, 42, 0.08)',
+          axis: dark ? '#94a3b8' : '#334155',
+          label: dark ? '#cbd5e1' : '#475569',
+          curve: dark ? '#818cf8' : '#3730a3',
+          posFill: dark ? 'rgba(52, 211, 153, 0.34)' : 'rgba(5, 150, 105, 0.28)',
+          posStroke: dark ? '#34d399' : '#059669',
+          negFill: dark ? 'rgba(251, 113, 133, 0.34)' : 'rgba(225, 29, 72, 0.26)',
+          negStroke: dark ? '#fb7185' : '#e11d48',
+          indigoFill: dark ? 'rgba(129, 140, 248, 0.25)' : 'rgba(79, 70, 229, 0.22)',
+          indigoStroke: dark ? '#818cf8' : '#4f46e5',
+          amberFill: dark ? 'rgba(251, 191, 36, 0.16)' : 'rgba(217, 119, 6, 0.14)',
+          amberStroke: dark ? '#fbbf24' : '#d97706',
+          dot: dark ? '#fbbf24' : '#d97706',
+          rose: dark ? '#fb7185' : '#e11d48'
+        };
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const next = rootEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        rootEl.setAttribute('data-theme', next);
+        themeIcon.innerHTML = next === 'dark' ? '&#9728;' : '&#9790;';
+        themeText.textContent = next === 'dark' ? 'Light' : 'Dark';
+        drawIntegrabilityLab();
+        drawBoundingLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         3. MOBILE SIDEBAR & MASTERY PROGRESS TRACKING
+         ---------------------------------------------------------------------- */
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      function setSidebar(open) {
+        sidebar.classList.toggle('open', open);
+        sidebarOverlay.classList.toggle('active', open);
+        menuToggle.setAttribute('aria-expanded', String(open));
+      }
+
+      menuToggle.addEventListener('click', () => setSidebar(!sidebar.classList.contains('open')));
+      sidebarOverlay.addEventListener('click', () => setSidebar(false));
+      document.querySelectorAll('.nav-link').forEach((lnk) => {
+        lnk.addEventListener('click', () => setSidebar(false));
+      });
+
+      const progressState = {
+        lab1: false,
+        lab2: false,
+        theory: false,
+        vault: false,
+        q1: false,
+        q2: false,
+        q3: false,
+        q4: false,
+        q5: false
+      };
+
+      function updateProgressUI() {
+        const keys = Object.keys(progressState);
+        const done = keys.filter((k) => progressState[k]).length;
+        const pct = Math.round((done / keys.length) * 100);
+        document.getElementById('progressPct').textContent = pct + '%';
+        document.getElementById('progressFill').style.width = pct + '%';
+
+        const captions = [
+          'Test integrability & complete the mastery check.',
+          'Nice start! Try irregular partitions and bounding sliders.',
+          'Great momentum! Check the ISRT Past-Exam Vault.',
+          'Almost there! Complete the remaining quiz items.',
+          'Lesson 2 Mastered! Ready for Lesson 3 (FTC & MVT).'
+        ];
+        const idx = pct === 100 ? 4 : pct >= 70 ? 3 : pct >= 40 ? 2 : pct > 0 ? 1 : 0;
+        document.getElementById('progressCaption').textContent = captions[idx];
+
+        document.querySelector('[data-section="section-lab1"]').classList.toggle('done', progressState.lab1);
+        document.querySelector('[data-section="section-lab2"]').classList.toggle('done', progressState.lab2);
+        document.querySelector('[data-section="section-theory"]').classList.toggle('done', progressState.theory);
+        document.querySelector('[data-section="section-vault"]').classList.toggle('done', progressState.vault);
+        const quizAll = ['q1', 'q2', 'q3', 'q4', 'q5'].every((q) => progressState[q]);
+        document.querySelector('[data-section="section-quiz"]').classList.toggle('done', quizAll);
+      }
+
+      function markDone(key) {
+        if (!progressState[key]) {
+          progressState[key] = true;
+          updateProgressUI();
+        }
+      }
+
+      // Scrollspy
+      const sections = document.querySelectorAll('.section-block');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            navLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === id));
+            if (id === 'section-theory') markDone('theory');
+          }
+        });
+      }, { rootMargin: '-20% 0px -65% 0px' });
+      sections.forEach((s) => spy.observe(s));
+
+      /* ----------------------------------------------------------------------
+         4. HIDPI CANVAS & AXES UTILITIES
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(200, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function niceStep(range, ticks) {
+        const rough = Math.max(range, 1e-6) / ticks;
+        const p10 = Math.pow(10, Math.floor(Math.log10(rough)));
+        const n = rough / p10;
+        const mult = n > 5 ? 10 : n > 2 ? 5 : n > 1 ? 2 : 1;
+        return mult * p10;
+      }
+
+      function drawGridAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax, colors) {
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = colors.bg;
+        ctx.fillRect(0, 0, w, h);
+
+        const xStep = niceStep(xMax - xMin, 6);
+        const yStep = niceStep(yMax - yMin, 5);
+        ctx.strokeStyle = colors.grid;
+        ctx.lineWidth = 1;
+        ctx.font = '500 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = colors.label;
+
+        // Vertical grid
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let xv = Math.ceil(xMin / xStep) * xStep; xv <= xMax + 1e-9; xv += xStep) {
+          const px = toX(xv);
+          ctx.beginPath();
+          ctx.moveTo(px, pad.top);
+          ctx.lineTo(px, h - pad.bottom);
+          ctx.stroke();
+          const txt = Math.abs(xv) < 1e-9 ? '0' : Number(xv.toFixed(2)).toString();
+          ctx.fillText(txt, px, h - pad.bottom + 6);
+        }
+
+        // Horizontal grid
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let yv = Math.ceil(yMin / yStep) * yStep; yv <= yMax + 1e-9; yv += yStep) {
+          const py = toY(yv);
+          ctx.beginPath();
+          ctx.moveTo(pad.left, py);
+          ctx.lineTo(w - pad.right, py);
+          ctx.stroke();
+          const txt = Math.abs(yv) < 1e-9 ? '0' : Number(yv.toFixed(2)).toString();
+          ctx.fillText(txt, pad.left - 8, py);
+        }
+
+        // Main axes
+        ctx.strokeStyle = colors.axis;
+        ctx.lineWidth = 1.6;
+        if (yMin <= 0 && yMax >= 0) {
+          const y0 = toY(0);
+          ctx.beginPath();
+          ctx.moveTo(pad.left, y0);
+          ctx.lineTo(w - pad.right, y0);
+          ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          const x0 = toX(0);
+          ctx.beginPath();
+          ctx.moveTo(x0, pad.top);
+          ctx.lineTo(x0, h - pad.bottom);
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = colors.grid;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pad.left, pad.top, plotW, plotH);
+
+        return { toX, toY, plotW, plotH };
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 1: INTERACTIVE INTEGRABILITY TESTER & PARTITION LAB
+         ---------------------------------------------------------------------- */
+      const intFunctions = [
+        {
+          id: 'cos3x',
+          a: -3, b: 3,
+          xRange: [-3.3, 3.3],
+          yRange: [-1.4, 1.4],
+          integrable: true,
+          bounded: 'Yes',
+          boundedSub: '-1 ≤ f(x) ≤ 1 on [-3, 3]',
+          disc: 'None',
+          discSub: 'Continuous everywhere',
+          reason: 'Continuous on $[-3, 3]$, so guaranteed integrable by Theorem 5.5.2 (exact integral $\\frac{2}{3}\\sin 9 \\approx 0.2747$).',
+          f: (x) => Math.cos(3 * x)
+        },
+        {
+          id: 'piecewise_cont',
+          a: -2, b: 2,
+          xRange: [-2.3, 2.3],
+          yRange: [-0.6, 4.6],
+          integrable: true,
+          bounded: 'Yes',
+          boundedSub: '0 ≤ f(x) ≤ 4 on [-2, 2]',
+          disc: 'None',
+          discSub: 'Smoothly meets at (0, 0)',
+          reason: 'Final 2025 Q1a: $\\lim_{x\\to 0^-} 0 = \\lim_{x\\to 0^+} x^2 = f(0) = 0$. Continuous everywhere $\\implies$ Integrable (exact $= 8/3 \\approx 2.6667$).',
+          f: (x) => (x <= 0 ? 0 : x * x)
+        },
+        {
+          id: 'jump_sgn',
+          a: -3, b: 3,
+          xRange: [-3.3, 3.3],
+          yRange: [-1.5, 1.5],
+          integrable: true,
+          bounded: 'Yes',
+          boundedSub: '-1 ≤ f(x) ≤ 1 on [-3, 3]',
+          disc: 'Finite (1)',
+          discSub: 'Single jump at x = 0',
+          reason: '1st In-course 2024 Q4c: Bounded on $[-3, 3]$ with only 1 finite jump discontinuity at $x = 0$ $\\implies$ Integrable by Theorem 5.5.8(a) (exact $= 0$).',
+          f: (x) => (Math.abs(x) < 1e-12 ? 0 : x > 0 ? 1 : -1)
+        },
+        {
+          id: 'single_hole',
+          a: 0, b: 1,
+          xRange: [-0.15, 1.15],
+          yRange: [-0.4, 2.6],
+          integrable: true,
+          bounded: 'Yes',
+          boundedSub: '0 ≤ f(x) ≤ 2 on [0, 1]',
+          disc: 'Finite (1)',
+          discSub: 'Single point at x = 1',
+          reason: '1st In-course 2024 Q3: Changing $f(1) = 0$ affects at most the last rectangle ($2 - 2\\Delta x_n \\to 2$). Bounded with 1 discontinuity $\\implies$ Integrable ($= 2$).',
+          f: (x) => (Math.abs(x - 1) < 1e-12 ? 0 : 2)
+        },
+        {
+          id: 'inv_x2',
+          a: -1, b: 1,
+          xRange: [-1.15, 1.15],
+          yRange: [-1, 18],
+          integrable: false,
+          bounded: 'No',
+          boundedSub: 'f(x) → +∞ as x → 0',
+          disc: 'Infinite Asymptote',
+          discSub: 'Unbounded at x = 0',
+          reason: 'Final 2024 Q1c: Unbounded near $x = 0$ ($1/x^2 \\to +\\infty$). By Theorem 5.5.8(b), an unbounded function on $[-1, 1]$ is NOT Riemann integrable.',
+          f: (x) => (Math.abs(x) < 1e-12 ? 0 : 1 / (x * x))
+        },
+        {
+          id: 'dirichlet',
+          a: 0, b: 2,
+          xRange: [-0.2, 2.2],
+          yRange: [-0.3, 1.4],
+          integrable: false,
+          bounded: 'Yes',
+          boundedSub: '0 ≤ D(x) ≤ 1 on [0, 2]',
+          disc: 'Infinite (Dense)',
+          discSub: 'Discontinuous at every x',
+          reason: 'Class Notes: Every subinterval contains rationals ($D=1$) and irrationals ($D=0$). $S_n$ equals $2$ or $0$ depending on $x_k^*$ $\\implies$ NOT integrable.',
+          f: () => 1
+        }
+      ];
+
+      const lab1State = {
+        fnIdx: 0,
+        n: 16,
+        partType: 'regular', // 'regular' | 'irregular'
+        sampleRule: 'right', // 'left' | 'right' | 'mid'
+        nearAsymptote: false,
+        dirichletMode: 'rational', // 'rational' | 'irrational'
+        irregularWeights: []
+      };
+
+      function generateIrregularWeights(n) {
+        const w = [];
+        let sum = 0;
+        for (let i = 0; i < n; i++) {
+          const r = 0.25 + Math.random() * 1.9;
+          w.push(r);
+          sum += r;
+        }
+        lab1State.irregularWeights = w.map((v) => v / sum);
+      }
+
+      function getPartitionPoints(a, b, n) {
+        const pts = [a];
+        if (lab1State.partType === 'regular') {
+          const dx = (b - a) / n;
+          for (let i = 1; i < n; i++) pts.push(a + i * dx);
+          pts.push(b);
+        } else {
+          if (lab1State.irregularWeights.length !== n) {
+            generateIrregularWeights(n);
+          }
+          let acc = a;
+          for (let i = 0; i < n - 1; i++) {
+            acc += lab1State.irregularWeights[i] * (b - a);
+            pts.push(acc);
+          }
+          pts.push(b);
+        }
+        return pts;
+      }
+
+      const intCanvas = document.getElementById('intCanvas');
+      const intFnSelect = document.getElementById('intFnSelect');
+      const intNSlider = document.getElementById('intNSlider');
+      const intNDisplay = document.getElementById('intNDisplay');
+      const rerollBtn = document.getElementById('rerollBtn');
+      const asymptoteModeBox = document.getElementById('asymptoteModeBox');
+      const asymptoteToggleBtn = document.getElementById('asymptoteToggleBtn');
+      const dirichletModeBox = document.getElementById('dirichletModeBox');
+      const standardSampleGroup = document.getElementById('standardSampleGroup');
+
+      function updateSpecialControls() {
+        const fnObj = intFunctions[lab1State.fnIdx];
+        asymptoteModeBox.classList.toggle('visible', fnObj.id === 'inv_x2');
+        dirichletModeBox.classList.toggle('visible', fnObj.id === 'dirichlet');
+        standardSampleGroup.style.display = fnObj.id === 'dirichlet' ? 'none' : 'flex';
+        rerollBtn.style.display = lab1State.partType === 'irregular' ? 'inline-flex' : 'none';
+      }
+
+      function drawIntegrabilityLab() {
+        const fnObj = intFunctions[lab1State.fnIdx];
+        const { a, b, xRange, yRange } = fnObj;
+        const n = lab1State.n;
+        const colors = getColors();
+        const { ctx, w, h } = setupCanvas(intCanvas);
+        const pad = { top: 20, right: 20, bottom: 32, left: 46 };
+        const { toX, toY } = drawGridAxes(ctx, w, h, pad, xRange[0], xRange[1], yRange[0], yRange[1], colors);
+        const y0 = toY(0);
+
+        const pts = getPartitionPoints(a, b, n);
+        let mesh = 0;
+        let sum = 0;
+
+        // Clip inside plot area for asymptote blowups
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+
+        // 1. Draw Riemann rectangles
+        for (let k = 0; k < n; k++) {
+          const xL = pts[k];
+          const xR = pts[k + 1];
+          const dx = xR - xL;
+          if (dx > mesh) mesh = dx;
+
+          let xStar = xR;
+          let yVal = 0;
+
+          if (fnObj.id === 'dirichlet') {
+            xStar = (xL + xR) / 2;
+            yVal = lab1State.dirichletMode === 'rational' ? 1 : 0;
+          } else {
+            if (lab1State.sampleRule === 'left') xStar = xL;
+            else if (lab1State.sampleRule === 'mid') xStar = (xL + xR) / 2;
+            else xStar = xR;
+
+            if (fnObj.id === 'inv_x2' && lab1State.nearAsymptote && xL <= 0 && xR >= 0) {
+              xStar = 0.015 * dx; // Very close to 0 inside subinterval containing 0
+            }
+            yVal = fnObj.f(xStar);
+          }
+
+          sum += yVal * dx;
+
+          // Visual clamp for 1/x^2 rectangles so canvas stays clean
+          const visualY = Math.max(yRange[0] - 2, Math.min(yRange[1] + 2, yVal));
+          const pxL = toX(xL);
+          const pxR = toX(xR);
+          const pyV = toY(visualY);
+          const rectTop = Math.min(y0, pyV);
+          const rectH = Math.abs(pyV - y0);
+
+          ctx.fillStyle = yVal >= 0 ? colors.posFill : colors.negFill;
+          ctx.strokeStyle = yVal >= 0 ? colors.posStroke : colors.negStroke;
+          ctx.lineWidth = n > 50 ? 0.6 : 1.2;
+          ctx.fillRect(pxL, rectTop, Math.max(1, pxR - pxL), rectH);
+          ctx.strokeRect(pxL, rectTop, Math.max(1, pxR - pxL), rectH);
+
+          if (n <= 32 && yVal <= yRange[1] && yVal >= yRange[0]) {
+            ctx.fillStyle = colors.dot;
+            ctx.beginPath();
+            ctx.arc(toX(xStar), pyV, 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // 2. Draw function curve / special representations
+        ctx.strokeStyle = colors.curve;
+        ctx.lineWidth = 2.6;
+
+        if (fnObj.id === 'dirichlet') {
+          // Dotted horizontal bands at y=1 (rationals) and y=0 (irrationals)
+          ctx.setLineDash([4, 5]);
+          ctx.strokeStyle = colors.posStroke;
+          ctx.beginPath();
+          ctx.moveTo(toX(a), toY(1));
+          ctx.lineTo(toX(b), toY(1));
+          ctx.stroke();
+
+          ctx.strokeStyle = colors.rose;
+          ctx.beginPath();
+          ctx.moveTo(toX(a), toY(0));
+          ctx.lineTo(toX(b), toY(0));
+          ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (fnObj.id === 'jump_sgn') {
+          // Left branch [-3, 0) at y = -1
+          ctx.beginPath();
+          ctx.moveTo(toX(-3), toY(-1));
+          ctx.lineTo(toX(0), toY(-1));
+          ctx.stroke();
+          // Right branch (0, 3] at y = 1
+          ctx.beginPath();
+          ctx.moveTo(toX(0), toY(1));
+          ctx.lineTo(toX(3), toY(1));
+          ctx.stroke();
+          // Open circles at (0, -1) and (0, 1)
+          [[-1], [1]].forEach(([yv]) => {
+            ctx.fillStyle = colors.bg;
+            ctx.strokeStyle = colors.curve;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(toX(0), toY(yv), 4.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          });
+          // Closed dot at (0, 0)
+          ctx.fillStyle = colors.curve;
+          ctx.beginPath();
+          ctx.arc(toX(0), toY(0), 4.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (fnObj.id === 'single_hole') {
+          ctx.beginPath();
+          ctx.moveTo(toX(0), toY(2));
+          ctx.lineTo(toX(1), toY(2));
+          ctx.stroke();
+          // Open circle at (1, 2)
+          ctx.fillStyle = colors.bg;
+          ctx.strokeStyle = colors.curve;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(toX(1), toY(2), 4.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          // Closed dot at (1, 0)
+          ctx.fillStyle = colors.curve;
+          ctx.beginPath();
+          ctx.arc(toX(1), toY(0), 4.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (fnObj.id === 'inv_x2') {
+          // Vertical asymptote at x = 0
+          ctx.strokeStyle = colors.rose;
+          ctx.lineWidth = 1.6;
+          ctx.setLineDash([5, 4]);
+          ctx.beginPath();
+          ctx.moveTo(toX(0), pad.top);
+          ctx.lineTo(toX(0), h - pad.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Left and right branches
+          ctx.strokeStyle = colors.curve;
+          ctx.lineWidth = 2.6;
+          [[-1.15, -0.06], [0.06, 1.15]].forEach(([s, e]) => {
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+              const xv = s + (i / 120) * (e - s);
+              const yv = Math.min(yRange[1] + 5, 1 / (xv * xv));
+              if (i === 0) ctx.moveTo(toX(xv), toY(yv));
+              else ctx.lineTo(toX(xv), toY(yv));
+            }
+            ctx.stroke();
+          });
+          // Closed dot at (0, 0)
+          ctx.fillStyle = colors.curve;
+          ctx.beginPath();
+          ctx.arc(toX(0), toY(0), 4.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Continuous curves (cos3x, piecewise_cont)
+          ctx.beginPath();
+          const samples = 240;
+          for (let i = 0; i <= samples; i++) {
+            const xv = xRange[0] + (i / samples) * (xRange[1] - xRange[0]);
+            const yv = fnObj.f(xv);
+            if (i === 0) ctx.moveTo(toX(xv), toY(yv));
+            else ctx.lineTo(toX(xv), toY(yv));
+          }
+          ctx.stroke();
+        }
+
+        ctx.restore();
+
+        // 3. Update Diagnostic Readouts
+        intNDisplay.textContent = `n = ${n}`;
+        const verdictEl = document.getElementById('diagVerdict');
+        verdictEl.className = `verdict-badge ${fnObj.integrable ? 'yes' : 'no'}`;
+        verdictEl.innerHTML = fnObj.integrable ? '&#10003; INTEGRABLE' : '&#10007; NOT INTEGRABLE';
+
+        const reasonEl = document.getElementById('diagReason');
+        reasonEl.innerHTML = fnObj.reason;
+        renderMath(reasonEl);
+
+        document.getElementById('diagBounded').textContent = fnObj.bounded;
+        document.getElementById('diagBoundedSub').textContent = fnObj.boundedSub;
+        document.getElementById('diagBoundedCard').className = `metric-card ${fnObj.bounded === 'Yes' ? 'emerald' : 'rose'}`;
+
+        document.getElementById('diagDisc').textContent = fnObj.disc;
+        document.getElementById('diagDiscSub').textContent = fnObj.discSub;
+
+        document.getElementById('diagMesh').textContent = mesh.toFixed(4);
+        document.getElementById('diagMeshSub').textContent = lab1State.partType === 'regular'
+          ? `Equal width Δx = ${((b - a) / n).toFixed(4)}`
+          : 'Irregular max(Δx_k)';
+
+        const sumEl = document.getElementById('diagSum');
+        const sumSubEl = document.getElementById('diagSumSub');
+        const sumCard = document.getElementById('diagSumCard');
+
+        if (sum > 9999) {
+          sumEl.textContent = sum.toExponential(2) + ' (BLOWS UP!)';
+          sumCard.className = 'metric-card rose';
+          sumSubEl.textContent = 'Arbitrarily large near x = 0!';
+        } else {
+          sumEl.textContent = sum.toFixed(4);
+          sumCard.className = `metric-card ${fnObj.integrable ? 'accent' : 'amber'}`;
+          if (fnObj.id === 'dirichlet') {
+            sumSubEl.textContent = lab1State.dirichletMode === 'rational'
+              ? 'All Rational x_k* → always 2.0000'
+              : 'All Irrational x_k* → always 0.0000';
+          } else if (fnObj.id === 'single_hole') {
+            sumSubEl.textContent = lab1State.sampleRule === 'right'
+              ? `2 - 2Δx_n = ${sum.toFixed(4)} → 2`
+              : 'x_n* < 1 → exact 2.0000';
+          } else if (fnObj.id === 'inv_x2') {
+            sumSubEl.textContent = lab1State.nearAsymptote
+              ? 'Diverges to +∞!'
+              : 'Try "Near Asymptote" to see blow-up';
+          } else {
+            sumSubEl.textContent = 'Converges as max(Δx_k) → 0';
+          }
+        }
+      }
+
+      intFnSelect.addEventListener('change', () => {
+        lab1State.fnIdx = parseInt(intFnSelect.value, 10);
+        lab1State.nearAsymptote = false;
+        asymptoteToggleBtn.textContent = 'Enable "Near Asymptote" x_k*';
+        asymptoteToggleBtn.classList.remove('btn-primary');
+        updateSpecialControls();
+        markDone('lab1');
+        drawIntegrabilityLab();
+      });
+
+      intNSlider.addEventListener('input', () => {
+        lab1State.n = parseInt(intNSlider.value, 10);
+        if (lab1State.partType === 'irregular') generateIrregularWeights(lab1State.n);
+        markDone('lab1');
+        drawIntegrabilityLab();
+      });
+
+      document.querySelectorAll('[data-part]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-part]').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          lab1State.partType = btn.dataset.part;
+          if (lab1State.partType === 'irregular') generateIrregularWeights(lab1State.n);
+          updateSpecialControls();
+          markDone('lab1');
+          drawIntegrabilityLab();
+        });
+      });
+
+      rerollBtn.addEventListener('click', () => {
+        generateIrregularWeights(lab1State.n);
+        markDone('lab1');
+        drawIntegrabilityLab();
+      });
+
+      document.querySelectorAll('[data-sample]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-sample]').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          lab1State.sampleRule = btn.dataset.sample;
+          markDone('lab1');
+          drawIntegrabilityLab();
+        });
+      });
+
+      asymptoteToggleBtn.addEventListener('click', () => {
+        lab1State.nearAsymptote = !lab1State.nearAsymptote;
+        asymptoteToggleBtn.textContent = lab1State.nearAsymptote
+          ? 'Disable "Near Asymptote" (Blowing Up!)'
+          : 'Enable "Near Asymptote" x_k*';
+        asymptoteToggleBtn.classList.toggle('btn-primary', lab1State.nearAsymptote);
+        markDone('lab1');
+        drawIntegrabilityLab();
+      });
+
+      document.querySelectorAll('[data-dir]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-dir]').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          lab1State.dirichletMode = btn.dataset.dir;
+          markDone('lab1');
+          drawIntegrabilityLab();
+        });
+      });
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 2: MAX-MIN INTEGRAL BOUNDING SANDBOX
+         ---------------------------------------------------------------------- */
+      const boundPresets = [
+        {
+          label: 'Final 2025 Q1b',
+          defA: 0, defB: 3,
+          domMin: -1.2, domMax: 3.5,
+          xRange: [-1.4, 3.8],
+          yRange: [-0.5, 7.2],
+          f: (x) => Math.sqrt(x * x * x + 2),
+          examLowerTex: '$3\\sqrt{2} \\approx 4.2426$',
+          examUpperTex: '$3\\sqrt{29} \\approx 16.1555$',
+          noteHtml: '<strong>Final 2025 Q1b:</strong> $f(x)=\\sqrt{x^3+2}$ is strictly increasing on $[0, 3]$, so $m=\\sqrt{2}$ and $M=\\sqrt{29}$. Bounds: $3\\sqrt{2} \\le \\int_0^3 \\sqrt{x^3+2}\\,dx \\le 3\\sqrt{29}$.'
+        },
+        {
+          label: '1st In-course 2025 Q2',
+          defA: 0, defB: 3,
+          domMin: -2.0, domMax: 3.3,
+          xRange: [-2.2, 3.6],
+          yRange: [-0.8, 12.2],
+          f: (x) => Math.sqrt(Math.pow(x, 4) + 4),
+          examLowerTex: '$6$',
+          examUpperTex: '$3\\sqrt{85} \\approx 27.6586$',
+          noteHtml: '<strong>1st In-course 2025 Q2:</strong> On $[0, 3]$, $f(x)=\\sqrt{x^4+4}$ has $m=f(0)=2$ and $M=f(3)=\\sqrt{85}$. Bounds: $6 \\le \\int_0^3 \\sqrt{x^4+4}\\,dx \\le 3\\sqrt{85}$.'
+        },
+        {
+          label: 'Class Notes (Sign Test)',
+          defA: 2, defB: 3,
+          domMin: 1.3, domMax: 5.0,
+          xRange: [1.0, 5.2],
+          yRange: [-4.2, 0.6],
+          f: (x) => Math.sqrt(x) / (1 - x),
+          examLowerTex: '$-\\sqrt{2} \\approx -1.4142$',
+          examUpperTex: '$-\\sqrt{3}/2 \\approx -0.8660$',
+          noteHtml: '<strong>Class Notes (Sign Test):</strong> Since $f(x)=\\frac{\\sqrt{x}}{1-x} &lt; 0$ everywhere on $[2, 3]$, both $m$ and $M$ are negative, proving $\\int_2^3 f(x)\\,dx &lt; 0$ without integrating!'
+        },
+        {
+          label: 'Class Notes (Geometric)',
+          defA: -3, defB: 0,
+          domMin: -3.0, domMax: 3.0,
+          xRange: [-3.4, 3.4],
+          yRange: [-0.5, 5.8],
+          f: (x) => 2 + Math.sqrt(Math.max(0, 9 - x * x)),
+          examLowerTex: '$6$',
+          examUpperTex: '$15$',
+          noteHtml: '<strong>Class Notes (Geometric):</strong> On $[-3, 0]$, $y = 2 + \\sqrt{9-x^2}$ combines a $3\\times 2$ rectangle and a quarter-circle of radius $3$, giving exact area $\\frac{9\\pi}{4}+6 \\approx 13.0686$.'
+        }
+      ];
+
+      const lab2State = {
+        presetIdx: 0,
+        a: 0,
+        b: 3
+      };
+
+      const boundCanvas = document.getElementById('boundCanvas');
+      const boundPresetSelect = document.getElementById('boundPresetSelect');
+      const boundASlider = document.getElementById('boundASlider');
+      const boundBSlider = document.getElementById('boundBSlider');
+      const boundADisplay = document.getElementById('boundADisplay');
+      const boundBDisplay = document.getElementById('boundBDisplay');
+
+      function simpsonIntegral(f, a, b, N) {
+        const steps = N % 2 === 0 ? N : N + 1;
+        const h = (b - a) / steps;
+        let sum = f(a) + f(b);
+        for (let i = 1; i < steps; i++) {
+          sum += (i % 2 === 0 ? 2 : 4) * f(a + i * h);
+        }
+        return (h / 3) * sum;
+      }
+
+      function syncBoundSliders() {
+        const p = boundPresets[lab2State.presetIdx];
+        boundASlider.min = p.domMin;
+        boundASlider.max = (p.domMax - 0.2).toFixed(1);
+        boundBSlider.min = (p.domMin + 0.2).toFixed(1);
+        boundBSlider.max = p.domMax;
+        lab2State.a = p.defA;
+        lab2State.b = p.defB;
+        boundASlider.value = p.defA;
+        boundBSlider.value = p.defB;
+      }
+
+      function drawBoundingLab() {
+        const p = boundPresets[lab2State.presetIdx];
+        const a = lab2State.a;
+        const b = lab2State.b;
+        const colors = getColors();
+        const { ctx, w, h } = setupCanvas(boundCanvas);
+        const pad = { top: 22, right: 22, bottom: 32, left: 46 };
+        const { toX, toY } = drawGridAxes(ctx, w, h, pad, p.xRange[0], p.xRange[1], p.yRange[0], p.yRange[1], colors);
+        const y0 = toY(0);
+
+        // Compute m and M over [a, b] by dense sampling
+        let m = Infinity;
+        let M = -Infinity;
+        const samples = 400;
+        for (let i = 0; i <= samples; i++) {
+          const x = a + (i / samples) * (b - a);
+          const y = p.f(x);
+          if (y < m) m = y;
+          if (y > M) M = y;
+        }
+
+        const trueInt = simpsonIntegral(p.f, a, b, 200);
+        const lowerBound = m * (b - a);
+        const upperBound = M * (b - a);
+
+        const pxA = toX(a);
+        const pxB = toX(b);
+        const rectW = Math.max(1, pxB - pxA);
+
+        // 1. Upper Rectangle M(b-a) in amber tint + dashed border
+        const pyM = toY(M);
+        ctx.fillStyle = colors.amberFill;
+        ctx.strokeStyle = colors.amberStroke;
+        ctx.lineWidth = 1.8;
+        ctx.setLineDash([6, 4]);
+        ctx.fillRect(pxA, Math.min(y0, pyM), rectW, Math.abs(pyM - y0));
+        ctx.strokeRect(pxA, Math.min(y0, pyM), rectW, Math.abs(pyM - y0));
+        ctx.setLineDash([]);
+
+        // 2. True shaded area under curve
+        ctx.fillStyle = trueInt >= 0 ? colors.posFill : colors.negFill;
+        ctx.beginPath();
+        ctx.moveTo(pxA, y0);
+        for (let i = 0; i <= 160; i++) {
+          const x = a + (i / 160) * (b - a);
+          ctx.lineTo(toX(x), toY(p.f(x)));
+        }
+        ctx.lineTo(pxB, y0);
+        ctx.closePath();
+        ctx.fill();
+
+        // 3. Lower Rectangle m(b-a) in indigo
+        const pyMin = toY(m);
+        ctx.fillStyle = colors.indigoFill;
+        ctx.strokeStyle = colors.indigoStroke;
+        ctx.lineWidth = 2;
+        ctx.fillRect(pxA, Math.min(y0, pyMin), rectW, Math.abs(pyMin - y0));
+        ctx.strokeRect(pxA, Math.min(y0, pyMin), rectW, Math.abs(pyMin - y0));
+
+        // 4. Function curve across valid domain
+        ctx.strokeStyle = colors.curve;
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        const curveN = 220;
+        for (let i = 0; i <= curveN; i++) {
+          const x = p.domMin + (i / curveN) * (p.domMax - p.domMin);
+          const y = p.f(x);
+          if (i === 0) ctx.moveTo(toX(x), toY(y));
+          else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+
+        // 5. Label M and m lines
+        ctx.font = '700 11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = colors.amberStroke;
+        ctx.fillText(`M = ${M.toFixed(2)}`, pxA + 6, Math.max(pad.top + 14, pyM - 4));
+
+        ctx.fillStyle = colors.indigoStroke;
+        ctx.textBaseline = 'top';
+        ctx.fillText(`m = ${m.toFixed(2)}`, pxA + 6, Math.min(h - pad.bottom - 14, pyMin + 4));
+
+        // Update UI labels & readouts
+        boundADisplay.textContent = `a = ${a.toFixed(2)}`;
+        boundBDisplay.textContent = `b = ${b.toFixed(2)}`;
+        document.getElementById('bReadM').textContent = m.toFixed(4);
+        document.getElementById('bReadMax').textContent = M.toFixed(4);
+        document.getElementById('bReadLower').textContent = lowerBound.toFixed(4);
+        document.getElementById('bReadTrue').textContent = trueInt.toFixed(4);
+        document.getElementById('bReadUpper').textContent = upperBound.toFixed(4);
+
+        const isDefault = Math.abs(a - p.defA) < 1e-6 && Math.abs(b - p.defB) < 1e-6;
+        const lSub = document.getElementById('bReadLowerExact');
+        const uSub = document.getElementById('bReadUpperExact');
+        lSub.innerHTML = isDefault ? `Exam exact: ${p.examLowerTex}` : `Width (b - a) = ${(b - a).toFixed(2)}`;
+        uSub.innerHTML = isDefault ? `Exam exact: ${p.examUpperTex}` : `Width (b - a) = ${(b - a).toFixed(2)}`;
+        renderMath(lSub);
+        renderMath(uSub);
+
+        document.getElementById('ineqFormulaText').textContent =
+          `${lowerBound.toFixed(4)}  \u2264  ${trueInt.toFixed(4)}  \u2264  ${upperBound.toFixed(4)}`;
+
+        const noteEl = document.getElementById('boundNoteBox');
+        noteEl.innerHTML = p.noteHtml;
+        renderMath(noteEl);
+      }
+
+      boundPresetSelect.addEventListener('change', () => {
+        lab2State.presetIdx = parseInt(boundPresetSelect.value, 10);
+        syncBoundSliders();
+        markDone('lab2');
+        drawBoundingLab();
+      });
+
+      boundASlider.addEventListener('input', () => {
+        let val = parseFloat(boundASlider.value);
+        if (val >= lab2State.b - 0.15) {
+          val = Number((lab2State.b - 0.2).toFixed(2));
+          boundASlider.value = val;
+        }
+        lab2State.a = val;
+        markDone('lab2');
+        drawBoundingLab();
+      });
+
+      boundBSlider.addEventListener('input', () => {
+        let val = parseFloat(boundBSlider.value);
+        if (val <= lab2State.a + 0.15) {
+          val = Number((lab2State.a + 0.2).toFixed(2));
+          boundBSlider.value = val;
+        }
+        lab2State.b = val;
+        markDone('lab2');
+        drawBoundingLab();
+      });
+
+      document.getElementById('resetBoundBtn').addEventListener('click', () => {
+        syncBoundSliders();
+        markDone('lab2');
+        drawBoundingLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         7. THEORY EXPANDABLE PROOF & PAST-EXAM VAULT INTERACTIONS
+         ---------------------------------------------------------------------- */
+      const toggleProofBtn = document.getElementById('toggleProofBtn');
+      const proofSteps = document.getElementById('proofSteps');
+      toggleProofBtn.addEventListener('click', () => {
+        const isOpen = proofSteps.classList.toggle('open');
+        toggleProofBtn.textContent = isOpen ? 'Hide Proof' : 'Expand Step-by-Step Proof';
+        markDone('theory');
+        if (isOpen) renderMath(proofSteps);
+      });
+
+      // Vault Filters
+      const filterTabs = document.querySelectorAll('.filter-tab');
+      const examCards = document.querySelectorAll('.exam-card');
+
+      filterTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          filterTabs.forEach((t) => t.classList.remove('active'));
+          tab.classList.add('active');
+          const f = tab.dataset.filter;
+          examCards.forEach((card) => {
+            card.classList.toggle('hidden', f !== 'all' && card.dataset.category !== f);
+          });
+        });
+      });
+
+      // Vault Hints & Solutions
+      examCards.forEach((card) => {
+        const hintBtn = card.querySelector('.hint-toggle');
+        const hintBox = card.querySelector('.hint-box');
+        const solBtn = card.querySelector('.sol-toggle');
+        const solBox = card.querySelector('.solution-box');
+
+        hintBtn.addEventListener('click', () => {
+          const open = hintBox.classList.toggle('open');
+          hintBtn.textContent = open ? 'Hide Hint' : 'Show Hint';
+          if (open) renderMath(hintBox);
+        });
+
+        solBtn.addEventListener('click', () => {
+          const open = solBox.classList.toggle('open');
+          solBtn.textContent = open ? 'Hide Solution' : 'Show Full Solution';
+          markDone('vault');
+          if (open) renderMath(solBox);
+        });
+      });
+
+      /* ----------------------------------------------------------------------
+         8. QUICK MASTERY CHECK (5 MCQs)
+         ---------------------------------------------------------------------- */
+      const quizExplanations = {
+        q1: 'Option (c) is bounded ($|f(x)| \\le 5$) with only a single discontinuity at $x = 0$, so it is integrable by Theorem 5.5.8(a). Options (a) and (d) are unbounded at $x=0$, and (b) is undefined for $x \\le -1$.',
+        q2: 'On $[0, 3]$, $m = f(0) = 2$ and $M = f(3) = \\sqrt{85}$. Multiplying by $(b - a) = 3$ yields $6 \\le \\int_0^3 \\sqrt{x^4 + 4}\\,dx \\le 3\\sqrt{85}$.',
+        q3: 'Changing a function at finitely many points does not affect boundedness or the Riemann sum limit, because those points sit inside subintervals whose total width shrinks to $0$ as $\\max\\Delta x_k \\to 0$.',
+        q4: 'Definition 5.5.1 requires the Riemann sum limit to be independent of sample points $x_k^*$. For Dirichlet\'s function, rational $x_k^*$ give $2$ while irrational $x_k^*$ give $0$.',
+        q5: 'By additivity, $\\int_{-2}^{3} f(x)\\,dx = \\int_{-2}^{1} f + \\int_{1}^{3} f = 2 + (-6) = -4$. Reversing limits flips the sign: $\\int_{3}^{-2} f(x)\\,dx = -(-4) = 4$.'
+      };
+
+      const quizResults = { q1: null, q2: null, q3: null, q4: null, q5: null };
+
+      function updateQuizScore() {
+        const correct = Object.values(quizResults).filter((v) => v === true).length;
+        document.getElementById('quizScore').textContent = `${correct} / 5`;
+      }
+
+      document.querySelectorAll('.quiz-card').forEach((card) => {
+        const qid = card.dataset.qid;
+        const correctVal = card.dataset.answer;
+        const opts = card.querySelectorAll('.quiz-opt');
+        const feedback = card.querySelector('.quiz-feedback');
+
+        opts.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const isRight = btn.dataset.val === correctVal;
+            opts.forEach((b) => {
+              b.disabled = true;
+              if (b.dataset.val === correctVal) b.classList.add('correct');
+            });
+            if (!isRight) btn.classList.add('wrong');
+
+            quizResults[qid] = isRight;
+            markDone(qid);
+            updateQuizScore();
+
+            feedback.className = `quiz-feedback show ${isRight ? 'ok' : 'err'}`;
+            feedback.innerHTML = `<strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${quizExplanations[qid]}`;
+            renderMath(feedback);
+          });
+        });
+      });
+
+      document.getElementById('resetQuizBtn').addEventListener('click', () => {
+        Object.keys(quizResults).forEach((k) => {
+          quizResults[k] = null;
+          progressState[k] = false;
+        });
+        document.querySelectorAll('.quiz-opt').forEach((b) => {
+          b.disabled = false;
+          b.classList.remove('correct', 'wrong');
+        });
+        document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+          fb.className = 'quiz-feedback';
+          fb.innerHTML = '';
+        });
+        updateQuizScore();
+        updateProgressUI();
+      });
+
+      /* ----------------------------------------------------------------------
+         9. RESPONSIVE RESIZE OBSERVER & INITIALIZATION
+         ---------------------------------------------------------------------- */
+      const ro = new ResizeObserver(() => {
+        drawIntegrabilityLab();
+        drawBoundingLab();
+      });
+      ro.observe(document.getElementById('intCanvasWrap'));
+      ro.observe(document.getElementById('boundCanvasWrap'));
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        updateSpecialControls();
+        syncBoundSliders();
+        drawIntegrabilityLab();
+        drawBoundingLab();
+        updateProgressUI();
+      });
+    })();
+  </script>
+</body>
+</html>

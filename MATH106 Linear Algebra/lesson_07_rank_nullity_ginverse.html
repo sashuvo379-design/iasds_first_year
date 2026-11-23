@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 7: Rank, Nullity, Idempotency & Generalized Inverses | Linear Algebra (MATH 106)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent-1: #2563eb;
+      --accent-2: #e11d48;
+      --accent-3: #059669;
+      --accent-4: #d97706;
+      --accent-purple: #7c3aed;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --sidebar-w: 270px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-card: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --primary: #60a5fa;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --primary-hover: #93c5fd;
+      --accent-1: #60a5fa;
+      --accent-2: #fb7185;
+      --accent-3: #34d399;
+      --accent-4: #fbbf24;
+      --accent-purple: #a78bfa;
+      --success: #34d399;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --warning: #fbbf24;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .brand-badge {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #d97706, #7c3aed);
+      color: #fff; font-weight: 800; font-size: 14px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-title { font-size: 14px; font-weight: 700; line-height: 1.25; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+
+    .progress-box { background: var(--bg-subtle); border-radius: 10px; padding: 12px; margin-bottom: 18px; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-bar { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #d97706, #7c3aed); transition: width 0.35s ease; }
+
+    .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin: 12px 8px 6px; }
+    .nav-links { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+    .nav-links a {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px;
+      color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      width: 20px; height: 20px; border-radius: 6px; background: var(--bg-subtle);
+      font-size: 11px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;
+    }
+    .nav-links a.active .nav-num { background: var(--primary); color: #fff; }
+
+    .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .theme-btn {
+      width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .theme-btn:hover { border-color: var(--primary); }
+
+    /* Mobile Header */
+    .mobile-bar {
+      display: none; position: fixed; top: 0; left: 0; right: 0; height: 54px;
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 0 16px; align-items: center; justify-content: space-between; z-index: 120;
+    }
+    .menu-btn {
+      background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Main */
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 80px; max-width: 1120px; }
+
+    /* Hero */
+    .hero {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 32px; box-shadow: var(--shadow); margin-bottom: 32px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #d97706, #7c3aed, #2563eb);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--primary-soft); color: var(--primary); }
+    .pill.neutral { background: var(--bg-subtle); color: var(--text-muted); }
+    .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .hero-desc { color: var(--text-muted); font-size: 15px; max-width: 780px; margin-bottom: 18px; }
+    .guiding-quote {
+      border-left: 3.5px solid var(--accent-4); background: var(--primary-soft);
+      padding: 12px 16px; border-radius: 0 10px 10px 0; font-size: 14px; margin-bottom: 20px;
+    }
+    .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+    .obj-item { background: var(--bg-subtle); padding: 10px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 8px; }
+    .obj-check { color: var(--success); font-weight: 800; }
+
+    /* Sections & Cards */
+    section { margin-bottom: 44px; scroll-margin-top: 24px; }
+    .sec-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .sec-title { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; display: flex; align-items: center; gap: 10px; }
+    .sec-tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary); color: #fff; }
+    .mark-btn {
+      font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); cursor: pointer;
+    }
+    .mark-btn.done { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow); margin-bottom: 18px;
+    }
+    .card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    .formula-box {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 16px; margin: 10px 0; overflow-x: auto;
+    }
+    .callout { border-radius: 10px; padding: 12px 16px; font-size: 13.5px; margin-top: 12px; }
+    .callout.warn { background: var(--warning-bg); border-left: 3.5px solid var(--warning); }
+    .callout.info { background: var(--primary-soft); border-left: 3.5px solid var(--primary); }
+    .callout.good { background: var(--success-bg); border-left: 3.5px solid var(--success); }
+
+    /* Interactive Four Subspaces & Parametric Rank Lab */
+    .lab-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; align-items: start; }
+    .canvas-wrap { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    #sub4Canvas { width: 100%; height: auto; display: block; }
+    .canvas-hint {
+      font-size: 12px; color: var(--text-muted); padding: 8px 12px; border-top: 1px solid var(--border);
+      background: var(--bg-card); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+    }
+    .controls-panel { display: flex; flex-direction: column; gap: 12px; }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-btn {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text); cursor: pointer;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    .slider-box {
+      background: var(--bg-subtle); padding: 11px 12px; border-radius: 10px;
+      display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 600;
+    }
+    .slider-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .slider-row input[type="range"] { flex: 1; }
+    .telemetry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-box { background: var(--bg-subtle); padding: 9px 11px; border-radius: 9px; border: 1px solid var(--border); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; margin-top: 2px; }
+
+    /* Stepper */
+    .proof-steps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .proof-step {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-subtle); opacity: 0.3; transition: all 0.25s;
+    }
+    .proof-step.revealed { opacity: 1; background: var(--bg-card); border-color: var(--primary); }
+    .proof-step .step-reason { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    th {
+      background: var(--bg-subtle); font-weight: 700; font-size: 12.5px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+    }
+
+    /* Solvers */
+    .solver-input {
+      padding: 6px 7px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+      text-align: center;
+    }
+    .mat-grid-4 {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+      background: var(--bg-subtle); padding: 10px; border-radius: 10px; margin-bottom: 10px;
+    }
+    .mat-grid-4 input { width: 100%; }
+    .btn-primary {
+      padding: 9px 16px; border-radius: 8px; border: none; background: var(--primary);
+      color: #fff; font-weight: 600; font-size: 13.5px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-weight: 600; font-size: 12.5px; cursor: pointer;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .solver-output {
+      margin-top: 12px; background: var(--bg-subtle); border-radius: 10px;
+      padding: 14px 16px; font-size: 13px; max-height: 460px; overflow-y: auto;
+    }
+    .step-line { padding: 7px 0; border-bottom: 1px dashed var(--border); }
+    .step-line:last-child { border-bottom: none; }
+    .mat-inline {
+      display: inline-grid; gap: 3px 9px; padding: 5px 10px;
+      border-left: 2px solid var(--text); border-right: 2px solid var(--text); border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; text-align: right;
+      vertical-align: middle; margin: 4px 0;
+    }
+    .hl-cell { background: var(--primary-soft); color: var(--primary); padding: 1px 4px; border-radius: 4px; }
+
+    /* True/False & Exam Cards */
+    .tf-item, .exam-card {
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      margin-bottom: 14px; background: var(--bg-card);
+    }
+    .tf-meta { font-size: 11.5px; font-weight: 700; color: var(--accent-purple); margin-bottom: 4px; }
+    .tf-q { font-size: 14.5px; font-weight: 500; margin-bottom: 10px; }
+    .tf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tf-btn {
+      padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-weight: 700; font-size: 12.5px; cursor: pointer;
+    }
+    .tf-btn.selected-correct { background: var(--success); color: #fff; border-color: var(--success); }
+    .tf-btn.selected-wrong { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .tf-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 13px; display: none; }
+    .tf-feedback.show { display: block; }
+    .tf-feedback.correct { background: var(--success-bg); border-left: 3px solid var(--success); }
+    .tf-feedback.wrong { background: var(--danger-bg); border-left: 3px solid var(--danger); }
+
+    .exam-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .exam-badge { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary-soft); color: var(--primary); }
+    .exam-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .reveal-box {
+      margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+      background: var(--bg-subtle); font-size: 13.5px; display: none;
+    }
+    .reveal-box.show { display: block; }
+
+    .lesson-footer {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding-top: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+    }
+
+    @media (max-width: 960px) { .lab-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 820px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); top: 54px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 74px 18px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Bar -->
+  <div class="mobile-bar">
+    <strong>MATH 106 &middot; Lesson 7</strong>
+    <button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">Menu</button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">L7</div>
+      <div>
+        <div class="brand-title">Linear Algebra</div>
+        <div class="brand-sub">MATH 106 / AST 107 &middot; DU IASDS</div>
+      </div>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson 7 Mastery</span>
+        <span id="progText">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <div class="nav-label">Lesson Sections</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#orientation" class="active"><span class="nav-num">0</span> Orientation</a></li>
+      <li><a href="#lab"><span class="nav-num">1</span> Four Subspaces Lab</a></li>
+      <li><a href="#rank-theory"><span class="nav-num">2</span> Rank, Nullity &amp; $A(t)$</a></li>
+      <li><a href="#idempotent-ginv"><span class="nav-num">3</span> Idempotency &amp; g-Inverses</a></li>
+      <li><a href="#dictionary"><span class="nav-num">4</span> Geometric Dictionary</a></li>
+      <li><a href="#solvers"><span class="nav-num">5</span> Interactive Solvers</a></li>
+      <li><a href="#exam-arena"><span class="nav-num">6</span> DU Past-Exam Arena</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">Switch to Dark Mode</button>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center;">
+        Module 2 Finale &middot; Lesson 7 of 12
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- 0. Orientation -->
+    <section id="orientation" class="hero">
+      <div class="pill-row">
+        <span class="pill">Module 2: Vector Spaces (Finale)</span>
+        <span class="pill neutral">Lesson 7 of 12</span>
+        <span class="pill neutral">Finals Heavyweight</span>
+        <span class="pill neutral">MATH106_MISC &middot; Anton 4.7&ndash;4.8 &middot; Strang 3.3&ndash;3.6</span>
+      </div>
+      <h1>Rank, Nullity, Idempotency &amp; Generalized Inverses</h1>
+      <p class="hero-desc">
+        Tie all of Module 2 together with the <strong>Fundamental Theorem of Linear Algebra</strong> (Rank-Nullity &amp; the Four Subspaces),
+        master parametrized rank analysis $A(t)$, prove why idempotent projection matrices satisfy $\text{rank}(A) = \text{trace}(A)$,
+        and construct <strong>generalized inverses ($AGA = A$)</strong> for singular and rectangular matrices—essential for linear models in Statistics.
+      </p>
+      <div class="guiding-quote">
+        <strong>The Big Picture (Rank-Nullity):</strong> Every column of an $m\times n$ matrix $A$ is either a <em>pivot column</em> (contributing to $\text{rank}(A)$)
+        or a <em>free column</em> (contributing to $\text{nullity}(A)$). Therefore, $\mathbf{\text{rank}(A) + \text{nullity}(A) = n}$ always holds!
+      </div>
+      <div class="obj-grid">
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Compute rank, nullity, and verify the Dimension Theorem</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Determine how $\text{rank}(A(t))$ changes with a parameter $t$</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Prove $A^2 = A \implies \text{rank}(A) = \text{trace}(A)$ for idempotent matrices</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Construct g-inverses $G$ ($AGA = A$) and solve systems via $\mathbf{x}=G\mathbf{b}+(I-GA)\mathbf{z}$</span></div>
+      </div>
+    </section>
+
+    <!-- 1. Visual Intuition Lab -->
+    <section id="lab">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">LAB</span> 1. The Four Fundamental Subspaces &amp; Parametric Rank Lab</h2>
+        <button class="mark-btn" data-sec="lab" onclick="toggleDone('lab', this)">Mark Complete</button>
+      </div>
+
+      <div class="card">
+        <div class="lab-layout">
+          <div>
+            <div class="canvas-wrap">
+              <canvas id="sub4Canvas" width="560" height="390"></canvas>
+              <div class="canvas-hint">
+                <span><strong>Left:</strong> $\mathbb{R}^n = R(A) \perp N(A)$ &nbsp;|&nbsp; <strong>Right:</strong> $\mathbb{R}^m = C(A) \perp N(A^T)$</span>
+                <span>A maps $R(A)$ 1-to-1 onto $C(A)$</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-panel">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">MATRIX SHAPE PRESETS</div>
+              <div class="preset-row">
+                <button class="chip-btn" onclick="setShape(3,4,2)">DU Final 2025 ($3\times 4, r=2$)</button>
+                <button class="chip-btn" onclick="setShape(3,3,3)">Invertible ($3\times 3, r=3$)</button>
+                <button class="chip-btn" onclick="setShape(4,2,2)">Full Col Rank ($4\times 2, r=2$)</button>
+                <button class="chip-btn" onclick="setShape(2,5,2)">Full Row Rank ($2\times 5, r=2$)</button>
+                <button class="chip-btn" onclick="setShape(3,4,1)">MISC Ex. 6 ($3\times 4, r=1$)</button>
+              </div>
+            </div>
+
+            <div class="slider-box">
+              <div class="slider-row"><span>Rows $m$: <strong id="lblM">3</strong></span><input type="range" id="slM" min="1" max="6" value="3" oninput="drawSub4()"></div>
+              <div class="slider-row"><span>Cols $n$: <strong id="lblN">4</strong></span><input type="range" id="slN" min="1" max="6" value="4" oninput="drawSub4()"></div>
+              <div class="slider-row"><span>Rank $r$: <strong id="lblR">2</strong></span><input type="range" id="slR" min="0" max="3" value="2" oninput="drawSub4()"></div>
+            </div>
+
+            <div class="telemetry">
+              <div class="stat-box">
+                <div class="stat-label">$\dim R(A) = \dim C(A)$</div>
+                <div class="stat-val" id="dRank" style="color:var(--accent-1);">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Nullity $\dim N(A) = n - r$</div>
+                <div class="stat-val" id="dNull" style="color:var(--accent-2);">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Left Nullity $\dim N(A^T) = m - r$</div>
+                <div class="stat-val" id="dLNull" style="color:var(--accent-4);">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Dimension Theorem</div>
+                <div class="stat-val" id="dThm" style="color:var(--success);">&mdash;</div>
+              </div>
+            </div>
+
+            <!-- Bonus Mini-Lab: Parametric Rank A(t) -->
+            <div style="background:var(--bg-subtle); padding:11px 12px; border-radius:10px; border:1px solid var(--border);">
+              <div style="font-size:12px; font-weight:700; color:var(--accent-purple); margin-bottom:4px;">LIVE PARAMETRIC RANK: DU Final 2025 Q1(a)</div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600; margin-bottom:6px;">
+                <span>$t =$ <strong id="tValLbl">0</strong></span>
+                <input type="range" id="tParam" min="-3" max="3" step="0.5" value="0" style="flex:1;" oninput="updateParamRank()">
+                <button class="chip-btn" onclick="setT(-2)">$t=-2$</button>
+                <button class="chip-btn" onclick="setT(1)">$t=1$</button>
+              </div>
+              <div id="tParamReadout" style="font-size:12.5px; font-family:'JetBrains Mono',monospace;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Rank, Nullity, Normal Form & Parametric Rank -->
+    <section id="rank-theory">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">THEORY</span> 2. Rank, Nullity, Normal Form &amp; Parametrized $A(t)$</h2>
+        <button class="mark-btn" data-sec="rank" onclick="toggleDone('rank', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>2.1 Rank-Nullity &amp; Normal Form</h3>
+          <div class="formula-box">
+            $$\text{rank}(A) = \dim C(A) = \dim R(A) \le \min(m, n)$$
+            $$\text{rank}(A) + \text{nullity}(A) = n \quad (\text{number of columns})$$
+          </div>
+          <ul style="padding-left:18px; font-size:13.5px; color:var(--text-muted); display:flex; flex-direction:column; gap:5px;">
+            <li><strong>Transpose Invariance:</strong> $\text{rank}(A^T) = \text{rank}(A)$ and $\text{rank}(A^T A) = \text{rank}(A)$.</li>
+            <li><strong>Normal Form:</strong> Using <em>both</em> elementary row and column operations, every matrix of rank $r$ reduces to:
+              $$PAQ = \begin{bmatrix} I_r & 0 \\ 0 & 0 \end{bmatrix}$$
+            </li>
+            <li><strong>Minor Test:</strong> $\text{rank}(A) = r \iff$ there is a nonzero $r\times r$ minor and every $(r+1)\times(r+1)$ minor is $0$.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>2.2 Strategy: How Rank Varies with Parameter $t$</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+            For a square matrix $A(t)$ depending on a scalar parameter $t$:
+          </p>
+          <ol style="padding-left:18px; font-size:13.5px; color:var(--text-muted); display:flex; flex-direction:column; gap:6px;">
+            <li><strong>Compute &amp; factor $\det A(t)$</strong> completely.</li>
+            <li><strong>Generic case ($\det A(t) \neq 0$):</strong> For all $t$ not equal to a root, $A(t)$ is nonsingular, so $\text{rank}(A(t)) = n$ (full rank).</li>
+            <li><strong>Special cases (each root $t_0$):</strong> Substitute $t = t_0$ into $A(t)$ and find the exact rank of that numerical matrix by row reduction or inspecting $2\times 2$ minors!</li>
+          </ol>
+          <div class="callout warn" style="font-size:12.5px;">
+            <strong>Exam Trap:</strong> Never assume $\det A(t_0) = 0$ automatically means $\text{rank} = n - 1$! At $t = 1$ in Final 2025 Q1(a), the rank drops all the way from $3$ to <strong>$1$</strong>!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Idempotent Matrices & Generalized Inverses -->
+    <section id="idempotent-ginv">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">CORE TOPICS</span> 3. Idempotent Matrices &amp; Generalized Inverses ($AGA = A$)</h2>
+        <button class="mark-btn" data-sec="idemp" onclick="toggleDone('idemp', this)">Mark Complete</button>
+      </div>
+
+      <!-- Interactive Proof Stepper: Idempotent rank = trace -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3 style="margin-bottom:2px;">3.1 Idempotent Matrices ($A^2 = A$) &amp; Interactive Proof</h3>
+            <span class="exam-badge">DU Final 2024 Q3(a) &middot; MISC Example 1</span>
+            <p style="font-size:13.5px; color:var(--text-muted); margin-top:4px;">
+              A square matrix $A$ is <strong>idempotent</strong> if $A^2 = A$ (geometrically: a <em>projection</em>—applying it twice does the same as once).
+              <strong>Theorem:</strong> If $A^2 = A$, then $\mathbf{\text{rank}(A) = \text{trace}(A)}$.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-primary" onclick="nextProofStep()">Next Proof Step</button>
+            <button class="btn-outline" onclick="resetProof()">Reset</button>
+          </div>
+        </div>
+
+        <div class="proof-steps" id="proofSteps">
+          <div class="proof-step revealed">
+            <div class="step-reason">Step 1: Eigenvalues of an idempotent matrix can only be $0$ or $1$</div>
+            If $A\mathbf{x} = \lambda\mathbf{x}$ ($\mathbf{x}\neq\mathbf{0}$), then $A^2\mathbf{x} = \lambda^2\mathbf{x}$. Since $A^2 = A$, we get $\lambda^2\mathbf{x} = \lambda\mathbf{x} \implies \lambda(\lambda - 1) = 0 \implies \lambda \in \{0, 1\}$.
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 2: Diagonalize $A$ via a nonsingular matrix $P$</div>
+            Every idempotent matrix is diagonalizable, so there exists invertible $P$ such that:
+            $$P^{-1}AP = D = \begin{bmatrix} I_k & 0 \\ 0 & 0 \end{bmatrix}, \quad \text{where } k = \text{number of eigenvalues equal to } 1.$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 3: Use invariance of Rank under nonsingular multiplication</div>
+            $$\text{rank}(A) = \text{rank}(P^{-1}AP) = \text{rank}(D) = k.$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 4: Use cyclic invariance of Trace ($\text{tr}(XY)=\text{tr}(YX)$)</div>
+            $$\text{trace}(A) = \text{trace}(PDP^{-1}) = \text{trace}(DP^{-1}P) = \text{trace}(D) = \underbrace{1 + 1 + \dots + 1}_{k \text{ times}} = k.$$
+            Comparing Steps 3 and 4 gives $\mathbf{\text{rank}(A) = k = \text{trace}(A)}$. $\blacksquare$
+          </div>
+        </div>
+      </div>
+
+      <!-- Generalized Inverses -->
+      <div class="card">
+        <h3>3.2 Generalized Inverses (g-Inverse, $A^-$)</h3>
+        <div class="grid-2">
+          <div>
+            <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+              For <em>any</em> $m \times n$ matrix $A$ (square or rectangular, singular or nonsingular), an $n \times m$ matrix $G$ (denoted $A^-$) is a <strong>generalized inverse</strong> if:
+            </p>
+            <div class="formula-box">
+              $$AGA = A$$
+            </div>
+            <ul style="padding-left:18px; font-size:13px; color:var(--text-muted); display:flex; flex-direction:column; gap:5px;">
+              <li><strong>Existence:</strong> Every matrix $A$ has a g-inverse.</li>
+              <li><strong>Non-uniqueness:</strong> $G$ is <em>not unique</em> unless $A$ is square and invertible (in which case $G = A^{-1}$).</li>
+              <li><strong>Solving Systems ($A\mathbf{x}=\mathbf{b}$):</strong> If consistent, $\mathbf{x}_p = G\mathbf{b}$ is a particular solution, and the <strong>general solution</strong> is:
+                $$\mathbf{x} = G\mathbf{b} + (I_n - GA)\mathbf{z}, \qquad \mathbf{z} \in \mathbb{R}^n \text{ arbitrary.}$$
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p style="font-size:13.5px; font-weight:700; margin-bottom:6px;">4-Step Working Rule to Construct $G$ (MISC Slides):</p>
+            <ol style="padding-left:18px; font-size:13px; color:var(--text-muted); display:flex; flex-direction:column; gap:5px;">
+              <li>Find $r = \text{rank}(A)$.</li>
+              <li>Pick <em>any</em> nonsingular $r \times r$ submatrix $M$ of $A$, located at row indices $I$ and column indices $J$.</li>
+              <li>Compute $M^{-1}$ and start with an $n \times m$ zero matrix $G$.</li>
+              <li>Place the entries of $M^{-1}$ into the <strong>transposed positions</strong>: rows $J$ and columns $I$ of $G$. <strong>Always verify $AGA = A$!</strong></li>
+            </ol>
+            <div class="callout info" style="font-size:12.5px;">
+              <strong>Note:</strong> Choosing a different nonsingular $r\times r$ submatrix $M$ yields a <em>different</em> valid g-inverse—all equally correct!
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Geometric Dictionary -->
+    <section id="dictionary">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">MAP</span> 4. Lesson 7 Geometric Dictionary</h2>
+        <button class="mark-btn" data-sec="dictionary" onclick="toggleDone('dictionary', this)">Mark Complete</button>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Algebraic Concept</th>
+              <th>Geometric Picture</th>
+              <th>Key Formula / Check</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>$\text{rank}(A) = r$</td>
+              <td>True dimension of the output image $C(A)$ (and active input space $R(A)$)</td>
+              <td>$r = \#\text{pivots} \le \min(m, n)$</td>
+            </tr>
+            <tr>
+              <td>$\text{nullity}(A) = n - r$</td>
+              <td>Dimension of the input subspace $N(A)$ crushed to $\mathbf{0}$</td>
+              <td>$\text{rank}(A) + \text{nullity}(A) = n$</td>
+            </tr>
+            <tr>
+              <td>$R(A) \perp N(A)$ in $\mathbb{R}^n$</td>
+              <td>Active input space and crushed null space meet at $90^\circ$</td>
+              <td>Every row dot-products to $0$ with $A\mathbf{x}=\mathbf{0}$</td>
+            </tr>
+            <tr>
+              <td>Idempotent ($A^2 = A$)</td>
+              <td>Projection onto a $k$-D subspace (leaves points in image fixed)</td>
+              <td>Eigenvalues $\in \{0, 1\}$, $\text{rank}(A) = \text{tr}(A)$</td>
+            </tr>
+            <tr>
+              <td>g-Inverse ($AGA = A$)</td>
+              <td>Inverts $A$ on an $r\times r$ nonsingular core while zeroing redundant dims</td>
+              <td>Not unique when $r &lt; \max(m, n)$</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Interactive Solvers -->
+    <section id="solvers">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">TOOLS</span> 5. Interactive Step-by-Step Solvers</h2>
+        <button class="mark-btn" data-sec="solvers" onclick="toggleDone('solvers', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Solver A: 3x4 Rank & Nullity Verifier -->
+        <div class="card">
+          <h3>Solver A: $3\times 4$ Rank, Nullity &amp; Dimension Theorem</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Reduces any $3\times 4$ matrix to RREF, finds rank, nullity, and basis for $N(A)$.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadRNPreset([6,2,0,4, -2,-1,3,4, -1,-1,6,10])">DU Final 2025 Q7(a)</button>
+            <button class="chip-btn" onclick="loadRNPreset([1,2,-1,1, 2,4,-2,2, 3,6,-3,3])">MISC Ex. 6 (r=1)</button>
+            <button class="chip-btn" onclick="loadRNPreset([1,1,0,1, 2,1,1,0, 2,2,0,2])">MISC Ex. 7 (r=2)</button>
+            <button class="chip-btn" onclick="loadRNPreset([1,0,0,2, 0,1,0,3, 0,0,1,4])">Full Row Rank (r=3)</button>
+          </div>
+          <div class="mat-grid-4">
+            <input class="solver-input" id="rn00" type="number" step="any" value="6">
+            <input class="solver-input" id="rn01" type="number" step="any" value="2">
+            <input class="solver-input" id="rn02" type="number" step="any" value="0">
+            <input class="solver-input" id="rn03" type="number" step="any" value="4">
+            <input class="solver-input" id="rn10" type="number" step="any" value="-2">
+            <input class="solver-input" id="rn11" type="number" step="any" value="-1">
+            <input class="solver-input" id="rn12" type="number" step="any" value="3">
+            <input class="solver-input" id="rn13" type="number" step="any" value="4">
+            <input class="solver-input" id="rn20" type="number" step="any" value="-1">
+            <input class="solver-input" id="rn21" type="number" step="any" value="-1">
+            <input class="solver-input" id="rn22" type="number" step="any" value="6">
+            <input class="solver-input" id="rn23" type="number" step="any" value="10">
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runRNSolver()">Compute Rank, Nullity &amp; $N(A)$ Basis</button>
+          <div class="solver-output" id="rnOut"></div>
+        </div>
+
+        <!-- Solver B: Interactive g-Inverse Builder (Non-Uniqueness Explorer) -->
+        <div class="card">
+          <h3>Solver B: Interactive g-Inverse Builder ($AGA = A$)</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            For $A = \begin{bmatrix} 1 & 1 & 0 & 1 \\ 2 & 1 & 1 & 0 \\ 2 & 2 & 0 & 2 \end{bmatrix}$ ($\text{rank}=2$, MISC Ex. 7 / Exam Q7b), pick <strong>different</strong> $2\times 2$ submatrices $M$ to see multiple valid g-inverses!
+          </p>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px;">
+            <label style="font-size:12.5px; font-weight:600;">Choose 2 Rows ($I$):
+              <select class="solver-input" id="giRows" style="width:100%; margin-top:4px;" onchange="runGISolver()">
+                <option value="0,1">Rows {1, 2}</option>
+                <option value="1,2">Rows {2, 3}</option>
+                <option value="0,2">Rows {1, 3} (Dependent!)</option>
+              </select>
+            </label>
+            <label style="font-size:12.5px; font-weight:600;">Choose 2 Cols ($J$):
+              <select class="solver-input" id="giCols" style="width:100%; margin-top:4px;" onchange="runGISolver()">
+                <option value="0,1">Cols {1, 2} (Slides)</option>
+                <option value="1,2">Cols {2, 3} (Alt. 1)</option>
+                <option value="0,2">Cols {1, 3} (Alt. 2)</option>
+                <option value="2,3">Cols {3, 4} (Alt. 3)</option>
+                <option value="0,3">Cols {1, 4} (Alt. 4)</option>
+              </select>
+            </label>
+          </div>
+          <div class="solver-output" id="giOut" style="margin-top:0;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. DU Past-Exam Arena -->
+    <section id="exam-arena">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">EXAM ARENA</span> 6. DU Past-Exam Practice (2017&ndash;2025)</h2>
+        <button class="mark-btn" data-sec="exam" onclick="toggleDone('exam', this)">Mark Complete</button>
+      </div>
+
+      <!-- Part A: True/False -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+          <div>
+            <h3 style="margin-bottom:2px;">Part A: True / False Conceptual Traps</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Direct questions from DU Final 2024, Anton 4.8 &amp; MISC Slides.</p>
+          </div>
+          <div class="pill" id="tfScore">Score: 0 / 5</div>
+        </div>
+        <div id="tfContainer"></div>
+      </div>
+
+      <!-- Part B: Written Past Exam Problems -->
+      <h3 style="margin:22px 0 12px; font-size:18px;">Part B: Written Exam Problems (Interactive Checks, Hints &amp; Solutions)</h3>
+
+      <!-- Problem 1: Final 2025 Q1(a) Parametric Rank -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 1: How $\text{rank}(A)$ Varies with Parameter $t$</strong>
+          <span class="exam-badge">Final 2025 Q1(a) &middot; MISC Example 4 (3 Marks)</span>
+        </div>
+        <p style="font-size:14px;">
+          Discuss how the rank of $A = \begin{bmatrix} 1 & 1 & t \\ 1 & t & 1 \\ t & 1 & 1 \end{bmatrix}$ varies with $t \in \mathbb{R}$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint1')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol1')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="hint1">
+          <strong>Hint:</strong> Compute $\det(A)$ and factor it into $-(t-1)^2(t+2)$. Then plug in $t = 1$ and $t = -2$ separately!
+        </div>
+        <div class="reveal-box" id="sol1">
+          <strong>Solution:</strong><br>
+          1. <strong>Determinant:</strong>
+          $$\det(A) = 1(t - 1) - 1(1 - t) + t(1 - t^2) = 2(t - 1) - t(t - 1)(t + 1) = -(t - 1)^2(t + 2).$$
+          2. <strong>Case 1 ($t \neq 1$ and $t \neq -2$):</strong> $\det(A) \neq 0 \implies \mathbf{\text{rank}(A) = 3}$.<br>
+          3. <strong>Case 2 ($t = -2$):</strong> $A = \begin{bmatrix} 1 & 1 & -2 \\ 1 & -2 & 1 \\ -2 & 1 & 1 \end{bmatrix}$. Since $\det(A) = 0$, rank $&lt; 3$. The top-left $2\times 2$ minor is $\begin{vmatrix} 1 & 1 \\ 1 & -2 \end{vmatrix} = -3 \neq 0$, so $\mathbf{\text{rank}(A) = 2}$.<br>
+          4. <strong>Case 3 ($t = 1$):</strong> $A = \begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{bmatrix}$. All three rows are identical, so $\mathbf{\text{rank}(A) = 1}$.
+        </div>
+      </div>
+
+      <!-- Problem 2: Final 2025 Q7(a) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 2: Rank, Nullity &amp; Dimension Theorem Verification</strong>
+          <span class="exam-badge">Final 2025 Q7(a) (5 Marks)</span>
+        </div>
+        <p style="font-size:14px;">
+          Find the rank and nullity of $A = \begin{bmatrix} 6 & 2 & 0 & 4 \\ -2 & -1 & 3 & 4 \\ -1 & -1 & 6 & 10 \end{bmatrix}$ and confirm that they satisfy the Dimension Theorem.
+        </p>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:600;">Quick check — enter rank, nullity (e.g. 2,2):</span>
+          <input type="text" id="ansRN" class="solver-input" style="width:90px;" placeholder="r, null" />
+          <button class="btn-primary" onclick="checkRN()">Check</button>
+          <span id="rnMsg" style="font-size:13px; font-weight:600;"></span>
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol2')">Show Full Solution</button>
+          <button class="btn-outline" onclick="loadRNPreset([6,2,0,4, -2,-1,3,4, -1,-1,6,10]); location.href='#solvers';">Verify in Solver A</button>
+        </div>
+        <div class="reveal-box" id="sol2">
+          <strong>Solution:</strong><br>
+          Row-reducing $A$ to RREF yields:
+          $$\text{RREF}(A) = \begin{bmatrix} 1 & 0 & 3 & 6 \\ 0 & 1 & -9 & -16 \\ 0 & 0 & 0 & 0 \end{bmatrix}.$$
+          &bull; <strong>Rank:</strong> 2 nonzero rows (2 pivots) $\implies \mathbf{\text{rank}(A) = 2}$.<br>
+          &bull; <strong>Nullity:</strong> 2 free variables ($x_3, x_4$), with null space basis $\{(-3, 9, 1, 0)^T,\; (-6, 16, 0, 1)^T\} \implies \mathbf{\text{nullity}(A) = 2}$.<br>
+          &bull; <strong>Dimension Theorem Check:</strong> $\text{rank}(A) + \text{nullity}(A) = 2 + 2 = 4 = n$ (number of columns). &#10003;
+        </div>
+      </div>
+
+      <!-- Problem 3: Idempotent Centering Matrix (Statistics Application) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 3: Centering Matrix $A = I_n - \frac{1}{n}\mathbf{1}\mathbf{1}^T$ (Idempotency &amp; Degrees of Freedom!)</strong>
+          <span class="exam-badge">DU Final Q3(a) (7 Marks)</span>
+        </div>
+        <p style="font-size:14px;">
+          Let $X' = [x_1, x_2, \dots, x_n]$ and $ns^2 = \sum_{i=1}^n (x_i - \bar{x})^2$.
+          (i) Express $ns^2$ in the quadratic form $X'AX$; (ii) Show $A$ is idempotent; (iii) Find $\text{rank}(A)$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint3')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol3')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="hint3">
+          <strong>Hint:</strong> Expand $\sum(x_i - \bar{x})^2 = \sum x_i^2 - \frac{1}{n}(\sum x_i)^2 = X'I_n X - \frac{1}{n}X'\mathbf{1}\mathbf{1}'X$. Note that $(\mathbf{1}\mathbf{1}')^2 = n(\mathbf{1}\mathbf{1}')$!
+        </div>
+        <div class="reveal-box" id="sol3">
+          <strong>Solution:</strong><br>
+          (i) Let $J = \mathbf{1}\mathbf{1}'$ (the $n\times n$ matrix of all $1$'s). Then:
+          $$ns^2 = \sum_{i=1}^n x_i^2 - \frac{1}{n}\left(\sum_{i=1}^n x_i\right)^2 = X'\left(I_n - \frac{1}{n}J\right)X \implies \mathbf{A = I_n - \frac{1}{n}J}.$$
+          (ii) <strong>Idempotency:</strong> Since $J^2 = nJ$:
+          $$A^2 = \left(I_n - \frac{1}{n}J\right)^2 = I_n - \frac{2}{n}J + \frac{1}{n^2}(nJ) = I_n - \frac{1}{n}J = A. \quad \checkmark$$
+          (iii) <strong>Rank:</strong> Since $A$ is idempotent, $\text{rank}(A) = \text{trace}(A) = \text{tr}(I_n) - \frac{1}{n}\text{tr}(J) = n - \frac{n}{n} = \mathbf{n - 1}$ (this is why sample variance has $n-1$ degrees of freedom!).
+        </div>
+      </div>
+
+      <!-- Problem 4: Finding a g-inverse (Exam Q7b / MISC Ex. 7) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 4: Finding a g-Inverse &amp; Solving via g-Inverse</strong>
+          <span class="exam-badge">DU Final Q7(b) &middot; Final 2024 Q6(a) (6 Marks)</span>
+        </div>
+        <p style="font-size:14px;">
+          Find a generalized inverse $G$ of $A = \begin{bmatrix} 1 & 1 & 0 & 1 \\ 2 & 1 & 1 & 0 \\ 2 & 2 & 0 & 2 \end{bmatrix}$ and verify $AGA = A$.
+          Also explain why a g-inverse is not unique when $A$ is singular/rectangular.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol4')">Show Full Solution</button>
+          <button class="btn-outline" onclick="location.href='#solvers';">Try Different Submatrices in Solver B</button>
+        </div>
+        <div class="reveal-box" id="sol4">
+          <strong>Solution:</strong><br>
+          1. Row 3 $= 2 \times$ Row 1, while Rows 1 and 2 are independent $\implies \text{rank}(A) = 2$.<br>
+          2. Choose nonsingular $2\times 2$ submatrix $M$ from rows $\{1, 2\}$ and cols $\{1, 2\}$:
+          $$M = \begin{bmatrix} 1 & 1 \\ 2 & 1 \end{bmatrix}, \quad \det(M) = -1 \implies M^{-1} = \begin{bmatrix} -1 & 1 \\ 2 & -1 \end{bmatrix}.$$
+          3. Place $M^{-1}$ into rows $\{1, 2\}$ and cols $\{1, 2\}$ of a $4\times 3$ zero matrix:
+          $$G = \begin{bmatrix} -1 & 1 & 0 \\ 2 & -1 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}.$$
+          4. Verify: $AG = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 2 & 0 & 0 \end{bmatrix} \implies AGA = \begin{bmatrix} 1 & 1 & 0 & 1 \\ 2 & 1 & 1 & 0 \\ 2 & 2 & 0 & 2 \end{bmatrix} = A$. &#10003;<br>
+          5. <strong>Non-uniqueness:</strong> Picking rows $\{1, 2\}$ and cols $\{2, 3\}$ gives a completely different valid g-inverse $G_2$ with $AG_2A = A$!
+        </div>
+      </div>
+    </section>
+
+    <footer class="lesson-footer">
+      <div style="font-size:13px; color:var(--text-muted);">
+        &larr; Lesson 6: Linear Independence, Basis, Dimension &amp; Transformations
+      </div>
+      <div style="font-size:13px; font-weight:600; color:var(--primary);">
+        Module 3 starts next &rarr; Lesson 8: Orthogonality, Gram-Schmidt &amp; Orthogonal Matrices
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    /* ============== THEME TOGGLE ============== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('themeBtn').textContent = isDark ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+      localStorage.setItem('la_theme', isDark ? 'light' : 'dark');
+      drawSub4();
+    }
+    (function initTheme(){
+      if (localStorage.getItem('la_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeBtn').textContent = 'Switch to Light Mode';
+      }
+    })();
+
+    /* ============== PROGRESS TRACKER ============== */
+    const sections = ['lab', 'rank', 'idemp', 'dictionary', 'solvers', 'exam'];
+    let doneState = JSON.parse(localStorage.getItem('la_l7_done') || '{}');
+    function updateProgressUI() {
+      let count = 0;
+      sections.forEach(s => {
+        const btn = document.querySelector(`.mark-btn[data-sec="${s}"]`);
+        if (doneState[s]) { count++; if (btn) { btn.classList.add('done'); btn.textContent = 'Completed \u2713'; } }
+        else if (btn) { btn.classList.remove('done'); btn.textContent = 'Mark Complete'; }
+      });
+      const pct = Math.round((count / sections.length) * 100);
+      document.getElementById('progText').textContent = pct + '%';
+      document.getElementById('progFill').style.width = pct + '%';
+    }
+    function toggleDone(sec) {
+      doneState[sec] = !doneState[sec];
+      localStorage.setItem('la_l7_done', JSON.stringify(doneState));
+      updateProgressUI();
+    }
+    updateProgressUI();
+
+    /* ============== SCROLL SPY ============== */
+    const navAnchors = document.querySelectorAll('#navLinks a');
+    window.addEventListener('scroll', () => {
+      let cur = 'orientation';
+      document.querySelectorAll('main section').forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) cur = sec.id;
+      });
+      navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    });
+
+    /* ============== FOUR FUNDAMENTAL SUBSPACES CANVAS ============== */
+    const canvas = document.getElementById('sub4Canvas');
+    const ctx = canvas.getContext('2d');
+
+    function setShape(m, n, r) {
+      document.getElementById('slM').value = m;
+      document.getElementById('slN').value = n;
+      document.getElementById('slR').max = Math.min(m, n);
+      document.getElementById('slR').value = r;
+      drawSub4();
+    }
+
+    function drawBox(x, y, w, h, fill, stroke, title, subtitle) {
+      ctx.save();
+      ctx.fillStyle = fill;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, 10);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = stroke;
+      ctx.font = '700 13px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(title, x + w/2, y + h/2 - 5);
+      ctx.font = '600 12px JetBrains Mono, monospace';
+      ctx.fillText(subtitle, x + w/2, y + h/2 + 13);
+      ctx.restore();
+    }
+
+    function drawSub4() {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const m = parseInt(document.getElementById('slM').value);
+      const n = parseInt(document.getElementById('slN').value);
+      const slR = document.getElementById('slR');
+      const maxR = Math.min(m, n);
+      slR.max = maxR;
+      let r = Math.min(parseInt(slR.value), maxR);
+      slR.value = r;
+
+      document.getElementById('lblM').textContent = m;
+      document.getElementById('lblN').textContent = n;
+      document.getElementById('lblR').textContent = r;
+
+      const nullity = n - r;
+      const lNull = m - r;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const textCol = dark ? '#e2e8f0' : '#1e293b';
+      const mutedCol = dark ? '#94a3b8' : '#475569';
+      const cBlue = dark ? '#60a5fa' : '#2563eb';
+      const cRed = dark ? '#fb7185' : '#e11d48';
+      const cGreen = dark ? '#34d399' : '#059669';
+      const cAmber = dark ? '#fbbf24' : '#d97706';
+
+      // Domain & Codomain Labels
+      ctx.fillStyle = textCol;
+      ctx.font = '800 15px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Input Space R^${n}`, 125, 34);
+      ctx.fillText(`Output Space R^${m}`, 435, 34);
+
+      // Left boxes: Row Space R(A) & Null Space N(A)
+      const hR_in = Math.max(58, (r / Math.max(1, n)) * 210);
+      const hN_in = Math.max(58, (nullity / Math.max(1, n)) * 210);
+      drawBox(35, 56, 180, hR_in, dark ? 'rgba(59,130,246,0.18)' : 'rgba(37,99,235,0.12)', cBlue, 'Row Space R(A)', `dim = r = ${r}`);
+      drawBox(35, 56 + hR_in + 14, 180, hN_in, dark ? 'rgba(248,113,113,0.18)' : 'rgba(225,29,72,0.12)', cRed, 'Null Space N(A)', `dim = n - r = ${nullity}`);
+
+      // Right-angle symbol between R(A) and N(A)
+      ctx.fillStyle = mutedCol; ctx.font = '700 12px Inter, sans-serif';
+      ctx.fillText('⊥ (90°)', 125, 56 + hR_in + 11);
+
+      // Right boxes: Col Space C(A) & Left Null Space N(A^T)
+      const hC_out = Math.max(58, (r / Math.max(1, m)) * 210);
+      const hLN_out = Math.max(58, (lNull / Math.max(1, m)) * 210);
+      drawBox(345, 56, 180, hC_out, dark ? 'rgba(52,211,153,0.18)' : 'rgba(5,150,105,0.12)', cGreen, 'Column Space C(A)', `dim = r = ${r}`);
+      drawBox(345, 56 + hC_out + 14, 180, hLN_out, dark ? 'rgba(251,191,36,0.18)' : 'rgba(217,119,6,0.12)', cAmber, 'Left Null N(Aᵀ)', `dim = m - r = ${lNull}`);
+      ctx.fillStyle = mutedCol;
+      ctx.fillText('⊥ (90°)', 435, 56 + hC_out + 11);
+
+      // Mapping Arrows
+      // 1. Row Space -> Col Space (1-to-1)
+      ctx.strokeStyle = cBlue; ctx.fillStyle = cBlue; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(222, 56 + hR_in/2); ctx.lineTo(336, 56 + hC_out/2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(340, 56 + hC_out/2); ctx.lineTo(328, 56 + hC_out/2 - 6); ctx.lineTo(328, 56 + hC_out/2 + 6); ctx.closePath(); ctx.fill();
+      ctx.font = '700 11.5px Inter, sans-serif';
+      ctx.fillText('A (1-to-1)', 280, Math.min(56 + hR_in/2, 56 + hC_out/2) - 8);
+
+      // 2. Null Space -> 0
+      const zeroY = 56 + hC_out + 7;
+      ctx.strokeStyle = cRed; ctx.fillStyle = cRed; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(222, 56 + hR_in + 14 + hN_in/2); ctx.lineTo(336, zeroY); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(345, zeroY, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.font = '700 11px Inter, sans-serif';
+      ctx.fillText('Ax = 0', 278, (56 + hR_in + 14 + hN_in/2 + zeroY)/2 + 16);
+
+      // Update Telemetry
+      document.getElementById('dRank').textContent = `r = ${r}`;
+      document.getElementById('dNull').textContent = `${nullity}`;
+      document.getElementById('dLNull').textContent = `${lNull}`;
+      document.getElementById('dThm').textContent = `${r} + ${nullity} = ${n} \u2713`;
+    }
+    drawSub4();
+
+    /* ============== PARAMETRIC RANK MINI-LAB ============== */
+    function setT(val) {
+      document.getElementById('tParam').value = val;
+      updateParamRank();
+    }
+    function updateParamRank() {
+      const t = parseFloat(document.getElementById('tParam').value);
+      document.getElementById('tValLbl').textContent = t;
+      const det = -(t - 1) * (t - 1) * (t + 2);
+      let rank = 3, note = 'Full rank (invertible)';
+      if (Math.abs(t - 1) < 1e-6) { rank = 1; note = 'All rows = [1, 1, 1]!'; }
+      else if (Math.abs(t + 2) < 1e-6) { rank = 2; note = 'det=0, nonzero 2x2 minor!'; }
+      document.getElementById('tParamReadout').innerHTML =
+        `det(A(${t})) = <strong>${det.toFixed(2)}</strong> &nbsp;|&nbsp; <strong style="color:${rank===3?'var(--success)':'var(--danger)'}">rank = ${rank}</strong> (${note})`;
+    }
+    updateParamRank();
+
+    /* ============== PROOF STEPPER ============== */
+    let curStep = 1;
+    function nextProofStep() {
+      const steps = document.querySelectorAll('#proofSteps .proof-step');
+      if (curStep < steps.length) { steps[curStep].classList.add('revealed'); curStep++; }
+    }
+    function resetProof() {
+      document.querySelectorAll('#proofSteps .proof-step').forEach((el, i) => el.classList.toggle('revealed', i === 0));
+      curStep = 1;
+    }
+
+    function fmtN(n) {
+      if (Math.abs(n) < 1e-8) return '0';
+      if (Math.abs(n - Math.round(n)) < 1e-6) return String(Math.round(n));
+      return n.toFixed(2);
+    }
+
+    function matHTML(M, hlSet = null) {
+      const cols = M[0].length;
+      let h = `<span class="mat-inline" style="grid-template-columns:repeat(${cols}, auto);">`;
+      for (let r = 0; r < M.length; r++) {
+        for (let c = 0; c < cols; c++) {
+          const isHL = hlSet && hlSet.has(`${r},${c}`);
+          h += `<span class="${isHL ? 'hl-cell' : ''}">${fmtN(M[r][c])}</span>`;
+        }
+      }
+      return h + '</span>';
+    }
+
+    /* ============== SOLVER A: 3x4 RANK & NULLITY ============== */
+    function loadRNPreset(arr) {
+      for (let r = 0; r < 3; r++)
+        for (let c = 0; c < 4; c++)
+          document.getElementById(`rn${r}${c}`).value = arr[r*4 + c];
+      runRNSolver();
+    }
+    function runRNSolver() {
+      const M = [0,1,2].map(r => [0,1,2,3].map(c => parseFloat(document.getElementById(`rn${r}${c}`).value) || 0));
+      let pr = 0;
+      const pCols = [];
+      for (let col = 0; col < 4 && pr < 3; col++) {
+        let mx = pr;
+        for (let r = pr + 1; r < 3; r++) if (Math.abs(M[r][col]) > Math.abs(M[mx][col])) mx = r;
+        if (Math.abs(M[mx][col]) < 1e-9) continue;
+        [M[pr], M[mx]] = [M[mx], M[pr]];
+        const piv = M[pr][col];
+        for (let c = col; c < 4; c++) M[pr][c] /= piv;
+        for (let r = 0; r < 3; r++) {
+          if (r !== pr && Math.abs(M[r][col]) > 1e-9) {
+            const f = M[r][col];
+            for (let c = col; c < 4; c++) M[r][c] -= f * M[pr][c];
+          }
+        }
+        pCols.push(col); pr++;
+      }
+      const freeCols = [0,1,2,3].filter(c => !pCols.includes(c));
+      const nullBasis = freeCols.map(fc => {
+        const v = [0,0,0,0]; v[fc] = 1;
+        pCols.forEach((pc, rIdx) => { v[pc] = -M[rIdx][fc]; });
+        return `(${v.map(fmtN).join(', ')})<sup>T</sup>`;
+      });
+
+      document.getElementById('rnOut').innerHTML = `
+        <div class="step-line"><strong>1. RREF(A):</strong><br>${matHTML(M)}</div>
+        <div class="step-line"><strong>2. Rank &amp; Nullity:</strong> rank(A) = <strong style="color:var(--primary)">${pCols.length}</strong>, &nbsp; nullity(A) = <strong style="color:var(--accent-2)">${freeCols.length}</strong></div>
+        <div class="step-line"><strong>3. Dimension Theorem:</strong> ${pCols.length} + ${freeCols.length} = <strong>4</strong> (= n) <span style="color:var(--success)">&#10003;</span></div>
+        <div class="step-line"><strong>4. Basis of N(A):</strong> { ${nullBasis.join(', ') || '(0,0,0,0)^T'} }</div>
+      `;
+    }
+    runRNSolver();
+
+    /* ============== SOLVER B: INTERACTIVE g-INVERSE BUILDER ============== */
+    const A_gi = [[1,1,0,1],[2,1,1,0],[2,2,0,2]];
+    function matMul(X, Y) {
+      const m = X.length, k = X[0].length, n = Y[0].length;
+      const Z = Array.from({length: m}, () => Array(n).fill(0));
+      for (let i = 0; i < m; i++)
+        for (let j = 0; j < n; j++)
+          for (let p = 0; p < k; p++) Z[i][j] += X[i][p] * Y[p][j];
+      return Z;
+    }
+
+    function runGISolver() {
+      const I = document.getElementById('giRows').value.split(',').map(Number);
+      const J = document.getElementById('giCols').value.split(',').map(Number);
+      const M = [
+        [A_gi[I[0]][J[0]], A_gi[I[0]][J[1]]],
+        [A_gi[I[1]][J[0]], A_gi[I[1]][J[1]]]
+      ];
+      const det = M[0][0]*M[1][1] - M[0][1]*M[1][0];
+      const out = document.getElementById('giOut');
+      if (Math.abs(det) < 1e-9) {
+        out.innerHTML = `<div class="step-line"><strong>Selected Submatrix M:</strong> ${matHTML(M)} &nbsp; (det = 0)</div>
+                         <div class="step-line" style="color:var(--danger);font-weight:700;">Singular submatrix! Cannot invert M. Choose linearly independent rows &amp; columns.</div>`;
+        return;
+      }
+      const Minv = [
+        [ M[1][1]/det, -M[0][1]/det],
+        [-M[1][0]/det,  M[0][0]/det]
+      ];
+      // Build 4x3 G with M^-1 placed in rows J, cols I
+      const G = Array.from({length: 4}, () => Array(3).fill(0));
+      const hlG = new Set();
+      for (let a = 0; a < 2; a++) {
+        for (let b = 0; b < 2; b++) {
+          G[J[a]][I[b]] = Minv[a][b];
+          hlG.add(`${J[a]},${I[b]}`);
+        }
+      }
+      const AG = matMul(A_gi, G);
+      const AGA = matMul(AG, A_gi);
+
+      out.innerHTML = `
+        <div class="step-line"><strong>1. Submatrix M (det = ${fmtN(det)} &ne; 0):</strong> M = ${matHTML(M)} &rArr; M<sup>&minus;1</sup> = ${matHTML(Minv)}</div>
+        <div class="step-line"><strong>2. Constructed g-Inverse G (4&times;3):</strong><br>${matHTML(G, hlG)}</div>
+        <div class="step-line"><strong>3. Verification (AGA = A?):</strong><br>
+          AGA = ${matHTML(AGA)} <strong style="color:var(--success);">&nbsp;= A &#10003;</strong>
+        </div>
+      `;
+    }
+    runGISolver();
+
+    /* ============== TRUE / FALSE EXAM QUIZ ============== */
+    const tfData = [
+      {
+        src: "DU Final 2024 Q1(a)(v)",
+        q: "Adding one additional column to a matrix always increases its rank by one.",
+        ans: false,
+        exp: "FALSE. If the new column is a linear combination of the existing columns (or if the matrix already had full row rank), the rank stays the same!"
+      },
+      {
+        src: "MISC Slides Core Theorem",
+        q: "For every idempotent matrix A (A\u00B2 = A), we have rank(A) = trace(A).",
+        ans: true,
+        exp: "TRUE. Every idempotent matrix is diagonalizable with eigenvalues 0 and 1, so both rank(A) and trace(A) equal the number of 1-eigenvalues."
+      },
+      {
+        src: "MISC Slides (Generalized Inverse)",
+        q: "Only square matrices possess a generalized inverse G satisfying AGA = A.",
+        ans: false,
+        exp: "FALSE. EVERY matrix (square or rectangular, singular or nonsingular) possesses a generalized inverse G of size n\u00D7m."
+      },
+      {
+        src: "Anton 4.8 Dimension Theorem",
+        q: "If A is a 5\u00D77 matrix of rank 3, then the homogeneous system Ax = 0 has 4 free parameters in its general solution.",
+        ans: true,
+        exp: "TRUE. By the Dimension Theorem, nullity(A) = n \u2212 rank(A) = 7 \u2212 3 = 4 free parameters."
+      },
+      {
+        src: "Strang Ch. 3.6 Orthogonality",
+        q: "For any m\u00D7n matrix A, the null space N(A) is perpendicular to the column space C(A).",
+        ans: false,
+        exp: "FALSE! N(A) lives in R^n and is perpendicular to the ROW space R(A). The column space C(A) lives in R^m and is perpendicular to the LEFT null space N(A^T)."
+      }
+    ];
+
+    let tfResults = {};
+    const tfContainer = document.getElementById('tfContainer');
+    tfData.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'tf-item';
+      div.innerHTML = `
+        <div class="tf-meta">${item.src}</div>
+        <div class="tf-q">${idx + 1}. ${item.q}</div>
+        <div class="tf-actions">
+          <button class="tf-btn" id="tf-${idx}-t" onclick="answerTF(${idx}, true)">True</button>
+          <button class="tf-btn" id="tf-${idx}-f" onclick="answerTF(${idx}, false)">False</button>
+        </div>
+        <div class="tf-feedback" id="tf-fb-${idx}"></div>
+      `;
+      tfContainer.appendChild(div);
+    });
+
+    function answerTF(idx, choice) {
+      const item = tfData[idx];
+      const isCorrect = choice === item.ans;
+      tfResults[idx] = isCorrect;
+      const btnT = document.getElementById(`tf-${idx}-t`), btnF = document.getElementById(`tf-${idx}-f`);
+      btnT.className = 'tf-btn'; btnF.className = 'tf-btn';
+      (choice ? btnT : btnF).classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+      const fb = document.getElementById(`tf-fb-${idx}`);
+      fb.className = `tf-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+      fb.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Not quite.'}</strong> ${item.exp}`;
+      const score = Object.values(tfResults).filter(Boolean).length;
+      document.getElementById('tfScore').textContent = `Score: ${score} / ${tfData.length}`;
+    }
+
+    function checkRN() {
+      const raw = document.getElementById('ansRN').value.replace(/\s/g, '');
+      const msg = document.getElementById('rnMsg');
+      if (raw === '2,2') {
+        msg.style.color = 'var(--success)'; msg.textContent = '\u2713 Correct! rank = 2, nullity = 2, and 2 + 2 = 4 = n.';
+      } else {
+        msg.style.color = 'var(--danger)'; msg.textContent = '\u2717 Try again! Row reduce A to count pivots (rank) and free cols (nullity).';
+      }
+    }
+    function toggleBox(id) { document.getElementById(id).classList.toggle('show'); }
+  </script>
+</body>
+</html>

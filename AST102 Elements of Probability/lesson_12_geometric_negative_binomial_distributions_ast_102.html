@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 12: Geometric &amp; Negative Binomial Distributions | AST 102 (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Playfair Display, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ivory: '#FAFAF7',
+            ink: '#1F2937',
+            muted: '#4B5563',
+            borderLight: '#E5E7EB',
+            tealPrimary: '#0F766E',
+            tealSoft: '#F0FDFA',
+            amberAccent: '#D97706',
+            amberSoft: '#FFFBEB',
+            roseTrap: '#BE123C',
+            roseSoft: '#FFF1F2',
+            indigoSec: '#4F46E5',
+            indigoSoft: '#EEF2FF',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX 0.16.11 via jsDelivr CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #FAFAF7;
+      color: #1F2937;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    h1, h2, .font-editorial {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Prevent display math overflow on small viewports */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #0F766E;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+    }
+
+    /* Smooth details/summary disclosure chevron */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] > summary .details-chevron {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-[#F0FDFA] selection:text-[#0F766E]">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVIGATION BAR & LIVE READING PROGRESS BAR                 -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] shadow-sm">
+    <div class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam-Weight Badge -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-[#4B5563]">
+          <span class="inline-flex items-center gap-1.5 font-bold text-[#1F2937]">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+            AST 102 · Module 4
+          </span>
+          <span class="text-slate-300">→</span>
+          <span class="text-[#0F766E] font-semibold">Lesson 12 of 14</span>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFFBEB] text-[#D97706] border border-amber-200">
+            <svg class="w-3.5 h-3.5 text-[#D97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Year Final + 1st Incourse
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Section Jump Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#4F46E5] hover:bg-[#EEF2FF] transition-colors">Proofs</a>
+        <a href="#vault" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#D97706] hover:bg-[#FFFBEB] transition-colors">Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Quiz</a>
+      </nav>
+    </div>
+
+    <!-- Live Teal Reading Progress Bar along bottom edge -->
+    <div class="w-full h-[3px] bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-[#0F766E] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- 0. HERO & ORIENTATION                                                 -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-[#1F2937] via-[#134E4A] to-[#0F766E] text-white py-12 sm:py-16 border-b border-teal-950">
+    <div class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-100 text-xs font-bold tracking-wider uppercase">
+            MODULE 4 · SPECIAL PROBABILITY DISTRIBUTIONS
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+            Lesson 12: Geometric &amp; Negative Binomial Distributions
+          </h1>
+
+          <p class="text-teal-50/90 text-base sm:text-lg leading-relaxed">
+            Waiting-time models for independent Bernoulli trials—from the first success to the $r$-th success, shifted conventions, and the discrete memoryless property.
+          </p>
+
+          <!-- Meta Badges -->
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold pt-1">
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-50">~45 min study</span>
+            <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-300/40 text-amber-200">High Weight: Year Final</span>
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-100">Ross §4.8.1–4.8.2 · ISRT Past Finals</span>
+          </div>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D97706] hover:bg-amber-500 text-white font-semibold text-sm shadow-lg shadow-black/25 transition-all">
+              Launch Waiting-Time Workbench
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="#vault" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+              ISRT Past Exam Vault
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Clickable Learning Objectives Checklist -->
+        <div class="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-5 sm:p-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-100">Learning Objectives</span>
+            <span id="objCounter" class="font-mono text-xs font-bold text-amber-200">0 / 5 Checked</span>
+          </div>
+          <ul class="space-y-1.5 text-xs sm:text-sm text-teal-50">
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Distinguish between <strong>Geometric</strong> (trials $X \ge 1$) and <strong>Shifted Geometric</strong> (failures $Y \ge 0$) parameterizations.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Derive and apply $E[X] = 1/p$, $V(X) = q/p^2$, and the tail formula $P(X > k) = q^k$.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Prove and interpret the <strong>discrete memoryless property</strong> $P(X > s+t \mid X > s) = P(X > t)$.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Model the $r$-th success with the <strong>Negative Binomial</strong> PMF $\binom{x-1}{r-1}p^r q^{x-r}$ and decompose it as a sum of $r$ i.i.d. Geometrics.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Solve authentic ISRT Year Final problems (basketball free throws, oil drilling, literacy surveys, road checks).</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- 1. CORE CONCEPTS & INTUITION                                        -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 01 • Core Theory</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1F2937] mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">Sheldon Ross §4.8.1–4.8.2 · AST 102 Past Finals (2022–2025)</p>
+      </div>
+
+      <!-- 1.1 THE WAITING-TIME PARADIGM -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1F2937] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">1.1</span>
+            The Waiting-Time Paradigm
+          </h3>
+          <span class="text-xs font-semibold text-[#4B5563]">Flipping What Is Fixed vs. Random</span>
+        </div>
+
+        <p class="text-sm text-[#4B5563] leading-relaxed">
+          In Lesson 11, we performed independent Bernoulli$(p)$ trials for a <strong>fixed</strong> number of trials $n$ and counted the random number of successes. In Lesson 12, we invert the experiment: we fix the <strong>target number of successes $r$</strong> and count how many trials we must wait!
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-1.5">
+            <div class="font-bold text-[#4B5563] uppercase tracking-wider text-[11px]">Binomial Paradigm (Lesson 11)</div>
+            <p class="text-[#1F2937] font-semibold">Fixed trials $n$ → Random successes $X \in \{0, 1, \dots, n\}$</p>
+            <p class="text-xs text-[#4B5563]">"Shoot 10 free throws; how many go in?"</p>
+          </div>
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1.5">
+            <div class="font-bold text-[#0F766E] uppercase tracking-wider text-[11px]">Waiting-Time Paradigm (Lesson 12)</div>
+            <p class="text-[#1F2937] font-semibold">Fixed target successes $r$ → Random trials $X \in \{r, r+1, \dots\}$</p>
+            <p class="text-xs text-[#4B5563]">"Keep shooting until you make your 1st (Geometric) or 3rd (Negative Binomial) free throw; how many shots did it take?"</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1.2 GEOMETRIC VS. SHIFTED GEOMETRIC (SIDE-BY-SIDE CARDS) -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1F2937] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">1.2</span>
+            Geometric vs. Shifted Geometric Parameterizations
+          </h3>
+          <span class="text-xs font-semibold text-[#4B5563]">ISRT Year Final 2024 Q7(a)</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <!-- Card A: Teal — Trials X >= 1 -->
+          <article class="bg-white rounded-2xl border-t-4 border-t-[#0F766E] border-x border-b border-[#E5E7EB] p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-xs font-bold">Card A · Trials Until 1st Success</span>
+              <span class="font-mono text-xs font-bold text-[#0F766E]">$X \in \{1, 2, 3, \dots\}$</span>
+            </div>
+            <h4 class="text-lg font-bold text-[#1F2937]">Geometric Distribution $\text{Geom}(p)$</h4>
+            <p class="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
+              Counts the <strong>total number of trials</strong> up to and including the first success ($k - 1$ failures followed by $1$ success, where $q = 1 - p$).
+            </p>
+            <div class="space-y-2 text-xs sm:text-sm bg-[#FAFAF7] p-4 rounded-xl border border-[#E5E7EB]">
+              <div><strong>PMF:</strong> $P(X = k) = q^{k-1} p, \quad k = 1, 2, 3, \dots$</div>
+              <div><strong>CDF:</strong> $F(k) = P(X \le k) = 1 - q^k$</div>
+              <div><strong>Survival (Tail):</strong> $P(X > k) = q^k$</div>
+              <div class="pt-1 border-t border-[#E5E7EB] flex flex-wrap gap-x-5 gap-y-1 font-semibold text-[#0F766E]">
+                <span>$E[X] = \dfrac{1}{p}$</span>
+                <span>$V(X) = \dfrac{q}{p^2}$</span>
+                <span>$\text{Mode} = 1$</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Card B: Indigo — Failures Y >= 0 -->
+          <article class="bg-white rounded-2xl border-t-4 border-t-[#4F46E5] border-x border-b border-[#E5E7EB] p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-[#EEF2FF] text-[#4F46E5] border border-indigo-200 text-xs font-bold">Card B · Failures Before 1st Success</span>
+              <span class="font-mono text-xs font-bold text-[#4F46E5]">$Y = X - 1 \in \{0, 1, 2, \dots\}$</span>
+            </div>
+            <h4 class="text-lg font-bold text-[#1F2937]">Shifted Geometric Distribution</h4>
+            <p class="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
+              Counts only the <strong>number of failures</strong> observed strictly <em>before</em> the first success occurs ($Y = X - 1$).
+            </p>
+            <div class="space-y-2 text-xs sm:text-sm bg-[#FAFAF7] p-4 rounded-xl border border-[#E5E7EB]">
+              <div><strong>PMF:</strong> $P(Y = y) = q^y p, \quad y = 0, 1, 2, \dots$</div>
+              <div><strong>CDF:</strong> $F(y) = P(Y \le y) = 1 - q^{y+1}$</div>
+              <div><strong>Survival (Tail):</strong> $P(Y \ge y) = q^y$</div>
+              <div class="pt-1 border-t border-[#E5E7EB] flex flex-wrap gap-x-5 gap-y-1 font-semibold text-[#4F46E5]">
+                <span>$E[Y] = \dfrac{q}{p} = \dfrac{1}{p} - 1$</span>
+                <span>$V(Y) = \dfrac{q}{p^2}$</span>
+                <span>$\text{Mode} = 0$</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- ISRT Wording Note -->
+        <div class="p-4 rounded-xl bg-[#FFFBEB] border border-amber-200 text-xs sm:text-sm text-amber-950 flex items-start gap-3">
+          <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-[#D97706] text-white font-bold text-xs shrink-0 mt-0.5">★</span>
+          <p class="leading-relaxed">
+            <strong>ISRT Exam Wording Note:</strong> <em>Watch the wording carefully: "number of trials until 1st success" starts at $1$, while "number of failures before 1st success" starts at $0$. Both share the exact same variance $q/p^2$!</em>
+          </p>
+        </div>
+      </div>
+
+      <!-- 1.3 NEGATIVE BINOMIAL DISTRIBUTION (r-TH SUCCESS) -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1F2937] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">1.3</span>
+            Negative Binomial Distribution ($r$-th Success)
+          </h3>
+          <span class="text-xs font-semibold text-[#4B5563]">Ross §4.8.2 · Year Final 2022 Q3(c)</span>
+        </div>
+
+        <p class="text-sm text-[#4B5563] leading-relaxed">
+          Let $X$ be the total number of independent Bernoulli$(p)$ trials needed to achieve the <strong>$r$-th success</strong>. For $X = x$ to happen, two independent things must occur: (1) exactly $r - 1$ successes and $x - r$ failures occur in any order during the first $x - 1$ trials, and (2) the $x$-th trial is <strong>locked</strong> as a Success.
+        </p>
+
+        <!-- Visual Sequence Diagram Strip -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-[#4B5563] text-center">Anatomy of the $r$-th Success Landing on Trial $x$</div>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <!-- Prefix Box: x - 1 trials -->
+            <div class="flex-1 w-full p-3.5 rounded-xl bg-white border-2 border-dashed border-slate-300 text-center space-y-2">
+              <div class="text-xs font-bold text-[#1F2937]">First $(x - 1)$ Trials: Any Arrangement of $(r - 1)$ S's and $(x - r)$ F's</div>
+              <div class="flex flex-wrap items-center justify-center gap-1.5 font-mono text-xs font-bold">
+                <span class="w-7 h-7 rounded-lg bg-[#FFF1F2] text-[#BE123C] border border-rose-200 inline-flex items-center justify-center">F</span>
+                <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 inline-flex items-center justify-center">S</span>
+                <span class="w-7 h-7 rounded-lg bg-[#FFF1F2] text-[#BE123C] border border-rose-200 inline-flex items-center justify-center">F</span>
+                <span class="text-slate-400 px-1">···</span>
+                <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 inline-flex items-center justify-center">S</span>
+                <span class="w-7 h-7 rounded-lg bg-[#FFF1F2] text-[#BE123C] border border-rose-200 inline-flex items-center justify-center">F</span>
+              </div>
+              <div class="text-xs font-semibold text-[#4F46E5]">
+                $\dbinom{x-1}{r-1} p^{r-1} q^{x-r}$
+              </div>
+            </div>
+
+            <div class="text-xl font-extrabold text-slate-400">×</div>
+
+            <!-- Locked Final Trial Box -->
+            <div class="sm:w-52 w-full p-3.5 rounded-xl bg-[#F0FDFA] border-2 border-[#0F766E] text-center space-y-2 shadow-xs">
+              <div class="text-xs font-bold text-[#0F766E]">Trial $x$ (LOCKED!)</div>
+              <div class="flex justify-center">
+                <span class="px-3 h-7 rounded-lg bg-[#0F766E] text-white font-mono text-xs font-bold inline-flex items-center justify-center shadow-xs">S ($r$-th)</span>
+              </div>
+              <div class="text-xs font-bold text-[#0F766E]">Probability $= p$</div>
+            </div>
+          </div>
+
+          <div class="pt-2 text-center">
+            $$P(X = x) = \binom{x-1}{r-1} p^r q^{x-r}, \qquad x = r,\; r+1,\; r+2,\; \dots$$
+          </div>
+        </div>
+
+        <!-- Decomposition & Failures Parameterization -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1.5">
+            <div class="font-bold text-[#0F766E] uppercase tracking-wider text-[11px]">Sum of $r$ i.i.d. Geometrics</div>
+            <p class="text-[#4B5563]">Waiting for the $r$-th success is simply waiting for the 1st success, then the 2nd, ..., up to the $r$-th:</p>
+            <div class="text-center font-semibold text-[#1F2937] pt-1">
+              $$X = G_1 + G_2 + \dots + G_r \implies E[X] = \frac{r}{p}, \quad V(X) = \frac{rq}{p^2}$$
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#EEF2FF]/70 border border-indigo-200 space-y-1.5">
+            <div class="font-bold text-[#4F46E5] uppercase tracking-wider text-[11px]">Failures Parameterization ($Y = X - r$)</div>
+            <p class="text-[#4B5563]">Counting failures $Y \in \{0, 1, 2, \dots\}$ before the $r$-th success:</p>
+            <div class="text-center font-semibold text-[#1F2937] pt-1">
+              $$P(Y = y) = \binom{y + r - 1}{y} p^r q^y, \qquad E[Y] = \frac{rq}{p}, \quad V(Y) = \frac{rq}{p^2}$$
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1.4 THE DISCRETE MEMORYLESS PROPERTY -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1F2937] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">1.4</span>
+            The Discrete Memoryless Property
+          </h3>
+          <span class="text-xs font-semibold text-[#4B5563]">Unique to Geometric Among Discrete RVs</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+          <div class="lg:col-span-5 p-4 rounded-xl bg-[#1F2937] text-white text-center space-y-1">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-teal-300">Memoryless Identity ($s, t \ge 0$)</div>
+            <div class="text-base sm:text-lg py-1">
+              $$P(X > s + t \mid X > s) = P(X > t)$$
+            </div>
+          </div>
+          <div class="lg:col-span-7 text-sm text-[#4B5563] leading-relaxed space-y-2">
+            <p>
+              <strong>"No hot hand, no overdue luck":</strong> Suppose you have already failed $s$ times in a row (so $X > s$). Because Bernoulli trials are independent, the probability of waiting <em>more than $t$ additional trials</em> is $q^t$—identical to starting fresh from trial 1!
+            </p>
+            <p class="text-xs text-[#0F766E] font-semibold">
+              Uniqueness: The Geometric is the <strong>only</strong> discrete distribution with the memoryless property. Its continuous twin is the <strong>Exponential distribution</strong> (coming in Lesson 14).
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ROSE EXAM-TRAP SPOTLIGHT (3 CLASSIC ISRT PITFALLS) -->
+      <div class="rounded-2xl border-2 border-[#BE123C]/40 bg-[#FFF1F2] p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#BE123C] text-white font-extrabold text-sm shadow-xs">!</span>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#BE123C]">Rose Exam-Trap Spotlight</span>
+            <h3 class="text-lg font-bold text-[#1F2937]">3 Classic ISRT Pitfalls</h3>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">1. $\binom{x}{r}$ vs. $\binom{x-1}{r-1}$ in Negative Binomial</div>
+            <p class="text-[#4B5563] leading-relaxed">
+              Writing $\binom{x}{r}p^r q^{x-r}$ computes a <strong>Binomial</strong> probability (which allows trial $x$ to be a failure!). In Negative Binomial, the $r$-th success <em>must</em> land on trial $x$, leaving only $r - 1$ successes to place among the first $x - 1$ slots.
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">2. Off-by-One Trap ("before" vs. "on")</div>
+            <p class="text-[#4B5563] leading-relaxed">
+              <em>"Ask 5 women <strong>before</strong> one says she is literate"</em> means 5 failures then 1 success on the 6th trial ($q^5 p$), whereas <em>"first strike <strong>on</strong> the 2nd well"</em> means 1 failure then 1 success ($q^1 p$).
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">3. Variance Under Shifting</div>
+            <p class="text-[#4B5563] leading-relaxed">
+              Shifting $Y = X - 1$ decreases the mean by $1$ ($E[Y] = \frac{1}{p} - 1 = \frac{q}{p}$), but additive shifts never affect spread: $V(X - 1) = V(X) = \dfrac{q}{p^2}$!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK-REFERENCE COMPARISON TABLE -->
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#1F2937] text-white flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold">Quick-Reference Comparison Table</h3>
+          <span class="text-xs text-teal-200">$q = 1 - p$, PGF valid for $|qt| &lt; 1$, MGF valid for $t &lt; -\ln q$</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-[#FAFAF7] border-b border-[#E5E7EB] text-[#4B5563] uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4 font-bold">Distribution</th>
+                <th class="py-3.5 px-4 font-bold">Support</th>
+                <th class="py-3.5 px-4 font-bold">PMF</th>
+                <th class="py-3.5 px-4 font-bold">Mean</th>
+                <th class="py-3.5 px-4 font-bold">Variance</th>
+                <th class="py-3.5 px-4 font-bold">PGF $P(t)$</th>
+                <th class="py-3.5 px-4 font-bold">MGF $M(t)$</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-[#1F2937]">
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3.5 px-4 font-bold text-[#0F766E]">Geometric (Trials)</td>
+                <td class="py-3.5 px-4 font-mono">$1, 2, 3, \dots$</td>
+                <td class="py-3.5 px-4">$q^{k-1} p$</td>
+                <td class="py-3.5 px-4">$\dfrac{1}{p}$</td>
+                <td class="py-3.5 px-4">$\dfrac{q}{p^2}$</td>
+                <td class="py-3.5 px-4">$\dfrac{pt}{1 - qt}$</td>
+                <td class="py-3.5 px-4">$\dfrac{pe^t}{1 - qe^t}$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3.5 px-4 font-bold text-[#4F46E5]">Shifted Geometric (Failures)</td>
+                <td class="py-3.5 px-4 font-mono">$0, 1, 2, \dots$</td>
+                <td class="py-3.5 px-4">$q^y p$</td>
+                <td class="py-3.5 px-4">$\dfrac{q}{p}$</td>
+                <td class="py-3.5 px-4">$\dfrac{q}{p^2}$</td>
+                <td class="py-3.5 px-4">$\dfrac{p}{1 - qt}$</td>
+                <td class="py-3.5 px-4">$\dfrac{p}{1 - qe^t}$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3.5 px-4 font-bold text-[#D97706]">Negative Binomial (Trials)</td>
+                <td class="py-3.5 px-4 font-mono">$r, r+1, \dots$</td>
+                <td class="py-3.5 px-4">$\dbinom{x-1}{r-1} p^r q^{x-r}$</td>
+                <td class="py-3.5 px-4">$\dfrac{r}{p}$</td>
+                <td class="py-3.5 px-4">$\dfrac{rq}{p^2}$</td>
+                <td class="py-3.5 px-4">$\left(\dfrac{pt}{1 - qt}\right)^r$</td>
+                <td class="py-3.5 px-4">$\left(\dfrac{pe^t}{1 - qe^t}\right)^r$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 2. INTERACTIVE WAITING-TIME WORKBENCH (4 TABS, HIGH-DPI CANVAS)     -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 02 • Interactive Studio</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1F2937] mt-1">4-Tab Waiting-Time Workbench</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">High-DPI Canvas plots · Overflow-free log-factorial engine</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <!-- Tab Bar -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-[#E5E7EB] bg-[#FAFAF7] p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="geom" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#0F766E] text-white shadow-sm">
+            1. Geometric vs. Shifted
+          </button>
+          <button type="button" role="tab" data-tab="negbin" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#4B5563] hover:bg-slate-200/70">
+            2. Negative Binomial ($r$-th Success)
+          </button>
+          <button type="button" role="tab" data-tab="memory" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#4B5563] hover:bg-slate-200/70">
+            3. Memoryless Visualizer
+          </button>
+          <button type="button" role="tab" data-tab="sim" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#4B5563] hover:bg-slate-200/70">
+            4. Live Trial Runner
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: GEOMETRIC VS. SHIFTED EXPLORER                           -->
+        <!-- =============================================================== -->
+        <div id="tab-geom" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E5E7EB]">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="text-lg font-bold text-[#1F2937]">Geometric vs. Shifted Geometric Explorer</h3>
+                <p class="text-xs sm:text-sm text-[#4B5563]">Compare Trials $X \ge 1$ vs. Failures $Y \ge 0$, inspect survival tails $P(X > k) = q^k$, and hover bars for exact values.</p>
+              </div>
+              <div class="inline-flex rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] p-1 text-xs font-bold">
+                <button type="button" data-gmode="trials" class="geom-mode-btn px-3 py-1.5 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all">Trials $X \ge 1$</button>
+                <button type="button" data-gmode="failures" class="geom-mode-btn px-3 py-1.5 rounded-lg text-[#4B5563] transition-all">Failures $Y \ge 0$</button>
+                <button type="button" data-gmode="overlay" class="geom-mode-btn px-3 py-1.5 rounded-lg text-[#4B5563] transition-all">Side-by-Side</button>
+              </div>
+            </div>
+
+            <!-- 4 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-gpreset="asif" class="geom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">Asif Free Throws (p = 0.70)</button>
+              <button type="button" data-gpreset="oil" class="geom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1F2937] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Oil Well (p = 0.30)</button>
+              <button type="button" data-gpreset="heart" class="geom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1F2937] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Heart Card (p = 0.25)</button>
+              <button type="button" data-gpreset="afghan" class="geom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1F2937] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Afghanistan Literacy (p = 0.12)</button>
+            </div>
+          </div>
+
+          <!-- Sliders -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Success Probability $p$</span><span id="geomValP" class="font-mono text-[#1F2937]">0.70</span></div>
+              <input id="geomSliderP" type="range" min="0.05" max="0.90" step="0.01" value="0.70" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#D97706]">Tail Cutoff $k$</span><span id="geomValK" class="font-mono text-[#1F2937]">3</span></div>
+              <input id="geomSliderK" type="range" min="1" max="15" step="1" value="3" class="w-full" />
+            </div>
+          </div>
+
+          <!-- High-DPI Canvas with Floating Tooltip -->
+          <div class="relative rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#4B5563]">Geometric PMF &amp; Survival Tail</span>
+              <div class="flex flex-wrap items-center gap-3 text-[11px] font-semibold">
+                <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-3 h-3 rounded bg-[#0F766E]"></span>Trials $X \ge 1$</span>
+                <span class="inline-flex items-center gap-1 text-[#4F46E5]"><span class="w-3 h-3 rounded bg-[#4F46E5]"></span>Shifted $Y \ge 0$</span>
+                <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-3 h-3 rounded bg-[#D97706]"></span>Survival Tail $q^k$</span>
+              </div>
+            </div>
+            <div id="geomCanvasWrap" class="relative w-full">
+              <canvas id="geomCanvas" class="cursor-crosshair" aria-label="Geometric and Shifted Geometric PMF bar chart"></canvas>
+              <div id="geomTooltip" class="hidden pointer-events-none absolute z-20 px-3 py-2 rounded-xl bg-[#1F2937]/95 text-white font-mono text-[11px] shadow-lg whitespace-nowrap"></div>
+            </div>
+          </div>
+
+          <!-- 6 Live Metric Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
+            <div class="p-3 rounded-xl bg-[#F0FDFA] border border-teal-200">
+              <div class="text-[11px] font-bold text-[#0F766E]">$E[X] = 1/p$</div>
+              <div id="geomOutEX" class="text-lg font-extrabold font-mono text-[#1F2937] mt-0.5">1.4286</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#EEF2FF] border border-indigo-200">
+              <div class="text-[11px] font-bold text-[#4F46E5]">$E[Y] = q/p$</div>
+              <div id="geomOutEY" class="text-lg font-extrabold font-mono text-[#1F2937] mt-0.5">0.4286</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+              <div class="text-[11px] font-bold text-[#4B5563]">$V(X) = V(Y)$</div>
+              <div id="geomOutVar" class="text-lg font-extrabold font-mono text-[#1F2937] mt-0.5">0.6122</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+              <div class="text-[11px] font-bold text-[#4B5563]">$SD = \sqrt{q}/p$</div>
+              <div id="geomOutSd" class="text-lg font-extrabold font-mono text-[#1F2937] mt-0.5">0.7825</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+              <div id="geomLblPk" class="text-[11px] font-bold text-[#4B5563]">$P(X = 3)$</div>
+              <div id="geomOutPk" class="text-lg font-extrabold font-mono text-[#1F2937] mt-0.5">0.0630</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#D97706] text-white shadow-sm">
+              <div id="geomLblTail" class="text-[11px] font-bold text-amber-100">$P(X > 3) = q^3$</div>
+              <div id="geomOutTail" class="text-lg font-extrabold font-mono text-white mt-0.5">0.0270</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: NEGATIVE BINOMIAL (r-TH SUCCESS) EXPLORER                -->
+        <!-- =============================================================== -->
+        <div id="tab-negbin" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1F2937]">Negative Binomial ($r$-th Success) Explorer</h3>
+              <p class="text-xs sm:text-sm text-[#4B5563]">Adjust target successes $r$, success probability $p$, and target trial $x$. Hover bars for exact PMF and CDF values.</p>
+            </div>
+            <!-- 3 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-nbpreset="asif" class="nb-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">Asif: 3rd make on 5th shot (r=3, p=0.70, x=5)</button>
+              <button type="button" data-nbpreset="oil" class="nb-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1F2937] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Oil: 3rd strike on 10th well (r=3, p=0.30, x=10)</button>
+              <button type="button" data-nbpreset="geom1" class="nb-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1F2937] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Geometric Special Case (r=1, p=0.35, x=3)</button>
+            </div>
+          </div>
+
+          <!-- Sliders -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Target Successes $r$</span><span id="nbValR" class="font-mono text-[#1F2937]">3</span></div>
+              <input id="nbSliderR" type="range" min="1" max="8" step="1" value="3" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Success Prob $p$</span><span id="nbValP" class="font-mono text-[#1F2937]">0.70</span></div>
+              <input id="nbSliderP" type="range" min="0.10" max="0.90" step="0.01" value="0.70" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#D97706]">Target Trial $x$</span><span id="nbValX" class="font-mono text-[#1F2937]">5</span></div>
+              <input id="nbSliderX" type="range" min="3" max="28" step="1" value="5" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Canvas -->
+          <div class="relative rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#4B5563]">Negative Binomial PMF $P(X = k)$</span>
+              <div class="flex flex-wrap items-center gap-3 text-[11px] font-semibold">
+                <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-3 h-3 rounded bg-[#D97706]"></span>Selected Trial $x$</span>
+                <span class="inline-flex items-center gap-1 text-[#4F46E5]"><span class="w-2.5 h-2.5 rotate-45 bg-[#4F46E5] inline-block"></span>Mode</span>
+                <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-4 border-t-2 border-dashed border-[#0F766E]"></span>Mean $r/p$</span>
+              </div>
+            </div>
+            <div id="nbCanvasWrap" class="relative w-full">
+              <canvas id="nbCanvas" class="cursor-crosshair" aria-label="Negative Binomial PMF bar chart"></canvas>
+              <div id="nbTooltip" class="hidden pointer-events-none absolute z-20 px-3 py-2 rounded-xl bg-[#1F2937]/95 text-white font-mono text-[11px] shadow-lg whitespace-nowrap"></div>
+            </div>
+          </div>
+
+          <!-- Combinatorial Breakdown & Decomposition Cards -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <div class="lg:col-span-7 p-5 rounded-2xl bg-[#1F2937] text-white space-y-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-amber-300">Exact Combinatorial Breakdown at $X = x$</div>
+              <div id="nbFormulaRender" class="text-sm sm:text-base text-white overflow-x-auto py-1"></div>
+              <div class="grid grid-cols-3 gap-2.5 text-center font-mono text-xs pt-2 border-t border-slate-700">
+                <div class="p-2.5 rounded-xl bg-white/10">
+                  <div class="text-[10px] text-slate-300">Prefix Ways $\binom{x-1}{r-1}$</div>
+                  <div id="nbOutWays" class="text-base font-extrabold text-teal-300 mt-0.5">6</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white/10">
+                  <div class="text-[10px] text-slate-300">One Path $p^r q^{x-r}$</div>
+                  <div id="nbOutPath" class="text-base font-extrabold text-slate-100 mt-0.5">0.03087</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-[#D97706] text-white">
+                  <div class="text-[10px] text-amber-100">Final $P(X=x)$</div>
+                  <div id="nbOutProb" class="text-base font-extrabold mt-0.5">0.18522</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-5 p-5 rounded-2xl bg-[#F0FDFA] border border-teal-200 space-y-3 flex flex-col justify-between">
+              <div class="space-y-1.5">
+                <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Sum of $r$ i.i.d. Geometrics</div>
+                <div id="nbDecompMath" class="text-xs sm:text-sm text-[#1F2937]"></div>
+              </div>
+              <div class="grid grid-cols-2 gap-2.5 text-center font-mono text-xs">
+                <div class="p-2.5 rounded-xl bg-white border border-teal-200">
+                  <div class="text-[10px] text-[#4B5563]">Mean $E[X] = r/p$</div>
+                  <div id="nbOutMean" class="text-base font-extrabold text-[#0F766E] mt-0.5">4.2857</div>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white border border-teal-200">
+                  <div class="text-[10px] text-[#4B5563]">Var $V(X) = rq/p^2$</div>
+                  <div id="nbOutVar" class="text-base font-extrabold text-[#1F2937] mt-0.5">1.8367</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: MEMORYLESS PROPERTY VISUALIZER                           -->
+        <!-- =============================================================== -->
+        <div id="tab-memory" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="pb-4 border-b border-[#E5E7EB]">
+            <h3 class="text-lg font-bold text-[#1F2937]">Discrete Memoryless Property Visualizer</h3>
+            <p class="text-xs sm:text-sm text-[#4B5563]">Conditioning on $s$ consecutive failures eliminates $k \le s$ and renormalizes the remaining tail—producing a distribution <strong>congruent</strong> to a brand-new $\text{Geom}(p)$.</p>
+          </div>
+
+          <!-- Controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Success Prob $p$</span><span id="memValP" class="font-mono text-[#1F2937]">0.30</span></div>
+              <input id="memSliderP" type="range" min="0.10" max="0.80" step="0.02" value="0.30" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#BE123C]">Already-Failed Trials $s$</span><span id="memValS" class="font-mono text-[#1F2937]">4</span></div>
+              <input id="memSliderS" type="range" min="1" max="8" step="1" value="4" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#D97706]">Additional Wait $t$</span><span id="memValT" class="font-mono text-[#1F2937]">3</span></div>
+              <input id="memSliderT" type="range" min="1" max="8" step="1" value="3" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Two Stacked Synchronized Canvases -->
+          <div class="space-y-4">
+            <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#1F2937]">1. Unconditional $\text{Geom}(p)$ — Gray ($k \le s$) Eliminated, Teal ($k > s + t$)</span>
+                <span id="memTopTag" class="font-mono text-[11px] font-bold text-[#0F766E]">$P(X > 7) = 0.0824$</span>
+              </div>
+              <div id="memTopWrap" class="w-full">
+                <canvas id="memTopCanvas" aria-label="Unconditional Geometric distribution with eliminated region"></canvas>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#0F766E]">2. Conditional Remaining Wait $(X - s \mid X > s)$ — Identical to Fresh $\text{Geom}(p)$!</span>
+                <span id="memBotTag" class="font-mono text-[11px] font-bold text-[#0F766E]">$P(X - 4 > 3 \mid X > 4) = 0.3430$</span>
+              </div>
+              <div id="memBotWrap" class="w-full">
+                <canvas id="memBotCanvas" aria-label="Conditional renormalized Geometric distribution"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Verification Panel -->
+          <div class="p-5 rounded-2xl bg-[#1F2937] text-white space-y-2 text-center">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-teal-300">Exact Symbolic &amp; Numerical Verification</div>
+            <div id="memVerifyMath" class="text-sm sm:text-base overflow-x-auto py-1"></div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: LIVE WAITING-TIME TRIAL RUNNER (MONTE CARLO SIMULATOR)   -->
+        <!-- =============================================================== -->
+        <div id="tab-sim" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1F2937]">Live Waiting-Time Trial Runner (Monte Carlo)</h3>
+              <p class="text-xs sm:text-sm text-[#4B5563]">Simulate independent Bernoulli$(p)$ trials until the $r$-th success and watch the empirical histogram converge to the exact PMF.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" id="simRun1" class="px-3.5 py-2 rounded-xl bg-[#0F766E] hover:bg-teal-800 text-white text-xs font-bold shadow-xs transition-colors">Run 1 Trial</button>
+              <button type="button" id="simRun25" class="px-3.5 py-2 rounded-xl bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors">+25 Runs</button>
+              <button type="button" id="simRun500" class="px-3.5 py-2 rounded-xl bg-[#D97706] hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-colors">+500 Runs</button>
+              <button type="button" id="simReset" class="px-3.5 py-2 rounded-xl bg-[#FAFAF7] hover:bg-slate-200 text-[#1F2937] border border-[#E5E7EB] text-xs font-semibold transition-colors">Reset</button>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Target Successes $r$</span><span id="simValR" class="font-mono text-[#1F2937]">2</span></div>
+              <input id="simSliderR" type="range" min="1" max="5" step="1" value="2" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Success Prob $p$</span><span id="simValP" class="font-mono text-[#1F2937]">0.40</span></div>
+              <input id="simSliderP" type="range" min="0.15" max="0.85" step="0.05" value="0.40" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Most Recent Trial Chip Strip -->
+          <div class="p-4 rounded-2xl bg-[#1F2937] text-white space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-teal-300">Latest Run Sequence (F = Failure, S = Success)</span>
+              <span id="simLatestX" class="font-mono font-bold text-amber-300">Ready to run</span>
+            </div>
+            <div id="simChipStrip" class="flex flex-wrap items-center gap-1.5 font-mono text-xs min-h-[28px]">
+              <span class="text-slate-400 font-sans">Click "Run 1 Trial" to generate a live waiting-time sequence...</span>
+            </div>
+          </div>
+
+          <!-- Empirical vs Theoretical Canvas -->
+          <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#4B5563]">Empirical Histogram vs. Exact Theoretical PMF</span>
+              <div class="flex items-center gap-3 text-[11px] font-bold">
+                <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-3 h-3 rounded bg-[#D97706]/50 border border-[#D97706]"></span>Empirical</span>
+                <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-3 h-3 rounded-full bg-[#0F766E]"></span>Theoretical PMF</span>
+              </div>
+            </div>
+            <div id="simCanvasWrap" class="w-full">
+              <canvas id="simCanvas" aria-label="Monte Carlo waiting time empirical vs theoretical chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Live Stats Strip -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center font-mono text-xs">
+            <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+              <div class="font-sans text-[11px] font-bold text-[#4B5563] uppercase">Total Simulated Runs</div>
+              <div id="simStatRuns" class="text-xl font-extrabold text-[#1F2937] mt-0.5">0</div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#F0FDFA] border border-teal-200">
+              <div class="font-sans text-[11px] font-bold text-[#0F766E] uppercase">Empirical vs. Theory Mean ($r/p$)</div>
+              <div id="simStatMean" class="text-lg font-extrabold text-[#1F2937] mt-0.5">— vs 5.000</div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#FFFBEB] border border-amber-200">
+              <div class="font-sans text-[11px] font-bold text-[#D97706] uppercase">Empirical vs. Theory SD ($\sqrt{rq}/p$)</div>
+              <div id="simStatSd" class="text-lg font-extrabold text-[#1F2937] mt-0.5">— vs 2.739</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 3. PROOFS & DERIVATIONS DRAWER                                      -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4F46E5]">Section 03 • Mathematical Rigor</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1F2937] mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">5 core AST 102 waiting-time proofs — click any card to expand</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 1 · Infinite Geometric Series</span>
+              <div class="font-bold text-[#1F2937] text-sm sm:text-base">Geometric PMF Sums to $1$ &amp; Survival Formula $P(X > k) = q^k$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Since $0 &lt; p \le 1$, we have $0 \le q = 1 - p &lt; 1$. Summing $P(X = x) = q^{x-1}p$ over $x = 1, 2, 3, \dots$ gives a convergent geometric series:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1F2937]">
+              $$\sum_{x=1}^{\infty} P(X = x) = p \sum_{x=1}^{\infty} q^{x-1} = p \cdot \frac{1}{1 - q} = \frac{p}{p} = 1 \;\checkmark$$
+            </div>
+            <p>For the survival tail $P(X > k)$ (requiring all first $k$ trials to fail), sum from $x = k + 1$ to $\infty$:</p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$P(X > k) = \sum_{x=k+1}^{\infty} q^{x-1} p = p q^k \sum_{j=0}^{\infty} q^j = p q^k \cdot \frac{1}{1 - q} = q^k \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 2 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 2 · ISRT Year Final Q6(b) Style</span>
+              <div class="font-bold text-[#1F2937] text-sm sm:text-base">Mean ($1/p$) &amp; Variance ($q/p^2$) of the Geometric Distribution</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Start with the geometric series identity $\sum_{k=0}^{\infty} q^k = \dfrac{1}{1 - q}$ (valid for $|q| &lt; 1$). Differentiate once with respect to $q$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1F2937]">
+              $$\sum_{k=1}^{\infty} k q^{k-1} = \frac{1}{(1 - q)^2} = \frac{1}{p^2} \implies E[X] = p \sum_{k=1}^{\infty} k q^{k-1} = p \cdot \frac{1}{p^2} = \mathbf{\frac{1}{p}}$$
+            </div>
+            <p>Differentiate a second time with respect to $q$ to obtain the second factorial moment $E[X(X-1)]$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1F2937]">
+              $$\sum_{k=2}^{\infty} k(k - 1) q^{k-2} = \frac{2}{(1 - q)^3} = \frac{2}{p^3} \implies E[X(X - 1)] = p q \sum_{k=2}^{\infty} k(k - 1) q^{k-2} = \frac{2q}{p^2}$$
+            </div>
+            <p>Using $E[X^2] = E[X(X-1)] + E[X] = \dfrac{2q}{p^2} + \dfrac{1}{p} = \dfrac{2q + p}{p^2} = \dfrac{1 + q}{p^2}$:</p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$V(X) = E[X^2] - (E[X])^2 = \frac{1 + q}{p^2} - \frac{1}{p^2} = \mathbf{\frac{q}{p^2}} \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 3 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#EEF2FF] text-[#4F46E5] border border-indigo-200 text-[11px] font-bold mb-1">Proof 3 · Conditional Survival</span>
+              <div class="font-bold text-[#1F2937] text-sm sm:text-base">Proof of the Discrete Memoryless Property: $P(X > s + t \mid X > s) = P(X > t)$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Let $s, t \ge 0$ be integers. Since $\{X > s + t\} \subseteq \{X > s\}$, their intersection is simply $\{X > s + t\}$. Applying the definition of conditional probability and $P(X > k) = q^k$:</p>
+            <div class="bg-[#F0FDFA] p-3.5 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$P(X > s + t \mid X > s) = \frac{P(X > s + t \cap X > s)}{P(X > s)} = \frac{P(X > s + t)}{P(X > s)} = \frac{q^{s+t}}{q^s} = q^t = P(X > t) \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 4 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-[11px] font-bold mb-1">Proof 4 · Generating Functions</span>
+              <div class="font-bold text-[#1F2937] text-sm sm:text-base">PGF &amp; MGF of the Geometric Distribution &amp; Recovering $E[X]$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p><strong>PGF ($|qt| &lt; 1$):</strong></p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1F2937]">
+              $$P_X(t) = E[t^X] = \sum_{x=1}^{\infty} t^x q^{x-1} p = pt \sum_{x=1}^{\infty} (qt)^{x-1} = \mathbf{\frac{pt}{1 - qt}}$$
+            </div>
+            <p><strong>MGF ($qe^t &lt; 1 \iff t &lt; -\ln q$):</strong> Replace $t$ with $e^t$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1F2937]">
+              $$M_X(t) = E[e^{tX}] = \mathbf{\frac{pe^t}{1 - qe^t}}$$
+            </div>
+            <p><strong>Recovering $E[X] = M'_X(0)$:</strong> By the quotient rule:</p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$M'_X(t) = \frac{pe^t(1 - qe^t) - pe^t(-qe^t)}{(1 - qe^t)^2} = \frac{pe^t}{(1 - qe^t)^2} \implies M'_X(0) = \frac{p}{(1 - q)^2} = \frac{p}{p^2} = \mathbf{\frac{1}{p}} \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 5 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 5 · Sum of i.i.d. Geometrics</span>
+              <div class="font-bold text-[#1F2937] text-sm sm:text-base">Negative Binomial Mean ($r/p$), Variance ($rq/p^2$) &amp; MGF</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Let $G_1$ be the trials until the 1st success, $G_2$ the additional trials from the 1st to the 2nd success, ..., and $G_r$ the additional trials from the $(r-1)$-th to the $r$-th success. Because Bernoulli trials are independent, $G_1, G_2, \dots, G_r \stackrel{\text{i.i.d.}}{\sim} \text{Geom}(p)$ and $X = \sum_{i=1}^r G_i$.</p>
+            <div class="bg-[#F0FDFA] p-3.5 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold space-y-1.5">
+              $$E[X] = \sum_{i=1}^{r} E[G_i] = \sum_{i=1}^{r} \frac{1}{p} = \mathbf{\frac{r}{p}}, \qquad V(X) = \sum_{i=1}^{r} V(G_i) = \sum_{i=1}^{r} \frac{q}{p^2} = \mathbf{\frac{rq}{p^2}}$$
+              $$M_X(t) = \prod_{i=1}^{r} M_{G_i}(t) = \left(\frac{pe^t}{1 - qe^t}\right)^r, \quad t &lt; -\ln q \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 4. PAST ISRT EXAM VAULT                                             -->
+    <!-- =================================================================== -->
+    <section id="vault" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#D97706]">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1F2937] mt-1">Past ISRT Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">5 real ISRT past exam problems with complete step-by-step solutions</p>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Vault 1: Year Final 2024 Q7(a) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">Year Final 2024 · Q7(a) [3 Marks]</span>
+            <span class="text-xs text-[#4B5563] font-medium">Geometric vs. Shifted Geometric · Afghanistan Literacy</span>
+          </div>
+          <p class="text-sm text-[#1F2937] leading-relaxed">
+            Distinguish between geometric and shifted geometric distribution. The literacy rate for women in Afghanistan is $12\%$. Let $X =$ the number of Afghani women you ask until one says that she is literate. (i) What is the probability distribution of $X$? (ii) What is the probability that you ask five women <em>before</em> one says she is literate? (iii) Find the mean and the standard deviation of $X$.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Model Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2.5 leading-relaxed">
+              <p><strong>Distinction:</strong> Geometric counts total trials until the 1st success ($X \in \{1,2,\dots\}$, $P(X=k)=q^{k-1}p$, $E[X]=1/p$); Shifted Geometric counts failures strictly before the 1st success ($Y = X-1 \in \{0,1,2,\dots\}$, $P(Y=y)=q^y p$, $E[Y]=q/p$). Both share variance $q/p^2$.</p>
+              <p><strong>(i)</strong> Here $p = 0.12$, $q = 0.88$. Using the trials parameterization: $X \sim \text{Geom}(0.12)$ with $P(X=k) = (0.88)^{k-1}(0.12)$ for $k=1,2,3,\dots$ (or Shifted Geometric $Y \in \{0,1,\dots\}$ if counting failures before the 1st literate woman).</p>
+              <p><strong>(ii)</strong> Asking 5 women <em>before</em> one says she is literate means 5 failures followed by 1 success on the 6th woman ($X = 6$ or $Y = 5$):
+                $$P = (0.88)^5 (0.12) = 0.527732 \times 0.12 = \mathbf{0.06333}$$
+              </p>
+              <p><strong>(iii)</strong> $E[X] = \dfrac{1}{0.12} = \mathbf{8.3333}$ (and $E[Y] = \frac{0.88}{0.12} = \mathbf{7.3333}$ for shifted). Standard deviation (identical for both):
+                $$SD = \frac{\sqrt{q}}{p} = \frac{\sqrt{0.88}}{0.12} = \mathbf{7.8174}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Vault 2: Year Final 2022 Q3(c) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">Year Final 2022 · Q3(c) [6 Marks]</span>
+            <span class="text-xs text-[#4B5563] font-medium">Asif's Basketball Free Throws · Geom + NegBin</span>
+          </div>
+          <p class="text-sm text-[#1F2937] leading-relaxed">
+            Asif is a high school basketball player who has a $70\%$ free throw percentage. Assume all free throw attempts are independent of one another (i.e., no hot hand). (i) What is the probability it takes more than 3 shots to get his first made free throw? (ii) What is the probability his first made free throw is on the third shot? (iii) What is the probability that his third made free throw is on his fifth shot?
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Model Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2 leading-relaxed">
+              <p>Given $p = 0.70$ and $q = 0.30$:</p>
+              <p><strong>(i)</strong> $X \sim \text{Geom}(0.70) \implies P(X > 3) = q^3 = (0.30)^3 = \mathbf{0.027}$.</p>
+              <p><strong>(ii)</strong> $P(X = 3) = q^2 p = (0.30)^2 (0.70) = 0.09 \times 0.70 = \mathbf{0.063}$.</p>
+              <p><strong>(iii)</strong> Let $W \sim \text{NegBin}(r = 3, p = 0.70)$ be the shot number of the 3rd make:
+                $$P(W = 5) = \binom{5 - 1}{3 - 1}(0.70)^3(0.30)^{5 - 3} = \binom{4}{2}(0.343)(0.09) = 6 \times 0.03087 = \mathbf{0.18522}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Vault 3: Year Final Q6(a,b) & Q7(c) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">Year Final · Q6(a,b) &amp; Q7(c) [12 Marks]</span>
+            <span class="text-xs text-[#4B5563] font-medium">Oil Well Drilling · Geom + NegBin</span>
+          </div>
+          <p class="text-sm text-[#1F2937] leading-relaxed">
+            An oil company conducts geological studies indicating that an exploratory oil well has a $30\%$ chance of striking oil independently at each site. (i) What is the probability that the <em>first</em> strike comes on the 2nd well drilled? (ii) What is the probability that the <em>third</em> strike comes on the 10th well drilled?
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Model Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2 leading-relaxed">
+              <p>Here $p = 0.30$ and $q = 0.70$:</p>
+              <p><strong>(i) First strike on 2nd well ($X \sim \text{Geom}(0.30)$):</strong>
+                $$P(X = 2) = q^{2-1} p = (0.70)(0.30) = \mathbf{0.21}$$
+              </p>
+              <p><strong>(ii) Third strike on 10th well ($W \sim \text{NegBin}(r = 3, p = 0.30)$):</strong>
+                $$P(W = 10) = \binom{10 - 1}{3 - 1}(0.30)^3(0.70)^{10 - 3} = \binom{9}{2}(0.027)(0.0823543) = 36 \times 0.0022236 \approx \mathbf{0.08005}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Vault 4: Year Final 2025 Q1(c) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-xs font-bold">Year Final 2025 · Q1(c) [3 Marks]</span>
+            <span class="text-xs text-[#4B5563] font-medium">Intoxicated Drivers Road Check · Rare-Event Geom</span>
+          </div>
+          <p class="text-sm text-[#1F2937] leading-relaxed">
+            Police check passing motorists at a roadblock where $1\%$ of drivers are intoxicated independently. Let $X$ be the number of motorists checked until the first intoxicated driver is found. Compute $E(X)$, $V(X)$, and $SD(X)$.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Model Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2 leading-relaxed">
+              <p>Here $X \sim \text{Geom}(p = 0.01)$ with $q = 0.99$:</p>
+              <ul class="list-disc list-inside space-y-1">
+                <li><strong>Mean:</strong> $E(X) = \dfrac{1}{p} = \dfrac{1}{0.01} = \mathbf{100}$ motorists.</li>
+                <li><strong>Variance:</strong> $V(X) = \dfrac{q}{p^2} = \dfrac{0.99}{(0.01)^2} = \dfrac{0.99}{0.0001} = \mathbf{9{,}900}$.</li>
+                <li><strong>Standard Deviation:</strong> $SD(X) = \sqrt{9{,}900} \approx \mathbf{99.4987}$ motorists.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+
+        <!-- Vault 5: 1st Incourse 2025 Q4 -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#EEF2FF] text-[#4F46E5] border border-indigo-200 text-xs font-bold">1st Incourse 2025 · Q4 [3 Marks]</span>
+            <span class="text-xs text-[#4B5563] font-medium">Heartless Card Draws With Replacement</span>
+          </div>
+          <p class="text-sm text-[#1F2937] leading-relaxed">
+            Cards are drawn one at a time <em>with replacement</em> from a well-shuffled standard 52-card deck until a Heart appears. What is the probability that at least 3 draws are required?
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Model Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2 leading-relaxed">
+              <p>With replacement, $p = \frac{13}{52} = \frac{1}{4}$ and $q = \frac{3}{4}$, so $X \sim \text{Geom}(1/4)$.</p>
+              <p>Requiring at least 3 draws ($X \ge 3$) is equivalent to $X > 2$ (meaning the first 2 draws are non-Hearts):</p>
+              <div class="bg-white p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1F2937] font-semibold">
+                $$P(X \ge 3) = P(X > 2) = q^2 = \left(\frac{3}{4}\right)^2 = \mathbf{\frac{9}{16} = 0.5625}$$
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 5. QUICK MASTERY CHECK (5-QUESTION QUIZ)                            -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E5E7EB]">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 05 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-[#1F2937] mt-1">Quick Mastery Check</h2>
+            <p class="text-sm text-[#4B5563] mt-1">Verify your mastery of Geometric, Shifted Geometric, Memoryless, and Negative Binomial models.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-[#1F2937] text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-teal-300">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-slate-200 text-[#1F2937] border border-[#E5E7EB] text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-[#E5E7EB] bg-white mt-16">
+    <div class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="px-4 py-2 rounded-xl bg-[#FAFAF7] text-[#4B5563] font-semibold border border-[#E5E7EB]">
+        ← Lesson 11: Bernoulli, Binomial &amp; Hypergeometric
+      </div>
+      <div class="text-[#4B5563] text-center">
+        <strong class="text-[#1F2937]">Module 4 · Lesson 12 of 14</strong> · AST 102 (ISRT, DU)
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-[#F0FDFA] text-[#0F766E] font-bold border border-teal-200">
+        Lesson 13: Poisson Distribution &amp; Approximations →
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         1. OVERFLOW-FREE LOG-FACTORIAL & EXACT DISTRIBUTION FUNCTIONS
+      ------------------------------------------------------------------- */
+      const LOG_FACT = new Float64Array(201);
+      LOG_FACT[0] = 0;
+      for (let i = 1; i <= 200; i++) LOG_FACT[i] = LOG_FACT[i - 1] + Math.log(i);
+
+      function logChoose(n, k) {
+        if (k < 0 || k > n) return -Infinity;
+        return LOG_FACT[n] - LOG_FACT[k] - LOG_FACT[n - k];
+      }
+
+      function chooseInt(n, k) {
+        if (k < 0 || k > n) return 0;
+        return Math.round(Math.exp(logChoose(n, k)));
+      }
+
+      function geomTrialsPMF(p, k) {
+        if (k < 1) return 0;
+        return Math.pow(1 - p, k - 1) * p;
+      }
+
+      function geomFailPMF(p, y) {
+        if (y < 0) return 0;
+        return Math.pow(1 - p, y) * p;
+      }
+
+      function negBinPMF(r, p, x) {
+        if (x < r) return 0;
+        return Math.exp(logChoose(x - 1, r - 1) + r * Math.log(p) + (x - r) * Math.log(1 - p));
+      }
+
+      /* -------------------------------------------------------------------
+         2. KATEX & HIGH-DPI CANVAS HELPERS
+      ------------------------------------------------------------------- */
+      function renderMath(el) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(el || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX auto-render skipped:', err);
+        }
+      }
+
+      function renderKatexInline(el, tex, displayMode) {
+        try {
+          if (typeof katex !== 'undefined' && el) {
+            katex.render(tex, el, { displayMode: !!displayMode, throwOnError: false });
+          } else if (el) {
+            el.textContent = tex;
+          }
+        } catch (err) {
+          if (el) el.textContent = tex;
+        }
+      }
+
+      function setupHiDPI(canvas, wrapEl, aspect, minH, maxH) {
+        const w = Math.max(260, wrapEl.clientWidth);
+        const h = Math.max(minH, Math.min(maxH, Math.round(w * aspect)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      /* -------------------------------------------------------------------
+         3. READING PROGRESS BAR & LEARNING OBJECTIVES CHECKLIST
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      const objBtns = document.querySelectorAll('.obj-btn');
+      const objDone = new Array(objBtns.length).fill(false);
+      objBtns.forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+          objDone[idx] = !objDone[idx];
+          const box = btn.querySelector('.obj-box');
+          const txt = btn.querySelector('.obj-text');
+          if (objDone[idx]) {
+            box.textContent = '✓';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-300 bg-[#0F766E] text-white flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.add('line-through', 'opacity-70');
+          } else {
+            box.textContent = '';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.remove('line-through', 'opacity-70');
+          }
+          document.getElementById('objCounter').textContent = `${objDone.filter(Boolean).length} / ${objBtns.length} Checked`;
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. TAB SWITCHER & IMMEDIATE CANVAS REDRAW
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      function redrawActiveCanvas() {
+        if (!document.getElementById('tab-geom').classList.contains('hidden')) renderGeomLab();
+        if (!document.getElementById('tab-negbin').classList.contains('hidden')) renderNegBinLab();
+        if (!document.getElementById('tab-memory').classList.contains('hidden')) renderMemoryLab();
+        if (!document.getElementById('tab-sim').classList.contains('hidden')) renderSimCanvas();
+      }
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#0F766E]', 'text-white', 'shadow-sm');
+            t.classList.add('text-[#4B5563]', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-[#0F766E]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-[#4B5563]', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const active = document.getElementById('tab-' + target);
+          if (active) {
+            active.classList.remove('hidden');
+            redrawActiveCanvas();
+            renderMath(active);
+          }
+        });
+      });
+
+      window.addEventListener('resize', redrawActiveCanvas);
+
+      /* -------------------------------------------------------------------
+         5. TAB 1: GEOMETRIC VS. SHIFTED EXPLORER
+      ------------------------------------------------------------------- */
+      let geomMode = 'trials'; // 'trials' | 'failures' | 'overlay'
+      let geomBarsMeta = [];
+
+      const geomSliderP = document.getElementById('geomSliderP');
+      const geomSliderK = document.getElementById('geomSliderK');
+      const geomCanvas = document.getElementById('geomCanvas');
+      const geomTooltip = document.getElementById('geomTooltip');
+
+      function renderGeomLab() {
+        const p = parseFloat(geomSliderP.value);
+        const q = 1 - p;
+        const k = parseInt(geomSliderK.value, 10);
+
+        document.getElementById('geomValP').textContent = p.toFixed(2);
+        document.getElementById('geomValK').textContent = k;
+
+        const ex = 1 / p;
+        const ey = q / p;
+        const vx = q / (p * p);
+        const sd = Math.sqrt(vx);
+        const pk = geomTrialsPMF(p, k);
+        const tail = Math.pow(q, k);
+
+        document.getElementById('geomOutEX').textContent = ex.toFixed(4);
+        document.getElementById('geomOutEY').textContent = ey.toFixed(4);
+        document.getElementById('geomOutVar').textContent = vx.toFixed(4);
+        document.getElementById('geomOutSd').textContent = sd.toFixed(4);
+        document.getElementById('geomOutPk').textContent = pk.toFixed(4);
+        document.getElementById('geomOutTail').textContent = tail.toFixed(4);
+
+        const lblPk = document.getElementById('geomLblPk');
+        const lblTail = document.getElementById('geomLblTail');
+        if (geomMode === 'failures') {
+          lblPk.innerHTML = `$P(Y = ${k})$`;
+          document.getElementById('geomOutPk').textContent = geomFailPMF(p, k).toFixed(4);
+          lblTail.innerHTML = `$P(Y \\ge ${k}) = q^{${k}}$`;
+        } else {
+          lblPk.innerHTML = `$P(X = ${k})$`;
+          lblTail.innerHTML = `$P(X > ${k}) = q^{${k}}$`;
+        }
+        renderMath(lblPk);
+        renderMath(lblTail);
+
+        // Determine display x range
+        const maxDisplay = Math.max(k + 4, Math.min(24, Math.ceil(ex * 2.6 + 3)));
+        const startX = (geomMode === 'trials') ? 1 : 0;
+        const xs = [];
+        for (let x = startX; x <= maxDisplay; x++) xs.push(x);
+
+        const { ctx, w, h } = setupHiDPI(geomCanvas, document.getElementById('geomCanvasWrap'), 0.42, 220, 290);
+        const padL = 44, padR = 18, padT = 24, padB = 34;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxY = Math.max(0.15, p) * 1.18;
+        const slotW = plotW / xs.length;
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E5E7EB'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#4B5563';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        geomBarsMeta = [];
+        const labelStep = xs.length > 18 ? 2 : 1;
+
+        xs.forEach((x, idx) => {
+          const cx = padL + (idx + 0.5) * slotW;
+          if (geomMode === 'overlay') {
+            const subW = Math.max(3, Math.min(18, slotW * 0.38));
+            const pX = geomTrialsPMF(p, x);
+            const pY = geomFailPMF(p, x);
+            const pyX = toY(pX), pyY = toY(pY);
+
+            // Shifted Y (Indigo left)
+            ctx.fillStyle = (x >= k) ? 'rgba(217, 119, 6, 0.78)' : '#4F46E5';
+            ctx.beginPath(); ctx.roundRect(cx - subW - 1, pyY, subW, Math.max(0, toY(0) - pyY), [3, 3, 0, 0]); ctx.fill();
+
+            // Trials X (Teal right)
+            if (x >= 1) {
+              ctx.fillStyle = (x > k) ? '#D97706' : '#0F766E';
+              ctx.beginPath(); ctx.roundRect(cx + 1, pyX, subW, Math.max(0, toY(0) - pyX), [3, 3, 0, 0]); ctx.fill();
+            }
+
+            geomBarsMeta.push({
+              x, left: cx - slotW / 2, right: cx + slotW / 2, cx,
+              py: Math.min(pyX, pyY),
+              text: `val=${x} | P(X=${x})=${pX.toFixed(4)} | P(Y=${x})=${pY.toFixed(4)}`
+            });
+          } else {
+            const barW = Math.max(6, Math.min(34, slotW * 0.70));
+            const isFail = (geomMode === 'failures');
+            const pr = isFail ? geomFailPMF(p, x) : geomTrialsPMF(p, x);
+            const cdf = isFail ? (1 - Math.pow(q, x + 1)) : (1 - Math.pow(q, x));
+            const inTail = isFail ? (x >= k) : (x > k);
+            const py = toY(pr);
+
+            ctx.fillStyle = inTail ? '#D97706' : (isFail ? '#4F46E5' : '#0F766E');
+            ctx.beginPath(); ctx.roundRect(cx - barW / 2, py, barW, Math.max(0, toY(0) - py), [4, 4, 0, 0]); ctx.fill();
+
+            geomBarsMeta.push({
+              x, left: cx - slotW / 2, right: cx + slotW / 2, cx, py,
+              text: `${isFail ? 'y' : 'k'} = ${x} | PMF = ${pr.toFixed(4)} | F(${x}) = ${cdf.toFixed(4)}`
+            });
+          }
+
+          if (idx % labelStep === 0 || idx === xs.length - 1) {
+            ctx.fillStyle = '#4B5563'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(x, cx, padT + plotH + 8);
+          }
+        });
+
+        // Vertical dashed mean line
+        const meanVal = (geomMode === 'failures') ? ey : ex;
+        if (meanVal >= startX && meanVal <= maxDisplay) {
+          const mx = padL + ((meanVal - startX + 0.5) / xs.length) * plotW;
+          ctx.save();
+          ctx.setLineDash([5, 3]);
+          ctx.strokeStyle = '#1F2937'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(mx, padT); ctx.lineTo(mx, padT + plotH); ctx.stroke();
+          ctx.restore();
+          ctx.fillStyle = '#1F2937'; ctx.font = '700 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText(`μ=${meanVal.toFixed(2)}`, mx, padT - 4);
+        }
+
+        // Axes
+        ctx.strokeStyle = '#4B5563'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      geomCanvas.addEventListener('mousemove', e => {
+        const rect = geomCanvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const hit = geomBarsMeta.find(b => mx >= b.left && mx <= b.right);
+        if (hit) {
+          geomTooltip.classList.remove('hidden');
+          geomTooltip.textContent = hit.text;
+          const tw = geomTooltip.offsetWidth || 200;
+          geomTooltip.style.left = Math.min(Math.max(8, hit.cx - tw / 2), rect.width - tw - 8) + 'px';
+          geomTooltip.style.top = Math.max(6, hit.py - 36) + 'px';
+        } else {
+          geomTooltip.classList.add('hidden');
+        }
+      });
+      geomCanvas.addEventListener('mouseleave', () => geomTooltip.classList.add('hidden'));
+
+      [geomSliderP, geomSliderK].forEach(s => s.addEventListener('input', renderGeomLab));
+      document.querySelectorAll('.geom-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          geomMode = btn.getAttribute('data-gmode');
+          document.querySelectorAll('.geom-mode-btn').forEach(b => {
+            b.className = b === btn
+              ? 'geom-mode-btn px-3 py-1.5 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'geom-mode-btn px-3 py-1.5 rounded-lg text-[#4B5563] transition-all';
+          });
+          renderGeomLab();
+        });
+      });
+
+      document.querySelectorAll('.geom-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-gpreset');
+          if (key === 'asif') { geomSliderP.value = '0.70'; geomSliderK.value = '3'; }
+          else if (key === 'oil') { geomSliderP.value = '0.30'; geomSliderK.value = '2'; }
+          else if (key === 'heart') { geomSliderP.value = '0.25'; geomSliderK.value = '2'; }
+          else if (key === 'afghan') { geomSliderP.value = '0.12'; geomSliderK.value = '5'; }
+          document.querySelectorAll('.geom-preset').forEach(b => {
+            b.className = b === btn
+              ? 'geom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'geom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1F2937] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          renderGeomLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 2: NEGATIVE BINOMIAL (r-TH SUCCESS) EXPLORER
+      ------------------------------------------------------------------- */
+      let nbBarsMeta = [];
+      const nbSliderR = document.getElementById('nbSliderR');
+      const nbSliderP = document.getElementById('nbSliderP');
+      const nbSliderX = document.getElementById('nbSliderX');
+      const nbCanvas = document.getElementById('nbCanvas');
+      const nbTooltip = document.getElementById('nbTooltip');
+
+      function renderNegBinLab() {
+        const r = parseInt(nbSliderR.value, 10);
+        const p = parseFloat(nbSliderP.value);
+        const q = 1 - p;
+
+        nbSliderX.min = r;
+        nbSliderX.max = r + 25;
+        let x = Math.max(r, Math.min(r + 25, parseInt(nbSliderX.value, 10)));
+        nbSliderX.value = x;
+
+        document.getElementById('nbValR').textContent = r;
+        document.getElementById('nbValP').textContent = p.toFixed(2);
+        document.getElementById('nbValX').textContent = x;
+
+        const mean = r / p;
+        const variance = (r * q) / (p * p);
+        const mode = r === 1 ? 1 : r + Math.floor(((r - 1) * q) / p);
+        const ways = chooseInt(x - 1, r - 1);
+        const onePath = Math.pow(p, r) * Math.pow(q, x - r);
+        const probX = negBinPMF(r, p, x);
+
+        document.getElementById('nbOutWays').textContent = ways.toLocaleString();
+        document.getElementById('nbOutPath').textContent = onePath.toFixed(5);
+        document.getElementById('nbOutProb').textContent = probX.toFixed(5);
+        document.getElementById('nbOutMean').textContent = mean.toFixed(4);
+        document.getElementById('nbOutVar').textContent = variance.toFixed(4);
+
+        renderKatexInline(
+          document.getElementById('nbFormulaRender'),
+          `P(X = ${x}) = \\binom{${x - 1}}{${r - 1}}(${p.toFixed(2)})^{${r}}(${q.toFixed(2)})^{${x - r}} = ${ways.toLocaleString()} \\times ${onePath.toFixed(5)} = ${probX.toFixed(5)}`,
+          true
+        );
+
+        const decompTerms = Array.from({ length: Math.min(r, 4) }, (_, i) => `G_${i + 1}`).join(' + ') + (r > 4 ? ` + \\dots + G_${r}` : '');
+        const decompEl = document.getElementById('nbDecompMath');
+        decompEl.innerHTML = `$X = ${decompTerms}$ where each $G_i \\stackrel{\\text{i.i.d.}}{\\sim} \\text{Geom}(${p.toFixed(2)})$ has mean $${(1/p).toFixed(2)}$ and variance $${(q/(p*p)).toFixed(2)}$.`;
+        renderMath(decompEl);
+
+        // Plot Range
+        const maxK = Math.max(x + 3, Math.min(r + 28, Math.ceil(mean + 3 * Math.sqrt(variance) + 2)));
+        const ks = [];
+        const pmfs = [];
+        const cdfs = [];
+        let cum = 0;
+        for (let k = r; k <= maxK; k++) {
+          const pr = negBinPMF(r, p, k);
+          cum += pr;
+          ks.push(k);
+          pmfs.push(pr);
+          cdfs.push(Math.min(1, cum));
+        }
+
+        const { ctx, w, h } = setupHiDPI(nbCanvas, document.getElementById('nbCanvasWrap'), 0.42, 220, 290);
+        const padL = 44, padR = 18, padT = 26, padB = 34;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxY = Math.max(0.10, ...pmfs) * 1.18;
+        const slotW = plotW / ks.length;
+        const barW = Math.max(4, Math.min(30, slotW * 0.72));
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E5E7EB'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#4B5563';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        nbBarsMeta = [];
+        const labelStep = ks.length > 20 ? 3 : (ks.length > 13 ? 2 : 1);
+        ks.forEach((k, idx) => {
+          const cx = padL + (idx + 0.5) * slotW;
+          const py = toY(pmfs[idx]);
+          const bh = Math.max(0, toY(0) - py);
+          const isSel = (k === x);
+          const isMode = (k === mode);
+
+          nbBarsMeta.push({ k, left: cx - slotW / 2, right: cx + slotW / 2, cx, py, pmf: pmfs[idx], cdf: cdfs[idx] });
+
+          ctx.fillStyle = isSel ? '#D97706' : '#0F766E';
+          ctx.beginPath(); ctx.roundRect(cx - barW / 2, py, barW, bh, [4, 4, 0, 0]); ctx.fill();
+
+          if (isMode) {
+            const dy = Math.max(padT + 6, py - 9);
+            ctx.fillStyle = '#4F46E5';
+            ctx.beginPath();
+            ctx.moveTo(cx, dy - 5); ctx.lineTo(cx + 5, dy); ctx.lineTo(cx, dy + 5); ctx.lineTo(cx - 5, dy);
+            ctx.closePath(); ctx.fill();
+          }
+
+          if (idx % labelStep === 0 || idx === ks.length - 1 || isSel) {
+            ctx.fillStyle = isSel ? '#D97706' : '#4B5563';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(k, cx, padT + plotH + 8);
+          }
+        });
+
+        // Mean dashed line
+        if (mean >= r && mean <= maxK) {
+          const mx = padL + ((mean - r + 0.5) / ks.length) * plotW;
+          ctx.save();
+          ctx.setLineDash([5, 3]);
+          ctx.strokeStyle = '#0F766E'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(mx, padT); ctx.lineTo(mx, padT + plotH); ctx.stroke();
+          ctx.restore();
+          ctx.fillStyle = '#0F766E'; ctx.font = '700 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText(`μ=${mean.toFixed(2)}`, mx, padT - 4);
+        }
+
+        // Axes
+        ctx.strokeStyle = '#4B5563'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      nbCanvas.addEventListener('mousemove', e => {
+        const rect = nbCanvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const hit = nbBarsMeta.find(b => mx >= b.left && mx <= b.right);
+        if (hit) {
+          nbTooltip.classList.remove('hidden');
+          nbTooltip.textContent = `x = ${hit.k} | P(X=${hit.k}) = ${hit.pmf.toFixed(5)} | F(${hit.k}) = ${hit.cdf.toFixed(4)}`;
+          const tw = nbTooltip.offsetWidth || 220;
+          nbTooltip.style.left = Math.min(Math.max(8, hit.cx - tw / 2), rect.width - tw - 8) + 'px';
+          nbTooltip.style.top = Math.max(6, hit.py - 36) + 'px';
+        } else {
+          nbTooltip.classList.add('hidden');
+        }
+      });
+      nbCanvas.addEventListener('mouseleave', () => nbTooltip.classList.add('hidden'));
+
+      [nbSliderR, nbSliderP, nbSliderX].forEach(s => s.addEventListener('input', renderNegBinLab));
+      document.querySelectorAll('.nb-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-nbpreset');
+          if (key === 'asif') { nbSliderR.value = '3'; nbSliderP.value = '0.70'; nbSliderX.max = 28; nbSliderX.value = '5'; }
+          else if (key === 'oil') { nbSliderR.value = '3'; nbSliderP.value = '0.30'; nbSliderX.max = 28; nbSliderX.value = '10'; }
+          else if (key === 'geom1') { nbSliderR.value = '1'; nbSliderP.value = '0.35'; nbSliderX.max = 26; nbSliderX.value = '3'; }
+          document.querySelectorAll('.nb-preset').forEach(b => {
+            b.className = b === btn
+              ? 'nb-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'nb-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1F2937] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          renderNegBinLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. TAB 3: MEMORYLESS PROPERTY VISUALIZER
+      ------------------------------------------------------------------- */
+      const memSliderP = document.getElementById('memSliderP');
+      const memSliderS = document.getElementById('memSliderS');
+      const memSliderT = document.getElementById('memSliderT');
+
+      function renderMemoryLab() {
+        const p = parseFloat(memSliderP.value);
+        const q = 1 - p;
+        const s = parseInt(memSliderS.value, 10);
+        const t = parseInt(memSliderT.value, 10);
+
+        document.getElementById('memValP').textContent = p.toFixed(2);
+        document.getElementById('memValS').textContent = s;
+        document.getElementById('memValT').textContent = t;
+
+        const pS = Math.pow(q, s);
+        const pST = Math.pow(q, s + t);
+        const pT = Math.pow(q, t);
+
+        document.getElementById('memTopTag').textContent = `P(X > ${s + t}) = ${pST.toFixed(4)} | P(X > ${s}) = ${pS.toFixed(4)}`;
+        document.getElementById('memBotTag').textContent = `P(X - ${s} > ${t} | X > ${s}) = ${pT.toFixed(4)} = P(X > ${t})`;
+
+        renderKatexInline(
+          document.getElementById('memVerifyMath'),
+          `P(X > ${s} + ${t} \\mid X > ${s}) = \\frac{P(X > ${s + t})}{P(X > ${s})} = \\frac{${q.toFixed(2)}^{${s + t}}}{${q.toFixed(2)}^{${s}}} = \\frac{${pST.toFixed(5)}}{${pS.toFixed(5)}} = ${pT.toFixed(5)} = ${q.toFixed(2)}^{${t}} = P(X > ${t})`,
+          true
+        );
+
+        const maxK = Math.max(s + t + 5, 16);
+        const maxY = Math.max(0.15, p) * 1.18;
+
+        // Chart 1: Unconditional X = 1..maxK
+        const { ctx: c1, w: w1, h: h1 } = setupHiDPI(document.getElementById('memTopCanvas'), document.getElementById('memTopWrap'), 0.30, 165, 210);
+        const padL = 44, padR = 16, padT = 18, padB = 30;
+        const pW1 = w1 - padL - padR, pH1 = h1 - padT - padB;
+        const slot1 = pW1 / maxK;
+        const barW1 = Math.max(5, Math.min(26, slot1 * 0.72));
+        const toY1 = v => padT + pH1 * (1 - v / maxY);
+
+        c1.clearRect(0, 0, w1, h1);
+        c1.strokeStyle = '#E5E7EB'; c1.lineWidth = 1;
+        c1.font = '600 10px JetBrains Mono, monospace'; c1.fillStyle = '#4B5563'; c1.textAlign = 'right'; c1.textBaseline = 'middle';
+        for (let i = 0; i <= 3; i++) {
+          const yv = (maxY * i) / 3;
+          c1.beginPath(); c1.moveTo(padL, toY1(yv)); c1.lineTo(padL + pW1, toY1(yv)); c1.stroke();
+          c1.fillText(yv.toFixed(2), padL - 6, toY1(yv));
+        }
+
+        for (let k = 1; k <= maxK; k++) {
+          const cx = padL + (k - 0.5) * slot1;
+          const pr = geomTrialsPMF(p, k);
+          const py = toY1(pr);
+          if (k <= s) c1.fillStyle = '#E2E8F0';
+          else if (k <= s + t) c1.fillStyle = '#94A3B8';
+          else c1.fillStyle = '#0F766E';
+          c1.beginPath(); c1.roundRect(cx - barW1 / 2, py, barW1, Math.max(0, toY1(0) - py), [3, 3, 0, 0]); c1.fill();
+          if (maxK <= 18 || k % 2 === 1) {
+            c1.fillStyle = k <= s ? '#94A3B8' : '#4B5563';
+            c1.textAlign = 'center'; c1.textBaseline = 'top';
+            c1.fillText(k, cx, padT + pH1 + 6);
+          }
+        }
+        // Divider line after s
+        const divX = padL + s * slot1;
+        c1.save(); c1.setLineDash([4, 3]); c1.strokeStyle = '#BE123C'; c1.lineWidth = 1.8;
+        c1.beginPath(); c1.moveTo(divX, padT); c1.lineTo(divX, padT + pH1); c1.stroke(); c1.restore();
+        c1.strokeStyle = '#4B5563'; c1.lineWidth = 1.3;
+        c1.beginPath(); c1.moveTo(padL, padT); c1.lineTo(padL, padT + pH1); c1.lineTo(padL + pW1, padT + pH1); c1.stroke();
+
+        // Chart 2: Conditional Remaining Wait m = 1..maxM
+        const maxM = Math.max(t + 6, 12);
+        const { ctx: c2, w: w2, h: h2 } = setupHiDPI(document.getElementById('memBotCanvas'), document.getElementById('memBotWrap'), 0.30, 165, 210);
+        const pW2 = w2 - padL - padR, pH2 = h2 - padT - padB;
+        const slot2 = pW2 / maxM;
+        const barW2 = Math.max(6, Math.min(30, slot2 * 0.72));
+        const toY2 = v => padT + pH2 * (1 - v / maxY);
+
+        c2.clearRect(0, 0, w2, h2);
+        c2.strokeStyle = '#E5E7EB'; c2.lineWidth = 1;
+        c2.font = '600 10px JetBrains Mono, monospace'; c2.fillStyle = '#4B5563'; c2.textAlign = 'right'; c2.textBaseline = 'middle';
+        for (let i = 0; i <= 3; i++) {
+          const yv = (maxY * i) / 3;
+          c2.beginPath(); c2.moveTo(padL, toY2(yv)); c2.lineTo(padL + pW2, toY2(yv)); c2.stroke();
+          c2.fillText(yv.toFixed(2), padL - 6, toY2(yv));
+        }
+
+        for (let m = 1; m <= maxM; m++) {
+          const cx = padL + (m - 0.5) * slot2;
+          // Renormalized conditional P(X = s+m | X > s) = q^(s+m-1)*p / q^s = q^(m-1)*p
+          const pr = geomTrialsPMF(p, s + m) / pS;
+          const py = toY2(pr);
+          c2.fillStyle = (m > t) ? '#0F766E' : '#94A3B8';
+          c2.beginPath(); c2.roundRect(cx - barW2 / 2, py, barW2, Math.max(0, toY2(0) - py), [3, 3, 0, 0]); c2.fill();
+          c2.fillStyle = '#4B5563'; c2.textAlign = 'center'; c2.textBaseline = 'top';
+          c2.fillText(`+${m}`, cx, padT + pH2 + 6);
+        }
+        c2.strokeStyle = '#4B5563'; c2.lineWidth = 1.3;
+        c2.beginPath(); c2.moveTo(padL, padT); c2.lineTo(padL, padT + pH2); c2.lineTo(padL + pW2, padT + pH2); c2.stroke();
+      }
+
+      [memSliderP, memSliderS, memSliderT].forEach(s => s.addEventListener('input', renderMemoryLab));
+
+      /* -------------------------------------------------------------------
+         8. TAB 4: LIVE WAITING-TIME TRIAL RUNNER (MONTE CARLO SIMULATOR)
+      ------------------------------------------------------------------- */
+      const simSliderR = document.getElementById('simSliderR');
+      const simSliderP = document.getElementById('simSliderP');
+      let simCounts = new Map();
+      let simRuns = 0, simSum = 0, simSumSq = 0;
+
+      function resetSim() {
+        const r = parseInt(simSliderR.value, 10);
+        const p = parseFloat(simSliderP.value);
+        document.getElementById('simValR').textContent = r;
+        document.getElementById('simValP').textContent = p.toFixed(2);
+        simCounts.clear();
+        simRuns = 0; simSum = 0; simSumSq = 0;
+        document.getElementById('simLatestX').textContent = 'Ready to run';
+        document.getElementById('simChipStrip').innerHTML = '<span class="text-slate-400 font-sans">Click "Run 1 Trial" to generate a live waiting-time sequence...</span>';
+        renderSimCanvas();
+      }
+
+      function runSimBatch(count) {
+        const r = parseInt(simSliderR.value, 10);
+        const p = parseFloat(simSliderP.value);
+        let lastSeq = [];
+        for (let b = 0; b < count; b++) {
+          let succ = 0, trials = 0;
+          const recordSeq = (b === count - 1);
+          if (recordSeq) lastSeq = [];
+          while (succ < r) {
+            trials++;
+            const hit = Math.random() < p;
+            if (hit) succ++;
+            if (recordSeq && lastSeq.length < 40) lastSeq.push(hit ? 'S' : 'F');
+          }
+          simCounts.set(trials, (simCounts.get(trials) || 0) + 1);
+          simRuns++;
+          simSum += trials;
+          simSumSq += trials * trials;
+          if (recordSeq) {
+            document.getElementById('simLatestX').textContent = `Latest X = ${trials} trial${trials === 1 ? '' : 's'} (r = ${r} successes)`;
+            const chipsHtml = lastSeq.map(tok =>
+              tok === 'S'
+                ? '<span class="w-6 h-6 rounded-md bg-[#0F766E] text-white font-bold inline-flex items-center justify-center">S</span>'
+                : '<span class="w-6 h-6 rounded-md bg-[#BE123C]/85 text-white font-bold inline-flex items-center justify-center">F</span>'
+            ).join('') + (trials > 40 ? `<span class="text-xs text-amber-300 ml-1">... (total ${trials})</span>` : '');
+            document.getElementById('simChipStrip').innerHTML = chipsHtml;
+          }
+        }
+        renderSimCanvas();
+      }
+
+      function renderSimCanvas() {
+        const r = parseInt(simSliderR.value, 10);
+        const p = parseFloat(simSliderP.value);
+        const q = 1 - p;
+        const theoMean = r / p;
+        const theoSd = Math.sqrt(r * q) / p;
+
+        document.getElementById('simStatRuns').textContent = simRuns.toLocaleString();
+        if (simRuns > 0) {
+          const empMean = simSum / simRuns;
+          const empVar = Math.max(0, simSumSq / simRuns - empMean * empMean);
+          document.getElementById('simStatMean').textContent = `${empMean.toFixed(3)} vs ${theoMean.toFixed(3)}`;
+          document.getElementById('simStatSd').textContent = `${Math.sqrt(empVar).toFixed(3)} vs ${theoSd.toFixed(3)}`;
+        } else {
+          document.getElementById('simStatMean').textContent = `— vs ${theoMean.toFixed(3)}`;
+          document.getElementById('simStatSd').textContent = `— vs ${theoSd.toFixed(3)}`;
+        }
+
+        const maxObs = simCounts.size ? Math.max(...simCounts.keys()) : r;
+        const maxK = Math.min(r + 32, Math.max(Math.ceil(theoMean + 2.8 * theoSd + 2), Math.min(maxObs, r + 32)));
+        const ks = [], emp = [], theo = [];
+        for (let k = r; k <= maxK; k++) {
+          ks.push(k);
+          emp.push(simRuns > 0 ? (simCounts.get(k) || 0) / simRuns : 0);
+          theo.push(negBinPMF(r, p, k));
+        }
+
+        const { ctx, w, h } = setupHiDPI(document.getElementById('simCanvas'), document.getElementById('simCanvasWrap'), 0.40, 210, 270);
+        const padL = 44, padR = 18, padT = 20, padB = 32;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxY = Math.max(0.15, ...emp, ...theo) * 1.18;
+        const slotW = plotW / ks.length;
+        const barW = Math.max(4, Math.min(28, slotW * 0.68));
+        const toX = idx => padL + (idx + 0.5) * slotW;
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E5E7EB'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#4B5563';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          ctx.beginPath(); ctx.moveTo(padL, toY(yv)); ctx.lineTo(padL + plotW, toY(yv)); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, toY(yv));
+        }
+
+        const labelStep = ks.length > 22 ? 3 : (ks.length > 13 ? 2 : 1);
+        // Empirical Amber Bars
+        ks.forEach((k, idx) => {
+          const cx = toX(idx);
+          if (simRuns > 0 && emp[idx] > 0) {
+            const py = toY(emp[idx]);
+            ctx.fillStyle = 'rgba(217, 119, 6, 0.42)';
+            ctx.strokeStyle = '#D97706'; ctx.lineWidth = 1.4;
+            ctx.beginPath(); ctx.roundRect(cx - barW / 2, py, barW, Math.max(0, toY(0) - py), [3, 3, 0, 0]);
+            ctx.fill(); ctx.stroke();
+          }
+          if (idx % labelStep === 0 || idx === ks.length - 1) {
+            ctx.fillStyle = '#4B5563'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(k, cx, padT + plotH + 8);
+          }
+        });
+
+        // Theoretical Teal Curve & Dots
+        ctx.strokeStyle = '#0F766E'; ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ks.forEach((_, idx) => {
+          const cx = toX(idx), py = toY(theo[idx]);
+          if (idx === 0) ctx.moveTo(cx, py); else ctx.lineTo(cx, py);
+        });
+        ctx.stroke();
+
+        ctx.fillStyle = '#0F766E';
+        ks.forEach((_, idx) => {
+          ctx.beginPath(); ctx.arc(toX(idx), toY(theo[idx]), 3.5, 0, Math.PI * 2); ctx.fill();
+        });
+
+        // Axes
+        ctx.strokeStyle = '#4B5563'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      [simSliderR, simSliderP].forEach(s => s.addEventListener('input', resetSim));
+      document.getElementById('simRun1').addEventListener('click', () => runSimBatch(1));
+      document.getElementById('simRun25').addEventListener('click', () => runSimBatch(25));
+      document.getElementById('simRun500').addEventListener('click', () => runSimBatch(500));
+      document.getElementById('simReset').addEventListener('click', resetSim);
+
+      /* -------------------------------------------------------------------
+         9. SECTION 5: QUICK MASTERY CHECK (5-QUESTION QUIZ)
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. A fair six-sided die is rolled repeatedly until a 6 appears ($X \\sim \\text{Geom}(1/6)$). What is the survival probability $P(X > 4)$?',
+          options: [
+            '$(1/6)^4$',
+            '$(5/6)^3(1/6)$',
+            '$(5/6)^4$',
+            '$1 - (5/6)^4$'
+          ],
+          correct: 2,
+          explanation: 'Using the Geometric survival formula $P(X > k) = q^k$ with $q = 5/6$ and $k = 4$, we get $P(X > 4) = (5/6)^4 \\approx 0.4823$ (all first 4 rolls are non-6s).'
+        },
+        {
+          q: '2. Suppose $X \\sim \\text{Geom}(p = 0.25)$ counts trials until the 1st success, and $Y = X - 1$ counts failures before the 1st success. What are $E[Y]$ and $V(Y)$?',
+          options: [
+            '$E[Y] = 4$ and $V(Y) = 12$',
+            '$E[Y] = 3$ and $V(Y) = 12$',
+            '$E[Y] = 3$ and $V(Y) = 11$',
+            '$E[Y] = 4$ and $V(Y) = 11$'
+          ],
+          correct: 1,
+          explanation: '$E[X] = 1/0.25 = 4 \\implies E[Y] = E[X - 1] = 3$. Shifting never alters variance: $V(Y) = V(X) = q/p^2 = 0.75 / 0.0625 = 12$.'
+        },
+        {
+          q: '3. Which expression gives the exact probability that the 4th success occurs on the 7th independent Bernoulli$(p)$ trial?',
+          options: [
+            '$\\binom{7}{4} p^4 q^3$',
+            '$\\binom{6}{3} p^4 q^3$',
+            '$\\binom{6}{4} p^4 q^3$',
+            '$\\binom{7}{3} p^3 q^4$'
+          ],
+          correct: 1,
+          explanation: 'The 4th success is locked on trial 7, so we place $r - 1 = 3$ successes in the first $x - 1 = 6$ trials: $\\binom{6}{3} p^4 q^3$.'
+        },
+        {
+          q: '4. An independent Bernoulli process has $p = 0.20$. Given that the first 5 trials were ALL failures ($X > 5$), what is the conditional probability that the first success still requires more than 3 additional trials ($X > 8$)?',
+          options: [
+            '$(0.80)^8$',
+            '$(0.80)^5$',
+            '$(0.80)^3 = 0.512$',
+            '$(0.80)^2(0.20) = 0.128$'
+          ],
+          correct: 2,
+          explanation: 'By the discrete memoryless property, $P(X > 5 + 3 \\mid X > 5) = P(X > 3) = q^3 = (0.80)^3 = 0.512$.'
+        },
+        {
+          q: '5. A quality inspector tests light bulbs one by one (independent, $p = 0.05$ defective) and stops as soon as the 3rd defective bulb is found. Which distribution models the total number of bulbs tested?',
+          options: [
+            'Binomial$(n, 0.05)$',
+            'Hypergeometric',
+            'Geometric$(0.05)$',
+            'Negative Binomial$(r = 3, p = 0.05)$'
+          ],
+          correct: 3,
+          explanation: 'Counting independent Bernoulli trials until a fixed target of $r = 3$ successes is the exact definition of the Negative Binomial$(r=3, p=0.05)$ distribution.'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-[#FAFAF7] border-[#E5E7EB] text-[#1F2937] hover:border-[#0F766E] hover:bg-[#F0FDFA]';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-[#F0FDFA] border-[#0F766E] text-[#0F766E] font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-[#FFF1F2] border-[#BE123C] text-[#BE123C] font-semibold';
+              else cls = 'bg-slate-50 border-slate-200 text-slate-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-[#F0FDFA] border-teal-300 text-[#0F766E]' : 'bg-[#FFF1F2] border-rose-300 text-[#BE123C]'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-[#1F2937] text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        renderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         10. INITIALIZATION ON DOMCONTENTLOADED & WINDOW LOAD
+      ------------------------------------------------------------------- */
+      function initAll() {
+        renderGeomLab();
+        renderNegBinLab();
+        renderMemoryLab();
+        resetSim();
+        renderQuiz();
+        updateScrollProgress();
+        renderMath(document.body);
+      }
+
+      document.addEventListener('DOMContentLoaded', initAll);
+      window.addEventListener('load', () => {
+        redrawActiveCanvas();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

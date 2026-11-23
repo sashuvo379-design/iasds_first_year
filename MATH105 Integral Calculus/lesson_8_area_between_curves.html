@@ -1,0 +1,3430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 8: Area Between Curves — MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.9 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DEEP DARK ACADEMIC SLATE THEME
+       ========================================================================== */
+    :root {
+      --bg-page: #0b1120;
+      --bg-card: #111827;
+      --bg-subtle: #162033;
+      --bg-elevated: #1e293b;
+      --border: #1e293b;
+      --border-strong: #334155;
+
+      --text-primary: #e2e8f0;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --cyan: #38bdf8;
+      --cyan-soft: rgba(56, 189, 248, 0.14);
+      --cyan-border: rgba(56, 189, 248, 0.36);
+
+      --emerald: #34d399;
+      --emerald-dark: #10b981;
+      --emerald-soft: rgba(52, 211, 153, 0.14);
+      --emerald-border: rgba(52, 211, 153, 0.36);
+
+      --amber: #fbbf24;
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.36);
+
+      --rose: #fb7185;
+      --rose-soft: rgba(251, 113, 133, 0.14);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.44);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.56);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-w: 260px;
+      --header-h: 60px;
+      --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* ==========================================================================
+       MOBILE TOP HEADER (VISIBLE ON < 900px)
+       ========================================================================== */
+    .mobile-header {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 45;
+      height: var(--header-h);
+      background: rgba(11, 17, 32, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .mobile-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .mobile-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mobile-pct {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--emerald);
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       APP SHELL & STICKY LEFT SIDEBAR (260px)
+       ========================================================================== */
+    .app-shell {
+      display: flex;
+      max-width: 1460px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 22px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 40;
+      transition: transform 0.28s ease;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.76);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active { display: block; }
+
+    .sidebar-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 4px;
+    }
+
+    .course-badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar-title {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+
+    .sidebar-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .progress-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 13px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-pct {
+      font-family: var(--font-mono);
+      color: var(--emerald);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--cyan), var(--emerald));
+      transition: width 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .nav-label {
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+      line-height: 1.35;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .nav-link.active {
+      background: var(--cyan-soft);
+      color: var(--cyan);
+      border-color: var(--cyan-border);
+      font-weight: 600;
+    }
+
+    .nav-check {
+      margin-left: auto;
+      color: var(--emerald);
+      font-weight: 800;
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .nav-link.done .nav-check { opacity: 1; }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .lesson-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .lesson-nav-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+      background: var(--cyan-soft);
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 28px 34px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 42px;
+    }
+
+    .lesson-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #102a43 52%, #0c4a6e 100%);
+      border: 1px solid var(--cyan-border);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(52, 211, 153, 0.22) 0%, rgba(56, 189, 248, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(11, 17, 32, 0.48);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .lesson-hero h1 {
+      font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .lesson-hero p {
+      max-width: 820px;
+      color: rgba(241, 245, 249, 0.92);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background: rgba(11, 17, 32, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       SECTIONS & CARDS
+       ========================================================================== */
+    .section-block {
+      scroll-margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+
+    .section-desc {
+      font-size: 0.91rem;
+      color: var(--text-muted);
+      max-width: 760px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ==========================================================================
+       BUTTONS, PRESET PILLS & CONTROLS
+       ========================================================================== */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #0b1120;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+      color: #0b1120;
+    }
+
+    .btn-emerald {
+      background: var(--emerald-soft);
+      border-color: var(--emerald-border);
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    .btn-emerald:hover:not(:disabled) {
+      background: rgba(52, 211, 153, 0.26);
+      border-color: var(--emerald);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 7px 11px;
+      font-size: 0.78rem;
+    }
+
+    .preset-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .preset-btn {
+      padding: 9px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      text-align: left;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+    }
+
+    .preset-btn.active {
+      background: var(--cyan-soft);
+      border-color: var(--cyan);
+      color: var(--text-primary);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.22);
+    }
+
+    .preset-sub {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--amber);
+      text-transform: uppercase;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      background: var(--bg-page);
+      padding: 5px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+    }
+
+    .seg-btn {
+      padding: 10px 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .seg-btn.active {
+      background: var(--cyan);
+      color: #0b1120;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      color: var(--cyan);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      padding: 2px 9px;
+      border-radius: var(--radius-sm);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    /* ==========================================================================
+       SECTION 1 & 2: INTERACTIVE CANVAS LAB LAYOUTS
+       ========================================================================== */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10.5;
+      min-height: 300px;
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.79rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch-cyan { background: var(--cyan); }
+    .swatch-rose { background: var(--rose); }
+    .swatch-amber { background: var(--amber); }
+    .swatch-emerald { background: var(--emerald); }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .efficiency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 6px 13px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .efficiency-badge.optimal {
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      color: var(--emerald);
+    }
+
+    .efficiency-badge.split {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      color: var(--rose);
+    }
+
+    .formula-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 13px 15px;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    .formula-box.emerald { border-left-color: var(--emerald); }
+    .formula-box.amber { border-left-color: var(--amber); }
+
+    .telemetry-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .tele-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .tele-card.cyan { background: var(--cyan-soft); border-color: var(--cyan-border); }
+    .tele-card.emerald { background: var(--emerald-soft); border-color: var(--emerald-border); }
+    .tele-card.amber { background: var(--amber-soft); border-color: var(--amber-border); }
+    .tele-card.rose { background: var(--rose-soft); border-color: var(--rose-border); }
+
+    .tele-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .tele-val {
+      font-family: var(--font-mono);
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .tele-sub {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+    }
+
+    /* Section 2: Balance Bar */
+    .balance-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.25s ease;
+    }
+
+    .balance-card.balanced {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      box-shadow: 0 0 22px rgba(52, 211, 153, 0.24);
+    }
+
+    .balance-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .balanced-pill {
+      display: none;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--emerald);
+      color: #06281e;
+      font-size: 0.73rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .balance-card.balanced .balanced-pill { display: inline-flex; }
+
+    .balance-bar {
+      width: 100%;
+      height: 14px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      overflow: hidden;
+      display: flex;
+    }
+
+    .balance-left {
+      height: 100%;
+      background: linear-gradient(90deg, #0284c7, var(--cyan));
+      transition: width 0.12s ease;
+    }
+
+    .balance-right {
+      height: 100%;
+      background: linear-gradient(90deg, var(--emerald-dark), var(--emerald));
+      flex: 1;
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY, DECISION GUIDE, RATE SVG & EXAM TRAPS
+       ========================================================================== */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .theory-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theory-card h3 {
+      font-size: 1.06rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .ref-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-strong);
+    }
+
+    table.ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background: var(--bg-card);
+    }
+
+    table.ref-table th, table.ref-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    table.ref-table th {
+      background: var(--bg-subtle);
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    table.ref-table tr:last-child td { border-bottom: none; }
+
+    .rate-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.05fr) minmax(0, 1.2fr);
+      gap: 20px;
+      align-items: center;
+    }
+
+    .svg-box {
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .traps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 14px;
+    }
+
+    .trap-card {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .trap-card-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--rose);
+    }
+
+    /* ==========================================================================
+       SECTION 4: ISRT PAST-EXAM VAULT
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 15px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--cyan);
+      color: var(--text-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #0b1120;
+    }
+
+    .vault-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .exam-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .exam-card.hidden { display: none; }
+    .exam-card.reviewed-card { border-color: var(--emerald-border); }
+
+    .exam-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exam-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .marks-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
+    }
+
+    .exam-prompt {
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+
+    .review-check-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--emerald-border);
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      font-size: 0.79rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .review-check-label input {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--emerald);
+      cursor: pointer;
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+    }
+
+    .hint-box.open { display: block; }
+
+    .solution-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .solution-box.open { display: flex; }
+
+    .sol-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-left: 3px solid var(--emerald);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.91rem;
+      overflow-x: auto;
+    }
+
+    .sol-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--emerald);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       SECTION 5: QUICK MASTERY CHECK (QUIZ)
+       ========================================================================== */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--emerald);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-qnum {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.89rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--cyan);
+      background: var(--cyan-soft);
+    }
+
+    .quiz-opt.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .quiz-opt.wrong {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: var(--emerald-soft); border: 1px solid var(--emerald-border); }
+    .quiz-feedback.err { background: var(--rose-soft); border: 1px solid var(--rose-border); }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 60;
+      background: var(--bg-elevated);
+      border: 1px solid var(--cyan-border);
+      color: var(--text-primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1100px) {
+      .lab-grid, .rate-grid { grid-template-columns: 1fr; }
+      .main-content { padding: 22px 22px 56px; }
+    }
+
+    @media (max-width: 900px) {
+      .mobile-header { display: flex; }
+      .sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        height: calc(100vh - var(--header-h));
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .section-block { scroll-margin-top: calc(var(--header-h) + 16px); }
+    }
+
+    @media (max-width: 540px) {
+      .main-content { padding: 16px 14px 48px; }
+      .card, .exam-card, .theory-card, .quiz-card { padding: 16px; }
+      .lesson-hero { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE COLLAPSIBLE HEADER -->
+  <header class="mobile-header">
+    <div class="mobile-header-left">
+      <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle navigation menu" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-title">MATH 105 &bull; Lesson 8: Area Between Curves</span>
+    </div>
+    <span class="mobile-pct" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- APP SHELL -->
+  <div class="app-shell">
+
+    <!-- STICKY LEFT SIDEBAR (260px) -->
+    <aside class="sidebar" id="sidebar" aria-label="Lesson 8 navigation">
+      <div class="sidebar-brand">
+        <span class="course-badge">MATH 105 &bull; Module 3 &bull; Lesson 8</span>
+        <div class="sidebar-title">Area Between Curves</div>
+        <div class="sidebar-sub">Section 6.1 &bull; ISRT, University of Dhaka</div>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Mastery Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-caption" id="progressCaption">0/13 checkpoints (0/8 Vault, 0/5 Quiz)</p>
+      </div>
+
+      <nav>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list" id="sidebarNav">
+          <li>
+            <a class="nav-link active" href="#section-slicer" data-section="section-slicer">
+              <span>01. Vertical vs. Horizontal Slicer</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-bisection" data-section="section-bisection">
+              <span>02. Area Bisection Lab (x=k, y=k, y=mx)</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-theory" data-section="section-theory">
+              <span>03. Core Theory &amp; Exam Traps</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-vault" data-section="section-vault">
+              <span>04. ISRT Past-Exam Vault (8)</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-quiz" data-section="section-quiz">
+              <span>05. Quick Mastery Check (5)</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button type="button" class="lesson-nav-btn" id="prevLessonBtn">
+          <span>&larr; Previous</span>
+          <span class="mono" style="color:var(--text-muted);">Lesson 7</span>
+        </button>
+        <button type="button" class="lesson-nav-btn" id="nextLessonBtn">
+          <span>Next Lesson &rarr;</span>
+          <span class="mono" style="color:var(--cyan);">Lesson 9</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="lesson-hero">
+        <div class="hero-eyebrow">Module 3: Geometric &amp; Physical Applications &bull; Section 6.1</div>
+        <h1>Lesson 8: Area Between Curves</h1>
+        <p>
+          Compare vertical ($dx$) and horizontal ($dy$) differential strips live to pick the cleanest 1-integral setup, balance vertical, horizontal, and slanted area bisectors ($x=k, y=k, y=mx$), and master every Area Between Curves problem from ISRT MATH 105 exams.
+        </p>
+        <div class="hero-pills">
+          <span class="hero-pill">Top &minus; Bottom ($dx$)</span>
+          <span class="hero-pill">Right &minus; Left ($dy$)</span>
+          <span class="hero-pill">Area Bisectors ($x=k, y=k, y=mx$)</span>
+          <span class="hero-pill">Birth vs. Death Rate Area</span>
+          <span class="hero-pill">8 Solved ISRT Problems</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 1: VERTICAL (dx) VS. HORIZONTAL (dy) SLICER SANDBOX
+           ==================================================================== -->
+      <section class="section-block" id="section-slicer">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 01 &bull; Interactive Slicing Sandbox</span>
+            <h2>Vertical ($dx$) vs. Horizontal ($dy$) Slicer Sandbox</h2>
+          </div>
+          <p class="section-desc">
+            Select an ISRT exam region, toggle between $dx$ and $dy$ strips, and sweep the differential strip across the region to see when boundary switches force 2 integrals.
+          </p>
+        </div>
+
+        <div class="card">
+          <!-- 5 Preset Buttons -->
+          <div class="preset-strip" id="slicerPresets">
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="lab-grid">
+            <!-- Canvas Column -->
+            <div>
+              <div class="canvas-wrapper" id="slicerCanvasWrap">
+                <canvas id="slicerCanvas" aria-label="Vertical vs Horizontal slicing interactive graph"></canvas>
+              </div>
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-cyan"></span> Upper / Right Curve</span>
+                <span class="legend-item"><span class="swatch swatch-rose"></span> Lower / Left Curve</span>
+                <span class="legend-item"><span class="swatch swatch-emerald"></span> Active Differential Strip</span>
+                <span class="legend-item"><span class="swatch swatch-amber"></span> Split Line / Intersections</span>
+              </div>
+            </div>
+
+            <!-- Controls & Formula Column -->
+            <div class="controls-panel">
+              <div class="control-group">
+                <span class="control-label">Slicing Orientation</span>
+                <div class="segmented" role="group" aria-label="Slicing mode">
+                  <button type="button" class="seg-btn active" data-smode="dx">Vertical Strips ($dx$)</button>
+                  <button type="button" class="seg-btn" data-smode="dy">Horizontal Strips ($dy$)</button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="stripSlider">
+                  <span>Strip Position Across Region</span>
+                  <span class="control-value" id="stripPctDisplay">55%</span>
+                </label>
+                <input type="range" id="stripSlider" min="1" max="99" step="0.5" value="55" />
+                <div class="btn-row">
+                  <button type="button" class="btn btn-sm btn-primary" id="sweepBtn">&#9654; Play Sweep</button>
+                  <button type="button" class="btn btn-sm" id="slicerResetBtn">&#8634; Reset</button>
+                </div>
+              </div>
+
+              <div>
+                <span class="efficiency-badge optimal" id="efficiencyBadge">&#10003; Optimal: 1 Integral</span>
+              </div>
+
+              <div class="formula-box" id="slicerFormulaBox">
+                <!-- Dynamic KaTeX integral formula -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Telemetry Readouts -->
+          <div class="telemetry-grid">
+            <div class="tele-card cyan">
+              <span class="tele-label" id="sTeleCoordLabel">Current Strip x</span>
+              <span class="tele-val" id="sTeleCoord">x = 2.20</span>
+              <span class="tele-sub" id="sTeleZone">Region 2 of 2</span>
+            </div>
+            <div class="tele-card emerald">
+              <span class="tele-label" id="sTeleLenLabel">Strip Height (Top &minus; Bottom)</span>
+              <span class="tele-val" id="sTeleLen">1.283</span>
+              <span class="tele-sub" id="sTeleEndpoints">Endpoints: 0.20 to 1.48</span>
+            </div>
+            <div class="tele-card">
+              <span class="tele-label" id="sTeleUpperLabel">Active Top Curve</span>
+              <span class="tele-val" id="sTeleUpper" style="font-size:0.9rem;"></span>
+              <span class="tele-sub">Cyan boundary</span>
+            </div>
+            <div class="tele-card rose">
+              <span class="tele-label" id="sTeleLowerLabel">Active Bottom Curve</span>
+              <span class="tele-val" id="sTeleLower" style="font-size:0.9rem;"></span>
+              <span class="tele-sub">Rose boundary</span>
+            </div>
+            <div class="tele-card amber">
+              <span class="tele-label">Exact Enclosed Area</span>
+              <span class="tele-val" id="sTeleArea"></span>
+              <span class="tele-sub" id="sTeleAreaDec">Decimal: 4.5000</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 2: AREA BISECTION LAB (x = k, y = k, y = mx)
+           ==================================================================== -->
+      <section class="section-block" id="section-bisection">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 02 &bull; Interactive Bisection Sandbox</span>
+            <h2>Area Bisection Lab ($x = k$, $y = k$, $y = mx$)</h2>
+          </div>
+          <p class="section-desc">
+            Slide the bisecting line to balance the two shaded regions into an exact 50/50 split, or snap directly to the exact analytical solution tested in ISRT Final 2025 &amp; Class Notes.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="preset-strip" id="bisectPresets">
+            <!-- Populated by JS -->
+          </div>
+
+          <div class="lab-grid">
+            <!-- Canvas Column -->
+            <div>
+              <div class="canvas-wrapper" id="bisectCanvasWrap">
+                <canvas id="bisectCanvas" aria-label="Area bisection interactive graph"></canvas>
+              </div>
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-cyan"></span> Region 1 ($A_1$)</span>
+                <span class="legend-item"><span class="swatch swatch-emerald"></span> Region 2 ($A_2$)</span>
+                <span class="legend-item"><span class="swatch swatch-amber"></span> Bisector Line ($x=k, y=k, y=mx$)</span>
+              </div>
+            </div>
+
+            <!-- Controls & Live Balance Column -->
+            <div class="controls-panel">
+              <div class="control-group">
+                <label class="control-label" for="bisectSlider">
+                  <span id="bisectParamName">Bisector Parameter ($k$)</span>
+                  <span class="control-value" id="bisectParamVal">k = 1.250</span>
+                </label>
+                <input type="range" id="bisectSlider" min="0.05" max="1.95" step="0.005" value="1.25" />
+                <div class="btn-row">
+                  <button type="button" class="btn btn-sm btn-emerald" id="snapBisectBtn">&#9878; Snap to Exact 50/50 Bisector</button>
+                </div>
+              </div>
+
+              <!-- Live Balance Bar -->
+              <div class="balance-card" id="balanceCard">
+                <div class="balance-top">
+                  <span style="color:var(--cyan);" id="balPct1">Region 1: 24.4%</span>
+                  <span class="balanced-pill">BALANCED 50/50!</span>
+                  <span style="color:var(--emerald);" id="balPct2">Region 2: 75.6%</span>
+                </div>
+                <div class="balance-bar">
+                  <div class="balance-left" id="balBarLeft" style="width:24.4%;"></div>
+                  <div class="balance-right"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:0.76rem;color:var(--text-secondary);">
+                  <span id="balArea1">A₁ = 0.6510</span>
+                  <span id="balTotal">Total = 2.6667</span>
+                  <span id="balArea2">A₂ = 2.0156</span>
+                </div>
+              </div>
+
+              <!-- Live KaTeX Algebraic Equation Box -->
+              <div class="formula-box amber" id="bisectEquationBox">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 3: CORE THEORY, DECISION GUIDE & ISRT EXAM TRAPS
+           ==================================================================== -->
+      <section class="section-block" id="section-theory">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 03 &bull; Exam-Ready Foundations</span>
+            <h2>Core Theory, Decision Guide &amp; ISRT Exam Traps</h2>
+          </div>
+          <p class="section-desc">
+            The two area integral formulas, a fast $dx$ vs. $dy$ decision table, the Birth/Death Rate area interpretation (Final 2024 Q2a), and the 4 classic ISRT exam traps.
+          </p>
+        </div>
+
+        <!-- 2-Column Formula Cards -->
+        <div class="theory-grid">
+          <article class="theory-card">
+            <h3 style="color:var(--cyan);">1. Vertical Slicing ($dx$ &mdash; Top minus Bottom)</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
+              If $f_{\text{top}}(x) \ge g_{\text{bottom}}(x)$ are continuous on $[a, b]$, slice vertically with width $dx$ and height $[f_{\text{top}}(x) - g_{\text{bottom}}(x)]$:
+            </p>
+            <div class="formula-box">
+              $$A = \int_a^b \big[f_{\text{top}}(x) - g_{\text{bottom}}(x)\big]\,dx$$
+            </div>
+            <p style="font-size:0.84rem;color:var(--text-muted);">
+              Limits $a, b$ are $x$-coordinates of the leftmost and rightmost intersections. If curves cross at $x = c \in (a, b)$, split into $\int_a^c + \int_c^b$.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <h3 style="color:var(--emerald);">2. Horizontal Slicing ($dy$ &mdash; Right minus Left)</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
+              If $w_{\text{right}}(y) \ge v_{\text{left}}(y)$ are continuous on $[c, d]$, slice horizontally with thickness $dy$ and length $[w_{\text{right}}(y) - v_{\text{left}}(y)]$:
+            </p>
+            <div class="formula-box emerald">
+              $$A = \int_c^d \big[w_{\text{right}}(y) - v_{\text{left}}(y)\big]\,dy$$
+            </div>
+            <p style="font-size:0.84rem;color:var(--text-muted);">
+              Limits $c, d$ are $y$-coordinates of the lowest and highest intersections. Ideal whenever equations are naturally given as $x = w(y)$.
+            </p>
+          </article>
+        </div>
+
+        <!-- Decision Guide Table -->
+        <div class="card">
+          <h3 style="margin-bottom:12px;font-size:1.05rem;">3. Quick Decision Guide: When to Choose $dx$ vs. $dy$</h3>
+          <div class="ref-table-wrap">
+            <table class="ref-table">
+              <thead>
+                <tr>
+                  <th>Diagnostic Criterion</th>
+                  <th>Choose Vertical Strips ($dx$)</th>
+                  <th>Choose Horizontal Strips ($dy$)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Curve Equations</strong></td>
+                  <td>Given explicitly as $y = f(x)$ (e.g., $y = 9 - (x/2)^2$, $y = e^{2x}$)</td>
+                  <td>Given as $x = w(y)$ or sideways parabolas ($x = y^2$, $y^2 = 4x$)</td>
+                </tr>
+                <tr>
+                  <td><strong>Boundary Switches</strong></td>
+                  <td>Every vertical line hits the <em>same</em> top curve and <em>same</em> bottom curve</td>
+                  <td>Every horizontal line hits the <em>same</em> right curve and <em>same</em> left curve</td>
+                </tr>
+                <tr>
+                  <td><strong>Intersection Solving</strong></td>
+                  <td>Set $f(x) = g(x)$ to find $x$-limits $[a, b]$</td>
+                  <td>Set $w(y) = v(y)$ to find $y$-limits $[c, d]$</td>
+                </tr>
+                <tr>
+                  <td><strong>ISRT Exam Examples</strong></td>
+                  <td>Final 2017 Q7a ($e^{2x}, e^x$), 2nd Incourse 2022 Q3 ($9-(x/2)^2, 6-x$)</td>
+                  <td>Final 2024 Q4b ($y^2=4x, y=2x-4$), 2nd Incourse 2024 Q2 ($x=y^2, y=x-2$)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Rate-of-Change Area Interpretation Card (Final 2024 Q2a) -->
+        <div class="card">
+          <div class="rate-grid">
+            <div class="svg-box">
+              <svg viewBox="0 0 420 225" width="100%" height="auto" role="img" aria-label="Birth rate and Death rate curves from 1960 to 2010">
+                <!-- Shaded Area between Birth Rate b(t) and Death Rate d(t) -->
+                <path d="M 65 82 Q 190 50 375 62 L 375 138 Q 210 128 65 142 Z"
+                      fill="rgba(56, 189, 248, 0.22)" />
+
+                <!-- Vertical Hatch Lines inside shaded region -->
+                <g stroke="rgba(56, 189, 248, 0.35)" stroke-width="1">
+                  <line x1="95" y1="74" x2="95" y2="139" />
+                  <line x1="125" y1="68" x2="125" y2="137" />
+                  <line x1="155" y1="64" x2="155" y2="135" />
+                  <line x1="185" y1="60" x2="185" y2="134" />
+                  <line x1="215" y1="58" x2="215" y2="133" />
+                  <line x1="245" y1="57" x2="245" y2="133" />
+                  <line x1="275" y1="57" x2="275" y2="134" />
+                  <line x1="305" y1="58" x2="305" y2="135" />
+                  <line x1="335" y1="60" x2="335" y2="136" />
+                  <line x1="365" y1="61" x2="365" y2="137" />
+                </g>
+
+                <!-- Axes -->
+                <line x1="65" y1="190" x2="65" y2="20" stroke="#94a3b8" stroke-width="1.8" />
+                <polygon points="65,14 61,23 69,23" fill="#94a3b8" />
+                <line x1="55" y1="190" x2="395" y2="190" stroke="#94a3b8" stroke-width="1.8" />
+                <polygon points="402,190 393,186 393,194" fill="#94a3b8" />
+
+                <!-- Right boundary at 2010 -->
+                <line x1="375" y1="62" x2="375" y2="190" stroke="#fbbf24" stroke-width="1.4" stroke-dasharray="4 3" />
+
+                <!-- Birth Rate Curve b(t) -->
+                <path d="M 65 82 Q 190 50 375 62" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
+                <!-- Death Rate Curve d(t) -->
+                <path d="M 65 142 Q 210 128 375 138" fill="none" stroke="#fb7185" stroke-width="3" stroke-linecap="round" />
+
+                <!-- Y-axis ticks & labels -->
+                <g fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10.5" text-anchor="end">
+                  <text x="58" y="45">2.5</text>
+                  <text x="58" y="80">2.0</text>
+                  <text x="58" y="115">1.5</text>
+                  <text x="58" y="150">1.0</text>
+                  <text x="58" y="185">0.5</text>
+                </g>
+                <text x="16" y="110" fill="#cbd5e1" font-size="11" font-weight="600" transform="rotate(-90 16 110)" text-anchor="middle">Millions / year</text>
+
+                <!-- X-axis ticks & labels -->
+                <g fill="#94a3b8" font-family="JetBrains Mono, monospace" font-size="10.5" text-anchor="middle">
+                  <text x="65" y="206">1960</text>
+                  <text x="127" y="206">1970</text>
+                  <text x="189" y="206">1980</text>
+                  <text x="251" y="206">1990</text>
+                  <text x="313" y="206">2000</text>
+                  <text x="375" y="206">2010</text>
+                </g>
+
+                <!-- Curve Annotations -->
+                <text x="220" y="44" fill="#38bdf8" font-size="12" font-weight="700" text-anchor="middle">Birth Rate b(t)</text>
+                <text x="220" y="158" fill="#fb7185" font-size="12" font-weight="700" text-anchor="middle">Death Rate d(t)</text>
+                <text x="220" y="102" fill="#e2e8f0" font-size="11.5" font-weight="700" text-anchor="middle">Area A = Net Increase</text>
+              </svg>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <span class="section-tag" style="margin-bottom:0;">Applied Interpretation &bull; Final 2024 Q2(a)</span>
+              <h3 style="font-size:1.1rem;font-weight:800;">Area Between Rate-of-Change Curves</h3>
+              <p style="font-size:0.9rem;color:var(--text-secondary);">
+                Let $b(t)$ be the birth rate and $d(t)$ be the death rate (in millions of people/year). Since $P'(t) = b(t) - d(t)$ is the net rate of population growth, the Fundamental Theorem of Calculus gives:
+              </p>
+              <div class="formula-box emerald">
+                $$A = \int_{1960}^{2010} \big[b(t) - d(t)\big]\,dt = \int_{1960}^{2010} P'(t)\,dt = P(2010) - P(1960)$$
+              </div>
+              <p style="font-size:0.88rem;color:var(--emerald);">
+                <strong>Meaning:</strong> The shaded area $A$ represents the <strong>net increase in population</strong> (in millions of people) over the 50-year period from 1960 to 2010.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Rose-Accented ISRT Exam Traps -->
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:12px;color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h3>
+          <div class="traps-grid">
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 1: Integrating Across a Crossing</div>
+              <p>
+                Integrating $\int_0^2 (1-x^2)\,dx$ straight across the crossing at $x=1$ gives $-\frac{2}{3}$ (net signed difference) instead of the total enclosed area $2$. Always solve $f(x) = g(x)$ inside $[a, b]$ and split!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 2: Forcing $dx$ on Sideways Parabolas</div>
+              <p>
+                In $x = y^2$ vs. $y = x - 2$, forcing $dx$ forces 2 messy radical integrals ($\int_0^1 2\sqrt{x}\,dx + \int_1^4 [\sqrt{x}-(x-2)]\,dx$). Switching to $dy$ gives 1 clean polynomial integral $\int_{-1}^2 [(y+2)-y^2]\,dy$!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 3: Misreading $x = \sqrt{y}$ as $y = \sqrt{x}$</div>
+              <p>
+                In <strong>Final 2025 Q4(a)</strong>, the curve is $x = \sqrt{y}$, which means <strong>$y = x^2$ ($x \ge 0$)</strong>, NOT $y = \sqrt{x}$! Squaring carefully avoids losing all 4 marks.
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 4: Subtracting in the Wrong Order</div>
+              <p>
+                Always subtract <strong>Top &minus; Bottom</strong> for $dx$ and <strong>Right &minus; Left</strong> for $dy$. If your final area comes out negative, you reversed the subtraction order!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 4: ISRT PAST-EXAM VAULT (8 PROBLEMS)
+           ==================================================================== -->
+      <section class="section-block" id="section-vault">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 04 &bull; ISRT Past-Exam Vault</span>
+            <h2>ISRT Past-Exam Vault (8 Solved Problems)</h2>
+          </div>
+          <p class="section-desc">
+            Filter by source, test yourself with hints, reveal full step-by-step KaTeX derivations, and check "Mark Reviewed" to update your Mastery Progress bar.
+          </p>
+        </div>
+
+        <div class="filter-tabs" id="vaultFilters" role="tablist" aria-label="Filter exam problems">
+          <button type="button" class="filter-tab active" data-filter="all">All (8)</button>
+          <button type="button" class="filter-tab" data-filter="final">Year Final (4)</button>
+          <button type="button" class="filter-tab" data-filter="incourse">In-course (2)</button>
+          <button type="button" class="filter-tab" data-filter="notes">Class Notes (3)</button>
+        </div>
+
+        <div class="vault-list" id="vaultList">
+
+          <!-- Vault 1 -->
+          <article class="exam-card" data-vid="v1" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 Q4(a)</span>
+              <span class="marks-badge">4 Marks &bull; Vertical Bisector $x = k$</span>
+            </div>
+            <div class="exam-prompt">
+              Find a vertical line $x = k$ that divides the area enclosed by $x = \sqrt{y}$, $x = 2$, and $y = 0$ into two equal parts.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v1" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Carefully rewrite $x = \sqrt{y}$ as $y = x^2$ (for $x \ge 0$). Find total area over $[0, 2]$, then set $\int_0^k x^2\,dx = \frac{1}{2}A_{\text{total}}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Rewrite curve and compute Total Area</div>
+                The equation $x = \sqrt{y}$ is equivalent to $y = x^2$ for $x \ge 0$. Over $x \in [0, 2]$ above $y = 0$:
+                $$A_{\text{total}} = \int_0^2 x^2\,dx = \left[\frac{x^3}{3}\right]_0^2 = \frac{8}{3}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Set left-half area equal to $\frac{1}{2}A_{\text{total}} = \frac{4}{3}$</div>
+                $$A_1(k) = \int_0^k x^2\,dx = \frac{k^3}{3} = \frac{4}{3} \implies k^3 = 4 \implies k = \sqrt[3]{4} \approx 1.5874.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="exam-card" data-vid="v2" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q4(b)</span>
+              <span class="marks-badge">4 Marks &bull; Horizontal Slicing ($dy$)</span>
+            </div>
+            <div class="exam-prompt">
+              Find the area of the region enclosed by $y^2 = 4x$ and $y = 2x - 4$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v2" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Express both curves as $x(y)$: $x_{\text{left}} = \frac{y^2}{4}$ and $x_{\text{right}} = \frac{y+4}{2}$. Solve $\frac{y^2}{4} = \frac{y+4}{2}$ for $y$-limits!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Express as $x(y)$ and find intersection $y$-values</div>
+                $$x = \frac{y^2}{4} \quad \text{and} \quad x = \frac{y + 4}{2}.$$
+                Setting them equal: $\frac{y^2}{4} = \frac{y + 4}{2} \implies y^2 - 2y - 8 = 0 \implies (y - 4)(y + 2) = 0 \implies y = -2,\; 4$.<br />
+                Intersections: $(1, -2)$ and $(4, 4)$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Integrate (Right &minus; Left) with respect to $y$</div>
+                $$A = \int_{-2}^{4} \left(\frac{y + 4}{2} - \frac{y^2}{4}\right)dy = \left[\frac{y^2}{4} + 2y - \frac{y^3}{12}\right]_{-2}^{4}$$
+                $$= \left(4 + 8 - \frac{64}{12}\right) - \left(1 - 4 + \frac{8}{12}\right) = \left(12 - \frac{16}{3}\right) - \left(-3 + \frac{2}{3}\right) = 15 - 6 = 9.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="exam-card" data-vid="v3" data-category="incourse notes">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2024 Q2 / Ashraful Notes</span>
+              <span class="marks-badge">4 Marks &bull; Horizontal Slicing ($dy$)</span>
+            </div>
+            <div class="exam-prompt">
+              Find the area of the region enclosed by $x = y^2$ and $y = x - 2$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v3" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Rewrite the line as $x = y + 2$. Solve $y^2 = y + 2$ to get $y \in [-1, 2]$, then integrate $[(y + 2) - y^2]\,dy$ in one clean step!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Find intersections in terms of $y$</div>
+                Setting $y^2 = y + 2 \implies y^2 - y - 2 = 0 \implies (y - 2)(y + 1) = 0 \implies y = -1,\; 2$.<br />
+                Intersection points: $(1, -1)$ and $(4, 2)$. On $[-1, 2]$, $x_{\text{right}} = y + 2 \ge x_{\text{left}} = y^2$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate the single $dy$-integral</div>
+                $$A = \int_{-1}^{2} \big[(y + 2) - y^2\big]\,dy = \left[\frac{y^2}{2} + 2y - \frac{y^3}{3}\right]_{-1}^{2}$$
+                $$= \left(2 + 4 - \frac{8}{3}\right) - \left(\frac{1}{2} - 2 + \frac{1}{3}\right) = \frac{10}{3} - \left(-\frac{7}{6}\right) = \frac{27}{6} = \frac{9}{2}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="exam-card" data-vid="v4" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q2(a)</span>
+              <span class="marks-badge">3 Marks &bull; Rate-of-Change Area</span>
+            </div>
+            <div class="exam-prompt">
+              The curves model birth rates $b(t)$ and death rates $d(t)$ (in millions of people per year) for a country over $[1960, 2010]$ (with $b(t) &gt; d(t)$). What does the area $A$ between the curves over $[1960, 2010]$ represent? Justify using the Fundamental Theorem of Calculus.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v4" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Recall that $\int_{1960}^{2010} b(t)\,dt$ is total births and $\int_{1960}^{2010} d(t)\,dt$ is total deaths. What is their difference by FTC?
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Express $A$ as a definite integral</div>
+                Since $b(t) \ge d(t)$ on $[1960, 2010]$:
+                $$A = \int_{1960}^{2010} \big[b(t) - d(t)\big]\,dt = \int_{1960}^{2010} b(t)\,dt - \int_{1960}^{2010} d(t)\,dt.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply Fundamental Theorem of Calculus (Net Change)</div>
+                Let $P(t)$ be the country's population at year $t$ (in millions). Assuming negligible net migration, $P'(t) = b(t) - d(t)$. By FTC Part I:
+                $$A = \int_{1960}^{2010} P'(t)\,dt = P(2010) - P(1960).$$
+                Therefore, $A$ represents the <strong>net increase in population</strong> (in millions) from 1960 to 2010.
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="exam-card" data-vid="v5" data-category="incourse">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2022 Q3</span>
+              <span class="marks-badge">5 Marks &bull; Vertical Slicing ($dx$)</span>
+            </div>
+            <div class="exam-prompt">
+              Draw the region bounded above by $f(x) = 9 - \left(\frac{x}{2}\right)^2$ and below by $g(x) = 6 - x$, and find its area.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v5" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Set $9 - \frac{x^2}{4} = 6 - x$, multiply by $4$ to get $x^2 - 4x - 12 = 0$, and integrate $[f(x) - g(x)]\,dx$ over $[-2, 6]$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Find intersection points</div>
+                $$9 - \frac{x^2}{4} = 6 - x \implies \frac{x^2}{4} - x - 3 = 0 \implies x^2 - 4x - 12 = 0 \implies (x - 6)(x + 2) = 0.$$
+                Thus $x = -2$ (giving $(-2, 8)$) and $x = 6$ (giving $(6, 0)$). The parabola opens downward with vertex $(0, 9)$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Integrate (Top &minus; Bottom) over $[-2, 6]$</div>
+                $$A = \int_{-2}^{6} \left[\left(9 - \frac{x^2}{4}\right) - (6 - x)\right]dx = \int_{-2}^{6} \left(3 + x - \frac{x^2}{4}\right)dx$$
+                $$= \left[3x + \frac{x^2}{2} - \frac{x^3}{12}\right]_{-2}^{6} = (18 + 18 - 18) - \left(-6 + 2 + \frac{2}{3}\right) = 18 + \frac{10}{3} = \frac{64}{3}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="exam-card" data-vid="v6" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2017 Q7(a)</span>
+              <span class="marks-badge">5 Marks &bull; Exponential Curves ($dx$)</span>
+            </div>
+            <div class="exam-prompt">
+              Sketch the region enclosed by $y = e^x$, $y = e^{2x}$, $x = 0$, and $x = \ln 2$, and find its area.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v6" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For $x &gt; 0$, $e^{2x} &gt; e^x$. At $x = 0$ both pass through $(0, 1)$; at $x = \ln 2$, $e^x = 2$ and $e^{2x} = 4$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Identify upper and lower curves on $[0, \ln 2]$</div>
+                Since $2x \ge x$ for all $x \ge 0$, $y = e^{2x}$ lies above $y = e^x$ on $[0, \ln 2]$ (meeting at $(0, 1)$, and reaching $( \ln 2, 4)$ and $(\ln 2, 2)$ on the right).
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate the $dx$-integral</div>
+                $$A = \int_0^{\ln 2} \left(e^{2x} - e^x\right)dx = \left[\frac{1}{2}e^{2x} - e^x\right]_0^{\ln 2}$$
+                $$= \left(\frac{1}{2}\cdot 4 - 2\right) - \left(\frac{1}{2}\cdot 1 - 1\right) = (2 - 2) - \left(-\frac{1}{2}\right) = \frac{1}{2}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 7 -->
+          <article class="exam-card" data-vid="v7" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes (Adib &amp; Ashraful, Anton 6.1 Ex 35)</span>
+              <span class="marks-badge">Horizontal Bisector $y = k$</span>
+            </div>
+            <div class="exam-prompt">
+              Find a horizontal line $y = k$ that divides the area enclosed by $y = x^2$ and $y = 9$ into two equal parts.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v7" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Total area is $\int_{-3}^3 (9 - x^2)\,dx = 36$. For the lower region bounded by $y = x^2$ and $y = k$, integrate $2\sqrt{y}\,dy$ from $0$ to $k$ (or $k - x^2$ from $-\sqrt{k}$ to $\sqrt{k}$) and set equal to $18$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Compute Total Area</div>
+                Intersections of $y = x^2$ and $y = 9$ are $(-3, 9)$ and $(3, 9)$:
+                $$A_{\text{total}} = \int_{-3}^{3} (9 - x^2)\,dx = \left[9x - \frac{x^3}{3}\right]_{-3}^{3} = (27 - 9) - (-27 + 9) = 36.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Set lower region area equal to $18$ and solve for $k$</div>
+                Using $x = \pm\sqrt{y}$ (or $\int_{-\sqrt{k}}^{\sqrt{k}}(k - x^2)\,dx$):
+                $$A_1(k) = \int_0^k 2\sqrt{y}\,dy = \left[\frac{4}{3}y^{3/2}\right]_0^k = \frac{4}{3}k^{3/2} = 18$$
+                $$\implies k^{3/2} = \frac{27}{2} \implies k = \left(\frac{27}{2}\right)^{2/3} = \frac{9}{\sqrt[3]{4}} \approx 5.6696.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 8 -->
+          <article class="exam-card" data-vid="v8" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes (Adib, Anton 6.1 Ex 37)</span>
+              <span class="marks-badge">Slanted Bisector $y = mx$</span>
+            </div>
+            <div class="exam-prompt">
+              Find the value of $m$ such that the line $y = mx$ divides the region enclosed by $y = 2x - x^2$ and the $x$-axis into two equal areas.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+              <label class="review-check-label">
+                <input type="checkbox" class="review-cb" data-vid="v8" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> The line $y = mx$ intersects $y = 2x - x^2$ at $x = 0$ and $x = 2 - m$. Integrate $[(2x - x^2) - mx]\,dx$ from $0$ to $2 - m$ and equate to half the total area ($\frac{2}{3}$).
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Compute Total Area under $y = 2x - x^2$ on $[0, 2]$</div>
+                $$A_{\text{total}} = \int_0^2 (2x - x^2)\,dx = \left[x^2 - \frac{x^3}{3}\right]_0^2 = 4 - \frac{8}{3} = \frac{4}{3} \implies \text{Half Area} = \frac{2}{3}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Find intersections with $y = mx$ and set $A_1(m) = \frac{2}{3}$</div>
+                $2x - x^2 = mx \implies x(2 - m - x) = 0 \implies x = 0$ and $x = 2 - m$ (for $0 &lt; m &lt; 2$):
+                $$A_1(m) = \int_0^{2-m} \big[(2 - m)x - x^2\big]\,dx = \left[\frac{(2-m)x^2}{2} - \frac{x^3}{3}\right]_0^{2-m} = \frac{(2 - m)^3}{6}.$$
+                Setting $\dfrac{(2 - m)^3}{6} = \dfrac{2}{3} \implies (2 - m)^3 = 4 \implies m = 2 - \sqrt[3]{4} \approx 0.4126$.
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 5: QUICK MASTERY CHECK (5 INTERACTIVE MCQS)
+           ==================================================================== -->
+      <section class="section-block" id="section-quiz">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 05 &bull; Self-Assessment</span>
+            <h2>Quick Mastery Check (5 Questions)</h2>
+          </div>
+          <p class="section-desc">
+            Verify your mastery of $dx$ vs. $dy$ setup efficiency, area bisectors, crossing curves, intersections, and rate-of-change areas.
+          </p>
+        </div>
+
+        <div class="quiz-topbar">
+          <div class="score-pill">
+            <span>Score:</span>
+            <span id="quizScore">0 / 5</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="resetQuizBtn">&#8634; Reset Quiz</button>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+
+          <!-- Q1 -->
+          <div class="quiz-card" data-qid="q1" data-answer="b">
+            <div class="quiz-qnum">Question 1 &bull; Optimal Slicing Variable ($dx$ vs. $dy$)</div>
+            <div>Which setup computes the area enclosed by $x = y^2$ and $y = x - 2$ using only <strong>one single integral</strong>?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$dx$: $\displaystyle \int_0^4 \big[\sqrt{x} - (x - 2)\big]\,dx$</button>
+              <button type="button" class="quiz-opt" data-val="b">$dy$: $\displaystyle \int_{-1}^{2} \big[(y + 2) - y^2\big]\,dy$</button>
+              <button type="button" class="quiz-opt" data-val="c">$dy$: $\displaystyle \int_{-1}^{2} \big[y^2 - (y + 2)\big]\,dy$</button>
+              <button type="button" class="quiz-opt" data-val="d">$dx$: $\displaystyle \int_1^4 \big[2\sqrt{x} - (x - 2)\big]\,dx$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-card" data-qid="q2" data-answer="c">
+            <div class="quiz-qnum">Question 2 &bull; Vertical Area Bisector (Final 2025 Q4a)</div>
+            <div>What is the exact value of $k$ such that the vertical line $x = k$ bisects the area enclosed by $y = x^2$ ($x \ge 0$), $x = 2$, and $y = 0$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$k = 1$</button>
+              <button type="button" class="quiz-opt" data-val="b">$k = \sqrt{2}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$k = \sqrt[3]{4}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$k = \dfrac{4}{3}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-card" data-qid="q3" data-answer="a">
+            <div class="quiz-qnum">Question 3 &bull; Crossing Curve Total Area (Final 2024 Q1d)</div>
+            <div>What is the <strong>total area</strong> between $y = 1 - x^2$ and the $x$-axis on $[0, 2]$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$2$</button>
+              <button type="button" class="quiz-opt" data-val="b">$-\dfrac{2}{3}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\dfrac{2}{3}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\dfrac{4}{3}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-card" data-qid="q4" data-answer="d">
+            <div class="quiz-qnum">Question 4 &bull; Intersection $y$-Values (Final 2024 Q4b)</div>
+            <div>What are the intersection $y$-values for the curves $y^2 = 4x$ and $y = 2x - 4$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$y = -4$ and $y = 2$</button>
+              <button type="button" class="quiz-opt" data-val="b">$y = 1$ and $y = 4$</button>
+              <button type="button" class="quiz-opt" data-val="c">$y = -1$ and $y = 2$</button>
+              <button type="button" class="quiz-opt" data-val="d">$y = -2$ and $y = 4$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-card" data-qid="q5" data-answer="b">
+            <div class="quiz-qnum">Question 5 &bull; Physical Meaning of Rate-of-Change Area (Final 2024 Q2a)</div>
+            <div>If $b(t)$ is a country's birth rate and $d(t)$ is its death rate (with $b(t) &gt; d(t)$) over $[t_1, t_2]$, what does $\displaystyle \int_{t_1}^{t_2} [b(t) - d(t)]\,dt$ represent?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">The average birth rate per year over $[t_1, t_2]$</button>
+              <button type="button" class="quiz-opt" data-val="b">The net increase in total population over $[t_1, t_2]$</button>
+              <button type="button" class="quiz-opt" data-val="c">The total population at time $t_2$</button>
+              <button type="button" class="quiz-opt" data-val="d">The acceleration of population growth at time $t_2$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Non-blocking Toast Notification -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX RENDER HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2800);
+      }
+
+      /* ----------------------------------------------------------------------
+         2. HIDPI CANVAS & COORDINATE AXES UTILITIES
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(260, Math.floor(rect.width));
+        const h = Math.max(220, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function niceStep(range, ticks) {
+        const rough = Math.max(range, 1e-6) / ticks;
+        const p10 = Math.pow(10, Math.floor(Math.log10(rough)));
+        const norm = rough / p10;
+        const m = norm > 5 ? 10 : norm > 2 ? 5 : norm > 1 ? 2 : 1;
+        return m * p10;
+      }
+
+      function drawGridAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax) {
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = '#0b1120';
+        ctx.fillRect(0, 0, w, h);
+
+        const xStep = niceStep(xMax - xMin, 6);
+        const yStep = niceStep(yMax - yMin, 5);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.font = '500 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#94a3b8';
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let xv = Math.ceil(xMin / xStep) * xStep; xv <= xMax + 1e-9; xv += xStep) {
+          const px = toX(xv);
+          ctx.beginPath(); ctx.moveTo(px, pad.top); ctx.lineTo(px, h - pad.bottom); ctx.stroke();
+          ctx.fillText(Math.abs(xv) < 1e-9 ? '0' : Number(xv.toFixed(2)).toString(), px, h - pad.bottom + 6);
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let yv = Math.ceil(yMin / yStep) * yStep; yv <= yMax + 1e-9; yv += yStep) {
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(w - pad.right, py); ctx.stroke();
+          ctx.fillText(Math.abs(yv) < 1e-9 ? '0' : Number(yv.toFixed(2)).toString(), pad.left - 8, py);
+        }
+
+        // Main axes
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.6;
+        if (yMin <= 0 && yMax >= 0) {
+          const y0 = toY(0);
+          ctx.beginPath(); ctx.moveTo(pad.left, y0); ctx.lineTo(w - pad.right, y0); ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          const x0 = toX(0);
+          ctx.beginPath(); ctx.moveTo(x0, pad.top); ctx.lineTo(x0, h - pad.bottom); ctx.stroke();
+        }
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pad.left, pad.top, plotW, plotH);
+
+        return { toX, toY, plotW, plotH };
+      }
+
+      function drawDotWithLabel(ctx, toX, toY, x, y, label, alignRight) {
+        const px = toX(x);
+        const py = toY(y);
+        ctx.fillStyle = '#fbbf24';
+        ctx.strokeStyle = '#0b1120';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '700 11px "JetBrains Mono", monospace';
+        ctx.textAlign = alignRight ? 'right' : 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(label, px + (alignRight ? -8 : 8), py - 6);
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 1: VERTICAL (dx) VS. HORIZONTAL (dy) SLICER SANDBOX
+         ---------------------------------------------------------------------- */
+      const slicerPresets = [
+        {
+          shortTitle: 'x = y² & y = x - 2',
+          tag: '2nd Incourse 2024 Q2',
+          areaTex: '\\frac{9}{2}',
+          areaDec: 4.5,
+          xRange: [-0.6, 5.0],
+          yRange: [-2.0, 2.8],
+          intersections: [
+            { x: 1, y: -1, lbl: '(1,-1)', right: false },
+            { x: 4, y: 2, lbl: '(4,2)', right: true }
+          ],
+          dx: {
+            domain: [0, 4],
+            split: 1,
+            optimal: false,
+            formulaTex: 'A = \\int_0^1 2\\sqrt{x}\\,dx + \\int_1^4 \\big[\\sqrt{x} - (x - 2)\\big]\\,dx = \\frac{9}{2}',
+            getStrip(x) {
+              if (x < 1) {
+                return { y1: -Math.sqrt(x), y2: Math.sqrt(x), topTex: 'y = \\sqrt{x}', botTex: 'y = -\\sqrt{x}', zone: 'Sub-region 1 (0 ≤ x ≤ 1)' };
+              }
+              return { y1: x - 2, y2: Math.sqrt(x), topTex: 'y = \\sqrt{x}', botTex: 'y = x - 2', zone: 'Sub-region 2 (1 ≤ x ≤ 4)' };
+            }
+          },
+          dy: {
+            domain: [-1, 2],
+            split: null,
+            optimal: true,
+            formulaTex: 'A = \\int_{-1}^{2} \\big[(y + 2) - y^2\\big]\\,dy = \\frac{9}{2}',
+            getStrip(y) {
+              return { x1: y * y, x2: y + 2, rightTex: 'x = y + 2', leftTex: 'x = y^2', zone: 'Single Clean Region (-1 ≤ y ≤ 2)' };
+            }
+          },
+          drawRegionAndCurves(ctx, toX, toY) {
+            // Shaded region via dy sweep
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+              const y = -1 + (i / 120) * 3;
+              const x = y * y;
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.lineTo(toX(4), toY(2));
+            ctx.lineTo(toX(1), toY(-1));
+            ctx.closePath();
+            ctx.fill();
+
+            // Curve 1: x = y^2 (Cyan)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 160; i++) {
+              const y = -2.1 + (i / 160) * 4.7;
+              const x = y * y;
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // Curve 2: y = x - 2 (Rose)
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            ctx.moveTo(toX(-0.5), toY(-2.5));
+            ctx.lineTo(toX(5.0), toY(3.0));
+            ctx.stroke();
+          }
+        },
+        {
+          shortTitle: 'y² = 4x & y = 2x - 4',
+          tag: 'Final 2024 Q4(b)',
+          areaTex: '9',
+          areaDec: 9.0,
+          xRange: [-0.6, 5.2],
+          yRange: [-3.4, 5.0],
+          intersections: [
+            { x: 1, y: -2, lbl: '(1,-2)', right: false },
+            { x: 4, y: 4, lbl: '(4,4)', right: true }
+          ],
+          dx: {
+            domain: [0, 4],
+            split: 1,
+            optimal: false,
+            formulaTex: 'A = \\int_0^1 4\\sqrt{x}\\,dx + \\int_1^4 \\big[2\\sqrt{x} - (2x - 4)\\big]\\,dx = 9',
+            getStrip(x) {
+              if (x < 1) {
+                return { y1: -2 * Math.sqrt(x), y2: 2 * Math.sqrt(x), topTex: 'y = 2\\sqrt{x}', botTex: 'y = -2\\sqrt{x}', zone: 'Sub-region 1 (0 ≤ x ≤ 1)' };
+              }
+              return { y1: 2 * x - 4, y2: 2 * Math.sqrt(x), topTex: 'y = 2\\sqrt{x}', botTex: 'y = 2x - 4', zone: 'Sub-region 2 (1 ≤ x ≤ 4)' };
+            }
+          },
+          dy: {
+            domain: [-2, 4],
+            split: null,
+            optimal: true,
+            formulaTex: 'A = \\int_{-2}^{4} \\left(\\frac{y + 4}{2} - \\frac{y^2}{4}\\right)dy = 9',
+            getStrip(y) {
+              return { x1: (y * y) / 4, x2: (y + 4) / 2, rightTex: 'x = \\frac{y+4}{2}', leftTex: 'x = \\frac{y^2}{4}', zone: 'Single Clean Region (-2 ≤ y ≤ 4)' };
+            }
+          },
+          drawRegionAndCurves(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+            ctx.beginPath();
+            for (let i = 0; i <= 140; i++) {
+              const y = -2 + (i / 140) * 6;
+              const x = (y * y) / 4;
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.lineTo(toX(4), toY(4));
+            ctx.lineTo(toX(1), toY(-2));
+            ctx.closePath();
+            ctx.fill();
+
+            // y^2 = 4x (Cyan)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 160; i++) {
+              const y = -3.4 + (i / 160) * 8.2;
+              const x = (y * y) / 4;
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // y = 2x - 4 (Rose)
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(-4));
+            ctx.lineTo(toX(4.8), toY(5.6));
+            ctx.stroke();
+          }
+        },
+        {
+          shortTitle: 'y = 9 - (x/2)² & y = 6 - x',
+          tag: '2nd Incourse 2022 Q3',
+          areaTex: '\\frac{64}{3}',
+          areaDec: 64 / 3,
+          xRange: [-4.5, 7.2],
+          yRange: [-1.5, 10.2],
+          intersections: [
+            { x: -2, y: 8, lbl: '(-2,8)', right: true },
+            { x: 6, y: 0, lbl: '(6,0)', right: true }
+          ],
+          dx: {
+            domain: [-2, 6],
+            split: null,
+            optimal: true,
+            formulaTex: 'A = \\int_{-2}^{6} \\left[\\left(9 - \\frac{x^2}{4}\\right) - (6 - x)\\right]dx = \\frac{64}{3}',
+            getStrip(x) {
+              return { y1: 6 - x, y2: 9 - (x * x) / 4, topTex: 'y = 9 - \\frac{x^2}{4}', botTex: 'y = 6 - x', zone: 'Single Clean Region (-2 ≤ x ≤ 6)' };
+            }
+          },
+          dy: {
+            domain: [0, 9],
+            split: 8,
+            optimal: false,
+            formulaTex: 'A = \\int_0^8 \\big[2\\sqrt{9-y} - (6-y)\\big]\\,dy + \\int_8^9 4\\sqrt{9-y}\\,dy = \\frac{64}{3}',
+            getStrip(y) {
+              if (y < 8) {
+                return { x1: 6 - y, x2: 2 * Math.sqrt(Math.max(0, 9 - y)), rightTex: 'x = 2\\sqrt{9-y}', leftTex: 'x = 6 - y', zone: 'Sub-region 1 (0 ≤ y ≤ 8)' };
+              }
+              const r = 2 * Math.sqrt(Math.max(0, 9 - y));
+              return { x1: -r, x2: r, rightTex: 'x = 2\\sqrt{9-y}', leftTex: 'x = -2\\sqrt{9-y}', zone: 'Sub-region 2 (8 ≤ y ≤ 9)' };
+            }
+          },
+          drawRegionAndCurves(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+            ctx.beginPath();
+            for (let i = 0; i <= 140; i++) {
+              const x = -2 + (i / 140) * 8;
+              const y = 9 - (x * x) / 4;
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.lineTo(toX(6), toY(0));
+            ctx.lineTo(toX(-2), toY(8));
+            ctx.closePath();
+            ctx.fill();
+
+            // Parabola (Cyan)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 180; i++) {
+              const x = -4.5 + (i / 180) * 11.7;
+              const y = 9 - (x * x) / 4;
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // Line y = 6 - x (Rose)
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            ctx.moveTo(toX(-4), toY(10));
+            ctx.lineTo(toX(7.2), toY(-1.2));
+            ctx.stroke();
+          }
+        },
+        {
+          shortTitle: 'y = e²ˣ & y = eˣ on [0, ln 2]',
+          tag: 'Final 2017 Q7(a)',
+          areaTex: '\\frac{1}{2}',
+          areaDec: 0.5,
+          xRange: [-0.15, 0.92],
+          yRange: [0, 4.6],
+          intersections: [
+            { x: 0, y: 1, lbl: '(0,1)', right: false },
+            { x: Math.LN2, y: 4, lbl: '(ln2,4)', right: true },
+            { x: Math.LN2, y: 2, lbl: '(ln2,2)', right: false }
+          ],
+          dx: {
+            domain: [0, Math.LN2],
+            split: null,
+            optimal: true,
+            formulaTex: 'A = \\int_0^{\\ln 2} \\left(e^{2x} - e^x\\right)dx = \\frac{1}{2}',
+            getStrip(x) {
+              return { y1: Math.exp(x), y2: Math.exp(2 * x), topTex: 'y = e^{2x}', botTex: 'y = e^x', zone: 'Single Clean Region (0 ≤ x ≤ ln 2)' };
+            }
+          },
+          dy: {
+            domain: [1, 4],
+            split: 2,
+            optimal: false,
+            formulaTex: 'A = \\int_1^2 \\left(\\ln y - \\frac{1}{2}\\ln y\\right)dy + \\int_2^4 \\left(\\ln 2 - \\frac{1}{2}\\ln y\\right)dy = \\frac{1}{2}',
+            getStrip(y) {
+              if (y < 2) {
+                return { x1: 0.5 * Math.log(y), x2: Math.log(y), rightTex: 'x = \\ln y', leftTex: 'x = \\frac{1}{2}\\ln y', zone: 'Sub-region 1 (1 ≤ y ≤ 2)' };
+              }
+              return { x1: 0.5 * Math.log(y), x2: Math.LN2, rightTex: 'x = \\ln 2', leftTex: 'x = \\frac{1}{2}\\ln y', zone: 'Sub-region 2 (2 ≤ y ≤ 4)' };
+            }
+          },
+          drawRegionAndCurves(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.18)';
+            ctx.beginPath();
+            for (let i = 0; i <= 100; i++) {
+              const x = (i / 100) * Math.LN2;
+              const y = Math.exp(2 * x);
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            for (let i = 100; i >= 0; i--) {
+              const x = (i / 100) * Math.LN2;
+              ctx.lineTo(toX(x), toY(Math.exp(x)));
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Vertical bound x = ln 2
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.55)';
+            ctx.lineWidth = 1.6;
+            ctx.setLineDash([4, 3]);
+            ctx.beginPath();
+            ctx.moveTo(toX(Math.LN2), toY(0));
+            ctx.lineTo(toX(Math.LN2), toY(4.5));
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // y = e^(2x) (Cyan)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+              const x = -0.1 + (i / 120) * 0.92;
+              const y = Math.exp(2 * x);
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // y = e^x (Rose)
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+              const x = -0.1 + (i / 120) * 0.98;
+              const y = Math.exp(x);
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+          }
+        },
+        {
+          shortTitle: 'y = 1 - x² & y = 0 on [0, 2]',
+          tag: 'Final 2024 Q1(d) Crossing',
+          areaTex: '2',
+          areaDec: 2.0,
+          xRange: [-0.25, 2.35],
+          yRange: [-3.5, 1.5],
+          intersections: [
+            { x: 1, y: 0, lbl: '(1,0) Crossing', right: false }
+          ],
+          dx: {
+            domain: [0, 2],
+            split: 1,
+            optimal: false,
+            formulaTex: 'A = \\int_0^1 (1 - x^2)\\,dx + \\int_1^2 (x^2 - 1)\\,dx = \\frac{2}{3} + \\frac{4}{3} = 2',
+            getStrip(x) {
+              if (x < 1) {
+                return { y1: 0, y2: 1 - x * x, topTex: 'y = 1 - x^2', botTex: 'y = 0', zone: 'Above x-axis (0 ≤ x ≤ 1)' };
+              }
+              return { y1: 1 - x * x, y2: 0, topTex: 'y = 0', botTex: 'y = 1 - x^2', zone: 'Below x-axis (1 ≤ x ≤ 2)' };
+            }
+          },
+          dy: {
+            domain: [-3, 1],
+            split: 0,
+            optimal: false,
+            formulaTex: 'A = \\int_{-3}^{0} \\big(2 - \\sqrt{1 - y}\\big)\\,dy + \\int_{0}^{1} \\sqrt{1 - y}\\,dy = \\frac{4}{3} + \\frac{2}{3} = 2',
+            getStrip(y) {
+              if (y < 0) {
+                return { x1: Math.sqrt(1 - y), x2: 2, rightTex: 'x = 2', leftTex: 'x = \\sqrt{1-y}', zone: 'Lower Region (-3 ≤ y ≤ 0)' };
+              }
+              return { x1: 0, x2: Math.sqrt(1 - y), rightTex: 'x = \\sqrt{1-y}', leftTex: 'x = 0', zone: 'Upper Region (0 ≤ y ≤ 1)' };
+            }
+          },
+          drawRegionAndCurves(ctx, toX, toY) {
+            // Positive lobe [0, 1]
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            for (let i = 0; i <= 80; i++) {
+              const x = i / 80;
+              ctx.lineTo(toX(x), toY(1 - x * x));
+            }
+            ctx.lineTo(toX(1), toY(0));
+            ctx.closePath();
+            ctx.fill();
+
+            // Negative lobe [1, 2]
+            ctx.fillStyle = 'rgba(251, 113, 133, 0.20)';
+            ctx.beginPath();
+            ctx.moveTo(toX(1), toY(0));
+            for (let i = 0; i <= 80; i++) {
+              const x = 1 + i / 80;
+              ctx.lineTo(toX(x), toY(1 - x * x));
+            }
+            ctx.lineTo(toX(2), toY(0));
+            ctx.closePath();
+            ctx.fill();
+
+            // Curve y = 1 - x^2 (Cyan)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 140; i++) {
+              const x = -0.2 + (i / 140) * 2.4;
+              const y = 1 - x * x;
+              if (i === 0) ctx.moveTo(toX(x), toY(y));
+              else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // Line y = 0 (Rose)
+            ctx.strokeStyle = '#fb7185';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            ctx.lineTo(toX(2), toY(0));
+            ctx.stroke();
+          }
+        }
+      ];
+
+      const slicerState = {
+        idx: 0,
+        mode: 'dx', // 'dx' | 'dy'
+        pct: 55,
+        sweeping: false,
+        rafId: null,
+        lastTs: 0
+      };
+
+      const slicerCanvas = document.getElementById('slicerCanvas');
+      const slicerPresetsEl = document.getElementById('slicerPresets');
+      const stripSlider = document.getElementById('stripSlider');
+      const sweepBtn = document.getElementById('sweepBtn');
+
+      function buildSlicerPresets() {
+        slicerPresetsEl.innerHTML = slicerPresets.map((p, i) => `
+          <button type="button" class="preset-btn ${i === slicerState.idx ? 'active' : ''}" data-spidx="${i}">
+            <span class="preset-sub">${p.tag}</span>
+            <span>${i + 1}. ${p.shortTitle}</span>
+          </button>
+        `).join('');
+
+        slicerPresetsEl.querySelectorAll('.preset-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            stopSweep();
+            slicerState.idx = parseInt(btn.dataset.spidx, 10);
+            slicerState.pct = 55;
+            stripSlider.value = 55;
+            visitedLabs.slicer = true;
+            updateProgress();
+            drawSlicerLab();
+          });
+        });
+      }
+
+      function drawSlicerLab() {
+        const pr = slicerPresets[slicerState.idx];
+        const cfg = pr[slicerState.mode];
+
+        slicerPresetsEl.querySelectorAll('.preset-btn').forEach((b, i) => {
+          b.classList.toggle('active', i === slicerState.idx);
+        });
+
+        const { ctx, w, h } = setupCanvas(slicerCanvas);
+        const pad = { top: 22, right: 22, bottom: 32, left: 46 };
+        const { toX, toY } = drawGridAxes(ctx, w, h, pad, pr.xRange[0], pr.xRange[1], pr.yRange[0], pr.yRange[1]);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+
+        // 1. Shaded region & curves
+        pr.drawRegionAndCurves(ctx, toX, toY);
+
+        // 2. Dashed Amber Split Line (when 2 integrals required)
+        if (cfg.split !== null) {
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          if (slicerState.mode === 'dx') {
+            const sx = toX(cfg.split);
+            ctx.moveTo(sx, pad.top);
+            ctx.lineTo(sx, h - pad.bottom);
+          } else {
+            const sy = toY(cfg.split);
+            ctx.moveTo(pad.left, sy);
+            ctx.lineTo(w - pad.right, sy);
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          if (slicerState.mode === 'dx') {
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(`Split x=${cfg.split}`, toX(cfg.split) + 6, pad.top + 6);
+          } else {
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`Split y=${cfg.split}`, w - pad.right - 8, toY(cfg.split) - 5);
+          }
+        }
+
+        // 3. Highlighted Differential Strip (dx or dy)
+        const [dMin, dMax] = cfg.domain;
+        const pos = dMin + (slicerState.pct / 100) * (dMax - dMin);
+        const strip = cfg.getStrip(pos);
+
+        if (slicerState.mode === 'dx') {
+          const px = toX(pos);
+          const pyTop = toY(strip.y2);
+          const pyBot = toY(strip.y1);
+          const sw = 10;
+          ctx.fillStyle = 'rgba(52, 211, 153, 0.48)';
+          ctx.strokeStyle = '#34d399';
+          ctx.lineWidth = 2;
+          ctx.fillRect(px - sw / 2, Math.min(pyTop, pyBot), sw, Math.abs(pyBot - pyTop));
+          ctx.strokeRect(px - sw / 2, Math.min(pyTop, pyBot), sw, Math.abs(pyBot - pyTop));
+
+          // Endpoints
+          ctx.fillStyle = '#38bdf8';
+          ctx.beginPath(); ctx.arc(px, pyTop, 4, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#fb7185';
+          ctx.beginPath(); ctx.arc(px, pyBot, 4, 0, Math.PI * 2); ctx.fill();
+        } else {
+          const py = toY(pos);
+          const pxLeft = toX(strip.x1);
+          const pxRight = toX(strip.x2);
+          const sh = 10;
+          ctx.fillStyle = 'rgba(52, 211, 153, 0.48)';
+          ctx.strokeStyle = '#34d399';
+          ctx.lineWidth = 2;
+          ctx.fillRect(Math.min(pxLeft, pxRight), py - sh / 2, Math.abs(pxRight - pxLeft), sh);
+          ctx.strokeRect(Math.min(pxLeft, pxRight), py - sh / 2, Math.abs(pxRight - pxLeft), sh);
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.beginPath(); ctx.arc(pxRight, py, 4, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#fb7185';
+          ctx.beginPath(); ctx.arc(pxLeft, py, 4, 0, Math.PI * 2); ctx.fill();
+        }
+
+        // 4. Intersection dots
+        pr.intersections.forEach((pt) => drawDotWithLabel(ctx, toX, toY, pt.x, pt.y, pt.lbl, pt.right));
+
+        ctx.restore();
+
+        // Update Telemetry & Formula Panel
+        document.getElementById('stripPctDisplay').textContent = `${Math.round(slicerState.pct)}%`;
+
+        const effBadge = document.getElementById('efficiencyBadge');
+        if (cfg.optimal) {
+          effBadge.className = 'efficiency-badge optimal';
+          effBadge.innerHTML = '&#10003; Optimal: 1 Integral';
+        } else {
+          effBadge.className = 'efficiency-badge split';
+          effBadge.innerHTML = '&#9888; Requires Splitting: 2 Integrals';
+        }
+
+        const fBox = document.getElementById('slicerFormulaBox');
+        const formulaKey = `${slicerState.idx}-${slicerState.mode}`;
+        if (fBox.dataset.fkey !== formulaKey) {
+          fBox.innerHTML = `
+            <div style="font-size:0.73rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">
+              ${slicerState.mode === 'dx' ? 'Vertical Slicing (dx) Setup' : 'Horizontal Slicing (dy) Setup'}
+            </div>
+            $$${cfg.formulaTex}$$
+          `;
+          fBox.dataset.fkey = formulaKey;
+          renderMath(fBox);
+        }
+
+        const upperEl = document.getElementById('sTeleUpper');
+        const lowerEl = document.getElementById('sTeleLower');
+        if (slicerState.mode === 'dx') {
+          document.getElementById('sTeleCoordLabel').textContent = 'Current Strip x';
+          document.getElementById('sTeleCoord').textContent = `x = ${pos.toFixed(3)}`;
+          document.getElementById('sTeleLenLabel').textContent = 'Strip Height (Top − Bottom)';
+          document.getElementById('sTeleLen').textContent = Math.abs(strip.y2 - strip.y1).toFixed(3);
+          document.getElementById('sTeleEndpoints').textContent = `y: ${strip.y1.toFixed(2)} to ${strip.y2.toFixed(2)}`;
+          document.getElementById('sTeleUpperLabel').textContent = 'Active Top Curve';
+          document.getElementById('sTeleLowerLabel').textContent = 'Active Bottom Curve';
+          if (upperEl.dataset.tex !== strip.topTex) {
+            upperEl.innerHTML = `$${strip.topTex}$`;
+            upperEl.dataset.tex = strip.topTex;
+            renderMath(upperEl);
+          }
+          if (lowerEl.dataset.tex !== strip.botTex) {
+            lowerEl.innerHTML = `$${strip.botTex}$`;
+            lowerEl.dataset.tex = strip.botTex;
+            renderMath(lowerEl);
+          }
+        } else {
+          document.getElementById('sTeleCoordLabel').textContent = 'Current Strip y';
+          document.getElementById('sTeleCoord').textContent = `y = ${pos.toFixed(3)}`;
+          document.getElementById('sTeleLenLabel').textContent = 'Strip Length (Right − Left)';
+          document.getElementById('sTeleLen').textContent = Math.abs(strip.x2 - strip.x1).toFixed(3);
+          document.getElementById('sTeleEndpoints').textContent = `x: ${strip.x1.toFixed(2)} to ${strip.x2.toFixed(2)}`;
+          document.getElementById('sTeleUpperLabel').textContent = 'Active Right Curve';
+          document.getElementById('sTeleLowerLabel').textContent = 'Active Left Curve';
+          if (upperEl.dataset.tex !== strip.rightTex) {
+            upperEl.innerHTML = `$${strip.rightTex}$`;
+            upperEl.dataset.tex = strip.rightTex;
+            renderMath(upperEl);
+          }
+          if (lowerEl.dataset.tex !== strip.leftTex) {
+            lowerEl.innerHTML = `$${strip.leftTex}$`;
+            lowerEl.dataset.tex = strip.leftTex;
+            renderMath(lowerEl);
+          }
+        }
+
+        document.getElementById('sTeleZone').textContent = strip.zone;
+        const areaEl = document.getElementById('sTeleArea');
+        if (areaEl.dataset.tex !== pr.areaTex) {
+          areaEl.innerHTML = `$${pr.areaTex}$`;
+          areaEl.dataset.tex = pr.areaTex;
+          renderMath(areaEl);
+        }
+        document.getElementById('sTeleAreaDec').textContent = `Decimal: ${pr.areaDec.toFixed(4)}`;
+      }
+
+      function stopSweep() {
+        slicerState.sweeping = false;
+        if (slicerState.rafId) cancelAnimationFrame(slicerState.rafId);
+        slicerState.rafId = null;
+        sweepBtn.innerHTML = '&#9654; Play Sweep';
+      }
+
+      function stepSweep(ts) {
+        if (!slicerState.sweeping) return;
+        if (!slicerState.lastTs) slicerState.lastTs = ts;
+        const dt = Math.min(0.05, (ts - slicerState.lastTs) / 1000);
+        slicerState.lastTs = ts;
+
+        slicerState.pct += 26 * dt;
+        if (slicerState.pct >= 99) slicerState.pct = 1;
+        stripSlider.value = slicerState.pct;
+        drawSlicerLab();
+        slicerState.rafId = requestAnimationFrame(stepSweep);
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2: AREA BISECTION LAB (x = k, y = k, y = mx)
+         ---------------------------------------------------------------------- */
+      const bisectPresets = [
+        {
+          shortTitle: 'Vertical Bisector x = k',
+          tag: 'Final 2025 Q4(a)',
+          paramName: 'Vertical Line x = k',
+          sym: 'k',
+          min: 0.05, max: 1.98, def: 1.25,
+          exact: Math.cbrt(4),
+          exactTex: 'k^* = \\sqrt[3]{4} \\approx 1.5874',
+          totalArea: 8 / 3,
+          totalTex: '\\frac{8}{3}',
+          xRange: [-0.2, 2.3],
+          yRange: [-0.3, 4.6],
+          area1: (k) => (k * k * k) / 3,
+          eqTex: (k, a1) => `A_1(k) = \\int_0^k x^2\\,dx = \\frac{k^3}{3} = \\frac{4}{3} \\implies k^* = \\sqrt[3]{4} \\approx 1.5874`,
+          draw(ctx, toX, toY, k) {
+            // Region 1 [0, k] (Cyan)
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.28)';
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            for (let i = 0; i <= 80; i++) {
+              const x = (i / 80) * k;
+              ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.lineTo(toX(k), toY(0));
+            ctx.closePath();
+            ctx.fill();
+
+            // Region 2 [k, 2] (Emerald)
+            ctx.fillStyle = 'rgba(52, 211, 153, 0.28)';
+            ctx.beginPath();
+            ctx.moveTo(toX(k), toY(0));
+            for (let i = 0; i <= 80; i++) {
+              const x = k + (i / 80) * (2 - k);
+              ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.lineTo(toX(2), toY(0));
+            ctx.closePath();
+            ctx.fill();
+
+            // Curve y = x^2
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+              const x = (i / 120) * 2.15;
+              if (i === 0) ctx.moveTo(toX(x), toY(x * x));
+              else ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.stroke();
+
+            // Right wall x = 2
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(toX(2), toY(0));
+            ctx.lineTo(toX(2), toY(4));
+            ctx.stroke();
+
+            // Amber dashed bisector x = k
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2.4;
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(toX(k), toY(0));
+            ctx.lineTo(toX(k), toY(4.4));
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '700 11.5px "JetBrains Mono", monospace';
+            ctx.textAlign = k > 1.45 ? 'right' : 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(`x = ${k.toFixed(3)}`, toX(k) + (k > 1.45 ? -7 : 7), toY(4.3));
+          }
+        },
+        {
+          shortTitle: 'Horizontal Bisector y = k',
+          tag: 'Class Notes (Anton Ex 35)',
+          paramName: 'Horizontal Line y = k',
+          sym: 'k',
+          min: 0.2, max: 8.8, def: 4.0,
+          exact: 9 / Math.cbrt(4),
+          exactTex: 'k^* = \\frac{9}{\\sqrt[3]{4}} \\approx 5.6696',
+          totalArea: 36,
+          totalTex: '36',
+          xRange: [-3.6, 3.6],
+          yRange: [-0.8, 10.2],
+          area1: (k) => (4 / 3) * Math.pow(k, 1.5),
+          eqTex: () => `A_1(k) = \\int_0^k 2\\sqrt{y}\\,dy = \\frac{4}{3}k^{3/2} = 18 \\implies k^* = \\frac{9}{\\sqrt[3]{4}} \\approx 5.6696`,
+          draw(ctx, toX, toY, k) {
+            const rk = Math.sqrt(k);
+            // Lower Region 1 [0, k] (Cyan)
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.28)';
+            ctx.beginPath();
+            for (let i = 0; i <= 100; i++) {
+              const x = -rk + (i / 100) * (2 * rk);
+              if (i === 0) ctx.moveTo(toX(x), toY(x * x));
+              else ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Upper Region 2 [k, 9] (Emerald)
+            ctx.fillStyle = 'rgba(52, 211, 153, 0.26)';
+            ctx.beginPath();
+            ctx.moveTo(toX(-3), toY(9));
+            ctx.lineTo(toX(3), toY(9));
+            for (let i = 0; i <= 60; i++) {
+              const x = 3 - (i / 60) * (3 - rk);
+              ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.lineTo(toX(-rk), toY(k));
+            for (let i = 0; i <= 60; i++) {
+              const x = -rk - (i / 60) * (3 - rk);
+              ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Parabola y = x^2
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 160; i++) {
+              const x = -3.2 + (i / 160) * 6.4;
+              if (i === 0) ctx.moveTo(toX(x), toY(x * x));
+              else ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.stroke();
+
+            // Top line y = 9
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(toX(-3.3), toY(9));
+            ctx.lineTo(toX(3.3), toY(9));
+            ctx.stroke();
+
+            // Amber dashed bisector y = k
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2.4;
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(toX(-3.4), toY(k));
+            ctx.lineTo(toX(3.4), toY(k));
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '700 11.5px "JetBrains Mono", monospace';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(`y = ${k.toFixed(3)}`, toX(3.35), toY(k) - 5);
+          }
+        },
+        {
+          shortTitle: 'Slanted Bisector y = mx',
+          tag: 'Class Notes (Adib, Ex 37)',
+          paramName: 'Slanted Line y = mx',
+          sym: 'm',
+          min: 0.05, max: 1.90, def: 0.85,
+          exact: 2 - Math.cbrt(4),
+          exactTex: 'm^* = 2 - \\sqrt[3]{4} \\approx 0.4126',
+          totalArea: 4 / 3,
+          totalTex: '\\frac{4}{3}',
+          xRange: [-0.2, 2.3],
+          yRange: [-0.2, 1.35],
+          area1: (m) => Math.pow(2 - m, 3) / 6,
+          eqTex: () => `A_1(m) = \\int_0^{2-m} \\big[(2x - x^2) - mx\\big]\\,dx = \\frac{(2-m)^3}{6} = \\frac{2}{3} \\implies m^* = 2 - \\sqrt[3]{4} \\approx 0.4126`,
+          draw(ctx, toX, toY, m) {
+            const xInt = 2 - m;
+            // Full Region 2 background (Emerald)
+            ctx.fillStyle = 'rgba(52, 211, 153, 0.28)';
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            for (let i = 0; i <= 100; i++) {
+              const x = (i / 100) * 2;
+              ctx.lineTo(toX(x), toY(2 * x - x * x));
+            }
+            ctx.lineTo(toX(2), toY(0));
+            ctx.closePath();
+            ctx.fill();
+
+            // Upper Region 1 above y = mx (Cyan)
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.36)';
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            for (let i = 0; i <= 90; i++) {
+              const x = (i / 90) * xInt;
+              ctx.lineTo(toX(x), toY(2 * x - x * x));
+            }
+            ctx.lineTo(toX(xInt), toY(m * xInt));
+            ctx.closePath();
+            ctx.fill();
+
+            // Parabola y = 2x - x^2
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+              const x = (i / 120) * 2;
+              if (i === 0) ctx.moveTo(toX(x), toY(2 * x - x * x));
+              else ctx.lineTo(toX(x), toY(2 * x - x * x));
+            }
+            ctx.stroke();
+
+            // Amber dashed line y = mx
+            const xEnd = Math.min(2.2, 1.3 / Math.max(m, 0.01));
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2.4;
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            ctx.lineTo(toX(xEnd), toY(m * xEnd));
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            drawDotWithLabel(ctx, toX, toY, xInt, m * xInt, `(${xInt.toFixed(2)}, ${(m * xInt).toFixed(2)})`, false);
+          }
+        }
+      ];
+
+      const bisectState = { idx: 0, val: 1.25 };
+      const bisectCanvas = document.getElementById('bisectCanvas');
+      const bisectPresetsEl = document.getElementById('bisectPresets');
+      const bisectSlider = document.getElementById('bisectSlider');
+
+      function buildBisectPresets() {
+        bisectPresetsEl.innerHTML = bisectPresets.map((p, i) => `
+          <button type="button" class="preset-btn ${i === bisectState.idx ? 'active' : ''}" data-bpidx="${i}">
+            <span class="preset-sub">${p.tag}</span>
+            <span>${i + 1}. ${p.shortTitle}</span>
+          </button>
+        `).join('');
+
+        bisectPresetsEl.querySelectorAll('.preset-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            bisectState.idx = parseInt(btn.dataset.bpidx, 10);
+            syncBisectControls();
+            visitedLabs.bisect = true;
+            updateProgress();
+            drawBisectLab();
+          });
+        });
+      }
+
+      function syncBisectControls() {
+        const p = bisectPresets[bisectState.idx];
+        bisectSlider.min = p.min;
+        bisectSlider.max = p.max;
+        bisectSlider.step = '0.005';
+        bisectState.val = p.def;
+        bisectSlider.value = p.def;
+      }
+
+      function drawBisectLab() {
+        const p = bisectPresets[bisectState.idx];
+        const v = bisectState.val;
+
+        bisectPresetsEl.querySelectorAll('.preset-btn').forEach((b, i) => {
+          b.classList.toggle('active', i === bisectState.idx);
+        });
+
+        const { ctx, w, h } = setupCanvas(bisectCanvas);
+        const pad = { top: 22, right: 22, bottom: 32, left: 46 };
+        const { toX, toY } = drawGridAxes(ctx, w, h, pad, p.xRange[0], p.xRange[1], p.yRange[0], p.yRange[1]);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+        p.draw(ctx, toX, toY, v);
+        ctx.restore();
+
+        // Compute balance metrics
+        const a1 = p.area1(v);
+        const a2 = p.totalArea - a1;
+        const pct1 = (a1 / p.totalArea) * 100;
+        const pct2 = 100 - pct1;
+        const isBalanced = Math.abs(pct1 - 50) <= 0.5;
+
+        document.getElementById('bisectParamName').textContent = p.paramName;
+        document.getElementById('bisectParamVal').textContent = `${p.sym} = ${v.toFixed(4)}`;
+        document.getElementById('balPct1').textContent = `Region 1: ${pct1.toFixed(1)}%`;
+        document.getElementById('balPct2').textContent = `Region 2: ${pct2.toFixed(1)}%`;
+        document.getElementById('balBarLeft').style.width = `${Math.max(0, Math.min(100, pct1))}%`;
+        document.getElementById('balArea1').textContent = `A₁ = ${a1.toFixed(4)}`;
+        document.getElementById('balTotal').textContent = `Total = ${p.totalArea.toFixed(4)}`;
+        document.getElementById('balArea2').textContent = `A₂ = ${a2.toFixed(4)}`;
+        document.getElementById('balanceCard').classList.toggle('balanced', isBalanced);
+
+        const eqBox = document.getElementById('bisectEquationBox');
+        if (eqBox.dataset.bidx !== String(bisectState.idx)) {
+          eqBox.innerHTML = `
+            <div style="font-size:0.73rem;font-weight:700;text-transform:uppercase;color:var(--amber);margin-bottom:4px;">
+              Exact Analytical Bisection Equation (${p.tag})
+            </div>
+            $$${p.eqTex(v, a1)}$$
+          `;
+          eqBox.dataset.bidx = String(bisectState.idx);
+          renderMath(eqBox);
+        }
+      }
+
+      /* ----------------------------------------------------------------------
+         5. PROGRESS TRACKING (8 VAULT + 5 QUIZ = 13 CHECKPOINTS)
+         ---------------------------------------------------------------------- */
+      const reviewedVault = new Set();
+      const quizResults = { q1: null, q2: null, q3: null, q4: null, q5: null };
+      const visitedLabs = { slicer: false, bisect: false, theory: false };
+
+      function updateProgress() {
+        const quizCorrect = Object.values(quizResults).filter((v) => v === true).length;
+        const done = reviewedVault.size + quizCorrect;
+        const pct = Math.round((done / 13) * 100);
+
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressCaption').textContent =
+          `${done}/13 checkpoints (${reviewedVault.size}/8 Vault, ${quizCorrect}/5 Quiz)`;
+
+        document.querySelector('[data-section="section-slicer"]').classList.toggle('done', visitedLabs.slicer);
+        document.querySelector('[data-section="section-bisection"]').classList.toggle('done', visitedLabs.bisect);
+        document.querySelector('[data-section="section-theory"]').classList.toggle('done', visitedLabs.theory);
+        document.querySelector('[data-section="section-vault"]').classList.toggle('done', reviewedVault.size === 8);
+        document.querySelector('[data-section="section-quiz"]').classList.toggle('done', quizCorrect === 5);
+      }
+
+      const quizExplanations = {
+        q1: 'In $dy$, every horizontal strip runs from $x_{\\text{left}} = y^2$ to $x_{\\text{right}} = y + 2$ across $[-1, 2]$, requiring just <strong>one</strong> polynomial integral $\\int_{-1}^2 [(y+2) - y^2]\\,dy = \\frac{9}{2}$.',
+        q2: 'Total area is $\\int_0^2 x^2\\,dx = \\frac{8}{3}$. Setting $\\int_0^k x^2\\,dx = \\frac{k^3}{3} = \\frac{4}{3}$ gives $k^3 = 4 \\implies k = \\sqrt[3]{4} \\approx 1.5874$.',
+        q3: 'Since $1 - x^2$ crosses the $x$-axis at $x = 1$, naive $\\int_0^2 (1-x^2)\\,dx = -\\frac{2}{3}$ gives the net signed difference. Splitting at $x = 1$ gives $\\int_0^1 (1-x^2)\\,dx + \\int_1^2 (x^2-1)\\,dx = \\frac{2}{3} + \\frac{4}{3} = 2$.',
+        q4: 'Equating $\\frac{y^2}{4} = \\frac{y+4}{2}$ gives $y^2 - 2y - 8 = 0 \\implies (y - 4)(y + 2) = 0$, so $y = -2$ and $y = 4$.',
+        q5: 'Since $P\'(t) = b(t) - d(t)$ is the net population growth rate, by FTC Part I $\\int_{t_1}^{t_2}[b(t)-d(t)]\\,dt = P(t_2) - P(t_1)$, the <strong>net increase in total population</strong> over $[t_1, t_2]$.'
+      };
+
+      /* ----------------------------------------------------------------------
+         6. DOM INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile sidebar
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+
+        function setSidebar(open) {
+          sidebar.classList.toggle('open', open);
+          sidebarOverlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+
+        menuToggle.addEventListener('click', () => setSidebar(!sidebar.classList.contains('open')));
+        sidebarOverlay.addEventListener('click', () => setSidebar(false));
+        document.querySelectorAll('.nav-link').forEach((l) => l.addEventListener('click', () => setSidebar(false)));
+
+        document.getElementById('prevLessonBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 7 — Gamma & Beta Functions (lesson7_gamma_beta.html)');
+        });
+        document.getElementById('nextLessonBtn').addEventListener('click', () => {
+          showToast('Next Up: Lesson 9 — Volumes of Revolution (Disks, Washers & Shells)');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('.section-block');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === id));
+              if (id === 'section-theory' && !visitedLabs.theory) {
+                visitedLabs.theory = true;
+                updateProgress();
+              }
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Slicer Controls
+        document.querySelectorAll('[data-smode]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-smode]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            slicerState.mode = btn.dataset.smode;
+            visitedLabs.slicer = true;
+            updateProgress();
+            drawSlicerLab();
+          });
+        });
+
+        stripSlider.addEventListener('input', () => {
+          stopSweep();
+          slicerState.pct = parseFloat(stripSlider.value);
+          visitedLabs.slicer = true;
+          updateProgress();
+          drawSlicerLab();
+        });
+
+        sweepBtn.addEventListener('click', () => {
+          visitedLabs.slicer = true;
+          updateProgress();
+          if (slicerState.sweeping) {
+            stopSweep();
+          } else {
+            slicerState.sweeping = true;
+            slicerState.lastTs = 0;
+            sweepBtn.textContent = '❚❚ Pause Sweep';
+            slicerState.rafId = requestAnimationFrame(stepSweep);
+          }
+        });
+
+        document.getElementById('slicerResetBtn').addEventListener('click', () => {
+          stopSweep();
+          slicerState.pct = 55;
+          stripSlider.value = 55;
+          drawSlicerLab();
+        });
+
+        // Section 2 Bisection Controls
+        bisectSlider.addEventListener('input', () => {
+          bisectState.val = parseFloat(bisectSlider.value);
+          visitedLabs.bisect = true;
+          updateProgress();
+          drawBisectLab();
+        });
+
+        document.getElementById('snapBisectBtn').addEventListener('click', () => {
+          const p = bisectPresets[bisectState.idx];
+          bisectState.val = p.exact;
+          bisectSlider.value = p.exact.toFixed(3);
+          visitedLabs.bisect = true;
+          updateProgress();
+          drawBisectLab();
+          showToast(`Snapped to exact 50/50 bisector: ${p.sym}* = ${p.exact.toFixed(4)}`);
+        });
+
+        // Section 4 Vault Filters, Hints, Solutions & Mark Reviewed
+        const filterTabs = document.querySelectorAll('.filter-tab');
+        const examCards = document.querySelectorAll('.exam-card');
+
+        filterTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            filterTabs.forEach((t) => t.classList.remove('active'));
+            tab.classList.add('active');
+            const f = tab.dataset.filter;
+            examCards.forEach((card) => {
+              const cats = card.dataset.category.split(' ');
+              card.classList.toggle('hidden', f !== 'all' && !cats.includes(f));
+            });
+          });
+        });
+
+        examCards.forEach((card) => {
+          const hintBtn = card.querySelector('.hint-toggle');
+          const hintBox = card.querySelector('.hint-box');
+          const solBtn = card.querySelector('.sol-toggle');
+          const solBox = card.querySelector('.solution-box');
+          const cb = card.querySelector('.review-cb');
+
+          hintBtn.addEventListener('click', () => {
+            const open = hintBox.classList.toggle('open');
+            hintBtn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            if (open) renderMath(hintBox);
+          });
+
+          solBtn.addEventListener('click', () => {
+            const open = solBox.classList.toggle('open');
+            solBtn.textContent = open ? 'Hide Solution' : 'Show Step-by-Step Solution';
+            if (open) renderMath(solBox);
+          });
+
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) {
+              reviewedVault.add(vid);
+              card.classList.add('reviewed-card');
+            } else {
+              reviewedVault.delete(vid);
+              card.classList.remove('reviewed-card');
+            }
+            updateProgress();
+          });
+        });
+
+        // Section 5 Quick Mastery Check Quiz
+        function updateQuizScoreUI() {
+          const score = Object.values(quizResults).filter((v) => v === true).length;
+          document.getElementById('quizScore').textContent = `${score} / 5`;
+        }
+
+        document.querySelectorAll('.quiz-card').forEach((card) => {
+          const qid = card.dataset.qid;
+          const ans = card.dataset.answer;
+          const opts = card.querySelectorAll('.quiz-opt');
+          const fb = card.querySelector('.quiz-feedback');
+
+          opts.forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const ok = btn.dataset.val === ans;
+              opts.forEach((b) => {
+                b.disabled = true;
+                if (b.dataset.val === ans) b.classList.add('correct');
+              });
+              if (!ok) btn.classList.add('wrong');
+
+              quizResults[qid] = ok;
+              updateQuizScoreUI();
+              updateProgress();
+
+              fb.className = `quiz-feedback show ${ok ? 'ok' : 'err'}`;
+              fb.innerHTML = `<strong>${ok ? 'Correct!' : 'Not quite.'}</strong> ${quizExplanations[qid]}`;
+              renderMath(fb);
+            });
+          });
+        });
+
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          Object.keys(quizResults).forEach((k) => { quizResults[k] = null; });
+          document.querySelectorAll('.quiz-opt').forEach((b) => {
+            b.disabled = false;
+            b.classList.remove('correct', 'wrong');
+          });
+          document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+            fb.className = 'quiz-feedback';
+            fb.innerHTML = '';
+          });
+          updateQuizScoreUI();
+          updateProgress();
+        });
+
+        // Initial Renders
+        buildSlicerPresets();
+        buildBisectPresets();
+        syncBisectControls();
+        drawSlicerLab();
+        drawBisectLab();
+        updateProgress();
+        renderMath(document.body);
+
+        // Responsive Resize Handling
+        const ro = new ResizeObserver(() => {
+          drawSlicerLab();
+          drawBisectLab();
+        });
+        ro.observe(document.getElementById('slicerCanvasWrap'));
+        ro.observe(document.getElementById('bisectCanvasWrap'));
+        window.addEventListener('resize', () => {
+          drawSlicerLab();
+          drawBisectLab();
+        });
+      });
+
+      // Ensure KaTeX renders once deferred CDN scripts finish loading
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawSlicerLab();
+        drawBisectLab();
+      });
+    })();
+  </script>
+</body>
+</html>

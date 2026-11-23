@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 9: Differentiation II — Chain, Implicit, Related Rates &amp; Differentials | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #b45309 0%, #dc2626 50%, #7c3aed 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.86rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 9: Differentiation II</h2>
+      <p>Module 3 of 5 &bull; Advanced Techniques</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Core Theory &amp; Formulas</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 9.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">2nd Incourse 2024 &amp; 2025</span>
+      <span class="source-pill">Year Final 2024 &amp; 2025</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 9 of 15</span>
+        <span class="hero-badge">Mega Yield: 2nd In-course &amp; Finals (2024 &amp; 2025)</span>
+        <span class="hero-badge">Interactive Web Lab</span>
+      </div>
+      <h1>Chain Rule, Implicit &amp; Log Differentiation, Related Rates &amp; Differentials</h1>
+      <p>
+        Master the powerhouse tools of Differential Calculus. Compare exact change $\Delta y$ against tangent rise $dy$
+        visually, animate the 2025 exam sliding ladder and coffee-cone related rates, and trace implicit tangent lines
+        around the Folium of Descartes $x^3 + y^3 = 3xy$.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-diff', this)">&Delta;y vs. dy Comparator</button>
+          <button class="tab-btn" onclick="switchTab('tab-rates', this)">Related Rates Animator (2025 Exams)</button>
+          <button class="tab-btn" onclick="switchTab('tab-folium', this)">Folium of Descartes (Implicit)</button>
+        </div>
+
+        <!-- TAB 1: DELTA Y VS DY -->
+        <div id="tab-diff" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="diffCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="diffSelect">Choose Lecture 9 / Final 2025 Example</label>
+                <select id="diffSelect" onchange="setupDiffSlider()">
+                  <option value="ex4">Ex 4 &amp; Final 2025: y = &radic;x at x₀ = 4 (dx = 3)</option>
+                  <option value="ex1">Ex 1: y = &radic;x at x₀ = 1 (approx &radic;1.1)</option>
+                  <option value="ex2">Ex 2: y = sin(x) at x₀ = 0 (sin x &approx; x)</option>
+                  <option value="ex3">Ex 3: y = x&sup2; at x₀ = 1 (dy = 2dx)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Step $dx = \Delta x$</span><span id="dxVal">3.00</span></label>
+                <input type="range" id="dxSlider" min="-2" max="4" step="0.1" value="3" oninput="drawDiffCanvas()" />
+              </div>
+              <div class="readout-card" id="diffReadout"></div>
+              <p style="font-size: 0.79rem; color: var(--text-muted);">
+                <strong>Key:</strong> <span style="color:#059669; font-weight:700;">Green bar</span> = exact change $\Delta y$;
+                <span style="color:#d97706; font-weight:700;">Amber bar</span> = differential $dy = f'(x_0)dx$ along the purple tangent line.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: RELATED RATES ANIMATOR -->
+        <div id="tab-rates" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="ratesCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="ratesMode">Select 2025 ISRT Exam Problem</label>
+                <select id="ratesMode" onchange="setupRatesControls()">
+                  <option value="ladder">2nd Incourse &amp; Final 2025: 10ft Sliding Ladder</option>
+                  <option value="coffee">Year Final 2025 Q4(d): Coffee Poured into Truncated Cone</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span id="rateParamLabel">Angle $\theta$ (degrees)</span><span id="rateParamVal">60&deg;</span></label>
+                <input type="range" id="rateSlider" min="15" max="85" step="1" value="60" oninput="drawRatesCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="snapExamRate()">Snap to Exact Exam Instant</button>
+              </div>
+              <div class="readout-card" id="ratesReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: FOLIUM OF DESCARTES -->
+        <div id="tab-folium" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="foliumCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label><span>Curve Equation (2nd Incourse &amp; Final 2024)</span></label>
+                <div class="readout-card" style="text-align:center; font-weight:700;">
+                  $x^3 + y^3 = 3xy \implies \dfrac{dy}{dx} = \dfrac{y - x^2}{y^2 - x}$
+                </div>
+              </div>
+              <div class="control-group">
+                <label><span>Move Point along Loop ($t = y/x$)</span><span id="folTVal">1.00</span></label>
+                <input type="range" id="folSlider" min="0.15" max="4.0" step="0.05" value="1.0" oninput="drawFoliumCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-outline" onclick="setFolT(1.0)">Tip (1.5, 1.5)</button>
+                <button class="btn btn-outline" onclick="setFolT(0.794)">Horizontal Tangent</button>
+                <button class="btn btn-outline" onclick="setFolT(1.26)">Vertical Tangent</button>
+              </div>
+              <div class="readout-card" id="foliumReadout"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory &amp; Formulas (Lecture 9 + Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Chain Rule, Implicit &amp; Logarithmic Differentiation</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Technique</th>
+                <th>Core Formula / Procedure</th>
+                <th>When to Use It</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Chain Rule</strong></td>
+                <td>$\dfrac{dy}{dx} = \dfrac{dy}{du}\cdot\dfrac{du}{dx}$ &nbsp; or &nbsp; $(f \circ g)'(x) = f'(g(x))g'(x)$</td>
+                <td>Composite functions like $\cos(2x)$, $e^{7x}$, $\sqrt{4+3x}$.</td>
+              </tr>
+              <tr>
+                <td><strong>Implicit Differentiation</strong></td>
+                <td>Differentiate both sides w.r.t. $x$, attaching $\dfrac{dy}{dx}$ whenever differentiating a $y$-term, then solve for $\dfrac{dy}{dx}$.</td>
+                <td>Equations mixing $x$ and $y$ that can't easily be solved for $y$, e.g., $x^3 + y^3 = 3xy$ or $x^{2/3} + y^{2/3} = 4$.</td>
+              </tr>
+              <tr>
+                <td><strong>Logarithmic Differentiation</strong></td>
+                <td>Take $\ln$ of both sides, expand using log laws, differentiate implicitly ($\frac{1}{y}\frac{dy}{dx} = \dots$), and multiply by $y$.</td>
+                <td>Variable exponents like $y = x^{\sin x}$, or complicated products/quotients with roots &amp; powers.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Local Linear Approximation &amp; Differentials (Lecture 9 Slides)</h3>
+        <p>
+          Near $x_0$, the tangent line $y = f(x_0) + f'(x_0)(x - x_0)$ is the best linear approximation to $f(x)$:
+          $$f(x) \approx f(x_0) + f'(x_0)(x - x_0) \qquad \Longleftrightarrow \qquad f(x_0 + \Delta x) \approx f(x_0) + f'(x_0)\Delta x$$
+          Setting $dx = \Delta x$, the <strong>differential $dy$</strong> is the tangent-line rise:
+          $$dy = f'(x)\,dx \qquad \text{which approximates the exact change} \qquad \Delta y = f(x + \Delta x) - f(x)$$
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Error Metric</th>
+                <th>Exact Formula</th>
+                <th>Differential Approximation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Propagated Error</strong></td>
+                <td>$\Delta q = q_{\text{measured}} - q_{\text{true}}$</td>
+                <td>$dq = f'(x)\,dx$</td>
+              </tr>
+              <tr>
+                <td><strong>Relative Error</strong></td>
+                <td>$\dfrac{\Delta q}{q}$</td>
+                <td>$\dfrac{dq}{q}$</td>
+              </tr>
+              <tr>
+                <td><strong>Percentage Error</strong></td>
+                <td>$\dfrac{\Delta q}{q} \times 100\%$</td>
+                <td>$\dfrac{dq}{q} \times 100\%$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout note-bn">
+          <strong>Important Engineering Approximation (Lecture 9 Ex. 34):</strong>
+          For small $x$, $(1 + x)^k \approx 1 + kx$ (the first two terms of the Binomial expansion!). For example, $(1.001)^{37} \approx 1 + 37(0.001) = 1.037$ (exact: $1.03767$). Also memorize at $x_0 = 0$: $\sin x \approx x$, $\tan x \approx x$, $e^x \approx 1 + x$, and $\ln(1 + x) \approx x$.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Lecture 9 Slides &amp; Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: Lecture 9 Example 5 & 6 (Error Propagation) -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 9 &bull; Examples 5 &amp; 6</span>
+            <h3 style="margin-top: 6px;">Example 1: Propagated Error in Square Area &amp; Sphere Volume</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>
+          <strong>(a)</strong> A square's side is measured as $10\text{ in}$ with error at most $\pm\frac{1}{32}\text{ in}$. Estimate the area error.<br />
+          <strong>(b)</strong> A polyurethane sphere's diameter is measured within $\pm 0.4\%$. Estimate the percentage error in its volume.
+        </p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Part (a) — Differential of Area:</strong> $y = x^2 \implies dy = 2x\,dx$. At $x = 10$, $dy = 20\,dx$.</div>
+          <div class="step-item"><strong>Part (a) — Apply Error Bound:</strong> Since $-\frac{1}{32} \le dx \le \frac{1}{32}$, multiplying by $20$ gives $-\frac{5}{8} \le dy \le \frac{5}{8}$. Estimated area error is within <strong>$\pm\dfrac{5}{8}\text{ in}^2$</strong>.</div>
+          <div class="step-item"><strong>Part (b) — Relative Error of Volume:</strong> $V = \dfrac{\pi}{6}D^3 \implies dV = \dfrac{\pi}{2}D^2\,dD$. Dividing by $V$: $\dfrac{dV}{V} = \dfrac{\frac{\pi}{2}D^2\,dD}{\frac{\pi}{6}D^3} = 3\dfrac{dD}{D}$.</div>
+          <div class="step-item"><strong>Part (b) — Percentage Error:</strong> Since $\left|\frac{dD}{D}\right| \le 0.4\%$, we get $\left|\frac{dV}{V}\right| \le 3(0.4\%) = \mathbf{\pm 1.2\%}$.</div>
+        </div>
+      </div>
+
+      <!-- Example 2: Logarithmic Differentiation (Ashraful's Notes) -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Logarithmic Differentiation</span>
+            <h3 style="margin-top: 6px;">Example 2: Differentiate $y = x^{\sin x}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Find $\dfrac{dy}{dx}$ for $y = x^{\sin x}$ ($x > 0$).</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Take $\ln$ of Both Sides:</strong> $\ln y = \ln(x^{\sin x}) = (\sin x)\ln x$.</div>
+          <div class="step-item"><strong>Step 2 — Differentiate Implicitly (Product Rule on RHS):</strong> $\dfrac{1}{y}\dfrac{dy}{dx} = (\sin x)\cdot\dfrac{1}{x} + (\cos x)\ln x$.</div>
+          <div class="step-item"><strong>Step 3 — Multiply by $y = x^{\sin x}$:</strong> $\dfrac{dy}{dx} = x^{\sin x}\left(\dfrac{\sin x}{x} + \cos x\ln x\right)$.</div>
+        </div>
+      </div>
+
+      <!-- Example 3: Local Linear Approx of sin(2 deg) -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 9 &bull; Example 2</span>
+            <h3 style="margin-top: 6px;">Example 3: Local Linear Approximation of $\sin 2^\circ$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Find the local linear approximation of $f(x) = \sin x$ at $x_0 = 0$ and use it to approximate $\sin 2^\circ$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Tangent Line at $x_0 = 0$:</strong> $f(0) = \sin 0 = 0$ and $f'(0) = \cos 0 = 1$, so $\sin x \approx 0 + 1(x - 0) = x$ (for $x$ in <strong>radians</strong>!).</div>
+          <div class="step-item"><strong>Step 2 — Convert Degrees to Radians:</strong> $2^\circ = 2 \cdot \dfrac{\pi}{180} = \dfrac{\pi}{90} \approx \mathbf{0.034907}\text{ rad}$.</div>
+          <div class="step-item"><strong>Step 3 — Compare with Calculator:</strong> Approximation $\sin 2^\circ \approx 0.034907$; calculator value is $0.034899$ (error $< 0.000008$!).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Filtered MATH104)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: 2nd Incourse 2024 Q6 & Q7(a) + Final 2024 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">2nd In-course 2024 Q6 &amp; Q7(a) + Final 2024</span>
+          <span class="pill pill-amber">2 + 5 = 7 Marks</span>
+        </div>
+        <p>
+          <strong>(a)</strong> Given that $f'(9) = 5$, $g(2) = 9$, and $g'(2) = -3$, find $(f \circ g)'(2)$.<br />
+          <strong>(b)</strong> Use implicit differentiation to find $\dfrac{dy}{dx}$ for the <strong>Folium of Descartes</strong>: $x^3 + y^3 = 3xy$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Part (a) (Chain Rule):</strong><br />
+          $$(f \circ g)'(2) = f'(g(2)) \cdot g'(2) = f'(9) \cdot (-3) = 5(-3) = \mathbf{-15}$$
+          <strong>Part (b) (Implicit Differentiation):</strong><br />
+          Differentiate $x^3 + y^3 = 3xy$ with respect to $x$ (using Product Rule on $3xy$):
+          $$3x^2 + 3y^2\frac{dy}{dx} = 3y + 3x\frac{dy}{dx}$$
+          Divide by $3$ and collect $\dfrac{dy}{dx}$ terms:
+          $$y^2\frac{dy}{dx} - x\frac{dy}{dx} = y - x^2 \implies (y^2 - x)\frac{dy}{dx} = y - x^2 \implies \mathbf{\frac{dy}{dx} = \frac{y - x^2}{y^2 - x}}$$
+        </div>
+      </div>
+
+      <!-- Exam Q2: 2nd Incourse 2025 Q1(a) & Final 2025 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">2nd In-course 2025 Q1(a) &amp; Year Final 2025</span>
+          <span class="pill pill-amber">3–4 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> A $10\text{ ft}$ ladder leans against a wall at an angle $\theta$ with the horizontal. The top of the ladder is $x\text{ ft}$ above the ground. If the bottom of the ladder is pushed toward the wall, find the rate at which $x$ changes with respect to $\theta$ when $\theta = 60^\circ$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          From the right triangle formed by the ladder (hypotenuse $= 10\text{ ft}$) and wall (opposite $= x$):
+          $$\sin\theta = \frac{x}{10} \implies x = 10\sin\theta$$
+          Differentiate with respect to $\theta$ (in radians):
+          $$\frac{dx}{d\theta} = 10\cos\theta$$
+          Evaluate at $\theta = 60^\circ = \dfrac{\pi}{3}\text{ rad}$:
+          $$\left.\frac{dx}{d\theta}\right|_{\theta = 60^\circ} = 10\cos(60^\circ) = 10\left(\frac{1}{2}\right) = \mathbf{5\text{ ft/rad}}$$
+        </div>
+      </div>
+
+      <!-- Exam Q3: Year Final 2025 Q4(b) & Q4(d) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2025 &bull; Q4(b) &amp; Q4(d)</span>
+          <span class="pill pill-amber">3 + 4 = 7 Marks</span>
+        </div>
+        <p>
+          <strong>(b)</strong> If $y = \sqrt{x}$, find formulas for $\Delta y$ and $dy$. Evaluate $\Delta y$ and $dy$ at $x = 4$ with $dx = \Delta x = 3$ and sketch them.<br />
+          <strong>(d)</strong> Coffee is poured at a uniform rate of $200\text{ cm}^3/\text{s}$ into a cup shaped like a truncated cone (upper radius $4\text{ cm}$, lower radius $2\text{ cm}$, height $6\text{ cm}$). How fast is the coffee level rising when the coffee is halfway up?
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm3-hint')">Toggle Hint for Coffee Cup</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm3-hint" class="toggle-box">
+          <strong>Hint:</strong> Express radius $r$ linearly in terms of height $h$: at $h=0$, $r=2$; at $h=6$, $r=4 \implies r(h) = 2 + \frac{h}{3}$. Even faster: $dV/dh$ is simply the cross-sectional area $\pi r^2$, so $\frac{dV}{dt} = \pi r^2 \frac{dh}{dt}$!
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Part (b) (Matches Lecture 9 Example 4!):</strong><br />
+          &bull; $\Delta y = \sqrt{x + \Delta x} - \sqrt{x}$ and $dy = \dfrac{1}{2\sqrt{x}}\,dx$.<br />
+          &bull; At $x = 4, dx = \Delta x = 3$: $\Delta y = \sqrt{7} - \sqrt{4} \approx \mathbf{0.646}$, and $dy = \dfrac{1}{2\sqrt{4}}(3) = \mathbf{0.75}$. *(See Tab 1 for the exact sketch!)*<br /><br />
+          <strong>Part (d) (Truncated Cone Coffee Cup):</strong><br />
+          At height $h \in [0, 6]$, the radius increases linearly from $2$ to $4$: $r(h) = 2 + \dfrac{4 - 2}{6}h = 2 + \dfrac{h}{3}$.<br />
+          Volume of the frustum up to height $h$:
+          $$V = \frac{\pi h}{3}\left(r^2 + 2r + 2^2\right) = \frac{\pi}{3}\left(\frac{h^3}{9} + 2h^2 + 12h\right)$$
+          Differentiate w.r.t. $t$:
+          $$\frac{dV}{dt} = \pi\left(\frac{h^2}{9} + \frac{4h}{3} + 4\right)\frac{dh}{dt} = \pi\left(2 + \frac{h}{3}\right)^2 \frac{dh}{dt} = \pi r^2 \frac{dh}{dt}$$
+          Halfway up means $h = 3\text{ cm} \implies r = 2 + \frac{3}{3} = 3\text{ cm}$. With $\frac{dV}{dt} = 200$:
+          $$200 = \pi(3)^2 \frac{dh}{dt} \implies \mathbf{\frac{dh}{dt} = \frac{200}{9\pi} \approx 7.074\text{ cm/s}}$$
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawDiffCanvas();
+      drawRatesCanvas();
+      drawFoliumCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-diff') drawDiffCanvas();
+      if (id === 'tab-rates') drawRatesCanvas();
+      if (id === 'tab-folium') drawFoliumCanvas();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    /* ================= CANVAS HELPERS ================= */
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        amber: '#d97706',
+        red: '#dc2626',
+        coffee: '#92400e',
+        coffeeFill: 'rgba(146, 64, 14, 0.45)'
+      };
+    }
+
+    function drawAxes(ctx, w, h, xMin, xMax, yMin, yMax, xStep = 1, yStep = 1) {
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      ctx.strokeStyle = c.grid;
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+      }
+
+      ctx.strokeStyle = c.axis;
+      ctx.lineWidth = 1.8;
+      if (yMin <= 0 && yMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
+      }
+      if (xMin <= 0 && xMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+      }
+
+      ctx.fillStyle = c.text;
+      ctx.font = '11px Inter, sans-serif';
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        if (Math.abs(x) > 1e-6) ctx.fillText(Math.round(x * 10) / 10, toX(x) - 6, toY(0) + 14);
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        if (Math.abs(y) > 1e-6) ctx.fillText(Math.round(y * 10) / 10, toX(0) + 6, toY(y) + 4);
+      }
+      return { toX, toY };
+    }
+
+    function plotFn(ctx, fn, xMin, xMax, yMin, yMax, toX, toY, color, width = 2.8, dashed = false) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      if (dashed) ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      let started = false;
+      const dx = (xMax - xMin) / 500;
+      for (let x = xMin; x <= xMax; x += dx) {
+        const y = fn(x);
+        if (y !== null && isFinite(y) && y >= yMin - 5 && y <= yMax + 5) {
+          if (!started) { ctx.moveTo(toX(x), toY(y)); started = true; }
+          else ctx.lineTo(toX(x), toY(y));
+        } else { started = false; }
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ================= TAB 1: DELTA Y VS DY ================= */
+    const diffPresets = {
+      ex4: {
+        name: 'y = √x at x₀ = 4', x0: 4, f: x => x >= 0 ? Math.sqrt(x) : null, df: x => 1 / (2*Math.sqrt(x)),
+        xMin: 0, xMax: 9.5, yMin: 0, yMax: 3.6, xStep: 1, yStep: 0.5, dMin: -2.5, dMax: 4.5, dVal: 3.0, dStep: 0.1
+      },
+      ex1: {
+        name: 'y = √x at x₀ = 1', x0: 1, f: x => x >= 0 ? Math.sqrt(x) : null, df: x => 1 / (2*Math.sqrt(x)),
+        xMin: 0, xMax: 4.5, yMin: 0, yMax: 2.8, xStep: 0.5, yStep: 0.5, dMin: -0.8, dMax: 2.5, dVal: 0.1, dStep: 0.05
+      },
+      ex2: {
+        name: 'y = sin(x) at x₀ = 0', x0: 0, f: x => Math.sin(x), df: x => Math.cos(x),
+        xMin: -1.6, xMax: 1.6, yMin: -1.4, yMax: 1.4, xStep: 0.5, yStep: 0.5, dMin: -1.2, dMax: 1.2, dVal: 0.35, dStep: 0.05
+      },
+      ex3: {
+        name: 'y = x² at x₀ = 1', x0: 1, f: x => x*x, df: x => 2*x,
+        xMin: -0.5, xMax: 3.5, yMin: -0.5, yMax: 8, xStep: 0.5, yStep: 1, dMin: -0.8, dMax: 2.0, dVal: 2.0, dStep: 0.1
+      }
+    };
+
+    function setupDiffSlider() {
+      const P = diffPresets[document.getElementById('diffSelect').value];
+      const sl = document.getElementById('dxSlider');
+      sl.min = P.dMin; sl.max = P.dMax; sl.step = P.dStep; sl.value = P.dVal;
+      drawDiffCanvas();
+    }
+
+    function drawDiffCanvas() {
+      const canvas = document.getElementById('diffCanvas');
+      const ctx = canvas.getContext('2d');
+      const P = diffPresets[document.getElementById('diffSelect').value];
+      const dx = parseFloat(document.getElementById('dxSlider').value);
+      document.getElementById('dxVal').textContent = dx.toFixed(2);
+
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, P.xMin, P.xMax, P.yMin, P.yMax, P.xStep, P.yStep);
+      const c = getColors();
+
+      const x0 = P.x0, y0 = P.f(x0), m = P.df(x0);
+      const x1 = x0 + dx;
+      const yExact = P.f(x1);
+      const yLin = y0 + m * dx;
+      const deltaY = yExact - y0;
+      const dy = m * dx;
+
+      // Curve & Tangent Line
+      plotFn(ctx, P.f, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.blue, 3);
+      plotFn(ctx, x => y0 + m * (x - x0), P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.purple, 2.4);
+
+      // Run horizontal line
+      ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = c.axis; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(toX(x0), toY(y0)); ctx.lineTo(toX(x1), toY(y0)); ctx.stroke();
+      ctx.restore();
+
+      // Exact Delta y bar (green, slightly left of x1)
+      ctx.strokeStyle = c.green; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(toX(x1) - 4, toY(y0)); ctx.lineTo(toX(x1) - 4, toY(yExact)); ctx.stroke();
+
+      // Differential dy bar (amber, slightly right of x1)
+      ctx.strokeStyle = c.amber; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(toX(x1) + 4, toY(y0)); ctx.lineTo(toX(x1) + 4, toY(yLin)); ctx.stroke();
+
+      // Anchor dot
+      ctx.fillStyle = c.blue; ctx.beginPath(); ctx.arc(toX(x0), toY(y0), 6, 0, Math.PI*2); ctx.fill();
+
+      document.getElementById('diffReadout').innerHTML = `
+        <div class="readout-row"><span>Exact Change Δy (Green):</span><strong style="color:var(--success);">${deltaY.toFixed(4)}</strong></div>
+        <div class="readout-row"><span>Differential dy (Amber):</span><strong style="color:var(--warning);">${dy.toFixed(4)}</strong></div>
+        <div class="readout-row"><span>Approx f(${x1.toFixed(2)}) ≈ L:</span><strong>${yLin.toFixed(4)} (Exact: ${yExact.toFixed(4)})</strong></div>
+        <div class="readout-row"><span>Error |Δy - dy|:</span><span class="pill pill-purple">${Math.abs(deltaY - dy).toFixed(5)}</span></div>
+      `;
+    }
+
+    /* ================= TAB 2: RELATED RATES ANIMATOR ================= */
+    function setupRatesControls() {
+      const mode = document.getElementById('ratesMode').value;
+      const sl = document.getElementById('rateSlider');
+      if (mode === 'ladder') {
+        sl.min = 15; sl.max = 85; sl.step = 1; sl.value = 60;
+        document.getElementById('rateParamLabel').textContent = 'Angle θ (degrees)';
+      } else {
+        sl.min = 0.2; sl.max = 6.0; sl.step = 0.1; sl.value = 3.0;
+        document.getElementById('rateParamLabel').textContent = 'Coffee Height h (cm)';
+      }
+      drawRatesCanvas();
+    }
+
+    function snapExamRate() {
+      const mode = document.getElementById('ratesMode').value;
+      document.getElementById('rateSlider').value = (mode === 'ladder') ? 60 : 3.0;
+      drawRatesCanvas();
+    }
+
+    function drawRatesCanvas() {
+      const canvas = document.getElementById('ratesCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('ratesMode').value;
+      const val = parseFloat(document.getElementById('rateSlider').value);
+      const c = getColors();
+
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (mode === 'ladder') {
+        document.getElementById('rateParamVal').textContent = `${val}°`;
+        const rad = val * Math.PI / 180;
+        const xH = 10 * Math.sin(rad);
+        const base = 10 * Math.cos(rad);
+        const rate = 10 * Math.cos(rad);
+
+        const ox = 150, oy = 310, scale = 25;
+        // Wall & Ground
+        ctx.strokeStyle = c.axis; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(ox, 40); ctx.lineTo(ox, oy); ctx.lineTo(540, oy); ctx.stroke();
+
+        // Ladder
+        const tx = ox, ty = oy - xH * scale;
+        const bx = ox + base * scale, by = oy;
+        ctx.strokeStyle = c.amber; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(bx, by); ctx.stroke();
+
+        // Angle arc
+        ctx.strokeStyle = c.purple; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(bx, by, 35, Math.PI, Math.PI + rad, false); ctx.stroke();
+
+        // Labels
+        ctx.fillStyle = c.text; ctx.font = 'bold 13px Inter, sans-serif';
+        ctx.fillText(`x = ${xH.toFixed(2)} ft`, ox - 95, (oy + ty) / 2);
+        ctx.fillText(`10 ft`, (tx + bx) / 2 + 12, (ty + by) / 2 - 8);
+        ctx.fillText(`θ = ${val}°`, bx - 75, oy - 12);
+
+        document.getElementById('ratesReadout').innerHTML = `
+          <div class="readout-row"><span>Relation:</span><strong>x = 10 sin(θ)</strong></div>
+          <div class="readout-row"><span>Top Height x:</span><strong>${xH.toFixed(2)} ft</strong></div>
+          <div class="readout-row"><span>Rate dx/dθ = 10 cos(θ):</span><span class="pill pill-green">${rate.toFixed(3)} ft/rad</span></div>
+          <div class="readout-row"><span>At θ = 60° (Exam):</span><strong>5.000 ft/rad</strong></div>
+        `;
+      } else {
+        document.getElementById('rateParamVal').textContent = `${val.toFixed(1)} cm`;
+        const h = val;
+        const r = 2 + h / 3;
+        const dhdt = 200 / (Math.PI * r * r);
+
+        const cx = canvas.width / 2, botY = 310, topY = 70;
+        const pxPerCm = (botY - topY) / 6; // 40 px/cm
+        const rScale = 36;
+
+        // Coffee fill trapezoid
+        const hY = botY - h * pxPerCm;
+        ctx.fillStyle = c.coffeeFill;
+        ctx.beginPath();
+        ctx.moveTo(cx - 2 * rScale, botY);
+        ctx.lineTo(cx + 2 * rScale, botY);
+        ctx.lineTo(cx + r * rScale, hY);
+        ctx.lineTo(cx - r * rScale, hY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Cup outline (truncated cone)
+        ctx.strokeStyle = c.text; ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx - 4 * rScale, topY);
+        ctx.lineTo(cx - 2 * rScale, botY);
+        ctx.lineTo(cx + 2 * rScale, botY);
+        ctx.lineTo(cx + 4 * rScale, topY);
+        ctx.stroke();
+
+        // Coffee surface line
+        ctx.strokeStyle = c.coffee; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(cx - r * rScale, hY); ctx.lineTo(cx + r * rScale, hY); ctx.stroke();
+
+        // Labels
+        ctx.fillStyle = c.text; ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText('Upper r = 4 cm', cx + 4 * rScale + 12, topY + 6);
+        ctx.fillText('Lower r = 2 cm', cx + 2 * rScale + 12, botY);
+        ctx.fillStyle = c.blue;
+        ctx.fillText(`h = ${h.toFixed(1)} cm, r = ${r.toFixed(2)} cm`, cx - 65, hY - 8);
+
+        document.getElementById('ratesReadout').innerHTML = `
+          <div class="readout-row"><span>Radius at height h:</span><strong>r = 2 + h/3 = ${r.toFixed(2)} cm</strong></div>
+          <div class="readout-row"><span>Surface Area πr²:</span><strong>${(Math.PI*r*r).toFixed(2)} cm²</strong></div>
+          <div class="readout-row"><span>Rise Rate dh/dt = 200/(πr²):</span><span class="pill pill-green">${dhdt.toFixed(3)} cm/s</span></div>
+          <div class="readout-row"><span>Halfway (h = 3 cm):</span><strong>200 / (9π) ≈ 7.074 cm/s</strong></div>
+        `;
+      }
+    }
+
+    /* ================= TAB 3: FOLIUM OF DESCARTES ================= */
+    function setFolT(v) {
+      document.getElementById('folSlider').value = v;
+      drawFoliumCanvas();
+    }
+
+    function drawFoliumCanvas() {
+      const canvas = document.getElementById('foliumCanvas');
+      const ctx = canvas.getContext('2d');
+      const t0 = parseFloat(document.getElementById('folSlider').value);
+      document.getElementById('folTVal').textContent = t0.toFixed(2);
+
+      const xMin = -2.2, xMax = 2.6, yMin = -2.2, yMax = 2.6;
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 1, 1);
+      const c = getColors();
+
+      // Asymptote x + y + 1 = 0
+      plotFn(ctx, x => -x - 1, xMin, xMax, yMin, yMax, toX, toY, c.axis, 1.5, true);
+
+      // Draw Folium parametrically: x = 3t/(1+t^3), y = 3t^2/(1+t^3)
+      const drawBranch = (tStart, tEnd) => {
+        ctx.strokeStyle = c.blue; ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= 300; i++) {
+          const t = tStart + (tEnd - tStart) * (i / 300);
+          const denom = 1 + t*t*t;
+          if (Math.abs(denom) < 0.08) { started = false; continue; }
+          const x = (3 * t) / denom;
+          const y = (3 * t * t) / denom;
+          if (x >= xMin - 1 && x <= xMax + 1 && y >= yMin - 1 && y <= yMax + 1) {
+            if (!started) { ctx.moveTo(toX(x), toY(y)); started = true; }
+            else ctx.lineTo(toX(x), toY(y));
+          } else { started = false; }
+        }
+        ctx.stroke();
+      };
+      drawBranch(-0.78, 8);
+      drawBranch(-8, -1.22);
+
+      // Active point on loop
+      const d0 = 1 + t0*t0*t0;
+      const px = (3 * t0) / d0;
+      const py = (3 * t0 * t0) / d0;
+      const num = py - px * px;
+      const den = py * py - px;
+
+      // Tangent line
+      ctx.strokeStyle = c.amber; ctx.lineWidth = 2.4;
+      if (Math.abs(den) < 0.03) {
+        ctx.beginPath(); ctx.moveTo(toX(px), 0); ctx.lineTo(toX(px), canvas.height); ctx.stroke();
+      } else {
+        const slope = num / den;
+        plotFn(ctx, x => py + slope * (x - px), xMin, xMax, yMin, yMax, toX, toY, c.amber, 2.4);
+      }
+
+      ctx.fillStyle = c.red;
+      ctx.beginPath(); ctx.arc(toX(px), toY(py), 6.5, 0, Math.PI*2); ctx.fill();
+
+      const slopeStr = Math.abs(den) < 0.03
+        ? '<span class="pill pill-red">Vertical Tangent (∞)</span>'
+        : (Math.abs(num) < 0.03 ? '<span class="pill pill-green">Horizontal Tangent (0)</span>' : `<strong>${(num / den).toFixed(3)}</strong>`);
+
+      document.getElementById('foliumReadout').innerHTML = `
+        <div class="readout-row"><span>Point (x, y) on Loop:</span><strong>(${px.toFixed(2)}, ${py.toFixed(2)})</strong></div>
+        <div class="readout-row"><span>Numerator (y - x²):</span><span>${num.toFixed(3)}</span></div>
+        <div class="readout-row"><span>Denominator (y² - x):</span><span>${den.toFixed(3)}</span></div>
+        <div class="readout-row"><span>Implicit Slope dy/dx:</span>${slopeStr}</div>
+      `;
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. Given f\'(9) = 5, g(2) = 9, and g\'(2) = -3, what is (f ∘ g)\'(2)? (2nd Incourse 2024 Q6)',
+        opts: ['-15', '15', '-27', '45'],
+        ans: 0,
+        exp: 'By the Chain Rule, (f ∘ g)\'(2) = f\'(g(2)) · g\'(2) = f\'(9) · (-3) = 5 · (-3) = -15.'
+      },
+      {
+        q: '2. For the Folium of Descartes x³ + y³ = 3xy, what is dy/dx? (2nd Incourse & Final 2024)',
+        opts: ['(x² - y) / (y² - x)', '(y - x²) / (y² - x)', '(3y - x²) / (y² - 3x)', '-x² / y²'],
+        ans: 1,
+        exp: '3x² + 3y²y\' = 3y + 3xy\' ⇒ (y² - x)y\' = y - x² ⇒ dy/dx = (y - x²) / (y² - x).'
+      },
+      {
+        q: '3. A 10ft ladder leans at angle θ with the horizontal, top height x = 10 sin θ. What is dx/dθ at θ = 60°? (2025 Exams)',
+        opts: ['5√3 ft/rad', '5 ft/rad', '10 ft/rad', '-5 ft/rad'],
+        ans: 1,
+        exp: 'dx/dθ = 10 cos θ. At θ = 60°, 10 cos(60°) = 10(1/2) = 5 ft/rad.'
+      },
+      {
+        q: '4. For y = √x at x = 4 with dx = Δx = 3, what is the differential dy? (Lecture 9 Ex 4 & Final 2025)',
+        opts: ['0.65', '0.75', '1.50', '0.25'],
+        ans: 1,
+        exp: 'dy = [1 / (2√4)] · 3 = (1/4) · 3 = 0.75 (while exact Δy = √7 - 2 ≈ 0.65).'
+      },
+      {
+        q: '5. A sphere\'s diameter has percentage error ±0.4%. What is the estimated percentage error in its volume V = (π/6)D³? (Lecture 9 Ex 6)',
+        opts: ['±0.4%', '±0.8%', '±1.2%', '±1.6%'],
+        ans: 2,
+        exp: 'dV/V = 3(dD/D) = 3(±0.4%) = ±1.2%.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      setupDiffSlider();
+      setupRatesControls();
+      drawFoliumCanvas();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

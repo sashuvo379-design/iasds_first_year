@@ -1,0 +1,1997 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 6: Gamma &amp; Beta Functions | MATH 103 — Foundations of Mathematics</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            primary: '#4f46e5',
+            secondary: '#0ea5e9',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Persist Theme Before First Paint -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('math103_theme') || localStorage.getItem('math103-theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100 transition-colors duration-200">
+
+  <!-- ==================== TOP STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Mobile Sidebar Toggle + Brand -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-sky-500 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              MATH 103 • Group A • ISRT, DU
+            </p>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+              Lesson 6: Gamma &amp; Beta Functions
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Lesson Pill + Progress + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/70">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Group A Capstone · 6 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+        </div>
+
+        <button
+          id="theme-toggle"
+          type="button"
+          aria-label="Toggle light or dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <svg class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR (280px desktop) ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 lg:w-[280px] bg-white dark:bg-slate-900 lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white text-sm">MATH 103 · Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Course Badge & Live Progress Card -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400">
+              MATH 103 • Group A
+            </span>
+            <div class="text-sm font-bold text-slate-900 dark:text-white mt-1">Foundations of Mathematics</div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson 6 Progress</span>
+              <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-sky-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="sidebar-progress-detail" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+              0/6 sections · 0/3 labs · 0/5 quiz
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. In-Page Table of Contents (Scroll-Spy) -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-xs sm:text-sm">
+            <li><a href="#sec-1" data-spy="sec-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">01</span> Gamma Function $\Gamma(x)$</a></li>
+            <li><a href="#lab-gamma" data-spy="lab-gamma" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 1: Gamma Explorer</a></li>
+            <li><a href="#sec-2" data-spy="sec-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">02</span> Beta Function $\beta(x,y)$</a></li>
+            <li><a href="#sec-3" data-spy="sec-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">03</span> Beta–Gamma Bridge</a></li>
+            <li><a href="#lab-beta" data-spy="lab-beta" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 2: Beta Symmetry</a></li>
+            <li><a href="#sec-4" data-spy="sec-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">04</span> Trig, Wallis &amp; Reflection</a></li>
+            <li><a href="#sec-5" data-spy="sec-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">05</span> Substitution Playbook</a></li>
+            <li><a href="#lab-sub" data-spy="lab-sub" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 3: Integral Converter</a></li>
+            <li><a href="#sec-6" data-spy="sec-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">06</span> Statistical Connections</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" data-spy="exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault (6)</a>
+            </li>
+            <li>
+              <a href="#quick-quiz" data-spy="quick-quiz" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-1">Module 1 · Group A: Basic Algebra</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L01</span><span class="truncate">Real Numbers &amp; Divisibility</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L02</span><span class="truncate">Congruences &amp; Diophantine</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L03</span><span class="truncate">Inequalities &amp; Series</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L04</span><span class="truncate">Complex Numbers &amp; Unity</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L05</span><span class="truncate">Theory of Equations</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <span class="font-mono">L06</span>
+                <span class="truncate">Gamma &amp; Beta Functions</span>
+              </div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Module 2 · Group B: Differential Equations</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L07</span><span class="truncate">Fundamentals &amp; Formation</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L08</span><span class="truncate">Separable &amp; Homogeneous</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L09</span><span class="truncate">Exact, IF &amp; Bernoulli DEs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L10</span><span class="truncate">Higher-Order Linear DEs</span></div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Module 3 · Group C: Discrete Math &amp; Games</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L11</span><span class="truncate">Logic &amp; Counting Principles</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L12</span><span class="truncate">Recurrences &amp; Gen. Funcs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L13</span><span class="truncate">Graph Theory &amp; Dijkstra</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L14</span><span class="truncate">Game Theory &amp; Minimax</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT (max-w-[960px]) ==================== -->
+    <main class="flex-1 min-w-0 max-w-[960px] mx-auto w-full space-y-10 pb-20">
+
+      <!-- ORIENTATION HERO HEADER -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              Module 1 • Lesson 6 of 14 • Group A Capstone
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              ⏱ Est. Time: 50 mins
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30">
+              ★ Exam Weight: 8–14 Marks (Guaranteed in Group A)
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+            Gamma &amp; Beta Functions
+          </h2>
+
+          <p class="mt-3 text-sm sm:text-base text-indigo-100 leading-relaxed">
+            Master Euler's two indispensable special functions—synced directly with Rownak Jahan Tamanna (RJT) lecture slides and ISRT 2017–2025 past exams. Learn how $\Gamma(x)$ extends factorials continuously, how $\beta(x,y)$ transforms tricky definite and trigonometric integrals, and how both power probability distributions in Applied Statistics.
+          </p>
+
+          <div class="mt-5 p-3.5 rounded-2xl bg-white/10 border border-white/15 text-xs sm:text-sm text-indigo-100">
+            <strong class="text-white">Prereq:</strong> Improper Integrals &amp; Integration by Parts · Completes Module 1 (Group A: Basic Algebra &amp; Special Functions).
+          </div>
+
+          <div class="mt-4 flex flex-wrap items-center gap-1.5 text-[11px]">
+            <span class="font-bold uppercase tracking-wider text-indigo-200 mr-1">Connected Sources:</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 font-mono">Gamma and Beta Functions.pdf (RJT Slides)</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 font-mono">ISRT 2nd Incourse 2024</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 font-mono">ISRT Finals 2017 / 2019 / 2020 / 2023 / 2024</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 1: THE GAMMA FUNCTION & FUNDAMENTAL PROPERTIES              -->
+      <!-- =================================================================== -->
+      <section id="sec-1" data-track-sec="sec-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 01</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              The Gamma Function $\Gamma(x)$ &amp; Fundamental Properties
+            </h3>
+          </div>
+          <span id="badge-sec-1" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <!-- Euler Integral Definition -->
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Definition 1.1 · Euler's Gamma Function</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            For any real number $x > 0$, the <strong>Gamma function</strong> $\Gamma(x)$ is defined by the convergent improper integral:
+            $$\Gamma(x) = \int_0^\infty e^{-t} t^{x-1}\,dt \qquad (x > 0)$$
+          </p>
+        </div>
+
+        <!-- Importance in Applied Statistics (ISRT Final 2023 Q3a) -->
+        <div class="p-5 rounded-2xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900/70 space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 class="font-bold text-sky-900 dark:text-sky-200 text-sm uppercase tracking-wider">Why Gamma &amp; Beta Matter in Applied Statistics &amp; Data Science</h4>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200">ISRT Final 2023 Q3a</span>
+          </div>
+          <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+            <li><strong>Continuous Factorials:</strong> Generalizes $n!$ to non-integer real numbers (e.g., $\Gamma(3.5)$, $\Gamma(1/2) = \sqrt{\pi}$).</li>
+            <li><strong>Probability Distributions:</strong> Provides the exact normalizing constants for the <em>Gamma, Chi-square ($\chi^2$), Student's $t$, $F$, Weibull, and Beta</em> probability density functions (PDFs) in AST 102.</li>
+            <li><strong>Tough Improper Integrals:</strong> Converts seemingly impossible definite and trigonometric integrals into 2-line algebraic evaluations.</li>
+          </ul>
+        </div>
+
+        <!-- Core Properties Table -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-4 py-3">Property</th>
+                <th class="px-4 py-3">Formula / Behavior</th>
+                <th class="px-4 py-3">Key Remark</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Base Value</td>
+                <td class="px-4 py-2.5">$\Gamma(1) = 1$</td>
+                <td class="px-4 py-2.5 text-slate-600 dark:text-slate-400">Matches $0! = 1$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Recurrence Relation</td>
+                <td class="px-4 py-2.5">$\Gamma(x+1) = x\,\Gamma(x)$</td>
+                <td class="px-4 py-2.5 text-slate-600 dark:text-slate-400">Holds for all $x \notin \{0, -1, -2, \dots\}$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Positive Integers</td>
+                <td class="px-4 py-2.5">$\Gamma(n) = (n - 1)! \;\;(n \in \mathbb{Z}^+)$</td>
+                <td class="px-4 py-2.5 text-rose-600 dark:text-rose-400 font-medium">Off-by-one: $\Gamma(6) = 5! = 120$!</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Half-Integer Anchor</td>
+                <td class="px-4 py-2.5">$\Gamma(1/2) = \sqrt{\pi}$</td>
+                <td class="px-4 py-2.5 text-slate-600 dark:text-slate-400">Unlocks all $\Gamma(n + 1/2)$ values</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Non-Positive Integers</td>
+                <td class="px-4 py-2.5">$\Gamma(0), \Gamma(-1), \Gamma(-2), \dots = \pm\infty$</td>
+                <td class="px-4 py-2.5 text-slate-600 dark:text-slate-400">Simple poles (undefined)</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Negative Non-Integers</td>
+                <td class="px-4 py-2.5">$\Gamma(x) = \dfrac{\Gamma(x+1)}{x}$ (finite!)</td>
+                <td class="px-4 py-2.5 text-slate-600 dark:text-slate-400">Alternates sign between negative integers</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Collapsible Proofs for Section 1 -->
+        <div class="space-y-3">
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('proof-g1-rec')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Proofs 1.1 &amp; 1.2 · $\Gamma(1) = 1$ and $\Gamma(x+1) = x\Gamma(x)$</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Direct integration &amp; Integration by Parts (ISRT Final 2019 Q4d)</p>
+              </div>
+              <span id="icon-proof-g1-rec" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+            </button>
+            <div id="proof-g1-rec" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+              <p><strong>(a) Proof of $\Gamma(1) = 1$:</strong>
+              $$\Gamma(1) = \int_0^\infty e^{-t} t^{1-1}\,dt = \int_0^\infty e^{-t}\,dt = \Big[-e^{-t}\Big]_0^\infty = 0 - (-1) = 1 \quad \blacksquare$$</p>
+              <p><strong>(b) Proof of $\Gamma(x+1) = x\Gamma(x)$ ($x > 0$):</strong> Start from $\Gamma(x+1) = \int_0^\infty t^x e^{-t}\,dt$. Integrate by parts with $u = t^x \implies du = x t^{x-1}\,dt$ and $dv = e^{-t}\,dt \implies v = -e^{-t}$:
+              $$\Gamma(x+1) = \Big[-t^x e^{-t}\Big]_0^\infty + x\int_0^\infty e^{-t} t^{x-1}\,dt$$
+              At $t = 0$, $0^x e^0 = 0$ (since $x > 0$). As $t \to \infty$, $\lim_{t\to\infty} \frac{t^x}{e^t} = 0$ by repeated L'Hôpital's Rule. Therefore, the boundary term vanishes and $\Gamma(x+1) = x\Gamma(x)$. By induction, $\Gamma(n) = (n-1)!$ for $n \in \mathbb{Z}^+$. $\blacksquare$</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('proof-g-scale')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Proof 1.3 · Scaling Identity (ISRT Final 2017 Q4b — 3 Marks)</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Prove that $\displaystyle\int_0^\infty e^{-tx} x^{m-1}\,dx = \frac{\Gamma(m)}{t^m}$ for $m, t > 0$.</p>
+              </div>
+              <span id="icon-proof-g-scale" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+            </button>
+            <div id="proof-g-scale" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p>Let $u = tx$ ($t > 0$). Then $x = \frac{u}{t}$ and $dx = \frac{du}{t}$. As $x$ runs from $0$ to $\infty$, $u$ also runs from $0$ to $\infty$:</p>
+              <div class="overflow-x-auto text-center">
+                $$\int_0^\infty e^{-tx} x^{m-1}\,dx = \int_0^\infty e^{-u}\left(\frac{u}{t}\right)^{m-1}\frac{du}{t} = \frac{1}{t^m}\int_0^\infty e^{-u} u^{m-1}\,du = \frac{\Gamma(m)}{t^m} \quad \blacksquare$$
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXAM TRAP CALLOUT: NEGATIVE NON-INTEGERS -->
+        <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800/70 flex gap-3.5">
+          <div class="text-2xl shrink-0">⚠️</div>
+          <div class="space-y-2 text-sm">
+            <div class="flex flex-wrap items-center gap-2">
+              <h4 class="font-bold text-amber-950 dark:text-amber-200">Exam Trap Alert: Evaluating $\Gamma(x)$ for Negative Non-Integers!</h4>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-amber-200 dark:bg-amber-800 text-amber-950 dark:text-amber-100">ISRT 2nd Incourse 2024 Q4a</span>
+            </div>
+            <p class="text-amber-900 dark:text-amber-200/90 leading-relaxed">
+              <strong>NEVER</strong> plug $x \le 0$ directly into $\int_0^\infty e^{-t} t^{x-1}\,dt$—that integral <em>diverges</em> at $t = 0$! Instead, extend $\Gamma(x)$ analytically using the inverted recurrence $\Gamma(x) = \dfrac{\Gamma(x+1)}{x}$ until the argument becomes positive:
+            </p>
+            <div class="p-3.5 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-amber-200 dark:border-amber-900 overflow-x-auto text-xs sm:text-sm">
+              $$\Gamma(-2.5) = \Gamma\!\left(-\frac{5}{2}\right) = \frac{\Gamma(-3/2)}{-5/2} = \frac{\Gamma(-1/2)}{(-5/2)(-3/2)} = \frac{\Gamma(1/2)}{(-5/2)(-3/2)(-1/2)} = \frac{\sqrt{\pi}}{-15/8} = \mathbf{-\frac{8}{15}\sqrt{\pi}}$$
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 1: GAMMA FUNCTION INTEGRAND & RECURRENCE EXPLORER               -->
+      <!-- =================================================================== -->
+      <section id="lab-gamma" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Gamma Function Integrand &amp; Recurrence Explorer</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setGammaPreset(1)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">x = 1</button>
+            <button type="button" onclick="setGammaPreset(0.5)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">x = 0.5</button>
+            <button type="button" onclick="setGammaPreset(4.5)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">x = 4.5 (9/2)</button>
+            <button type="button" onclick="setGammaPreset(6)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">x = 6</button>
+            <button type="button" onclick="setGammaPreset(-2.5)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-800 hover:border-amber-500 transition">x = −2.5 (ISRT '24)</button>
+            <button type="button" onclick="setGammaPreset(0)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 hover:border-rose-500 transition">x = 0 (Pole)</button>
+          </div>
+        </div>
+
+        <!-- Slider -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+          <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+            <label for="gamma-x">Parameter $x \in [-3.5, 6.0]$ (step 0.5)</label>
+            <span id="gamma-x-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">x = 4.5</span>
+          </div>
+          <input id="gamma-x" type="range" min="-3.5" max="6.0" step="0.5" value="4.5" oninput="updateGammaLab(true)" class="w-full accent-indigo-600 cursor-pointer" />
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- SVG Canvas -->
+          <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span id="gamma-svg-title" class="font-semibold text-slate-500 dark:text-slate-400">Integrand $f(t) = e^{-t} t^{x-1}$ on $[0, 14]$</span>
+              <span id="gamma-svg-badge" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">Area = Γ(x)</span>
+            </div>
+            <svg id="gamma-svg" viewBox="0 0 460 250" class="w-full h-auto"></svg>
+          </div>
+
+          <!-- Reduction Chain & Numeric Value -->
+          <div id="gamma-readout" class="lg:col-span-5 p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-xs sm:text-sm"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 2: THE BETA FUNCTION & EQUIVALENT FORMS                     -->
+      <!-- =================================================================== -->
+      <section id="sec-2" data-track-sec="sec-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 02</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              The Beta Function $\beta(x,y)$ &amp; Equivalent Forms
+            </h3>
+          </div>
+          <span id="badge-sec-2" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Definition 2.1 · Euler's Beta Function</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            For any positive real numbers $x > 0$ and $y > 0$, the <strong>Beta function</strong> $\beta(x, y)$ (also written $B(x, y)$) is defined by:
+            $$\beta(x, y) = \int_0^1 t^{x-1}(1 - t)^{y-1}\,dt \qquad (x > 0,\; y > 0)$$
+            Key quick values: <strong>Symmetry</strong> $\beta(x, y) = \beta(y, x)$, $\beta(1, x) = \frac{1}{x}$, and $\beta\!\left(\frac{1}{2}, \frac{1}{2}\right) = \pi$.
+          </p>
+        </div>
+
+        <!-- Three Essential Forms Comparison Card -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Three Essential Forms of $\beta(x, y)$</h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+              <span class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">Form 1 · Standard $[0, 1]$</span>
+              <div class="py-1 text-center overflow-x-auto">$$\int_0^1 t^{x-1}(1-t)^{y-1}\,dt$$</div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Direct definition; powers of $t$ and $(1-t)$.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+              <span class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300">Form 2 · Trig ($t = \sin^2\theta$)</span>
+              <div class="py-1 text-center overflow-x-auto">$$2\int_0^{\pi/2} \sin^{2x-1}\theta \cos^{2y-1}\theta\,d\theta$$</div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Unlocks $\beta(1/2,1/2)=\pi$ &amp; Wallis integrals.</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+              <span class="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300">Form 3 · Improper ($t = \frac{u}{1+u}$)</span>
+              <div class="py-1 text-center overflow-x-auto">$$\int_0^\infty \frac{u^{x-1}}{(1+u)^{x+y}}\,du$$</div>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Key bridge to the Beta–Gamma theorem.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsible Proofs for Section 2 -->
+        <div class="space-y-3">
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('proof-beta-sym')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Proof 2.1 · Symmetry of Beta Function (ISRT 2nd Incourse 2024 Q5a — 3 Marks)</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Prove that $\beta(x, y) = \beta(y, x)$ for all $x, y > 0$.</p>
+              </div>
+              <span id="icon-proof-beta-sym" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+            </button>
+            <div id="proof-beta-sym" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p>Start with $\beta(x, y) = \int_0^1 t^{x-1}(1 - t)^{y-1}\,dt$. Substitute $t = 1 - u$, so $1 - t = u$ and $dt = -du$.</p>
+              <p>When $t = 0 \implies u = 1$, and when $t = 1 \implies u = 0$. Substituting gives:</p>
+              <div class="overflow-x-auto text-center">
+                $$\beta(x, y) = \int_1^0 (1 - u)^{x-1} u^{y-1}(-du) = \int_0^1 u^{y-1}(1 - u)^{x-1}\,du = \beta(y, x) \quad \blacksquare$$
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('proof-beta-trig')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Proof 2.2 · Trigonometric Form &amp; $\beta(1/2, 1/2) = \pi$</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Derive $\beta(x,y) = 2\int_0^{\pi/2}\sin^{2x-1}\theta\cos^{2y-1}\theta\,d\theta$ and deduce $\beta(1/2, 1/2) = \pi$.</p>
+              </div>
+              <span id="icon-proof-beta-trig" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+            </button>
+            <div id="proof-beta-trig" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p>In $\beta(x,y) = \int_0^1 t^{x-1}(1-t)^{y-1}\,dt$, substitute $t = \sin^2\theta \implies 1 - t = \cos^2\theta$ and $dt = 2\sin\theta\cos\theta\,d\theta$.</p>
+              <p>Limits: $t = 0 \implies \theta = 0$, and $t = 1 \implies \theta = \frac{\pi}{2}$. Thus:</p>
+              <div class="overflow-x-auto text-center">
+                $$\beta(x, y) = \int_0^{\pi/2} (\sin^2\theta)^{x-1}(\cos^2\theta)^{y-1}(2\sin\theta\cos\theta)\,d\theta = 2\int_0^{\pi/2}\sin^{2x-1}\theta\cos^{2y-1}\theta\,d\theta$$
+              </div>
+              <p>Setting $x = \frac{1}{2}$ and $y = \frac{1}{2}$ gives $2x-1 = 0$ and $2y-1 = 0$, so:
+              $$\beta\!\left(\frac{1}{2}, \frac{1}{2}\right) = 2\int_0^{\pi/2} \sin^0\theta \cos^0\theta\,d\theta = 2\int_0^{\pi/2} 1\,d\theta = 2\left(\frac{\pi}{2}\right) = \pi \quad \blacksquare$$</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 3: THE MASTER BRIDGE — RELATION BETWEEN BETA & GAMMA        -->
+      <!-- =================================================================== -->
+      <section id="sec-3" data-track-sec="sec-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 03</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">⭐ ISRT Final 2017, 2019, 2020 (5–7 Marks)</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1.5">
+              The Master Bridge — Relation Between Beta &amp; Gamma Functions
+            </h3>
+          </div>
+          <span id="badge-sec-3" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/70 text-center space-y-2">
+          <div class="text-xs font-mono font-bold uppercase text-indigo-700 dark:text-indigo-300">Theorem 3.1 · The Beta–Gamma Master Identity</div>
+          <div class="text-lg sm:text-xl font-bold">
+            $$\beta(x, y) = \frac{\Gamma(x)\,\Gamma(y)}{\Gamma(x + y)} \qquad (x > 0,\; y > 0)$$
+          </div>
+        </div>
+
+        <!-- Complete Collapsible RJT-Slide Proof -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button type="button" onclick="toggleCollapsible('proof-beta-gamma')" class="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Complete RJT-Slide Proof (Exam Standard)</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Step-by-step derivation via $t = \lambda u$ and the improper form $\int_0^\infty \frac{u^{x-1}}{(1+u)^{x+y}}\,du$.
+              </p>
+            </div>
+            <span id="icon-proof-beta-gamma" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+
+          <div id="proof-beta-gamma" class="hidden px-5 py-5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-3 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            <p><strong>Step 1 (Scale $\Gamma(x)$):</strong> Start from $\Gamma(x) = \int_0^\infty e^{-t} t^{x-1}\,dt$. Substitute $t = \lambda u$ ($\lambda > 0$ constant, $dt = \lambda\,du$):
+            $$\Gamma(x) = \int_0^\infty e^{-\lambda u} (\lambda u)^{x-1} \lambda\,du = \lambda^x \int_0^\infty e^{-\lambda u} u^{x-1}\,du$$</p>
+
+            <p><strong>Step 2 (Multiply by $e^{-\lambda}\lambda^{y-1}$ &amp; Integrate $\lambda$ from $0$ to $\infty$):</strong>
+            $$\Gamma(x) \int_0^\infty e^{-\lambda} \lambda^{y-1}\,d\lambda = \int_0^\infty \int_0^\infty e^{-\lambda(1+u)} \lambda^{x+y-1} u^{x-1}\,d\lambda\,du$$
+            The left-hand side is simply $\Gamma(x)\Gamma(y)$. On the right-hand side, evaluate the inner $\lambda$-integral using the scaling identity (Proof 1.3) with parameter $1 + u$:
+            $$\int_0^\infty e^{-\lambda(1+u)} \lambda^{(x+y)-1}\,d\lambda = \frac{\Gamma(x+y)}{(1+u)^{x+y}}$$</p>
+
+            <p><strong>Step 3 (Isolate the $u$-integral):</strong> Substituting back gives:
+            $$\Gamma(x)\Gamma(y) = \Gamma(x+y)\int_0^\infty \frac{u^{x-1}}{(1+u)^{x+y}}\,du \implies \frac{\Gamma(x)\Gamma(y)}{\Gamma(x+y)} = \int_0^\infty \frac{u^{x-1}}{(1+u)^{x+y}}\,du \quad \text{(Eq. 1)}$$</p>
+
+            <p><strong>Step 4 (Match with $\beta(x,y)$ via $t = \frac{u}{1+u}$):</strong> In $\beta(x,y) = \int_0^1 t^{x-1}(1-t)^{y-1}\,dt$, substitute $t = \frac{u}{1+u}$, so $1 - t = \frac{1}{1+u}$ and $dt = \frac{du}{(1+u)^2}$. As $t: 0 \to 1$, $u: 0 \to \infty$:
+            $$\beta(x, y) = \int_0^\infty \left(\frac{u}{1+u}\right)^{x-1}\left(\frac{1}{1+u}\right)^{y-1}\frac{du}{(1+u)^2} = \int_0^\infty \frac{u^{x-1}}{(1+u)^{x+y}}\,du \quad \text{(Eq. 2)}$$</p>
+
+            <p class="font-bold text-emerald-700 dark:text-emerald-400">Comparing (Eq. 1) and (Eq. 2) yields $\beta(x, y) = \dfrac{\Gamma(x)\Gamma(y)}{\Gamma(x+y)}$. $\blacksquare$</p>
+          </div>
+        </div>
+
+        <!-- Corollary: Gamma(1/2) = sqrt(pi) -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button type="button" onclick="toggleCollapsible('proof-gamma-half')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <div>
+              <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">Corollary 3.2 · $\Gamma(1/2) = \sqrt{\pi}$ (ISRT Final 2023 Q4c &amp; 2024 — 3 Marks)</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Prove that $\Gamma\!\left(\frac{1}{2}\right) = \sqrt{\pi}$ using the Beta–Gamma relation.</p>
+            </div>
+            <span id="icon-proof-gamma-half" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-gamma-half" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <p>Set $x = \frac{1}{2}$ and $y = \frac{1}{2}$ in $\beta(x, y) = \dfrac{\Gamma(x)\Gamma(y)}{\Gamma(x+y)}$:
+            $$\beta\!\left(\frac{1}{2}, \frac{1}{2}\right) = \frac{\Gamma(1/2)\,\Gamma(1/2)}{\Gamma(1/2 + 1/2)} = \frac{\big[\Gamma(1/2)\big]^2}{\Gamma(1)} = \big[\Gamma(1/2)\big]^2 \qquad (\text{since } \Gamma(1) = 1)$$</p>
+            <p>From Proof 2.2, we know $\beta\!\left(\frac{1}{2}, \frac{1}{2}\right) = 2\int_0^{\pi/2} d\theta = \pi$. Hence $\big[\Gamma(1/2)\big]^2 = \pi$. Since the integrand $e^{-t} t^{-1/2} > 0$ on $(0, \infty)$, $\Gamma(1/2) > 0$, so $\Gamma\!\left(\frac{1}{2}\right) = \sqrt{\pi}$. $\blacksquare$</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 2: BETA FUNCTION SHAPE, SYMMETRY & GAMMA-BRIDGE VISUALIZER      -->
+      <!-- =================================================================== -->
+      <section id="lab-beta" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Beta Function Shape, Symmetry &amp; Gamma-Bridge Visualizer</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setBetaPreset(0.5, 0.5)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">B(1/2, 1/2) = π</button>
+            <button type="button" onclick="setBetaPreset(3, 2.5)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">B(3, 5/2) = 16/315</button>
+            <button type="button" onclick="setBetaPreset(2, 1.5)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">B(2, 3/2)</button>
+            <button type="button" onclick="setBetaPreset(1, 4)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">B(1, 4) = 1/4</button>
+          </div>
+        </div>
+
+        <!-- Sliders + Symmetry Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+          <div class="md:col-span-4">
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="beta-x">Parameter $x$</label>
+              <span id="beta-x-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">3.0</span>
+            </div>
+            <input id="beta-x" type="range" min="0.5" max="6.0" step="0.5" value="3.0" oninput="updateBetaLab(true)" class="w-full accent-indigo-600" />
+          </div>
+          <div class="md:col-span-4">
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="beta-y">Parameter $y$</label>
+              <span id="beta-y-val" class="font-mono font-bold text-sky-600 dark:text-sky-400">2.5</span>
+            </div>
+            <input id="beta-y" type="range" min="0.5" max="6.0" step="0.5" value="2.5" oninput="updateBetaLab(true)" class="w-full accent-sky-500" />
+          </div>
+          <div class="md:col-span-4 flex flex-wrap gap-2">
+            <button type="button" onclick="swapBetaXY()" class="flex-1 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">⇄ Swap $x \leftrightarrow y$</button>
+            <button type="button" id="btn-beta-mirror" onclick="toggleBetaMirror()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition">Mirror: ON</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Beta SVG -->
+          <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
+              <span class="font-semibold text-slate-500 dark:text-slate-400">Integrand $g(t) = t^{x-1}(1-t)^{y-1}$ on $[0, 1]$</span>
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-indigo-600"></span> $\beta(x,y)$</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-sky-500"></span> Mirror $\beta(y,x)$</span>
+              </div>
+            </div>
+            <svg id="beta-svg" viewBox="0 0 460 245" class="w-full h-auto"></svg>
+          </div>
+
+          <!-- Beta Breakdown Card -->
+          <div id="beta-readout" class="lg:col-span-5 p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-xs sm:text-sm"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 4: TRIG INTEGRALS, WALLIS'S FORMULA & REFLECTION FORMULA    -->
+      <!-- =================================================================== -->
+      <section id="sec-4" data-track-sec="sec-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 04</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Trigonometric Integrals, Wallis's Formula &amp; Euler's Reflection Formula
+            </h3>
+          </div>
+          <span id="badge-sec-4" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <!-- Sine-Cosine Gamma Theorem -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div class="p-5 bg-indigo-50/70 dark:bg-indigo-950/35 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 4.1 · Sine–Cosine Gamma Formula</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2023 Q3b (4 Marks)</span>
+            </div>
+            <div class="py-1 text-center overflow-x-auto">
+              $$\int_0^{\pi/2} \sin^p\theta \cos^q\theta\,d\theta = \frac{\Gamma\!\left(\frac{p+1}{2}\right)\Gamma\!\left(\frac{q+1}{2}\right)}{2\,\Gamma\!\left(\frac{p+q+2}{2}\right)} \qquad (p > -1,\; q > -1)$$
+            </div>
+            <button type="button" onclick="toggleCollapsible('proof-wallis')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-50 transition">
+              <span id="icon-proof-wallis">Show Proof</span>
+            </button>
+          </div>
+          <div id="proof-wallis" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <p>From the trigonometric form of the Beta function (Section 2), $\beta(x, y) = 2\int_0^{\pi/2} \sin^{2x-1}\theta \cos^{2y-1}\theta\,d\theta$.</p>
+            <p>Set $2x - 1 = p \implies x = \frac{p+1}{2}$ and $2y - 1 = q \implies y = \frac{q+1}{2}$ (note $p, q > -1 \iff x, y > 0$).</p>
+            <p>Dividing by $2$ and applying $\beta(x, y) = \frac{\Gamma(x)\Gamma(y)}{\Gamma(x+y)}$ with $x + y = \frac{p+q+2}{2}$ gives:
+            $$\int_0^{\pi/2} \sin^p\theta \cos^q\theta\,d\theta = \frac{1}{2}\beta\!\left(\frac{p+1}{2}, \frac{q+1}{2}\right) = \frac{\Gamma\!\left(\frac{p+1}{2}\right)\Gamma\!\left(\frac{q+1}{2}\right)}{2\,\Gamma\!\left(\frac{p+q+2}{2}\right)} \quad \blacksquare$$</p>
+          </div>
+        </div>
+
+        <!-- Euler's Reflection Formula + Dirichlet's Theorem -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-sm">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Euler's Reflection Formula (RJT Slides)</div>
+            <div class="py-1 text-center font-bold">
+              $$\Gamma(x)\,\Gamma(1 - x) = \frac{\pi}{\sin(\pi x)} \qquad (0 < x < 1)$$
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              <strong>Worked RJT Exercise:</strong> Set $x = \frac{1}{4}$:
+              $$\Gamma\!\left(\frac{1}{4}\right)\Gamma\!\left(\frac{3}{4}\right) = \frac{\pi}{\sin(\pi/4)} = \frac{\pi}{1/\sqrt{2}} = \mathbf{\pi\sqrt{2}}$$
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-sm">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">Dirichlet's Theorem</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2019 Q4c (2 Marks)</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              Over the 3D simplex $V = \{(x,y,z) : x, y, z \ge 0,\; x + y + z \le 1\}$ ($l, m, n > 0$):
+            </p>
+            <div class="overflow-x-auto text-center">
+              $$\iiint_V x^{l-1} y^{m-1} z^{n-1}\,dx\,dy\,dz = \frac{\Gamma(l)\,\Gamma(m)\,\Gamma(n)}{\Gamma(l + m + n + 1)}$$
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 5: SUBSTITUTION PLAYBOOK FOR ISRT EXAM INTEGRALS            -->
+      <!-- =================================================================== -->
+      <section id="sec-5" data-track-sec="sec-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 05</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Substitution Playbook for ISRT Exam Integrals
+            </h3>
+          </div>
+          <span id="badge-sec-5" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-600 dark:text-slate-300">
+          Spot the integral pattern on your exam paper and immediately apply the matching substitution from this master cheat-sheet:
+        </p>
+
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-4 py-3">Exam Integral Pattern</th>
+                <th class="px-4 py-3">Magic Substitution</th>
+                <th class="px-4 py-3">Closed-Form Target</th>
+                <th class="px-4 py-3">ISRT Exam Reference</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="px-4 py-3">$\displaystyle\int_0^\infty e^{-ax^k} x^m\,dx$</td>
+                <td class="px-4 py-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">$t = ax^k$</td>
+                <td class="px-4 py-3">$\dfrac{1}{k\,a^{(m+1)/k}}\Gamma\!\left(\dfrac{m+1}{k}\right)$</td>
+                <td class="px-4 py-3 text-xs text-slate-500">2024 Q4b ($e^{-x^2}$), 2023 Q3d ($e^{-\sqrt{x}}$)</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">$\displaystyle\int_0^1 x^m(1 - x^k)^n\,dx$</td>
+                <td class="px-4 py-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">$t = x^k$</td>
+                <td class="px-4 py-3">$\dfrac{1}{k}\,\beta\!\left(\dfrac{m+1}{k},\; n + 1\right)$</td>
+                <td class="px-4 py-3 text-xs text-slate-500">2024 2nd Incourse Q5b ($k=2$)</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">$\displaystyle\int_0^a x^m(a - x)^n\,dx$</td>
+                <td class="px-4 py-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">$x = at$</td>
+                <td class="px-4 py-3">$a^{m+n+1}\,\beta(m+1, n+1)$</td>
+                <td class="px-4 py-3 text-xs text-slate-500">RJT Slides (Interval Rescaling)</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">$\displaystyle\int_0^\infty \frac{x^{m-1}}{(1+x)^{m+n}}\,dx$</td>
+                <td class="px-4 py-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">Direct Form 3</td>
+                <td class="px-4 py-3">$\beta(m, n) = \dfrac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}$</td>
+                <td class="px-4 py-3 text-xs text-slate-500">RJT Slides &amp; Final 2017/2020</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">$\displaystyle\int_0^{\pi/2} \sin^p\theta \cos^q\theta\,d\theta$</td>
+                <td class="px-4 py-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">Direct Formula</td>
+                <td class="px-4 py-3">$\dfrac{\Gamma\!\left(\frac{p+1}{2}\right)\Gamma\!\left(\frac{q+1}{2}\right)}{2\,\Gamma\!\left(\frac{p+q+2}{2}\right)}$</td>
+                <td class="px-4 py-3 text-xs text-slate-500">ISRT Final 2023 Q3b &amp; Q3c</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 3: INTERACTIVE SUBSTITUTION & EXAM INTEGRAL CONVERTER           -->
+      <!-- =================================================================== -->
+      <section id="lab-sub" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Interactive Substitution &amp; Exam Integral Converter</h3>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="stepSubPipeline()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition">Step Forward →</button>
+            <button type="button" onclick="showAllSubSteps()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Show All 4 Steps</button>
+          </div>
+        </div>
+
+        <!-- Preset Selector + Dynamic Parameter Sliders -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          <div class="md:col-span-6">
+            <label for="sub-preset" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Choose ISRT / RJT Exam Integral</label>
+            <select id="sub-preset" onchange="onSubPresetChange()" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="p1">1. ∫₀^∞ e^(−x²) x^(2n−1) dx  [ISRT 2nd Incourse 2024 Q4b]</option>
+              <option value="p2">2. ∫₀^∞ e^(−√x) x^(n/2 − 1) dx  [ISRT Final 2023 Q3d]</option>
+              <option value="p3">3. ∫₀^1 x^m (1 − x²)^n dx  [ISRT 2nd Incourse 2024 Q5b]</option>
+              <option value="p4">4. ∫₀^(π/2) sin^p(θ) cos^q(θ) dθ  [ISRT Final 2023 Q3b]</option>
+              <option value="p5">5. ∫₀^∞ e^(−tx) x^(m−1) dx  [ISRT Final 2017 Q4b]</option>
+            </select>
+          </div>
+          <div id="sub-params-container" class="md:col-span-6 grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <!-- 4-Step Pipeline Display -->
+        <div id="sub-pipeline" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 6: STATISTICAL CONNECTIONS (AST 102 PREVIEW)                -->
+      <!-- =================================================================== -->
+      <section id="sec-6" data-track-sec="sec-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 06 · Applied Statistics Bridge</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Statistical Connections (Preview for AST 102 / Probability)
+            </h3>
+          </div>
+          <span id="badge-sec-6" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          Every valid continuous probability density function (PDF) $f(x)$ must integrate to $1$ over its support. At ISRT, Gamma and Beta functions serve as the exact normalizing constants for two of the most important probability families in data science:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-indigo-600 text-white">Gamma Distribution · $X \sim \text{Gamma}(\alpha, \lambda)$</span>
+            <div class="py-1 overflow-x-auto text-center">
+              $$f(x) = \frac{\lambda^\alpha}{\Gamma(\alpha)} x^{\alpha-1} e^{-\lambda x}, \qquad x > 0$$
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300">
+              <strong>Why it integrates to $1$:</strong> By the scaling identity (Section 1), $\int_0^\infty x^{\alpha-1} e^{-\lambda x}\,dx = \frac{\Gamma(\alpha)}{\lambda^\alpha}$. Models waiting times, rainfall, and insurance claims (and gives the $\chi^2_\nu$ distribution when $\alpha = \nu/2, \lambda = 1/2$).
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/35 border border-sky-200 dark:border-sky-900/70 space-y-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-sky-600 text-white">Beta Distribution · $X \sim \text{Beta}(\alpha, \beta)$</span>
+            <div class="py-1 overflow-x-auto text-center">
+              $$f(x) = \frac{1}{\beta(\alpha, \beta)} x^{\alpha-1}(1 - x)^{\beta-1}, \qquad 0 < x < 1$$
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300">
+              <strong>Why it integrates to $1$:</strong> Directly by Definition 2.1, $\int_0^1 x^{\alpha-1}(1-x)^{\beta-1}\,dx = \beta(\alpha,\beta)$. The backbone of Bayesian statistics for modeling unknown probabilities, proportions, and click-through rates!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT (6 AUTHENTIC WORKED PROBLEMS)                  -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Past Papers (2017–2024) &amp; RJT Slides</span>
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 6)</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Attempt each question first, then reveal the Hint or Full Step-by-Step Solution independently.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Vault 1 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2024 (AST 103) · Q4(a)</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. Define the Gamma function and evaluate $\Gamma(-2.5)$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Write $-2.5 = -\frac{5}{2}$ and repeatedly apply $\Gamma(x) = \frac{\Gamma(x+1)}{x}$ three times until you reach $\Gamma(1/2) = \sqrt{\pi}$.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Definition:</strong> For $x > 0$, $\Gamma(x) = \int_0^\infty e^{-t} t^{x-1}\,dt$. For negative non-integers, it is extended via $\Gamma(x) = \frac{\Gamma(x+1)}{x}$.</p>
+              <p><strong>Evaluation of $\Gamma(-2.5) = \Gamma(-5/2)$:</strong>
+              $$\Gamma\!\left(-\frac{5}{2}\right) = \frac{\Gamma(-3/2)}{-5/2} = \frac{\Gamma(-1/2)}{(-5/2)(-3/2)} = \frac{\Gamma(1/2)}{(-5/2)(-3/2)(-1/2)} = \frac{\sqrt{\pi}}{-15/8} = \mathbf{-\frac{8}{15}\sqrt{\pi}} \approx -0.9453 \quad \blacksquare$$</p>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2024 (AST 103) · Q4(b) &amp; Q5(b)</span>
+              <span class="text-xs font-mono text-slate-400">[2 + 2 = 4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. Evaluate $\displaystyle\int_0^\infty e^{-x^2} x^{2n-1}\,dx$ ($n > 1$) and express $\displaystyle\int_0^1 x^m(1 - x^2)^n\,dx$ in terms of the Beta function.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Use the exact same substitution $t = x^2$ ($x = t^{1/2}$, $dx = \frac{1}{2}t^{-1/2}\,dt$) for both integrals!
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2.5">
+              <p><strong>Part (a):</strong> Let $t = x^2 \implies x = t^{1/2}$ and $2x\,dx = dt \implies x^{2n-1}\,dx = (x^2)^{n-1} x\,dx = \frac{1}{2} t^{n-1}\,dt$. Limits remain $0$ to $\infty$:
+              $$\int_0^\infty e^{-x^2} x^{2n-1}\,dx = \frac{1}{2}\int_0^\infty e^{-t} t^{n-1}\,dt = \mathbf{\frac{1}{2}\Gamma(n)}$$</p>
+              <p><strong>Part (b):</strong> Let $t = x^2 \implies x = t^{1/2}$ and $dx = \frac{1}{2}t^{-1/2}\,dt$. Limits remain $0$ to $1$:
+              $$\int_0^1 x^m(1 - x^2)^n\,dx = \frac{1}{2}\int_0^1 t^{\frac{m}{2}}(1-t)^n t^{-\frac{1}{2}}\,dt = \frac{1}{2}\int_0^1 t^{\frac{m+1}{2} - 1}(1-t)^{(n+1)-1}\,dt = \mathbf{\frac{1}{2}\beta\!\left(\frac{m+1}{2},\; n+1\right)} \quad \blacksquare$$</p>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2023 (MATH 103) · Q3(b) &amp; Q3(d)</span>
+              <span class="text-xs font-mono text-slate-400">[4 + 3 = 7 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. Express $\displaystyle\int_0^{\pi/2} \sin^p\theta \cos^q\theta\,d\theta$ in terms of the Gamma function with proof, and evaluate $\displaystyle\int_0^\infty e^{-\sqrt{x}} x^{\frac{1}{2}n - 1}\,dx$ ($n > 1$).
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> For Q3(b), set $2x-1=p, 2y-1=q$ in the trig Beta form. For Q3(d), substitute $t = \sqrt{x} \implies x = t^2,\; dx = 2t\,dt$.
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2.5">
+              <p><strong>Q3(b):</strong> Since $\beta(x,y) = 2\int_0^{\pi/2}\sin^{2x-1}\theta\cos^{2y-1}\theta\,d\theta$, substituting $x = \frac{p+1}{2}, y = \frac{q+1}{2}$ gives:
+              $$\int_0^{\pi/2}\sin^p\theta\cos^q\theta\,d\theta = \frac{1}{2}\beta\!\left(\frac{p+1}{2}, \frac{q+1}{2}\right) = \mathbf{\frac{\Gamma\!\left(\frac{p+1}{2}\right)\Gamma\!\left(\frac{q+1}{2}\right)}{2\,\Gamma\!\left(\frac{p+q+2}{2}\right)}}$$</p>
+              <p><strong>Q3(d):</strong> Let $t = \sqrt{x} \implies x = t^2$ and $dx = 2t\,dt$. Limits stay $0$ to $\infty$:
+              $$\int_0^\infty e^{-\sqrt{x}} x^{\frac{n}{2}-1}\,dx = \int_0^\infty e^{-t} (t^2)^{\frac{n}{2}-1}(2t\,dt) = 2\int_0^\infty e^{-t} t^{n-2+1}\,dt = 2\int_0^\infty e^{-t} t^{n-1}\,dt = \mathbf{2\Gamma(n)} \quad \blacksquare$$</p>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2017 (AST 104) · Q4(b) &amp; Q4(c)</span>
+              <span class="text-xs font-mono text-slate-400">[3 + 4 = 7 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. If $m$ and $t$ are positive integers, show that $\dfrac{\Gamma(m)}{t^m} = \displaystyle\int_0^\infty e^{-tx} x^{m-1}\,dx$, and prove that $B(m, n) = \dfrac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> In 4(b), substitute $u = tx$. In 4(c), apply 4(b) with $t = 1 + u$ inside the double integral for $\Gamma(m)\Gamma(n)$!
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>4(b):</strong> Substitute $u = tx \implies x = u/t,\; dx = du/t$: $\int_0^\infty e^{-tx}x^{m-1}\,dx = \frac{1}{t^m}\int_0^\infty e^{-u}u^{m-1}\,du = \frac{\Gamma(m)}{t^m}$.</p>
+              <p><strong>4(c):</strong> From 4(b), $\Gamma(m) = \lambda^m \int_0^\infty e^{-\lambda u} u^{m-1}\,du$. Multiply both sides by $e^{-\lambda}\lambda^{n-1}$ and integrate $\lambda \in [0,\infty)$:
+              $$\Gamma(m)\Gamma(n) = \int_0^\infty u^{m-1}\left(\int_0^\infty e^{-\lambda(1+u)}\lambda^{m+n-1}\,d\lambda\right)du = \Gamma(m+n)\int_0^\infty \frac{u^{m-1}}{(1+u)^{m+n}}\,du = \Gamma(m+n)B(m,n)$$
+              Dividing by $\Gamma(m+n)$ yields $B(m, n) = \dfrac{\Gamma(m)\Gamma(n)}{\Gamma(m+n)}$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2024 / 2023 Q4(c) / RJT Slides</span>
+              <span class="text-xs font-mono text-slate-400">[3–4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. Prove that $\Gamma\!\left(\dfrac{1}{2}\right) = \sqrt{\pi}$ starting from the Beta function.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Evaluate $\beta(1/2, 1/2)$ in two ways: (1) via $t = \sin^2\theta$ to get $\pi$, and (2) via $\frac{\Gamma(1/2)\Gamma(1/2)}{\Gamma(1)}$ to get $[\Gamma(1/2)]^2$.
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Using $\beta(x, y) = \int_0^1 t^{x-1}(1-t)^{y-1}\,dt$ with $x = y = \frac{1}{2}$ and substituting $t = \sin^2\theta$:
+              $$\beta\!\left(\frac{1}{2}, \frac{1}{2}\right) = \int_0^{\pi/2} (\sin\theta)^{-1}(\cos\theta)^{-1}(2\sin\theta\cos\theta)\,d\theta = 2\int_0^{\pi/2} d\theta = \pi$$</p>
+              <p>On the other hand, by the Beta–Gamma relation: $\beta\!\left(\frac{1}{2}, \frac{1}{2}\right) = \dfrac{\Gamma(1/2)\Gamma(1/2)}{\Gamma(1)} = \big[\Gamma(1/2)\big]^2$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Since $\Gamma(1/2) > 0$, taking the positive square root yields $\Gamma\!\left(\frac{1}{2}\right) = \sqrt{\pi}$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">RJT Lecture Slides · Exercises</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. Prove that: (i) $\beta\!\left(3, \dfrac{5}{2}\right) = \dfrac{16}{315}$ &nbsp;and&nbsp; (ii) $\Gamma\!\left(\dfrac{1}{4}\right)\Gamma\!\left(\dfrac{3}{4}\right) = \pi\sqrt{2}$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> For (i), expand $\Gamma(11/2)$ down to $\Gamma(5/2)$ so $\Gamma(5/2)$ cancels cleanly! For (ii), apply Euler's reflection formula with $x = 1/4$.
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>(i)</strong> $\beta\!\left(3, \frac{5}{2}\right) = \dfrac{\Gamma(3)\Gamma(5/2)}{\Gamma(11/2)} = \dfrac{2!\cdot \Gamma(5/2)}{\frac{9}{2}\cdot\frac{7}{2}\cdot\frac{5}{2}\cdot\Gamma(5/2)} = \dfrac{2}{315/8} = \mathbf{\dfrac{16}{315}}$.</p>
+              <p><strong>(ii)</strong> By Euler's Reflection Formula $\Gamma(x)\Gamma(1-x) = \frac{\pi}{\sin(\pi x)}$ at $x = \frac{1}{4}$:
+              $$\Gamma\!\left(\frac{1}{4}\right)\Gamma\!\left(\frac{3}{4}\right) = \frac{\pi}{\sin(\pi/4)} = \frac{\pi}{1/\sqrt{2}} = \mathbf{\pi\sqrt{2}} \quad \blacksquare$$</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- INTERACTIVE QUICK-CHECK QUIZ (5 EXAM-STYLE MCQS)                    -->
+      <!-- =================================================================== -->
+      <section id="quick-quiz" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Self-Assessment</span>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <p>MATH 103: Foundations of Mathematics · Module 1 (Group A) Complete! (Lesson 6 of 14)</p>
+        <p>Next Module: <strong>Lesson 7 — Fundamentals &amp; Formation of Differential Equations (Group B)</strong></p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX RENDERING & SPECIAL FUNCTION MATH (LANCZOS GAMMA + FRACTIONS)
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // Accurate Lanczos approximation for Gamma(z) on R \ {0, -1, -2, ...}
+    function gammaLanczos(z) {
+      if (z <= 0 && Math.abs(z - Math.round(z)) < 1e-9) return NaN; // Pole
+      if (z < 0.5) {
+        return Math.PI / (Math.sin(Math.PI * z) * gammaLanczos(1 - z));
+      }
+      const g = 7;
+      const p = [
+        0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+        771.32342877765313, -176.61502916214059, 12.507343278686905,
+        -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+      ];
+      z -= 1;
+      let x = p[0];
+      for (let i = 1; i < p.length; i++) x += p[i] / (z + i);
+      const t = z + g + 0.5;
+      return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+    }
+
+    function betaVal(x, y) {
+      return (gammaLanczos(x) * gammaLanczos(y)) / gammaLanczos(x + y);
+    }
+
+    function gcdInt(a, b) {
+      a = Math.abs(a); b = Math.abs(b);
+      while (b) { const t = a % b; a = b; b = t; }
+      return a || 1;
+    }
+
+    function factorial(n) {
+      let f = 1;
+      for (let i = 2; i <= n; i++) f *= i;
+      return f;
+    }
+
+    // Exact symbolic Gamma for integers and half-integers (2x is integer)
+    function exactGammaSymbolic(x) {
+      const twoX = Math.round(x * 2);
+      if (twoX <= 0 && twoX % 2 === 0) {
+        return { isPole: true, tex: '\\pm\\infty \\text{ (Pole)}', num: NaN };
+      }
+      if (twoX % 2 === 0) {
+        const n = twoX / 2;
+        const val = factorial(n - 1);
+        return { isPole: false, tex: `${val}`, num: val, fracNum: val, fracDen: 1, hasSqrtPi: false };
+      }
+      // Half-integer
+      if (twoX === 1) {
+        return { isPole: false, tex: '\\sqrt{\\pi}', num: Math.sqrt(Math.PI), fracNum: 1, fracDen: 1, hasSqrtPi: true };
+      }
+      if (twoX > 1) {
+        let num = 1, den = 1;
+        for (let k = twoX - 2; k >= 1; k -= 2) {
+          num *= k;
+          den *= 2;
+        }
+        const g = gcdInt(num, den);
+        num /= g; den /= g;
+        return {
+          isPole: false,
+          tex: den === 1 ? `${num}\\sqrt{\\pi}` : `\\frac{${num}}{${den}}\\sqrt{\\pi}`,
+          num: (num / den) * Math.sqrt(Math.PI),
+          fracNum: num, fracDen: den, hasSqrtPi: true
+        };
+      }
+      // Negative half-integer: twoX = -1, -3, -5, -7 ...
+      let num = 1, den = 1, sign = 1;
+      for (let k = twoX; k < 1; k += 2) {
+        sign *= -1;
+        num *= 2;
+        den *= Math.abs(k);
+      }
+      const g = gcdInt(num, den);
+      num /= g; den /= g;
+      const signedNum = sign * num;
+      return {
+        isPole: false,
+        tex: `${sign < 0 ? '-' : ''}\\frac{${num}}{${den}}\\sqrt{\\pi}`,
+        num: (signedNum / den) * Math.sqrt(Math.PI),
+        fracNum: signedNum, fracDen: den, hasSqrtPi: true
+      };
+    }
+
+    function exactBetaSymbolic(x, y) {
+      const gx = exactGammaSymbolic(x);
+      const gy = exactGammaSymbolic(y);
+      const gxy = exactGammaSymbolic(x + y);
+      // Product of numerators / denominators
+      const num = gx.fracNum * gy.fracNum * gxy.fracDen;
+      const den = gx.fracDen * gy.fracDen * gxy.fracNum;
+      const g = gcdInt(num, den);
+      const rNum = num / g;
+      const rDen = den / g;
+      // Check pi powers: (hasSqrtPi count in top) - (hasSqrtPi in bottom)
+      const piHalfCount = (gx.hasSqrtPi ? 1 : 0) + (gy.hasSqrtPi ? 1 : 0) - (gxy.hasSqrtPi ? 1 : 0);
+      let piTex = '';
+      if (piHalfCount === 2) piTex = '\\pi';
+      else if (piHalfCount === 1) piTex = '\\sqrt{\\pi}';
+
+      let tex = '';
+      if (rDen === 1) {
+        tex = rNum === 1 && piTex ? piTex : `${rNum}${piTex}`;
+      } else {
+        tex = `\\frac{${rNum === 1 && piTex ? piTex : rNum + piTex}}{${rDen}}`;
+      }
+      return { tex, val: betaVal(x, y) };
+    }
+
+    function fmtHalf(v) {
+      const twoV = Math.round(v * 2);
+      if (twoV % 2 === 0) return `${twoV / 2}`;
+      return `\\frac{${twoV}}{2}`;
+    }
+
+    /* =========================================================================
+       2. THEME, SIDEBAR, SCROLL-SPY & PROGRESS TRACKING
+       ========================================================================= */
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      const mode = isDark ? 'dark' : 'light';
+      localStorage.setItem('math103_theme', mode);
+      localStorage.setItem('math103-theme', mode);
+      updateGammaLab(false);
+      updateBetaLab(false);
+    });
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', openSidebar);
+    document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      document.getElementById('roadmap-list').classList.toggle('hidden');
+      document.getElementById('roadmap-chevron').classList.toggle('rotate-180');
+    }
+
+    function toggleCollapsible(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById('icon-' + id);
+      const isHidden = el.classList.toggle('hidden');
+      if (icon) icon.textContent = isHidden ? 'Show Proof' : 'Hide Proof';
+      if (!isHidden) renderMath(el);
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    const viewedSections = new Set();
+    const exploredLabs = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function markLabExplored(labId) {
+      if (!exploredLabs.has(labId)) {
+        exploredLabs.add(labId);
+        updateOverallProgress();
+      }
+    }
+
+    function updateOverallProgress() {
+      const total = 6 + 3 + 5; // 6 sections + 3 labs + 5 quiz questions
+      const done = viewedSections.size + exploredLabs.size + quizAnsweredCount;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('header-progress-text').textContent = pct + '%';
+      document.getElementById('sidebar-progress-pct').textContent = pct + '%';
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${viewedSections.size}/6 sections · ${exploredLabs.size}/3 labs · ${quizAnsweredCount}/5 quiz`;
+    }
+
+    function initObservers() {
+      // Scroll-spy for TOC
+      const spyTargets = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link[data-spy]');
+      const spyObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              tocLinks.forEach((link) => {
+                if (link.dataset.spy === id) {
+                  link.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                } else {
+                  link.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
+      );
+      spyTargets.forEach((sec) => spyObs.observe(sec));
+
+      // Section viewed observer for progress bar
+      const secObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const secId = entry.target.dataset.trackSec;
+              if (secId && !viewedSections.has(secId)) {
+                viewedSections.add(secId);
+                const badge = document.getElementById('badge-' + secId);
+                if (badge) {
+                  badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300';
+                  badge.textContent = '✓ Viewed';
+                }
+                updateOverallProgress();
+              }
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      document.querySelectorAll('section[data-track-sec]').forEach((s) => secObs.observe(s));
+    }
+
+    /* =========================================================================
+       3. LAB 1: GAMMA FUNCTION INTEGRAND & RECURRENCE EXPLORER
+       ========================================================================= */
+    function setGammaPreset(x) {
+      document.getElementById('gamma-x').value = x;
+      updateGammaLab(true);
+    }
+
+    function updateGammaLab(userTriggered) {
+      const x = parseFloat(document.getElementById('gamma-x').value);
+      if (userTriggered) markLabExplored('lab-gamma');
+      document.getElementById('gamma-x-val').textContent = `x = ${x.toFixed(1)}`;
+
+      const sym = exactGammaSymbolic(x);
+      const readout = document.getElementById('gamma-readout');
+      const titleEl = document.getElementById('gamma-svg-title');
+      const badgeEl = document.getElementById('gamma-svg-badge');
+
+      // Build reduction chain LaTeX
+      let chainTex = '';
+      const twoX = Math.round(x * 2);
+      if (sym.isPole) {
+        chainTex = `\\Gamma(${x}) \\text{ has a simple pole (diverges to } \\pm\\infty\\text{)}`;
+      } else if (x > 0) {
+        if (twoX % 2 === 0) {
+          const n = twoX / 2;
+          if (n === 1) chainTex = `\\Gamma(1) = 0! = 1`;
+          else {
+            const mults = [];
+            for (let k = n - 1; k >= 1; k--) mults.push(k);
+            chainTex = `\\Gamma(${n}) = ${mults.join(' \\cdot ')} = ${sym.tex}`;
+          }
+        } else {
+          if (twoX === 1) chainTex = `\\Gamma\\!\\left(\\frac{1}{2}\\right) = \\sqrt{\\pi}`;
+          else {
+            const steps = [];
+            for (let k = twoX - 2; k >= 1; k -= 2) steps.push(`\\frac{${k}}{2}`);
+            chainTex = `\\Gamma\\!\\left(\\frac{${twoX}}{2}\\right) = ${steps.join(' \\cdot ')} \\cdot \\Gamma\\!\\left(\\frac{1}{2}\\right) = ${sym.tex}`;
+          }
+        }
+      } else {
+        // Negative half-integer upward recurrence
+        const denoms = [];
+        for (let k = twoX; k < 1; k += 2) denoms.push(`\\left(\\frac{${k}}{2}\\right)`);
+        chainTex = `\\Gamma\\!\\left(\\frac{${twoX}}{2}\\right) = \\frac{\\Gamma(1/2)}{${denoms.join('')}} = ${sym.tex}`;
+      }
+
+      if (sym.isPole) {
+        readout.innerHTML = `
+          <div class="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 space-y-1.5">
+            <div class="font-bold uppercase text-xs">⚠️ Pole Warning at $x = ${x}$</div>
+            <p class="text-xs leading-relaxed">Because $\\Gamma(x) = \\frac{\\Gamma(x+1)}{x}$, division by zero occurs at $x = 0, -1, -2, -3, \\dots$. Therefore $\\Gamma(${x})$ is <strong>undefined</strong> (vertical asymptote).</p>
+          </div>
+          <div class="text-xs text-slate-500 dark:text-slate-400">Try sliding to a half-integer like $x = -2.5$ or $x = 4.5$ to see finite values!</div>
+        `;
+      } else {
+        readout.innerHTML = `
+          <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Exact Symbolic Reduction Chain</div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto text-center">
+            $$${chainTex}$$
+          </div>
+          <div class="grid grid-cols-2 gap-2.5 font-mono text-xs">
+            <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900">
+              <div class="text-slate-500 dark:text-slate-400">Exact Value</div>
+              <div class="font-bold text-indigo-700 dark:text-indigo-300 mt-1">$${sym.tex}$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900">
+              <div class="text-slate-500 dark:text-slate-400">Lanczos Numeric</div>
+              <div class="font-bold text-emerald-700 dark:text-emerald-300 mt-1">${sym.num.toFixed(5)}</div>
+            </div>
+          </div>
+          ${x > 1
+            ? `<div class="text-xs text-slate-600 dark:text-slate-400"><strong>Peak of Integrand:</strong> $f'(t) = 0$ at $t = x - 1 = ${(x - 1).toFixed(1)}$.</div>`
+            : (x > 0
+              ? `<div class="text-xs text-slate-600 dark:text-slate-400"><strong>Note ($0 < x \\le 1$):</strong> Integrand is strictly decreasing (vertical asymptote at $t=0$ for $x < 1$, yet finite area!).</div>`
+              : `<div class="text-xs text-amber-700 dark:text-amber-300"><strong>Analytic Continuation:</strong> Integral diverges for $x \\le 0$; plotted on the extended $\\Gamma(x)$ curve instead.</div>`)}
+        `;
+      }
+      renderMath(readout);
+
+      if (x > 0) {
+        titleEl.innerHTML = 'Integrand $f(t) = e^{-t} t^{x-1}$ on $[0, 14]$';
+        badgeEl.textContent = `Shaded Area = Γ(${x}) ≈ ${sym.num.toFixed(3)}`;
+        renderMath(titleEl);
+        drawGammaIntegrandSVG(x);
+      } else {
+        titleEl.innerHTML = 'Extended $\\Gamma(x)$ Curve on $[-3.5, 5]$ (Poles Shown)';
+        badgeEl.textContent = sym.isPole ? `Pole at x = ${x}` : `Γ(${x}) ≈ ${sym.num.toFixed(3)}`;
+        renderMath(titleEl);
+        drawGammaExtendedSVG(x, sym);
+      }
+    }
+
+    function drawGammaIntegrandSVG(x) {
+      const svg = document.getElementById('gamma-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#475569' : '#cbd5e1';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 460, H = 250, padL = 42, padR = 18, padT = 22, padB = 30;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const tMax = 14;
+
+      const f = (t) => Math.exp(-t) * Math.pow(t, x - 1);
+      const pts = [];
+      let yMax = 0;
+      const N = 160;
+      for (let i = 1; i <= N; i++) {
+        const t = (i / N) * tMax;
+        const y = f(t);
+        if (Number.isFinite(y)) {
+          pts.push({ t, y });
+          if (i > 2 && y > yMax) yMax = y;
+        }
+      }
+      if (yMax < 0.5) yMax = 1.2;
+      yMax *= 1.15;
+
+      const sx = (t) => padL + (t / tMax) * plotW;
+      const sy = (y) => padT + plotH - (Math.min(y, yMax) / yMax) * plotH;
+
+      let pathD = '';
+      pts.forEach((p, idx) => {
+        pathD += `${idx === 0 ? 'M' : 'L'} ${sx(p.t).toFixed(1)} ${sy(p.y).toFixed(1)} `;
+      });
+      const areaD = `M ${sx(pts[0].t).toFixed(1)} ${sy(0).toFixed(1)} ` + pathD.replace(/^M/, 'L') + ` L ${sx(tMax).toFixed(1)} ${sy(0).toFixed(1)} Z`;
+
+      let peakSVG = '';
+      if (x > 1) {
+        const tPeak = x - 1;
+        const yPeak = f(tPeak);
+        peakSVG = `
+          <line x1="${sx(tPeak)}" y1="${sy(0)}" x2="${sx(tPeak)}" y2="${sy(yPeak)}" stroke="#10b981" stroke-width="1.6" stroke-dasharray="4 3" />
+          <circle cx="${sx(tPeak)}" cy="${sy(yPeak)}" r="5" fill="#10b981" stroke="${isDark ? '#020617' : '#ffffff'}" stroke-width="2" />
+          <text x="${Math.min(W - 65, sx(tPeak) + 8)}" y="${Math.max(padT + 12, sy(yPeak) - 6)}" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#10b981">Peak t=${tPeak.toFixed(1)}</text>
+        `;
+      }
+
+      let ticks = '';
+      for (let t = 0; t <= 14; t += 2) {
+        ticks += `<text x="${sx(t)}" y="${H - 10}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="${txtCol}">${t}</text>`;
+      }
+
+      svg.innerHTML = `
+        <line x1="${padL}" y1="${sy(0)}" x2="${W - padR}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+        <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+        <path d="${areaD}" fill="#4f46e5" fill-opacity="0.18" />
+        <path d="${pathD}" fill="none" stroke="#4f46e5" stroke-width="2.6" />
+        ${peakSVG}
+        ${ticks}
+        <text x="${W - 22}" y="${sy(0) - 6}" font-family="Inter" font-size="10" font-weight="700" fill="${txtCol}">t</text>
+      `;
+    }
+
+    function drawGammaExtendedSVG(selectedX, sym) {
+      const svg = document.getElementById('gamma-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#475569' : '#cbd5e1';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 460, H = 250, padL = 32, padR = 16, padT = 16, padB = 26;
+      const xMin = -3.7, xMax = 4.8, yMin = -6, yMax = 6;
+      const sx = (v) => padL + ((v - xMin) / (xMax - xMin)) * (W - padL - padR);
+      const sy = (v) => padT + ((yMax - v) / (yMax - yMin)) * (H - padT - padB);
+
+      // Draw each continuous branch between poles
+      const intervals = [[-3.7, -3.02], [-2.98, -2.02], [-1.98, -1.02], [-0.98, -0.03], [0.05, 4.8]];
+      let curves = '';
+      intervals.forEach(([a, b]) => {
+        let d = '', pen = false;
+        const steps = 80;
+        for (let i = 0; i <= steps; i++) {
+          const vx = a + (i / steps) * (b - a);
+          const vy = gammaLanczos(vx);
+          if (Number.isFinite(vy) && vy >= yMin && vy <= yMax) {
+            d += `${pen ? 'L' : 'M'} ${sx(vx).toFixed(1)} ${sy(vy).toFixed(1)} `;
+            pen = true;
+          } else pen = false;
+        }
+        curves += `<path d="${d}" fill="none" stroke="#4f46e5" stroke-width="2.4" />`;
+      });
+
+      // Vertical asymptotes (poles) at -3, -2, -1, 0
+      const poles = [-3, -2, -1, 0].map((p) => `
+        <line x1="${sx(p)}" y1="${padT}" x2="${sx(p)}" y2="${H - padB}" stroke="#ef4444" stroke-width="1.4" stroke-dasharray="4 3" opacity="0.8" />
+      `).join('');
+
+      let ticks = '';
+      for (let k = -3; k <= 4; k++) {
+        ticks += `<text x="${sx(k)}" y="${H - 8}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="${k <= 0 ? '#ef4444' : txtCol}">${k}</text>`;
+      }
+
+      let marker = '';
+      if (!sym.isPole && sym.num >= yMin && sym.num <= yMax) {
+        marker = `
+          <circle cx="${sx(selectedX)}" cy="${sy(sym.num)}" r="6" fill="#10b981" stroke="${isDark ? '#020617' : '#ffffff'}" stroke-width="2" />
+          <text x="${sx(selectedX) + 9}" y="${sy(sym.num) - 7}" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#10b981">(${selectedX}, ${sym.num.toFixed(2)})</text>
+        `;
+      } else if (sym.isPole) {
+        marker = `<text x="${sx(selectedX)}" y="${padT + 14}" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="800" fill="#ef4444">POLE x=${selectedX}</text>`;
+      }
+
+      svg.innerHTML = `
+        <line x1="${padL}" y1="${sy(0)}" x2="${W - padR}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.5" />
+        ${poles}
+        ${curves}
+        ${marker}
+        ${ticks}
+      `;
+    }
+
+    /* =========================================================================
+       4. LAB 2: BETA FUNCTION SHAPE, SYMMETRY & GAMMA-BRIDGE VISUALIZER
+       ========================================================================= */
+    let betaShowMirror = true;
+
+    function setBetaPreset(x, y) {
+      document.getElementById('beta-x').value = x;
+      document.getElementById('beta-y').value = y;
+      updateBetaLab(true);
+    }
+
+    function swapBetaXY() {
+      const bx = document.getElementById('beta-x');
+      const by = document.getElementById('beta-y');
+      const tmp = bx.value;
+      bx.value = by.value;
+      by.value = tmp;
+      updateBetaLab(true);
+    }
+
+    function toggleBetaMirror() {
+      betaShowMirror = !betaShowMirror;
+      document.getElementById('btn-beta-mirror').textContent = betaShowMirror ? 'Mirror: ON' : 'Mirror: OFF';
+      updateBetaLab(true);
+    }
+
+    function updateBetaLab(userTriggered) {
+      const x = parseFloat(document.getElementById('beta-x').value);
+      const y = parseFloat(document.getElementById('beta-y').value);
+      if (userTriggered) markLabExplored('lab-beta');
+
+      document.getElementById('beta-x-val').textContent = x.toFixed(1);
+      document.getElementById('beta-y-val').textContent = y.toFixed(1);
+
+      const gx = exactGammaSymbolic(x);
+      const gy = exactGammaSymbolic(y);
+      const gxy = exactGammaSymbolic(x + y);
+      const bSym = exactBetaSymbolic(x, y);
+
+      const pPow = Math.round(2 * x - 1);
+      const qPow = Math.round(2 * y - 1);
+
+      const readout = document.getElementById('beta-readout');
+      readout.innerHTML = `
+        <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Exact Beta–Gamma Bridge</div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto text-center">
+          $$\\beta\\!\\left(${fmtHalf(x)}, ${fmtHalf(y)}\\right) = \\frac{\\Gamma(${fmtHalf(x)})\\,\\Gamma(${fmtHalf(y)})}{\\Gamma(${fmtHalf(x + y)})} = ${bSym.tex} \\approx ${bSym.val.toFixed(5)}$$
+        </div>
+        <div class="grid grid-cols-3 gap-2 font-mono text-[11px] text-center">
+          <div class="p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40">
+            <div class="text-slate-500">$\Gamma(x)$</div>
+            <div class="font-bold text-indigo-700 dark:text-indigo-300 mt-0.5">${gx.num.toFixed(3)}</div>
+          </div>
+          <div class="p-2 rounded-xl bg-sky-50/70 dark:bg-sky-950/40">
+            <div class="text-slate-500">$\Gamma(y)$</div>
+            <div class="font-bold text-sky-700 dark:text-sky-300 mt-0.5">${gy.num.toFixed(3)}</div>
+          </div>
+          <div class="p-2 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40">
+            <div class="text-slate-500">$\Gamma(x+y)$</div>
+            <div class="font-bold text-emerald-700 dark:text-emerald-300 mt-0.5">${gxy.num.toFixed(3)}</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800 text-xs space-y-1">
+          <div class="font-bold text-emerald-800 dark:text-emerald-300">Equivalent Trigonometric Integral:</div>
+          <div class="overflow-x-auto">$$2\\int_0^{\\pi/2} \\sin^{${pPow}}\\theta\\cos^{${qPow}}\\theta\\,d\\theta = ${bSym.tex}$$</div>
+        </div>
+      `;
+      renderMath(readout);
+      drawBetaSVG(x, y);
+    }
+
+    function drawBetaSVG(x, y) {
+      const svg = document.getElementById('beta-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#475569' : '#cbd5e1';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 460, H = 245, padL = 42, padR = 18, padT = 20, padB = 30;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+
+      const g = (t, a, b) => Math.pow(t, a - 1) * Math.pow(1 - t, b - 1);
+      const N = 140;
+      const pts1 = [], pts2 = [];
+      let yMax = 0;
+
+      for (let i = 1; i < N; i++) {
+        const t = i / N;
+        const v1 = g(t, x, y);
+        const v2 = g(t, y, x);
+        pts1.push({ t, v: v1 });
+        pts2.push({ t, v: v2 });
+        if (i >= 4 && i <= N - 4) {
+          yMax = Math.max(yMax, v1, v2);
+        }
+      }
+      if (yMax < 0.05) yMax = 0.05;
+      yMax *= 1.18;
+
+      const sx = (t) => padL + t * plotW;
+      const sy = (v) => padT + plotH - (Math.min(v, yMax) / yMax) * plotH;
+
+      const buildLine = (arr) => arr.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${sx(p.t).toFixed(1)} ${sy(p.v).toFixed(1)}`).join(' ');
+      const line1 = buildLine(pts1);
+      const area1 = `M ${sx(pts1[0].t).toFixed(1)} ${sy(0).toFixed(1)} ` + line1.replace(/^M/, 'L') + ` L ${sx(pts1[pts1.length - 1].t).toFixed(1)} ${sy(0).toFixed(1)} Z`;
+      const line2 = buildLine(pts2);
+
+      let ticks = '';
+      [0, 0.25, 0.5, 0.75, 1].forEach((t) => {
+        ticks += `<text x="${sx(t)}" y="${H - 10}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="${txtCol}">${t}</text>`;
+      });
+
+      svg.innerHTML = `
+        <line x1="${padL}" y1="${sy(0)}" x2="${W - padR}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+        <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+        <line x1="${sx(0.5)}" y1="${padT}" x2="${sx(0.5)}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.7" />
+        <path d="${area1}" fill="#4f46e5" fill-opacity="0.18" />
+        <path d="${line1}" fill="none" stroke="#4f46e5" stroke-width="2.6" />
+        ${betaShowMirror ? `<path d="${line2}" fill="none" stroke="#0ea5e9" stroke-width="2.2" stroke-dasharray="6 4" />` : ''}
+        ${ticks}
+        <text x="${W - 22}" y="${sy(0) - 6}" font-family="Inter" font-size="10" font-weight="700" fill="${txtCol}">t</text>
+      `;
+    }
+
+    /* =========================================================================
+       5. LAB 3: INTERACTIVE SUBSTITUTION & EXAM INTEGRAL CONVERTER
+       ========================================================================= */
+    const subState = {
+      preset: 'p1',
+      step: 4,
+      n: 3, m: 2, p: 3, q: 5, t: 2
+    };
+
+    function onSubPresetChange() {
+      subState.preset = document.getElementById('sub-preset').value;
+      subState.step = 4;
+      renderSubParams();
+      renderSubPipeline(true);
+    }
+
+    function stepSubPipeline() {
+      subState.step = subState.step >= 4 ? 1 : subState.step + 1;
+      renderSubPipeline(true);
+    }
+
+    function showAllSubSteps() {
+      subState.step = 4;
+      renderSubPipeline(true);
+    }
+
+    function renderSubParams() {
+      const box = document.getElementById('sub-params-container');
+      const p = subState.preset;
+      if (p === 'p1' || p === 'p2') {
+        box.innerHTML = `
+          <div class="col-span-2">
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="sub-n">Parameter $n$ (2 to 5)</label>
+              <span id="sub-n-lbl" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">n = ${subState.n}</span>
+            </div>
+            <input id="sub-n" type="range" min="2" max="5" step="1" value="${subState.n}" oninput="subState.n=+this.value; document.getElementById('sub-n-lbl').textContent='n = '+this.value; renderSubPipeline(true);" class="w-full accent-indigo-600" />
+          </div>
+        `;
+      } else if (p === 'p3') {
+        box.innerHTML = `
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Power $m$</label>
+              <span id="sub-m-lbl" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">m = ${subState.m}</span>
+            </div>
+            <input type="range" min="1" max="5" step="1" value="${subState.m}" oninput="subState.m=+this.value; document.getElementById('sub-m-lbl').textContent='m = '+this.value; renderSubPipeline(true);" class="w-full accent-indigo-600" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Power $n$</label>
+              <span id="sub-n-lbl" class="font-mono font-bold text-sky-600 dark:text-sky-400">n = ${subState.n}</span>
+            </div>
+            <input type="range" min="1" max="4" step="1" value="${subState.n}" oninput="subState.n=+this.value; document.getElementById('sub-n-lbl').textContent='n = '+this.value; renderSubPipeline(true);" class="w-full accent-sky-500" />
+          </div>
+        `;
+      } else if (p === 'p4') {
+        box.innerHTML = `
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Power $p$</label>
+              <span id="sub-p-lbl" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">p = ${subState.p}</span>
+            </div>
+            <input type="range" min="0" max="6" step="1" value="${subState.p}" oninput="subState.p=+this.value; document.getElementById('sub-p-lbl').textContent='p = '+this.value; renderSubPipeline(true);" class="w-full accent-indigo-600" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Power $q$</label>
+              <span id="sub-q-lbl" class="font-mono font-bold text-sky-600 dark:text-sky-400">q = ${subState.q}</span>
+            </div>
+            <input type="range" min="0" max="6" step="1" value="${subState.q}" oninput="subState.q=+this.value; document.getElementById('sub-q-lbl').textContent='q = '+this.value; renderSubPipeline(true);" class="w-full accent-sky-500" />
+          </div>
+        `;
+      } else {
+        box.innerHTML = `
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Scale $t$</label>
+              <span id="sub-t-lbl" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">t = ${subState.t}</span>
+            </div>
+            <input type="range" min="1" max="5" step="1" value="${subState.t}" oninput="subState.t=+this.value; document.getElementById('sub-t-lbl').textContent='t = '+this.value; renderSubPipeline(true);" class="w-full accent-indigo-600" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Power $m$</label>
+              <span id="sub-m-lbl" class="font-mono font-bold text-sky-600 dark:text-sky-400">m = ${subState.m}</span>
+            </div>
+            <input type="range" min="1" max="5" step="1" value="${subState.m}" oninput="subState.m=+this.value; document.getElementById('sub-m-lbl').textContent='m = '+this.value; renderSubPipeline(true);" class="w-full accent-sky-500" />
+          </div>
+        `;
+      }
+      renderMath(box);
+    }
+
+    function renderSubPipeline(userTriggered) {
+      if (userTriggered) markLabExplored('lab-sub');
+      const { preset, step, n, m, p, q, t } = subState;
+      let cards = [];
+
+      if (preset === 'p1') {
+        const val = 0.5 * factorial(n - 1);
+        cards = [
+          { title: '1. Original Integral', body: `$$I = \\int_0^\\infty e^{-x^2} x^{${2 * n - 1}}\\,dx \\quad (n = ${n})$$` },
+          { title: '2. Substitution & Differential', body: `Set $u = x^2 \\implies x = u^{1/2},\\; dx = \\frac{1}{2}u^{-1/2}\\,du$. Then $x^{${2 * n - 1}}\\,dx = \\frac{1}{2}u^{${n - 1}}\\,du$.` },
+          { title: '3. Updated Limits', body: `When $x = 0 \\implies u = 0$; as $x \\to \\infty \\implies u \\to \\infty$. Transformed: $$I = \\frac{1}{2}\\int_0^\\infty e^{-u} u^{${n}-1}\\,du$$` },
+          { title: '4. Gamma Result & Exact Value', body: `$$I = \\frac{1}{2}\\Gamma(${n}) = \\frac{${factorial(n - 1)}}{2} = \\mathbf{${val}}$$` }
+        ];
+      } else if (preset === 'p2') {
+        const val = 2 * factorial(n - 1);
+        cards = [
+          { title: '1. Original Integral', body: `$$I = \\int_0^\\infty e^{-\\sqrt{x}} x^{\\frac{${n}}{2}-1}\\,dx \\quad (n = ${n})$$` },
+          { title: '2. Substitution & Differential', body: `Set $u = \\sqrt{x} \\implies x = u^2,\\; dx = 2u\\,du$. Then $x^{\\frac{${n}}{2}-1}\\,dx = u^{${n - 2}}(2u\\,du) = 2u^{${n - 1}}\\,du$.` },
+          { title: '3. Updated Limits', body: `When $x = 0 \\implies u = 0$; as $x \\to \\infty \\implies u \\to \\infty$. Transformed: $$I = 2\\int_0^\\infty e^{-u} u^{${n}-1}\\,du$$` },
+          { title: '4. Gamma Result & Exact Value', body: `$$I = 2\\Gamma(${n}) = 2(${factorial(n - 1)}) = \\mathbf{${val}}$$` }
+        ];
+      } else if (preset === 'p3') {
+        const bx = (m + 1) / 2, by = n + 1;
+        const bSym = exactBetaSymbolic(bx, by);
+        const val = 0.5 * bSym.val;
+        cards = [
+          { title: '1. Original Integral', body: `$$I = \\int_0^1 x^{${m}}(1 - x^2)^{${n}}\\,dx$$` },
+          { title: '2. Substitution & Differential', body: `Set $u = x^2 \\implies x = u^{1/2},\\; dx = \\frac{1}{2}u^{-1/2}\\,du$.` },
+          { title: '3. Updated Limits', body: `When $x = 0 \\implies u = 0$; when $x = 1 \\implies u = 1$. Transformed: $$I = \\frac{1}{2}\\int_0^1 u^{${fmtHalf(bx)} - 1}(1 - u)^{${by} - 1}\\,du$$` },
+          { title: '4. Beta Result & Exact Value', body: `$$I = \\frac{1}{2}\\beta\\!\\left(${fmtHalf(bx)}, ${by}\\right) = \\frac{1}{2}\\left(${bSym.tex}\\right) \\approx \\mathbf{${val.toFixed(5)}}$$` }
+        ];
+      } else if (preset === 'p4') {
+        const bx = (p + 1) / 2, by = (q + 1) / 2;
+        const bSym = exactBetaSymbolic(bx, by);
+        const val = 0.5 * bSym.val;
+        cards = [
+          { title: '1. Original Integral', body: `$$I = \\int_0^{\\pi/2} \\sin^{${p}}\\theta \\cos^{${q}}\\theta\\,d\\theta$$` },
+          { title: '2. Parameter Mapping', body: `Match $2x - 1 = ${p} \\implies x = ${fmtHalf(bx)}$, and $2y - 1 = ${q} \\implies y = ${fmtHalf(by)}$.` },
+          { title: '3. Beta–Gamma Form', body: `$$I = \\frac{1}{2}\\beta\\!\\left(${fmtHalf(bx)}, ${fmtHalf(by)}\\right) = \\frac{\\Gamma(${fmtHalf(bx)})\\,\\Gamma(${fmtHalf(by)})}{2\\,\\Gamma(${fmtHalf(bx + by)})}$$` },
+          { title: '4. Exact Value', body: `$$I = \\frac{1}{2}\\left(${bSym.tex}\\right) \\approx \\mathbf{${val.toFixed(5)}}$$` }
+        ];
+      } else {
+        const num = factorial(m - 1);
+        const den = Math.pow(t, m);
+        const g = gcdInt(num, den);
+        cards = [
+          { title: '1. Original Integral', body: `$$I = \\int_0^\\infty e^{-${t}x} x^{${m - 1}}\\,dx \\quad (t = ${t},\\; m = ${m})$$` },
+          { title: '2. Substitution & Differential', body: `Set $u = ${t}x \\implies x = \\frac{u}{${t}},\\; dx = \\frac{du}{${t}}$.` },
+          { title: '3. Updated Limits', body: `Limits stay $0 \\to \\infty$. Transformed: $$I = \\frac{1}{${t}^{${m}}}\\int_0^\\infty e^{-u} u^{${m}-1}\\,du$$` },
+          { title: '4. Gamma Result & Exact Value', body: `$$I = \\frac{\\Gamma(${m})}{${t}^{${m}}} = \\frac{${num / g}}{${den / g}} \\approx \\mathbf{${(num / den).toFixed(5)}}$$` }
+        ];
+      }
+
+      const container = document.getElementById('sub-pipeline');
+      container.innerHTML = cards.map((c, idx) => {
+        const visible = idx < step;
+        const isLast = idx === 3;
+        const cls = !visible
+          ? 'opacity-35 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-900/40'
+          : (isLast
+              ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/35'
+              : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950');
+        return `
+          <div class="p-4 rounded-2xl border transition-all duration-300 ${cls}">
+            <div class="text-xs font-mono font-bold uppercase ${isLast && visible ? 'text-emerald-700 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400'} mb-2">${c.title}</div>
+            <div class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 overflow-x-auto">${visible ? c.body : '<span class="italic text-slate-400">Click "Step Forward →" to reveal…</span>'}</div>
+          </div>
+        `;
+      }).join('');
+      renderMath(container);
+    }
+
+    /* =========================================================================
+       6. QUICK-CHECK INTERACTIVE QUIZ (5 EXAM-STYLE MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. What is the exact value of $\\Gamma(6)$?',
+        options: [
+          '$720$',
+          '$120$',
+          '$24$',
+          '$6$'
+        ],
+        answer: 1,
+        explanation: 'Watch the off-by-one rule! For any positive integer $n$, $\\Gamma(n) = (n - 1)!$. Therefore $\\Gamma(6) = 5! = 120$ (not $6! = 720$).'
+      },
+      {
+        q: '2. Using the negative non-integer recurrence $\\Gamma(x) = \\frac{\\Gamma(x+1)}{x}$, what is the value of $\\Gamma(-3/2)$?',
+        options: [
+          '$-\\dfrac{4}{3}\\sqrt{\\pi}$',
+          '$\\dfrac{4}{3}\\sqrt{\\pi}$',
+          '$-\\dfrac{3}{4}\\sqrt{\\pi}$',
+          'Undefined (pole)'
+        ],
+        answer: 1,
+        explanation: '$\\Gamma(-3/2) = \\frac{\\Gamma(-1/2)}{-3/2} = \\frac{\\Gamma(1/2)}{(-3/2)(-1/2)} = \\frac{\\sqrt{\\pi}}{3/4} = \\frac{4}{3}\\sqrt{\\pi}$.'
+      },
+      {
+        q: '3. Evaluate $\\displaystyle\\int_0^{\\pi/2} \\sin^3\\theta \\cos^5\\theta\\,d\\theta$ using the Sine–Cosine Gamma formula:',
+        options: [
+          '$\\dfrac{1}{12}$',
+          '$\\dfrac{1}{24}$',
+          '$\\dfrac{1}{48}$',
+          '$\\dfrac{\\pi}{24}$'
+        ],
+        answer: 1,
+        explanation: 'With $p = 3$ and $q = 5$: $\\frac{\\Gamma((3+1)/2)\\Gamma((5+1)/2)}{2\\Gamma((3+5+2)/2)} = \\frac{\\Gamma(2)\\Gamma(3)}{2\\Gamma(5)} = \\frac{1! \\cdot 2!}{2 \\cdot 4!} = \\frac{2}{48} = \\frac{1}{24}$.'
+      },
+      {
+        q: '4. Which of the following improper integrals is identically equal to $\\beta(4, 3)$?',
+        options: [
+          '$\\displaystyle\\int_0^\\infty \\frac{u^4}{(1+u)^7}\\,du$',
+          '$\\displaystyle\\int_0^\\infty \\frac{u^3}{(1+u)^7}\\,du$',
+          '$\\displaystyle\\int_0^\\infty \\frac{u^3}{(1+u)^6}\\,du$',
+          '$\\displaystyle\\int_0^1 u^4(1-u)^3\\,du$'
+        ],
+        answer: 1,
+        explanation: 'From Form 3 of the Beta function, $\\beta(x, y) = \\int_0^\\infty \\frac{u^{x-1}}{(1+u)^{x+y}}\\,du$. For $x = 4, y = 3$, this gives $x - 1 = 3$ and $x + y = 7$, i.e., $\\int_0^\\infty \\frac{u^3}{(1+u)^7}\\,du$.'
+      },
+      {
+        q: '5. How does the Gamma function $\\Gamma(x)$ behave at $x = 0, -1, -2$?',
+        options: [
+          'It equals $0$ at every non-positive integer',
+          'It equals $(-1)^n / n!$ at $x = -n$',
+          'It has simple poles (diverges to $\\pm\\infty$ and is undefined)',
+          'It equals $1$ at $x = 0$ and diverges for $x < 0$'
+        ],
+        answer: 2,
+        explanation: 'Because $\\Gamma(x) = \\frac{\\Gamma(x+1)}{x}$, approaching $x = 0, -1, -2, \\dots$ causes division by zero, creating vertical asymptotes (simple poles) where $\\Gamma(x)$ is undefined.'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       7. INITIALIZATION ON DOMCONTENTLOADED
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      updateGammaLab(false);
+      updateBetaLab(false);
+      renderSubParams();
+      renderSubPipeline(false);
+      renderQuiz();
+      updateOverallProgress();
+      initObservers();
+
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

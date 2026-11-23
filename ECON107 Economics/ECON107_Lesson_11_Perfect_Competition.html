@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON107 • Lesson 11: Perfectly Competitive Markets</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f4c81;
+      --primary-light: #e0f2fe;
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+      --warn: #d97706;
+      --warn-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-elevated: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-light: rgba(56, 189, 248, 0.14);
+      --accent: #2dd4bf;
+      --accent-light: rgba(45, 212, 191, 0.14);
+      --warn: #fbbf24;
+      --warn-light: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.14);
+      --success: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.14);
+      --purple: #a78bfa;
+      --purple-light: rgba(167, 139, 250, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1rem; }
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .brand-badge { color: #0b1120; }
+    .top-controls { display: flex; align-items: center; gap: 0.75rem; }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .progress-bar-wrap { width: 72px; height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+    .btn-icon {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+    .scroll-track { height: 3px; background: transparent; width: 100%; }
+    .scroll-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.1s linear; }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 4.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 9px;
+      transition: all 0.18s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-link.active .nav-num { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .nav-link.active .nav-num { color: #0b1120; }
+    .sidebar-meta {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sidebar-meta strong { color: var(--text); }
+
+    /* Main */
+    .main { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #0369a1 50%, #059669 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+    }
+    .pill-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-accent { background: var(--accent-light); color: var(--accent); }
+    .pill-warn { background: var(--warn-light); color: var(--warn); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+
+    .hero h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.65rem; }
+    .hero p { color: rgba(255, 255, 255, 0.92); max-width: 72ch; font-size: 1rem; }
+    .hero-stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+    }
+    .hero-stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+    .hero-stat-val { font-size: 1rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.85rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .section-card h2 { font-size: 1.45rem; line-height: 1.25; }
+    .section-card h3 { font-size: 1.1rem; margin: 1.15rem 0 0.5rem; }
+    .section-card p { margin-bottom: 0.85rem; color: var(--text); }
+    .muted { color: var(--text-muted); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.2rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-light); }
+    .callout.danger { border-left-color: var(--danger); background: var(--danger-light); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.95rem; }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .mini-card h4 { font-size: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem; }
+    .mini-card ul { padding-left: 1.15rem; font-size: 0.91rem; color: var(--text-muted); }
+    .mini-card li { margin-bottom: 0.35rem; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.89rem; }
+    th, td { padding: 0.68rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-subtle); font-weight: 700; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr.active-row { background: var(--primary-light); font-weight: 700; }
+
+    /* Interactive Labs */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+    .canvas-wrap {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+    }
+    .control-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .readout-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-size: 0.87rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .chip-btn {
+      padding: 0.42rem 0.75rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .chip-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .chip-btn.active { color: #0b1120; }
+
+    /* Tabs & Buttons */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .tab-btn.active { color: #0b1120; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .slider-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; }
+
+    /* SVG Box */
+    .svg-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+      margin: 0.75rem 0;
+      text-align: center;
+    }
+    .svg-box svg { max-width: 100%; height: auto; }
+
+    /* Accordion */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .acc-item { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated); }
+    .acc-btn {
+      width: 100%;
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: none;
+      padding: 0.95rem 1.15rem;
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .acc-btn:hover { filter: brightness(0.97); }
+    .acc-chevron { transition: transform 0.2s; font-size: 0.85rem; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 1.1rem 1.2rem; border-top: 1px solid var(--border); font-size: 0.92rem; }
+    .acc-item.open .acc-body { display: block; }
+
+    /* Quiz */
+    .quiz-q {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--bg-subtle);
+    }
+    .quiz-q-title { font-weight: 700; margin-bottom: 0.7rem; }
+    .quiz-opts { display: grid; gap: 0.45rem; }
+    .quiz-opt {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .quiz-opt.is-correct { background: var(--success-light); border-color: var(--success); font-weight: 600; }
+    .quiz-opt.is-wrong { background: var(--danger-light); border-color: var(--danger); }
+    .quiz-exp { margin-top: 0.65rem; font-size: 0.86rem; color: var(--text-muted); display: none; }
+    .quiz-exp.show { display: block; }
+
+    /* Done Button */
+    .done-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .done-btn.completed { background: var(--success-light); color: var(--success); border-color: var(--success); }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-2, .grid-3, .lab-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge">ECON107</span>
+        <span>Lesson 11: Perfectly Competitive Markets</span>
+      </div>
+      <div class="top-controls">
+        <div class="progress-pill">
+          <span id="progressText">0/6 Done</span>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="scroll-track"><div class="scroll-fill" id="scrollFill"></div></div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lesson 11 Roadmap</div>
+      <ul class="nav-list">
+        <li><a class="nav-link active" href="#sec-pc"><span class="nav-num">1</span> Price-Takers &amp; P = MC</a></li>
+        <li><a class="nav-link" href="#sec-shutdown"><span class="nav-num">2</span> Shutdown vs. Operate Lab</a></li>
+        <li><a class="nav-link" href="#sec-longrun"><span class="nav-num">3</span> Short Run vs. Long Run</a></li>
+        <li><a class="nav-link" href="#sec-efficiency"><span class="nav-num">4</span> Efficiency &amp; 5 Fallacies</a></li>
+        <li><a class="nav-link" href="#sec-pyq"><span class="nav-num">5</span> ISRT PYQ Vault</a></li>
+        <li><a class="nav-link" href="#sec-quiz"><span class="nav-num">6</span> Mastery Check</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <div><strong>Course:</strong> ECON107 (4 Credits)</div>
+        <div><strong>Module 3:</strong> Year Final Focus</div>
+        <div><strong>Sources:</strong> ECON107_L10.pdf &amp; Samuelson Ch. 8</div>
+        <div><strong>Exam Focus:</strong> Guaranteed Final Q5/Q6</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-badges">
+          <span class="pill pill-glass">Module 3 • Year Final Focus</span>
+          <span class="pill pill-glass">Lecture 10 • ECON107</span>
+          <span class="pill pill-glass">Shutdown &amp; Zero-Profit Core</span>
+        </div>
+        <h1>Analysis of Perfectly Competitive Markets</h1>
+        <p>
+          Discover how atomistic price-taking firms decide how much to produce ($P = MC$), why a firm losing money
+          should still stay open in the short run as long as $P &gt; \min AVC$, how free entry and exit drive long-run
+          economic profits to zero, and why competitive markets achieve Pareto efficiency ($MU = P = MC$).
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Supply Rule</div>
+            <div class="hero-stat-val">P = MR = MC (Rising MC)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Zero-Profit Point</div>
+            <div class="hero-stat-val">P = min AC (Break-Even)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Shutdown Point</div>
+            <div class="hero-stat-val">P &lt; min AVC (q = 0)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Efficiency Benchmark</div>
+            <div class="hero-stat-val">MU = P = MC (Max Surplus)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Perfect Competition, Horizontal Demand & P = MC -->
+      <section class="section-card" id="sec-pc">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 01 • Supply Behavior of the Competitive Firm</div>
+            <h2>Price-Takers, Horizontal Demand &amp; The P = MC Rule</h2>
+          </div>
+          <button class="done-btn" data-section="s1">✓ Mark Done</button>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Core Features of Perfect Competition (ECON107_L10 / Samuelson Ch. 8)</div>
+          1. <strong>Many small firms</strong> selling a <strong>homogeneous (identical) product</strong> (e.g., wheat, financial assets).<br>
+          2. <strong>Price-takers:</strong> Each firm is too tiny relative to the total market to affect price—so to the firm's "lilliputian eye," its own demand curve <strong>dd is completely horizontal (infinitely elastic)</strong> at the market price $P$.<br>
+          3. <strong>Marginal Revenue = Price:</strong> Selling 1 extra unit brings in exactly $P$, so <strong><code>P = AR = MR</code></strong>.<br>
+          4. <strong>Profit-Maximization Rule:</strong> Produce where <strong><code>P = MC</code></strong> (on the rising portion of MC). Thus the firm's rising MC curve (above min AVC) <em>is</em> its short-run supply curve!
+        </div>
+
+        <div class="svg-box">
+          <svg viewBox="0 0 680 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Industry Demand vs Competitive Firm Horizontal Demand">
+            <!-- Left: Industry -->
+            <text x="165" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">(a) Entire Industry Market</text>
+            <line x1="45" y1="195" x2="295" y2="195" stroke="#475569" stroke-width="2"/>
+            <line x1="45" y1="195" x2="45" y2="32" stroke="#475569" stroke-width="2"/>
+            <text x="170" y="220" text-anchor="middle" font-size="11.5" font-weight="700" fill="#475569">Industry Output (Q)</text>
+            <text x="20" y="115" text-anchor="middle" font-size="11.5" font-weight="700" fill="#475569" transform="rotate(-90 20 115)">Price ($)</text>
+            <!-- DD and SS -->
+            <line x1="80" y1="45" x2="255" y2="180" stroke="#0f4c81" stroke-width="3"/>
+            <text x="260" y="182" font-size="12" font-weight="700" fill="#0f4c81">DD</text>
+            <line x1="80" y1="180" x2="255" y2="45" stroke="#0d9488" stroke-width="3"/>
+            <text x="260" y="50" font-size="12" font-weight="700" fill="#0d9488">SS</text>
+            <circle cx="167" cy="112" r="5" fill="#dc2626"/>
+            <text x="176" y="106" font-size="11.5" font-weight="700" fill="#dc2626">Equilibrium A (P*)</text>
+
+            <!-- Dashed transfer line -->
+            <line x1="167" y1="112" x2="395" y2="112" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="5,4"/>
+
+            <!-- Right: Single Firm -->
+            <text x="515" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">(b) Single Competitive Firm (Price-Taker)</text>
+            <line x1="395" y1="195" x2="645" y2="195" stroke="#475569" stroke-width="2"/>
+            <line x1="395" y1="195" x2="395" y2="32" stroke="#475569" stroke-width="2"/>
+            <text x="520" y="220" text-anchor="middle" font-size="11.5" font-weight="700" fill="#475569">Firm Output (q)</text>
+            <!-- Horizontal dd = MR = P* -->
+            <line x1="395" y1="112" x2="635" y2="112" stroke="#0f4c81" stroke-width="3.2"/>
+            <text x="515" y="102" text-anchor="middle" font-size="12" font-weight="700" fill="#0f4c81">d = AR = MR = P* (Infinitely Elastic)</text>
+          </svg>
+        </div>
+
+        <h3>Table 8-1: Bob's Competitive Oil Firm (P = $40, FC = $55,000)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Quantity (q)</th><th>TC ($)</th><th>MC ($)</th><th>AC ($)</th><th>Price ($)</th><th>TR ($)</th><th>Profit π = TR − TC</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>55,000</td><td>—</td><td>∞</td><td>40</td><td>0</td><td>−$55,000 (Fixed Cost)</td></tr>
+              <tr><td>1,000</td><td>85,000</td><td>27</td><td>85.00</td><td>40</td><td>40,000</td><td>−$45,000</td></tr>
+              <tr><td>2,000</td><td>110,000</td><td>22</td><td>55.00</td><td>40</td><td>80,000</td><td>−$30,000</td></tr>
+              <tr><td>3,000</td><td>130,000</td><td>21</td><td>43.33</td><td>40</td><td>120,000</td><td>−$10,000</td></tr>
+              <tr class="active-row"><td><strong>4,000*</strong></td><td><strong>160,000</strong></td><td><strong>40</strong></td><td><strong>40.00</strong></td><td><strong>40</strong></td><td><strong>160,000</strong></td><td><strong>$0 (Max Profit / Break-Even!)</strong></td></tr>
+              <tr><td>5,000</td><td>210,000</td><td>60</td><td>42.00</td><td>40</td><td>200,000</td><td>−$10,000 (MC &gt; P hurts π)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 2: Interactive Shutdown vs. Operate Simulator -->
+      <section class="section-card" id="sec-shutdown">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 02 • Interactive Simulator (Figure 8-3 &amp; Final 2019/2024/2025 PYQs)</div>
+            <h2>Shutdown vs. Operate Simulator (Zero-Profit &amp; Shutdown Points)</h2>
+          </div>
+          <button class="done-btn" data-section="s2">✓ Mark Done</button>
+        </div>
+
+        <p class="muted" style="font-size:0.92rem;">
+          Drag the <strong>Market Price (P)</strong> slider up and down across the cost curves (<code>min AC = $40</code>,
+          <code>min AVC = $25</code>, <code>FC = $55</code>) to see why a profit-maximizing firm continues operating at a
+          loss whenever <strong>$25 &lt; P &lt; $40</strong>, and shuts down immediately when <strong>P &lt; $25</strong>!
+        </p>
+
+        <div class="preset-chips" style="margin-bottom:0.85rem;">
+          <button class="chip-btn" onclick="setSimPrice(58, this)">💰 Economic Profit (P = $58)</button>
+          <button class="chip-btn active" onclick="setSimPrice(40, this)">⚖️ Zero-Profit Point (P = $40 = min AC)</button>
+          <button class="chip-btn" onclick="setSimPrice(32, this)">✈️ Operate at a Loss (P = $32, Airlines Case)</button>
+          <button class="chip-btn" onclick="setSimPrice(25, this)">⚠️ Shutdown Threshold (P = $25 = min AVC)</button>
+          <button class="chip-btn" onclick="setSimPrice(18, this)">🛑 Shut Down! (P = $18 &lt; min AVC)</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="sdCanvas" width="540" height="390"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label">
+                <span>Given Market Price (P)</span>
+                <span id="sdPVal" style="color:var(--primary);">$40.00</span>
+              </div>
+              <input type="range" id="sdPSlider" min="12" max="68" step="1" value="40" />
+            </div>
+
+            <div class="readout-card" id="sdReadout"></div>
+
+            <div class="mini-card" style="font-size:0.83rem;">
+              <strong>The Short-Run Shutdown Rule (ECON107_L10):</strong>
+              <ul style="margin-top:0.3rem;">
+                <li><strong>If P ≥ min AVC:</strong> Revenue covers all variable costs and pays <em>part</em> of fixed costs → Operating loses <em>less</em> than shutting down (e.g., heavily indebted airlines).</li>
+                <li><strong>If P &lt; min AVC:</strong> Revenue doesn't even cover variable costs → Shutting down (<code>q = 0</code>) minimizes loss to just <code>−FC</code> (e.g., oil rigs idling in 1999).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Short-Run vs Long-Run Equilibrium & Special Cases -->
+      <section class="section-card" id="sec-longrun">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 03 • Industry Dynamics (Figures 8-5, 8-6 &amp; 8-7)</div>
+            <h2>Market Supply, Short-Run vs. Long-Run Equilibrium &amp; Constant Cost</h2>
+          </div>
+          <button class="done-btn" data-section="s3">✓ Mark Done</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="mini-card" style="border-top:4px solid var(--primary);">
+            <h4>📊 Market Supply &amp; Short-Run vs. Long-Run</h4>
+            <ul>
+              <li><strong>Market Supply ($SS$):</strong> Obtained by <strong>horizontally summing</strong> the individual MC (supply) curves of all competitive firms at each price.</li>
+              <li><strong>Short-Run Equilibrium:</strong> Number of firms and plants is fixed; supply ($S_S$) is steeper, so a demand surge causes a <em>larger</em> price jump and smaller quantity rise.</li>
+              <li><strong>Long-Run Equilibrium:</strong> Free entry and exit allow new firms to enter when profits &gt; 0 (pushing P down) and exit when profits &lt; 0 (pushing P up) until:
+                <div style="font-family:monospace; font-weight:700; margin-top:0.3rem;">P = MC = min LRAC = Zero-Profit Price</div>
+              </li>
+            </ul>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--accent);">
+            <h4>🏭 Constant-Cost vs. Increasing-Cost Industries</h4>
+            <ul>
+              <li><strong>Constant-Cost Case (Fig 8-7):</strong> Output can be expanded simply by duplicating identical factories, machinery, and labor (e.g., textiles/shirts: 100k → 200k/day) without bidding up input prices → <strong>Horizontal Long-Run Supply ($S_L$)</strong> at min AC.</li>
+              <li><strong>Increasing-Cost Case:</strong> Industry relies on a scarce specific factor (e.g., fertile wine land or beachfront property) → expanding output drives up factor prices → <strong>Upward-Sloping $S_L$</strong>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-title">Ch. 8 Q8 Insight: "How can competitive profits be ZERO in the long run? Who will work for nothing?"</div>
+          <strong>Zero economic profit does NOT mean zero accounting profit!</strong> Costs in economics include all
+          <strong>opportunity costs</strong>—managers are paid competitive salaries and owners earn a <em>normal return</em>
+          on their capital. Competition wipes out only <em>excess (supernormal)</em> economic profits.
+        </div>
+      </section>
+
+      <!-- Section 4: Efficiency of Competitive Markets & 5 Classic Fallacies -->
+      <section class="section-card" id="sec-efficiency">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 04 • Welfare &amp; Exam Traps</div>
+            <h2>Allocative Efficiency (MU = P = MC) &amp; 5 Classic Fallacies</h2>
+          </div>
+          <button class="done-btn" data-section="s4">✓ Mark Done</button>
+        </div>
+
+        <div class="callout accent">
+          <div class="callout-title">Why Perfectly Competitive Equilibrium Is Pareto (Allocatively) Efficient (Fig 8-11)</div>
+          1. Consumers maximize utility where <strong><code>MU = P</code></strong>.<br>
+          2. Competitive firms maximize profit where <strong><code>MC = P</code></strong>.<br>
+          3. Therefore <strong><code>MU = P = MC</code></strong>: the marginal benefit to society from the last unit consumed
+          <em>exactly equals</em> the marginal cost to society of producing it! This maximizes <strong>Economic Surplus
+          (= Consumer Surplus + Producer Surplus)</strong>.<br>
+          <em>Qualifications (Two Cheers, Not Three):</em> Fails under <strong>market failures</strong> (imperfect competition,
+          externalities/pollution, imperfect information) and says nothing about <strong>equity (fair income distribution)</strong>.
+        </div>
+
+        <h3>Debunking the 5 Classic Competitive Firm Fallacies (Samuelson Ch. 8 Q1)</h3>
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span>❌ Fallacy (a): "A competitive firm will produce output up to the point where price equals average variable cost."</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <strong>False!</strong> A competitive firm maximizes profit by producing where <strong>price equals marginal cost ($P = MC$)</strong>—not $P = AVC$. ($P = \min AVC$ is merely the <em>shutdown threshold</em>.)
+            </div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span>❌ Fallacy (b): "A firm's shutdown point comes where price is less than minimum average cost." (Final 2024 Q6!)</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <strong>False!</strong> The shutdown point comes where price falls below <strong>minimum Average Variable Cost ($P &lt; \min AVC$)</strong>. When $\min AVC &lt; P &lt; \min AC$, the firm suffers a loss but still covers all variable costs and part of fixed costs—so operating minimizes its short-run loss.
+            </div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span>❌ Fallacy (c): "A firm's supply curve depends only on MC; all other cost concepts are irrelevant."</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <strong>False!</strong> You also need <strong>AVC</strong> to know where the short-run supply curve starts (the shutdown point at min AVC), and <strong>AC</strong> to determine profitability and long-run entry/exit!
+            </div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span>❌ Fallacy (d): "The P = MC rule holds on upward-sloping, horizontal, and downward-sloping MC curves."</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <strong>False!</strong> $P = MC$ maximizes profit <strong>only on the upward-sloping (rising) portion of MC</strong> (second-order condition: $d^2\pi/dq^2 = -d(MC)/dq &lt; 0 \Rightarrow d(MC)/dq &gt; 0$). Where MC is falling, $P = MC$ actually <em>minimizes</em> profit!
+            </div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span>❌ Fallacy (e): "The competitive firm sets price equal to marginal cost."</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <strong>False (subtle wording)!</strong> A competitive firm is a <strong>price-taker</strong>—it cannot "set" price. Instead, it takes market price $P$ as given and <strong>chooses its output level $q$</strong> so that $MC(q) = P$.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: ISRT PYQ Vault -->
+      <section class="section-card" id="sec-pyq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 05 • Exam Preparation</div>
+            <h2>ISRT Past Exam Question (PYQ) Vault (2019–2025)</h2>
+          </div>
+          <button class="done-btn" data-section="s5">✓ Mark Done</button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">Final 2025 • Q6(2,3,4) [9 Marks]</span> Horizontal vs. downward demand (PC vs. Monopoly); True/False: Both maximize profit at MR = MC; Illustrate &amp; explain shutdown condition.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(2) Horizontal vs. Downward Demand:</strong> A perfectly competitive firm is tiny relative to the market and sells an identical product; it can sell all it wants at market price $P$ without affecting it, so its $dd$ curve is horizontal (infinitely elastic). A monopolist <em>is</em> the entire industry, so it faces the downward-sloping market demand curve and must cut price to sell more.</p>
+              <p><strong>(3) Both Maximize Profit at MR = MC — TRUE:</strong> Any profit-maximizing firm ($\pi = TR - TC$) maximizes profit where $d\pi/dq = MR - MC = 0 \Rightarrow MR = MC$. For a monopoly, $MR &lt; P$, so it sets $MR = MC &lt; P$. For a perfect competitor, since price is constant, $MR = P$, so the universal $MR = MC$ rule simply reduces to the special case $P = MC$!</p>
+              <p style="margin:0;"><strong>(4) Shutdown Condition:</strong> Draw U-shaped MC cutting AVC at $M'$ ($P_S = \min AVC$) and AC at $M$ (zero-profit point). Explain that for $P &lt; P_S$, $TR &lt; VC$ (losses exceed FC), so the firm shuts down ($q = 0$); for $P_S &lt; P &lt; \min AC$, the firm operates at a loss to minimize total loss below FC.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-accent">Final 2024 • Q6(2) [2 Marks]</span> "A competitive firm's shutdown point comes where price is less than minimum average cost" — True or False? Justify.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p style="margin:0;"><strong>FALSE.</strong> The shutdown point occurs where price falls below <strong>minimum Average Variable Cost ($P &lt; \min AVC$)</strong>, not minimum Average Cost ($AC$). Between $\min AVC$ and $\min AC$, the firm's revenues cover all variable costs and contribute toward fixed costs, so staying open yields a smaller loss than shutting down.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-warn">Final 2019 • Q5(a,b) [8 Marks]</span> Explain graphically the zero-profit and shutdown points of a perfectly competitive market; show slopes of TC and TR are parallel at max profit.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) Zero-Profit &amp; Shutdown Points:</strong> Sketch Figure 8-3 showing MC cutting AC at its minimum $M$ (Zero-Profit Point, where $P = \min AC \Rightarrow \pi = 0$) and cutting AVC at its minimum $M'$ (Shutdown Point, where $P_S = \min AVC \Rightarrow TR = VC$ and $\pi = -FC$).</p>
+              <p style="margin:0;"><strong>(b) Parallel Slopes of TR and TC:</strong> Profit is $\pi(q) = TR(q) - TC(q)$. At maximum profit, $d\pi/dq = d(TR)/dq - d(TC)/dq = 0 \Rightarrow d(TR)/dq = d(TC)/dq$ (i.e., $MR = MC$). Geometrically, the slope of the TR curve equals the slope of the TC curve—meaning their tangent lines are <strong>parallel</strong> at the profit-maximizing output!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: Quick Mastery Check -->
+      <section class="section-card" id="sec-quiz">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 06 • Self-Assessment</div>
+            <h2>Lesson 11 Quick Mastery Check</h2>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="resetQuiz()">↻ Reset Quiz</button>
+        </div>
+        <div id="quizContainer"></div>
+        <div class="callout accent" id="quizSummary" style="display:none;"></div>
+      </section>
+
+      <footer>
+        ECON107 Interactive Course Series • Lesson 11: Perfectly Competitive Markets • Built for ISRT, University of Dhaka
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme Toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('econ107_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('econ107_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      drawShutdownSim();
+    });
+
+    // ---------- Scroll Progress & Active Nav ----------
+    const scrollFill = document.getElementById('scrollFill');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section-card');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      scrollFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      let currentId = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) currentId = sec.id; });
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + currentId));
+    });
+
+    // ---------- Completion Tracker ----------
+    const doneBtns = document.querySelectorAll('.done-btn');
+    let completedSet = new Set(JSON.parse(localStorage.getItem('econ107_l11_done') || '[]'));
+    function updateProgressUI() {
+      document.getElementById('progressText').textContent = `${completedSet.size}/${doneBtns.length} Done`;
+      document.getElementById('progressBar').style.width = `${(completedSet.size / doneBtns.length) * 100}%`;
+      doneBtns.forEach(btn => {
+        const isDone = completedSet.has(btn.dataset.section);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : '✓ Mark Done';
+      });
+    }
+    doneBtns.forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.section;
+      completedSet.has(k) ? completedSet.delete(k) : completedSet.add(k);
+      localStorage.setItem('econ107_l11_done', JSON.stringify([...completedSet]));
+      updateProgressUI();
+    }));
+    updateProgressUI();
+
+    // ---------- Accordion ----------
+    document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+
+    // ---------- Interactive Shutdown vs Operate Simulator ----------
+    // Clean cubic cost model closely matching Table 8-1 scale:
+    // VC(q) = 2.5*q^3 - 15*q^2 + 47.5*q, FC = 55
+    // AVC(q) = 2.5*q^2 - 15*q + 47.5 => min AVC at q = 3: AVC(3) = 22.5 - 45 + 47.5 = 25.00!
+    // MC(q) = 7.5*q^2 - 30*q + 47.5 => min MC at q = 2 (MC=17.5); MC(3) = 25 (cuts min AVC!)
+    // AC(q) = AVC(q) + 55/q => min AC near q = 4.18, AC ≈ 40.00!
+    const sdCanvas = document.getElementById('sdCanvas');
+    const sdCtx = sdCanvas.getContext('2d');
+    const sdSlider = document.getElementById('sdPSlider');
+
+    const FC = 55;
+    const vcFn = q => 2.5 * q * q * q - 15 * q * q + 47.5 * q;
+    const avcFn = q => 2.5 * q * q - 15 * q + 47.5;
+    const mcFn = q => 7.5 * q * q - 30 * q + 47.5;
+    const acFn = q => avcFn(q) + FC / q;
+    const minAVC = 25.0; // exact at q = 3
+    // Exact min AC: d(AC)/dq = 5q - 15 - 55/q^2 = 0 => q ≈ 4.156, minAC ≈ 40.08
+    const minACQ = 4.156;
+    const minAC = acFn(minACQ);
+
+    function solveQfromP(P) {
+      // Rising branch of MC: 7.5 q^2 - 30 q + (47.5 - P) = 0  => q = (30 + sqrt(900 - 30*(47.5 - P))) / 15
+      const disc = 900 - 30 * (47.5 - P);
+      if (disc < 0) return 0;
+      return (30 + Math.sqrt(disc)) / 15;
+    }
+
+    function setSimPrice(p, btn) {
+      sdSlider.value = p;
+      if (btn) {
+        btn.parentElement.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      drawShutdownSim();
+    }
+
+    function drawShutdownSim() {
+      const P = parseFloat(sdSlider.value);
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const W = sdCanvas.width, H = sdCanvas.height;
+      const pad = { l: 55, r: 24, t: 24, b: 46 };
+      const maxQ = 6.2, maxY = 80;
+      const sx = q => pad.l + (q / maxQ) * (W - pad.l - pad.r);
+      const sy = y => H - pad.b - (y / maxY) * (H - pad.t - pad.b);
+
+      sdCtx.clearRect(0, 0, W, H);
+
+      // Grid
+      sdCtx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0';
+      sdCtx.lineWidth = 1;
+      for (let y = 20; y <= 80; y += 20) {
+        sdCtx.beginPath(); sdCtx.moveTo(pad.l, sy(y)); sdCtx.lineTo(W - pad.r, sy(y)); sdCtx.stroke();
+      }
+
+      // Axes
+      sdCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      sdCtx.lineWidth = 2;
+      sdCtx.beginPath(); sdCtx.moveTo(pad.l, pad.t); sdCtx.lineTo(pad.l, H - pad.b); sdCtx.lineTo(W - pad.r, H - pad.b); sdCtx.stroke();
+
+      sdCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      sdCtx.font = 'bold 12px system-ui, sans-serif';
+      sdCtx.textAlign = 'center';
+      sdCtx.fillText('Firm Output (q, in thousands)', (pad.l + W - pad.r) / 2, H - 12);
+      sdCtx.save(); sdCtx.translate(16, (pad.t + H - pad.b) / 2); sdCtx.rotate(-Math.PI / 2);
+      sdCtx.fillText('Price & Cost ($)', 0, 0); sdCtx.restore();
+
+      const shutDown = P < minAVC;
+      const qOpt = shutDown ? 0 : solveQfromP(P);
+      const acAtQ = qOpt > 0 ? acFn(qOpt) : 0;
+      const avcAtQ = qOpt > 0 ? avcFn(qOpt) : 0;
+
+      // Profit / Loss Shaded Rectangle if operating
+      if (!shutDown && qOpt > 0) {
+        const profitPerUnit = P - acAtQ;
+        const rectTop = sy(Math.max(P, acAtQ));
+        const rectBot = sy(Math.min(P, acAtQ));
+        sdCtx.fillStyle = profitPerUnit >= -0.15 ? 'rgba(22, 163, 74, 0.24)' : 'rgba(217, 119, 6, 0.24)';
+        sdCtx.fillRect(pad.l, rectTop, sx(qOpt) - pad.l, Math.max(2, rectBot - rectTop));
+      }
+
+      // Plot Curves
+      function plotFn(fn, qStart, qEnd, color, w) {
+        sdCtx.strokeStyle = color; sdCtx.lineWidth = w;
+        sdCtx.beginPath();
+        let started = false;
+        for (let q = qStart; q <= qEnd; q += 0.06) {
+          const y = fn(q);
+          if (y >= 0 && y <= maxY) {
+            if (!started) { sdCtx.moveTo(sx(q), sy(y)); started = true; }
+            else sdCtx.lineTo(sx(q), sy(y));
+          }
+        }
+        sdCtx.stroke();
+      }
+
+      plotFn(avcFn, 0.5, 5.8, '#7c3aed', 2.6); // AVC
+      plotFn(acFn, 1.1, 5.6, isDark ? '#38bdf8' : '#0f4c81', 3); // AC
+      plotFn(mcFn, 0.4, 5.2, isDark ? '#2dd4bf' : '#0d9488', 3.4); // MC
+
+      // Mark Zero-Profit Point M and Shutdown Point M'
+      sdCtx.fillStyle = isDark ? '#38bdf8' : '#0f4c81';
+      sdCtx.beginPath(); sdCtx.arc(sx(minACQ), sy(minAC), 5, 0, Math.PI * 2); sdCtx.fill();
+      sdCtx.font = 'bold 10.5px system-ui, sans-serif';
+      sdCtx.textAlign = 'left';
+      sdCtx.fillText('M (Zero-Profit $40)', sx(minACQ) + 8, sy(minAC) + 4);
+
+      sdCtx.fillStyle = '#7c3aed';
+      sdCtx.beginPath(); sdCtx.arc(sx(3), sy(minAVC), 5, 0, Math.PI * 2); sdCtx.fill();
+      sdCtx.fillText("M' (Shutdown $25)", sx(3) + 8, sy(minAVC) + 12);
+
+      // Horizontal Price Line (dd = MR = P)
+      const pColor = shutDown ? '#dc2626' : (P >= minAC - 0.15 ? '#16a34a' : '#d97706');
+      sdCtx.strokeStyle = pColor;
+      sdCtx.lineWidth = 2.6;
+      sdCtx.setLineDash([6, 4]);
+      sdCtx.beginPath(); sdCtx.moveTo(pad.l, sy(P)); sdCtx.lineTo(W - pad.r, sy(P)); sdCtx.stroke();
+      sdCtx.setLineDash([]);
+
+      // Operating Point
+      if (!shutDown) {
+        sdCtx.save(); sdCtx.setLineDash([4, 4]); sdCtx.strokeStyle = pColor; sdCtx.lineWidth = 1.5;
+        sdCtx.beginPath(); sdCtx.moveTo(sx(qOpt), sy(P)); sdCtx.lineTo(sx(qOpt), H - pad.b); sdCtx.stroke(); sdCtx.restore();
+        sdCtx.fillStyle = pColor;
+        sdCtx.beginPath(); sdCtx.arc(sx(qOpt), sy(P), 7, 0, Math.PI * 2); sdCtx.fill();
+        sdCtx.strokeStyle = '#fff'; sdCtx.lineWidth = 2; sdCtx.stroke();
+      } else {
+        sdCtx.fillStyle = '#dc2626';
+        sdCtx.beginPath(); sdCtx.arc(sx(0), sy(P), 7, 0, Math.PI * 2); sdCtx.fill();
+        sdCtx.strokeStyle = '#fff'; sdCtx.lineWidth = 2; sdCtx.stroke();
+      }
+
+      // Legend
+      sdCtx.font = 'bold 11px system-ui, sans-serif';
+      sdCtx.textAlign = 'right';
+      sdCtx.fillStyle = isDark ? '#2dd4bf' : '#0d9488'; sdCtx.fillText('— MC (Supply)', W - pad.r - 4, pad.t + 12);
+      sdCtx.fillStyle = isDark ? '#38bdf8' : '#0f4c81'; sdCtx.fillText('— AC', W - pad.r - 92, pad.t + 12);
+      sdCtx.fillStyle = '#7c3aed'; sdCtx.fillText('— AVC', W - pad.r - 134, pad.t + 12);
+
+      // Compute Financials
+      const tr = P * qOpt;
+      const tc = qOpt > 0 ? (FC + vcFn(qOpt)) : FC;
+      const profit = tr - tc;
+
+      document.getElementById('sdPVal').textContent = `$${P.toFixed(2)}`;
+      let badge, verdict, explanation;
+      if (shutDown) {
+        badge = 'pill-danger';
+        verdict = '🛑 SHUT DOWN IMMEDIATELY (q* = 0)';
+        explanation = `P ($${P}) &lt; min AVC ($25). Operating would lose MORE than your $${FC}k fixed cost. Shutting down caps your loss at −$${FC.toFixed(1)}k.`;
+      } else if (Math.abs(P - minAC) <= 0.3) {
+        badge = 'pill-primary';
+        verdict = '⚖️ ZERO-PROFIT / BREAK-EVEN POINT';
+        explanation = `P ≈ min AC ($40.1). Revenue exactly covers all explicit + implicit opportunity costs (π ≈ $0). Long-run competitive equilibrium!`;
+      } else if (P > minAC) {
+        badge = 'pill-success';
+        verdict = '💰 OPERATE &amp; EARN ECONOMIC PROFIT!';
+        explanation = `P ($${P}) &gt; AC ($${acAtQ.toFixed(2)}). Produce q* = ${qOpt.toFixed(2)}k where P = MC for +$${profit.toFixed(1)}k economic profit (attracts long-run entry).`;
+      } else {
+        badge = 'pill-warn';
+        verdict = '✈️ OPERATE AT A LOSS (MINIMIZE LOSS!)';
+        explanation = `min AVC ($25) ≤ P ($${P}) &lt; min AC ($40.1). Operating loses $${(-profit).toFixed(1)}k, which is STILL BETTER than shutting down and losing $${FC}k!`;
+      }
+
+      document.getElementById('sdReadout').innerHTML = `
+        <span class="status-badge ${badge}">${verdict}</span>
+        <div><strong>Optimal Output (q*):</strong> ${qOpt.toFixed(2)}k &nbsp;|&nbsp; <strong>TR:</strong> $${tr.toFixed(1)}k &nbsp;|&nbsp; <strong>TC:</strong> $${tc.toFixed(1)}k</div>
+        <div style="margin-top:0.25rem;"><strong>Profit / Loss (π):</strong> <strong style="color:${profit >= -0.5 ? 'var(--success)' : 'var(--danger)'};">${profit >= 0 ? '+' : '−'}$${Math.abs(profit).toFixed(1)}k</strong> &nbsp;|&nbsp; <span class="muted">Shutdown Loss: −$${FC}k</span></div>
+        <div class="muted" style="font-size:0.81rem; margin-top:0.25rem;">${explanation}</div>
+      `;
+    }
+    sdSlider.addEventListener('input', drawShutdownSim);
+    drawShutdownSim();
+
+    // ---------- Quick Mastery Check Quiz ----------
+    const quizData = [
+      {
+        q: "1. Why does a perfectly competitive firm face a completely horizontal (infinitely elastic) demand curve?",
+        opts: [
+          "Because the entire industry demand curve is horizontal.",
+          "Because each firm is so small relative to the market and sells an identical product that it can sell all it wants at the given market price without affecting it.",
+          "Because the government fixes prices.",
+          "Because marginal cost is zero."
+        ],
+        ans: 1,
+        exp: "A competitive firm is a price-taker selling a homogeneous product; its tiny slice of the market demand curve looks flat at the prevailing market price."
+      },
+      {
+        q: "2. Which portion of a competitive firm's Marginal Cost (MC) curve serves as its short-run supply curve?",
+        opts: [
+          "The entire MC curve, including the downward-sloping portion.",
+          "Only the portion of the rising MC curve lying ABOVE minimum Average Cost (AC).",
+          "Only the portion of the rising MC curve lying ABOVE minimum Average Variable Cost (AVC).",
+          "The Average Fixed Cost (AFC) curve."
+        ],
+        ans: 2,
+        exp: "Below min AVC, the firm shuts down (q = 0). Above min AVC, the firm produces along its rising MC curve where P = MC."
+      },
+      {
+        q: "3. True or False (Final 2024 Q6): A competitive firm should shut down in the short run whenever market price falls below minimum Average Cost (AC).",
+        opts: ["True", "False"],
+        ans: 1,
+        exp: "False! If min AVC < P < min AC, revenues cover variable costs and pay part of fixed costs, so staying open loses less than shutting down. Shutdown happens only when P < min AVC."
+      },
+      {
+        q: "4. True or False (Final 2025 Q6): Both a monopoly firm and a perfectly competitive firm maximize profit where MR = MC.",
+        opts: ["True", "False"],
+        ans: 0,
+        exp: "True! MR = MC is the universal profit-maximizing rule. For a perfect competitor, MR = P, so MR = MC simply reduces to P = MC."
+      },
+      {
+        q: "5. In a competitive industry with free entry and exit and identical firms, what condition holds in LONG-RUN equilibrium?",
+        opts: [
+          "P > MC > min LRAC",
+          "P = MC = min LRAC (zero economic profit)",
+          "P = min AVC",
+          "Firms earn permanent supernormal economic profits."
+        ],
+        ans: 1,
+        exp: "Free entry wipes out positive economic profits and free exit eliminates losses, driving long-run price to P = MC = min LRAC (zero economic profit)."
+      },
+      {
+        q: "6. Which condition guarantees that a perfectly competitive market achieves allocative (Pareto) efficiency?",
+        opts: [
+          "MU = P = MC (marginal utility equals price equals marginal cost)",
+          "P > MC",
+          "AFC = AVC",
+          "TR = 0"
+        ],
+        ans: 0,
+        exp: "When MU = P = MC (with no externalities or market power), the social benefit of the last unit equals its social cost, maximizing total economic surplus."
+      }
+    ];
+
+    let quizAnswers = {};
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        div.innerHTML = `
+          <div class="quiz-q-title">${item.q}</div>
+          <div class="quiz-opts">
+            ${item.opts.map((opt, oIdx) => `<button class="quiz-opt" type="button" onclick="answerQuiz(${idx}, ${oIdx}, this)">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${idx}">${item.exp}</div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('quizSummary').style.display = 'none';
+    }
+
+    function answerQuiz(qIdx, oIdx, btn) {
+      if (quizAnswers[qIdx] !== undefined) return;
+      quizAnswers[qIdx] = oIdx;
+      const allBtns = btn.closest('.quiz-q').querySelectorAll('.quiz-opt');
+      const correctIdx = quizData[qIdx].ans;
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === correctIdx) b.classList.add('is-correct');
+        else if (i === oIdx) b.classList.add('is-wrong');
+      });
+      document.getElementById(`qexp-${qIdx}`).classList.add('show');
+
+      if (Object.keys(quizAnswers).length === quizData.length) {
+        let score = 0;
+        quizData.forEach((q, i) => { if (quizAnswers[i] === q.ans) score++; });
+        const summary = document.getElementById('quizSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `
+          <div class="callout-title">Mastery Check Complete: ${score} / ${quizData.length} (${Math.round(score / quizData.length * 100)}%)</div>
+          ${score === quizData.length
+            ? "Awesome! You've mastered Perfect Competition, the Shutdown Rule, and Allocative Efficiency—ready for Lesson 12 (Imperfect Competition & Monopoly)!"
+            : "Great effort! Review the highlighted explanations above and reset the quiz to hit 100%."}
+        `;
+      }
+    }
+
+    function resetQuiz() { quizAnswers = {}; renderQuiz(); }
+    renderQuiz();
+  </script>
+</body>
+</html>

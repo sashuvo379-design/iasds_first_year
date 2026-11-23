@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 12: Double Integrals over Rectangular &amp; General Regions | MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK ACADEMIC THEME (MATH 105 COHESIVE PALETTE)
+       ========================================================================== */
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --accent-border: rgba(56, 189, 248, 0.36);
+      --accent2-soft: rgba(129, 140, 248, 0.15);
+      --accent2-border: rgba(129, 140, 248, 0.38);
+      --green-soft: rgba(52, 211, 153, 0.14);
+      --green-border: rgba(52, 211, 153, 0.36);
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.36);
+      --rose-soft: rgba(251, 113, 133, 0.12);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 270px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ==========================================================================
+       MOBILE TOP BAR (< 900px)
+       ========================================================================== */
+    .mobile-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .mobile-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .menu-toggle {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .mobile-bar-title {
+      font-size: 0.9rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-pct-pill {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
+      color: var(--green); background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       FIXED LEFT SIDEBAR (270px)
+       ========================================================================== */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      z-index: 55; backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    aside.sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 60;
+      transition: transform 0.25s ease;
+    }
+    .brand { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .brand .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .brand h1 { font-size: 1.1rem; margin-top: 5px; line-height: 1.3; font-weight: 800; }
+    .brand p { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
+
+    .progress-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; margin-bottom: 7px; font-weight: 600;
+    }
+    .progress-bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--green));
+      transition: width 0.35s ease;
+    }
+    .progress-detail {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; color: var(--muted); margin-top: 7px;
+    }
+
+    nav.side-nav { display: flex; flex-direction: column; gap: 5px; }
+    .nav-heading {
+      font-size: 0.69rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); padding: 0 10px; margin-bottom: 4px;
+    }
+    nav.side-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.18s ease;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    nav.side-nav a:hover { background: var(--surface-2); color: var(--text); }
+    nav.side-nav a.active {
+      background: var(--surface-2);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .foot-btn {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .foot-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 34px 40px 84px;
+      max-width: calc(1140px + var(--sidebar-w));
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.13), rgba(129, 140, 248, 0.15));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-bottom: 34px;
+    }
+    .hero .pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      background: var(--accent-soft); border: 1px solid var(--accent-border);
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .hero h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    .hero p { color: var(--muted); max-width: 820px; font-size: 0.95rem; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .hero-chip {
+      font-size: 0.77rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(11, 17, 32, 0.55); border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 1.32rem; font-weight: 800; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .num {
+      background: var(--accent); color: var(--bg);
+      font-family: var(--font-mono); font-weight: 800; font-size: 0.85rem;
+      width: 28px; height: 28px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-sub { color: var(--muted); font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================================================
+       CONTROLS, BUTTONS & CANVASES
+       ========================================================================== */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn, .btn {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.84rem; font-weight: 600;
+      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .tab-btn:hover, .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+    .tab-btn.active, .btn-primary {
+      background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700;
+    }
+    .btn-primary:hover:not(:disabled) { background: #7dd3fc; border-color: #7dd3fc; color: var(--bg); }
+
+    .segmented {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+      background: var(--bg); padding: 4px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .seg-btn {
+      padding: 9px 10px; border: none; border-radius: 6px;
+      background: transparent; color: var(--muted);
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.18s;
+    }
+    .seg-btn.active-t1 { background: var(--accent); color: var(--bg); }
+    .seg-btn.active-t2 { background: var(--green); color: #052e16; }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .control-group label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted); font-weight: 600;
+    }
+    .control-group label strong {
+      font-family: var(--font-mono); color: var(--accent); font-size: 0.82rem;
+    }
+    .control-group select {
+      width: 100%;
+      background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 11px; font-size: 0.86rem; cursor: pointer;
+    }
+    .control-group select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .control-group input[type="range"] {
+      width: 100%; accent-color: var(--accent); cursor: pointer; height: 6px;
+    }
+
+    .canvas-wrap {
+      background: #070d19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+      width: 100%;
+      height: 380px;
+    }
+    .canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+
+    .legend-row {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      overflow-x: auto;
+    }
+    .stat.optimal { background: var(--green-soft); border-color: var(--green-border); }
+    .stat.warn { background: var(--amber-soft); border-color: var(--amber-border); }
+    .stat .label {
+      font-size: 0.71rem; color: var(--muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat .val {
+      font-family: var(--font-mono);
+      font-size: 1rem; font-weight: 700; margin-top: 4px; color: var(--accent);
+    }
+    .stat .sub { font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+
+    /* Section 2 Tab B: 4-Step Pipeline */
+    .pipe-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px;
+    }
+    .pipe-node {
+      padding: 10px 8px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--muted); font-size: 0.78rem; font-weight: 700;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .pipe-node.done { border-color: var(--green-border); background: var(--green-soft); color: var(--green); }
+    .pipe-node.current { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+
+    .step-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .step-card {
+      display: none;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-2); border-radius: 8px;
+      padding: 14px 16px; overflow-x: auto; font-size: 0.92rem;
+    }
+    .step-card.visible { display: block; animation: fadeIn 0.22s ease; }
+    .step-card.final { border-left-color: var(--green); background: rgba(52, 211, 153, 0.08); }
+    .step-tag {
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+      color: var(--accent-2); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .step-card.final .step-tag { color: var(--green); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ==========================================================================
+       SECTION 3: THEORY & EXAM TRAPS
+       ========================================================================== */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .formula-box {
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent-2);
+      padding: 13px 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .trap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .trap-box {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+    }
+    .trap-box strong { color: var(--rose); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    /* ==========================================================================
+       SECTION 4: VAULT
+       ========================================================================== */
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .vault-item.reviewed { border-color: var(--green-border); }
+    .vault-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+      border-radius: 999px; background: var(--accent2-soft); color: var(--accent-2);
+      border: 1px solid var(--accent2-border);
+    }
+    .badge.sky { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+
+    .vault-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .reveal-box {
+      display: none; margin-top: 12px; padding: 14px 16px;
+      background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.91rem;
+    }
+    .reveal-box.open { display: block; }
+    .reveal-box.hint-box { background: var(--amber-soft); border-color: var(--amber-border); }
+    .check-label {
+      margin-left: auto; font-size: 0.82rem; font-weight: 600; color: var(--green);
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+      padding: 6px 11px; border-radius: 8px;
+      background: var(--green-soft); border: 1px solid var(--green-border);
+      user-select: none;
+    }
+    .check-label input { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; }
+
+    /* ==========================================================================
+       SECTION 5: QUIZ
+       ========================================================================== */
+    .quiz-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    }
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; margin-top: 12px; }
+    .opt-btn {
+      text-align: left; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px;
+      cursor: pointer; font-size: 0.89rem; transition: all 0.18s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .opt-btn.correct { background: var(--green-soft); border-color: var(--green); color: var(--green); font-weight: 600; }
+    .opt-btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); }
+    .feedback {
+      margin-top: 11px; font-size: 0.87rem; color: var(--text);
+      padding: 10px 13px; border-radius: 8px; background: var(--surface-2);
+      border: 1px solid var(--border); display: none;
+    }
+    .feedback.show { display: block; }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 80;
+      background: var(--surface-2); border: 1px solid var(--accent-border);
+      color: var(--text); padding: 11px 16px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+      opacity: 0; transform: translateY(10px); pointer-events: none; transition: all 0.22s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 900px) {
+      .mobile-bar { display: flex; }
+      aside.sidebar {
+        transform: translateX(-100%);
+        top: 63px;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+      }
+      aside.sidebar.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 22px 16px 64px; }
+      section { scroll-margin-top: 78px; }
+      .pipe-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Header -->
+  <header class="mobile-bar">
+    <div class="mobile-bar-left">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-bar-title">Lesson 12: Double Integrals</span>
+    </div>
+    <span class="mobile-pct-pill" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Fixed Left Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Lesson 12 navigation">
+    <div class="brand">
+      <div class="tag">MATH 105 · ISRT, DU</div>
+      <h1>Lesson 12: Double Integrals (Rect. &amp; General)</h1>
+      <p>Module 4 · Multiple Integrals</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Mastery Progress</span>
+        <strong id="progressPct" style="color:var(--green)">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-detail" id="progressDetail">0 / 13 tasks (0/8 Vault, 0/5 Quiz)</div>
+    </div>
+
+    <nav class="side-nav" id="sideNav">
+      <div class="nav-heading">Sections (14.1 &amp; 14.2)</div>
+      <a href="#sec1" class="active" data-sec="sec1">1. Order Flipper &amp; Scanner</a>
+      <a href="#sec2" data-sec="sec2">2. 3D Volume &amp; Reversal Lab</a>
+      <a href="#sec3" data-sec="sec3">3. Core Theory &amp; Exam Traps</a>
+      <a href="#sec4" data-sec="sec4">4. ISRT Past-Exam Vault (8)</a>
+      <a href="#sec5" data-sec="sec5">5. Quick Mastery Check (5)</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="foot-btn" id="prevBtn"><span>&larr; Prev Lesson</span><span class="mono">L11</span></button>
+      <button type="button" class="foot-btn" id="nextBtn"><span>Next Lesson &rarr;</span><span class="mono" style="color:var(--accent)">L13</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <span class="pill">Module 4 · Sections 14.1 &amp; 14.2 · Year Final Core</span>
+      <h2>Double Integrals over Rectangular &amp; General Regions</h2>
+      <p>
+        Visualize Type I ($dy\,dx$) vs. Type II ($dx\,dy$) scanning arrows to choose the cleanest integration order, reverse non-elementary integrals like $\sin(y^3)$, inspect 3D Riemann prisms under surfaces $z = f(x, y)$, and practice 8 authentic ISRT exam &amp; class-note problems.
+      </p>
+      <div class="hero-chips">
+        <span class="hero-chip">Fubini's Theorem</span>
+        <span class="hero-chip">Type I ($dy\,dx$) vs. Type II ($dx\,dy$)</span>
+        <span class="hero-chip">Reversing Order of Integration</span>
+        <span class="hero-chip">8 Solved ISRT &amp; Note Problems</span>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         SECTION 1: ORDER-OF-INTEGRATION FLIPPER & REGION SCANNER
+         ====================================================================== -->
+    <section id="sec1">
+      <h3 class="section-title"><span class="num">1</span> Order-of-Integration Flipper &amp; Region Scanner</h3>
+      <p class="section-sub">Flip between vertical ($dy\,dx$) and horizontal ($dx\,dy$) scan arrows to see entry/exit boundaries, split lines, and why reversing order unlocks non-elementary integrals.</p>
+
+      <div class="card">
+        <div class="controls-grid">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="scanPreset"><span>ISRT Exam / Class Notes Preset</span></label>
+            <select id="scanPreset">
+              <option value="trapezoid">Final 2023 Q5a: Trapezoid (1,3),(5,3),(2,1),(4,1)</option>
+              <option value="siny3">2nd Incourse 2025 Q4: sin(y³) on y=√x, y=2, x=0</option>
+              <option value="f2025_q5b">Final 2025 Q5b: x(1+y²)^(-1/2) on y=x², y=4, x=0</option>
+              <option value="lnx">Class Notes Ex 56: ∫₁³∫₀^(ln x) x dy dx</option>
+              <option value="triangle">2nd Incourse 2021 Q4: Triangle y=x, x=1, y=0</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label><span>Integration Order</span></label>
+            <div class="segmented" role="group" aria-label="Integration order">
+              <button type="button" class="seg-btn active-t1" id="btnType1">Type I ($dy\,dx$)</button>
+              <button type="button" class="seg-btn" id="btnType2">Type II ($dx\,dy$)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls-grid" style="margin-bottom:14px;">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="scanSlider">
+              <span>Scanning Arrow Position</span>
+              <strong id="scanPosLabel">50%</strong>
+            </label>
+            <input type="range" id="scanSlider" min="2" max="98" step="0.5" value="50" />
+          </div>
+          <div class="control-group" style="display:flex;flex-direction:row;gap:8px;align-items:flex-end;">
+            <button type="button" class="btn btn-primary" id="playScanBtn" style="flex:1;">&#9654; Play Scan Sweep</button>
+            <button type="button" class="btn" id="resetScanBtn">&#8634; Reset</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="scanCanvasWrap">
+          <canvas id="scanCanvas" aria-label="Order of integration region scanner canvas"></canvas>
+        </div>
+
+        <div class="legend-row">
+          <span class="legend-item"><span class="swatch" style="background:var(--green)"></span> Entry Boundary Point</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--rose)"></span> Exit Boundary Arrowhead</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--accent)"></span> Region $R$ &amp; Scan Arrow</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Multi-Piece Split Lines</span>
+        </div>
+
+        <!-- 4 Telemetry Cards -->
+        <div class="telemetry">
+          <div class="stat optimal" id="scanPiecesCard">
+            <div class="label">1. Pieces Needed</div>
+            <div class="val" id="scanPiecesVal">—</div>
+            <div class="sub" id="scanPiecesSub">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">2. Entry &rarr; Exit Bounds</div>
+            <div class="val" id="scanEntryExit" style="font-size:0.9rem;">—</div>
+            <div class="sub" id="scanCoordSub">Inner variable limits</div>
+          </div>
+          <div class="stat">
+            <div class="label">3. Outer Constant Limits</div>
+            <div class="val" id="scanOuter" style="color:var(--accent-2)">—</div>
+            <div class="sub">Outer limits are ALWAYS constants</div>
+          </div>
+          <div class="stat">
+            <div class="label">4. Iterated Integral Setup</div>
+            <div class="val" id="scanSetup" style="font-size:0.86rem;color:var(--text)">—</div>
+            <div class="sub" id="scanValSub">Exact evaluation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 2: 3D FUBINI VOLUME & REVERSE-ORDER WORKSHOP
+         ====================================================================== -->
+    <section id="sec2">
+      <h3 class="section-title"><span class="num">2</span> 3D Fubini Volume &amp; Reverse-Order Workshop</h3>
+      <p class="section-sub">Visualize 3D Riemann prisms approximating $\iint_R f(x,y)\,dA$ in isometric 3D, or practice the 4-step reverse-order pipeline.</p>
+
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-lab2="vol3d">Tab A: 3D Surface Volume over $R$ (Isometric)</button>
+          <button type="button" class="tab-btn" data-lab2="workshop">Tab B: Step-by-Step Reverse-Order Workshop</button>
+        </div>
+
+        <!-- TAB A: 3D Surface Volume -->
+        <div id="lab2-vol3d">
+          <div class="controls-grid">
+            <div class="control-group" style="grid-column: span 2;">
+              <label for="volPreset"><span>Select 3D Surface &amp; Base Region $R$</span></label>
+              <select id="volPreset">
+                <option value="plane">1) Plane z = 4 - x - y over [0,1]×[0,2] (Class Notes, V = 5)</option>
+                <option value="tetra">2) Tetrahedron z = 4 - 4x - 2y in 1st Octant (Class Notes, V = 4/3)</option>
+                <option value="parab">3) Parabolic Cylinder z = 1 - x² over Triangle y=x, x=1, y=0 (2nd Incourse 2021, V = 1/4)</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="gridNSlider"><span>Prism Resolution ($n \times n$)</span><strong id="gridNVal">8 &times; 8</strong></label>
+              <input type="range" id="gridNSlider" min="2" max="16" step="1" value="8" />
+            </div>
+            <div class="control-group">
+              <label for="rotSlider"><span>3D Rotation Angle</span><strong id="rotVal">36&deg;</strong></label>
+              <input type="range" id="rotSlider" min="12" max="78" step="2" value="36" />
+            </div>
+          </div>
+
+          <div class="canvas-wrap" id="volCanvasWrap">
+            <canvas id="volCanvas" aria-label="3D isometric surface volume and Riemann prisms"></canvas>
+          </div>
+
+          <div class="telemetry">
+            <div class="stat">
+              <div class="label">Riemann Prism Sum ($V_n$)</div>
+              <div class="val" id="volApprox">—</div>
+              <div class="sub" id="volPrismCount">Active prisms inside $R$</div>
+            </div>
+            <div class="stat optimal">
+              <div class="label">Exact Double Integral $V$</div>
+              <div class="val" id="volExact" style="color:var(--green)">—</div>
+              <div class="sub" id="volExactFormula">Analytical volume</div>
+            </div>
+            <div class="stat">
+              <div class="label">Relative Error</div>
+              <div class="val" id="volErr" style="color:var(--amber)">—</div>
+              <div class="sub">Shrinks to $0$ as $n \to \infty$</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: Reverse-Order Workshop -->
+        <div id="lab2-workshop" style="display:none;">
+          <div class="tabs" id="wsTabs">
+            <button type="button" class="tab-btn active" data-ws="0">1) 2nd Incourse 2025: $\sin(y^3)$</button>
+            <button type="button" class="tab-btn" data-ws="1">2) Anton Ex 50 / Notes: $\ln x$</button>
+            <button type="button" class="tab-btn" data-ws="2">3) Anton Ex 51: $\sin^{-1} y$</button>
+          </div>
+
+          <div class="pipe-bar" id="wsPipeBar">
+            <button type="button" class="pipe-node current" data-wstep="1">1. Read Inequalities</button>
+            <button type="button" class="pipe-node" data-wstep="2">2. Sketch &amp; Corners</button>
+            <button type="button" class="pipe-node" data-wstep="3">3. Invert Boundaries</button>
+            <button type="button" class="pipe-node" data-wstep="4">4. Rewrite &amp; Evaluate</button>
+          </div>
+
+          <div class="step-list" id="wsStepsWrap"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <span class="mono" style="font-size:0.8rem;color:var(--muted)" id="wsCounter">Step 1 of 4</span>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn" id="wsPrevBtn">&larr; Prev</button>
+              <button type="button" class="btn btn-primary" id="wsNextBtn">Next Step &rarr;</button>
+              <button type="button" class="btn" id="wsAllBtn">Show All</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: CORE THEORY, TYPE I VS. TYPE II & EXAM TRAPS
+         ====================================================================== -->
+    <section id="sec3">
+      <h3 class="section-title"><span class="num">3</span> Core Theory, Type I vs. Type II Guide &amp; Exam Traps</h3>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>1. Fubini's Theorem (Rectangles, Sec. 14.1)</h4>
+          <p style="font-size:0.88rem;color:var(--muted);margin-top:4px;">If $f(x, y)$ is continuous on the rectangle $R = [a, b] \times [c, d]$, then the order of integration can be freely swapped:</p>
+          <div class="formula-box">
+            $$\iint_R f(x, y)\,dA = \int_a^b \int_c^d f(x, y)\,dy\,dx = \int_c^d \int_a^b f(x, y)\,dx\,dy$$
+          </div>
+          <p style="font-size:0.84rem;color:var(--muted);">When $f(x, y) \ge 0$, this double integral equals the exact 3D volume under the surface $z = f(x, y)$ above $R$.</p>
+        </div>
+
+        <div class="card">
+          <h4>2. Area &amp; Average Value via Double Integrals</h4>
+          <p style="font-size:0.88rem;color:var(--muted);margin-top:4px;">Setting $f(x, y) = 1$ gives the exact 2D area of $R$, which normalizes the average value of any surface $f$ over $R$:</p>
+          <div class="formula-box">
+            $$\text{Area}(R) = \iint_R 1\,dA, \qquad f_{\text{ave}} = \frac{1}{\text{Area}(R)}\iint_R f(x, y)\,dA$$
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>3. Type I (Vertically Simple — $dy\,dx$)</h4>
+          <p style="font-size:0.88rem;color:var(--muted);margin-top:4px;">Bounded left/right by constants $a \le x \le b$ and bottom/top by functions $g_1(x) \le y \le g_2(x)$:</p>
+          <div class="formula-box">
+            $$\iint_R f(x, y)\,dA = \int_a^b \int_{g_1(x)}^{g_2(x)} f(x, y)\,dy\,dx$$
+          </div>
+          <p style="font-size:0.83rem;color:var(--muted);">Scan vertically (bottom $\to$ top) while holding $x$ fixed.</p>
+        </div>
+
+        <div class="card">
+          <h4>4. Type II (Horizontally Simple — $dx\,dy$)</h4>
+          <p style="font-size:0.88rem;color:var(--muted);margin-top:4px;">Bounded bottom/top by constants $c \le y \le d$ and left/right by functions $h_1(y) \le x \le h_2(y)$:</p>
+          <div class="formula-box">
+            $$\iint_R f(x, y)\,dA = \int_c^d \int_{h_1(y)}^{h_2(y)} f(x, y)\,dx\,dy$$
+          </div>
+          <p style="font-size:0.83rem;color:var(--muted);">Scan horizontally (left $\to$ right) while holding $y$ fixed.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 style="color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h4>
+        <div class="trap-grid">
+          <div class="trap-box">
+            <strong>Trap 1: Outer Limits MUST Be Constants</strong>
+            The outer integral's limits must ALWAYS be pure numbers ($a$ to $b$, or $c$ to $d$). Putting $x$ or $y$ in the outer limits leaves a variable in your final numeric answer!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 2: Never Just Swap Non-Rectangular Limits</strong>
+            You can only swap limits directly on a rectangle $[a,b]\times[c,d]$. On a general region $R$, you <em>must</em> sketch $R$, invert the boundary curves, and re-scan in the new direction.
+          </div>
+          <div class="trap-box">
+            <strong>Trap 3: Hidden Non-Elementary Integrands</strong>
+            Integrands like $\sin(y^3)$, $e^{y^2}$, or $\frac{\sin x}{x}$ have no elementary antiderivative. Seeing one in the inner integral is a direct signal to <strong>reverse the order of integration</strong>!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 4: Unnecessary Multi-Piece Splits</strong>
+            Always check both orders before integrating! On the Final 2023 Q5(a) trapezoid, Type I ($dy\,dx$) requires <strong>3 integrals</strong>, whereas Type II ($dx\,dy$) needs only <strong>1 integral</strong>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ====================================================================== -->
+    <section id="sec4">
+      <h3 class="section-title"><span class="num">4</span> ISRT Past-Exam &amp; Class-Notes Vault (8 Problems)</h3>
+      <div class="tabs" id="vaultFilters">
+        <button type="button" class="tab-btn active" data-vcat="all">All (8)</button>
+        <button type="button" class="tab-btn" data-vcat="setup">Type I / II Setup (2)</button>
+        <button type="button" class="tab-btn" data-vcat="reverse">Reverse Order (3)</button>
+        <button type="button" class="tab-btn" data-vcat="volume">Volume &amp; Average (3)</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ====================================================================== -->
+    <section id="sec5">
+      <h3 class="section-title"><span class="num">5</span> Quick Mastery Check</h3>
+      <div class="quiz-bar">
+        <span style="color:var(--muted);font-size:0.9rem;">Quiz Score: <strong id="quizScore" style="color:var(--green);font-family:var(--font-mono)">0 / 5</strong></span>
+        <button type="button" class="btn" id="resetQuizBtn">&#8634; Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2600);
+      }
+
+      /* ----------------------------------------------------------------------
+         2. HIDPI CANVAS & 2D AXES HELPER
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(220, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function draw2DAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax) {
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        // Subtle grid
+        const xStep = (xMax - xMin) > 4.5 ? 1 : 0.5;
+        const yStep = (yMax - yMin) > 3.5 ? 1 : 0.5;
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.font = '500 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#94a3b8';
+
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (let xv = Math.ceil(xMin / xStep) * xStep; xv <= xMax + 1e-9; xv += xStep) {
+          const px = toX(xv);
+          ctx.beginPath(); ctx.moveTo(px, pad.top); ctx.lineTo(px, h - pad.bottom); ctx.stroke();
+          ctx.fillText(Math.abs(xv) < 1e-9 ? '0' : Number(xv.toFixed(1)).toString(), px, h - pad.bottom + 6);
+        }
+
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let yv = Math.ceil(yMin / yStep) * yStep; yv <= yMax + 1e-9; yv += yStep) {
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(w - pad.right, py); ctx.stroke();
+          ctx.fillText(Math.abs(yv) < 1e-9 ? '0' : Number(yv.toFixed(1)).toString(), pad.left - 8, py);
+        }
+
+        // Main axes
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.6;
+        if (yMin <= 0 && yMax >= 0) {
+          const y0 = toY(0);
+          ctx.beginPath(); ctx.moveTo(pad.left, y0); ctx.lineTo(w - pad.right, y0); ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          const x0 = toX(0);
+          ctx.beginPath(); ctx.moveTo(x0, pad.top); ctx.lineTo(x0, h - pad.bottom); ctx.stroke();
+        }
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pad.left, pad.top, plotW, plotH);
+
+        return { toX, toY };
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 1: ORDER-OF-INTEGRATION FLIPPER & REGION SCANNER
+         ---------------------------------------------------------------------- */
+      const scanPresets = {
+        trapezoid: {
+          xRange: [0, 6], yRange: [0, 3.8],
+          labels: [
+            { x: 1.25, y: 1.9, text: 'y = 5 - 2x', color: '#38bdf8' },
+            { x: 4.75, y: 1.9, text: 'y = 2x - 7', color: '#818cf8' },
+            { x: 3.0, y: 3.2, text: 'y = 3', color: '#94a3b8' },
+            { x: 3.0, y: 0.75, text: 'y = 1', color: '#94a3b8' }
+          ],
+          corners: [[1,3], [5,3], [4,1], [2,1]],
+          drawRegion(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(toX(1), toY(3));
+            ctx.lineTo(toX(5), toY(3));
+            ctx.lineTo(toX(4), toY(1));
+            ctx.lineTo(toX(2), toY(1));
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+          },
+          type1: {
+            pieces: '3 Integrals (Split!)',
+            piecesSub: 'Bottom boundary switches at x=2 and x=4',
+            isOptimal: false,
+            dom: [1.02, 4.98],
+            splits: [2, 4],
+            outerTex: '1 \\le x \\le 5 \\; (\\text{split at } 2, 4)',
+            setupTex: '\\int_1^2\\!\\int_{5-2x}^3 f\\,dy\\,dx + \\int_2^4\\!\\int_1^3 f\\,dy\\,dx + \\int_4^5\\!\\int_{2x-7}^3 f\\,dy\\,dx',
+            valSub: 'Final 2023 Q5(a)(i)',
+            scan(x) {
+              if (x < 2) return { a: 5 - 2 * x, b: 3, entryTex: 'y = 5 - 2x', exitTex: 'y = 3' };
+              if (x <= 4) return { a: 1, b: 3, entryTex: 'y = 1', exitTex: 'y = 3' };
+              return { a: 2 * x - 7, b: 3, entryTex: 'y = 2x - 7', exitTex: 'y = 3' };
+            }
+          },
+          type2: {
+            pieces: '1 Integral (Optimal!)',
+            piecesSub: 'Single clean horizontal scan',
+            isOptimal: true,
+            dom: [1.02, 2.98],
+            splits: [],
+            outerTex: '1 \\le y \\le 3',
+            setupTex: '\\int_1^3 \\int_{(5-y)/2}^{(y+7)/2} f(x,y)\\,dx\\,dy',
+            valSub: 'Final 2023 Q5(a)(ii)',
+            scan(y) {
+              return { a: (5 - y) / 2, b: (y + 7) / 2, entryTex: 'x = (5-y)/2', exitTex: 'x = (y+7)/2' };
+            }
+          }
+        },
+
+        siny3: {
+          xRange: [-0.4, 4.6], yRange: [-0.2, 2.5],
+          labels: [
+            { x: 2.6, y: 1.2, text: 'y = √x  (x = y²)', color: '#38bdf8' },
+            { x: 2.0, y: 2.18, text: 'y = 2', color: '#818cf8' }
+          ],
+          corners: [[0,0], [0,2], [4,2]],
+          drawRegion(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            for (let i = 0; i <= 80; i++) {
+              const x = (i / 80) * 4;
+              ctx.lineTo(toX(x), toY(Math.sqrt(x)));
+            }
+            ctx.lineTo(toX(0), toY(2));
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+          },
+          type1: {
+            pieces: '1 Integral (Non-Elementary!)',
+            piecesSub: '∫ sin(y³) dy has NO elementary antiderivative',
+            isOptimal: false,
+            dom: [0.05, 3.92],
+            splits: [],
+            outerTex: '0 \\le x \\le 4',
+            setupTex: '\\int_0^4 \\int_{\\sqrt{x}}^{2} \\sin(y^3)\\,dy\\,dx \\; (\\text{stuck!})',
+            valSub: 'Switch to Type II (dx dy)!',
+            scan(x) {
+              return { a: Math.sqrt(x), b: 2, entryTex: 'y = \\sqrt{x}', exitTex: 'y = 2' };
+            }
+          },
+          type2: {
+            pieces: '1 Integral (Optimal!)',
+            piecesSub: 'Inner ∫ dx gives y², unlocking u = y³!',
+            isOptimal: true,
+            dom: [0.05, 1.96],
+            splits: [],
+            outerTex: '0 \\le y \\le 2',
+            setupTex: '\\int_0^2 \\int_0^{y^2} \\sin(y^3)\\,dx\\,dy = \\frac{1 - \\cos 8}{3}',
+            valSub: '2nd Incourse 2025 Q4 (≈ 0.3818)',
+            scan(y) {
+              return { a: 0, b: y * y, entryTex: 'x = 0', exitTex: 'x = y^2' };
+            }
+          }
+        },
+
+        f2025_q5b: {
+          xRange: [-0.3, 2.5], yRange: [-0.3, 4.6],
+          labels: [
+            { x: 1.55, y: 1.35, text: 'y = x² (x = √y)', color: '#38bdf8' },
+            { x: 1.0, y: 4.22, text: 'y = 4', color: '#818cf8' }
+          ],
+          corners: [[0,0], [0,4], [2,4]],
+          drawRegion(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            for (let i = 0; i <= 80; i++) {
+              const x = (i / 80) * 2;
+              ctx.lineTo(toX(x), toY(x * x));
+            }
+            ctx.lineTo(toX(0), toY(4));
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+          },
+          type1: {
+            pieces: '1 Integral (Messy sinh⁻¹)',
+            piecesSub: 'Inner ∫ (1+y²)^(-1/2) dy requires trig sub',
+            isOptimal: false,
+            dom: [0.04, 1.96],
+            splits: [],
+            outerTex: '0 \\le x \\le 2',
+            setupTex: '\\int_0^2 \\int_{x^2}^{4} \\frac{x}{\\sqrt{1+y^2}}\\,dy\\,dx',
+            valSub: 'Type II is dramatically cleaner!',
+            scan(x) {
+              return { a: x * x, b: 4, entryTex: 'y = x^2', exitTex: 'y = 4' };
+            }
+          },
+          type2: {
+            pieces: '1 Integral (Optimal!)',
+            piecesSub: 'Inner ∫ x dx = y/2 enables u = 1+y²!',
+            isOptimal: true,
+            dom: [0.08, 3.92],
+            splits: [],
+            outerTex: '0 \\le y \\le 4',
+            setupTex: '\\int_0^4 \\int_0^{\\sqrt{y}} \\frac{x}{\\sqrt{1+y^2}}\\,dx\\,dy = \\frac{\\sqrt{17}-1}{2}',
+            valSub: 'Final 2025 Q5(b) (≈ 1.5616)',
+            scan(y) {
+              return { a: 0, b: Math.sqrt(y), entryTex: 'x = 0', exitTex: 'x = \\sqrt{y}' };
+            }
+          }
+        },
+
+        lnx: {
+          xRange: [0.5, 3.5], yRange: [-0.2, 1.45],
+          labels: [
+            { x: 1.9, y: 0.92, text: 'y = ln x (x = e^y)', color: '#38bdf8' },
+            { x: 3.18, y: 0.55, text: 'x = 3', color: '#818cf8' }
+          ],
+          corners: [[1,0], [3,0], [3, Math.log(3)]],
+          drawRegion(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(toX(1), toY(0));
+            for (let i = 0; i <= 80; i++) {
+              const x = 1 + (i / 80) * 2;
+              ctx.lineTo(toX(x), toY(Math.log(x)));
+            }
+            ctx.lineTo(toX(3), toY(0));
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+          },
+          type1: {
+            pieces: '1 Integral (IBP Needed)',
+            piecesSub: 'Outer ∫ x ln x dx requires Integration by Parts',
+            isOptimal: false,
+            dom: [1.04, 2.96],
+            splits: [],
+            outerTex: '1 \\le x \\le 3',
+            setupTex: '\\int_1^3 \\int_0^{\\ln x} x\\,dy\\,dx = \\frac{9}{2}\\ln 3 - 2',
+            valSub: 'Class Notes Ex 56 (≈ 2.9438)',
+            scan(x) {
+              return { a: 0, b: Math.log(x), entryTex: 'y = 0', exitTex: 'y = \\ln x' };
+            }
+          },
+          type2: {
+            pieces: '1 Integral (Optimal!)',
+            piecesSub: 'Direct exponential integral — no IBP needed!',
+            isOptimal: true,
+            dom: [0.02, Math.log(3) - 0.02],
+            splits: [],
+            outerTex: '0 \\le y \\le \\ln 3',
+            setupTex: '\\int_0^{\\ln 3} \\int_{e^y}^{3} x\\,dx\\,dy = \\frac{9}{2}\\ln 3 - 2',
+            valSub: 'Class Notes Ex 56 (≈ 2.9438)',
+            scan(y) {
+              return { a: Math.exp(y), b: 3, entryTex: 'x = e^y', exitTex: 'x = 3' };
+            }
+          }
+        },
+
+        triangle: {
+          xRange: [-0.2, 1.3], yRange: [-0.2, 1.25],
+          labels: [
+            { x: 0.42, y: 0.65, text: 'y = x', color: '#38bdf8' },
+            { x: 1.08, y: 0.5, text: 'x = 1', color: '#818cf8' }
+          ],
+          corners: [[0,0], [1,0], [1,1]],
+          drawRegion(ctx, toX, toY) {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(toX(0), toY(0));
+            ctx.lineTo(toX(1), toY(0));
+            ctx.lineTo(toX(1), toY(1));
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+          },
+          type1: {
+            pieces: '1 Integral (Optimal!)',
+            piecesSub: 'Inner ∫ (1-x²) dy = x(1-x²) immediately',
+            isOptimal: true,
+            dom: [0.03, 0.97],
+            splits: [],
+            outerTex: '0 \\le x \\le 1',
+            setupTex: '\\int_0^1 \\int_0^x (1 - x^2)\\,dy\\,dx = \\frac{1}{4}',
+            valSub: '2nd Incourse 2021 Q4 (V = 0.25)',
+            scan(x) {
+              return { a: 0, b: x, entryTex: 'y = 0', exitTex: 'y = x' };
+            }
+          },
+          type2: {
+            pieces: '1 Integral (Also Clean)',
+            piecesSub: 'Both Type I and Type II need 1 integral',
+            isOptimal: true,
+            dom: [0.03, 0.97],
+            splits: [],
+            outerTex: '0 \\le y \\le 1',
+            setupTex: '\\int_0^1 \\int_y^1 (1 - x^2)\\,dx\\,dy = \\frac{1}{4}',
+            valSub: '2nd Incourse 2021 Q4 (V = 0.25)',
+            scan(y) {
+              return { a: y, b: 1, entryTex: 'x = y', exitTex: 'x = 1' };
+            }
+          }
+        }
+      };
+
+      const scanState = {
+        preset: 'trapezoid',
+        order: 'type1', // 'type1' | 'type2'
+        pct: 50,
+        playing: false,
+        rafId: null,
+        lastTs: 0
+      };
+
+      const scanCanvas = document.getElementById('scanCanvas');
+      const scanSlider = document.getElementById('scanSlider');
+      const playScanBtn = document.getElementById('playScanBtn');
+
+      function drawScanner() {
+        const pr = scanPresets[scanState.preset];
+        const cfg = pr[scanState.order];
+        const isT1 = scanState.order === 'type1';
+
+        // Button highlight
+        document.getElementById('btnType1').className = `seg-btn ${isT1 ? 'active-t1' : ''}`;
+        document.getElementById('btnType2').className = `seg-btn ${!isT1 ? 'active-t2' : ''}`;
+
+        const { ctx, w, h } = setupCanvas(scanCanvas);
+        const pad = { top: 24, right: 24, bottom: 32, left: 46 };
+        const { toX, toY } = draw2DAxes(ctx, w, h, pad, pr.xRange[0], pr.xRange[1], pr.yRange[0], pr.yRange[1]);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, w - pad.left - pad.right, h - pad.top - pad.bottom);
+        ctx.clip();
+
+        // 1. Region R
+        pr.drawRegion(ctx, toX, toY);
+
+        // 2. Multi-piece dashed amber split lines
+        if (cfg.splits.length) {
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 1.8;
+          ctx.setLineDash([6, 4]);
+          cfg.splits.forEach((sv) => {
+            ctx.beginPath();
+            if (isT1) {
+              ctx.moveTo(toX(sv), pad.top); ctx.lineTo(toX(sv), h - pad.bottom);
+            } else {
+              ctx.moveTo(pad.left, toY(sv)); ctx.lineTo(w - pad.right, toY(sv));
+            }
+            ctx.stroke();
+          });
+          ctx.setLineDash([]);
+        }
+
+        // 3. Glowing Animated Entry -> Exit Scan Arrow
+        const pos = cfg.dom[0] + (scanState.pct / 100) * (cfg.dom[1] - cfg.dom[0]);
+        const sc = cfg.scan(pos);
+        const x1 = isT1 ? toX(pos) : toX(sc.a);
+        const y1 = isT1 ? toY(sc.a) : toY(pos);
+        const x2 = isT1 ? toX(pos) : toX(sc.b);
+        const y2 = isT1 ? toY(sc.b) : toY(pos);
+
+        // Arrow shaft
+        ctx.save();
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 10;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.restore();
+
+        // Entry dot (Emerald)
+        ctx.fillStyle = '#34d399';
+        ctx.strokeStyle = '#070d19';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(x1, y1, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        // Exit arrowhead (Rose)
+        const ang = Math.atan2(y2 - y1, x2 - x1);
+        const hl = 12;
+        ctx.fillStyle = '#fb7185';
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - hl * Math.cos(ang - 0.42), y2 - hl * Math.sin(ang - 0.42));
+        ctx.lineTo(x2 - hl * Math.cos(ang + 0.42), y2 - hl * Math.sin(ang + 0.42));
+        ctx.closePath();
+        ctx.fill();
+
+        // Corner dots
+        pr.corners.forEach(([cx, cy]) => {
+          ctx.fillStyle = '#f1f5f9';
+          ctx.beginPath(); ctx.arc(toX(cx), toY(cy), 3.5, 0, Math.PI * 2); ctx.fill();
+        });
+
+        // Boundary curve labels
+        ctx.font = '700 11.5px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        pr.labels.forEach((lb) => {
+          ctx.fillStyle = lb.color;
+          ctx.fillText(lb.text, toX(lb.x), toY(lb.y));
+        });
+
+        ctx.restore();
+
+        // Update Telemetry Cards
+        document.getElementById('scanPosLabel').textContent = `${isT1 ? 'x' : 'y'} = ${pos.toFixed(2)} (${Math.round(scanState.pct)}%)`;
+
+        const pCard = document.getElementById('scanPiecesCard');
+        pCard.className = `stat ${cfg.isOptimal ? 'optimal' : 'warn'}`;
+        document.getElementById('scanPiecesVal').textContent = cfg.pieces;
+        document.getElementById('scanPiecesVal').style.color = cfg.isOptimal ? 'var(--green)' : 'var(--amber)';
+        document.getElementById('scanPiecesSub').textContent = cfg.piecesSub;
+
+        const eeEl = document.getElementById('scanEntryExit');
+        const eeKey = `${sc.entryTex}->${sc.exitTex}`;
+        if (eeEl.dataset.key !== eeKey) {
+          eeEl.innerHTML = `<span style="color:var(--green)">$${sc.entryTex}$</span> &rarr; <span style="color:var(--rose)">$${sc.exitTex}$</span>`;
+          eeEl.dataset.key = eeKey;
+          renderMath(eeEl);
+        }
+        document.getElementById('scanCoordSub').textContent = `Active ${isT1 ? 'y' : 'x'}-span: [${sc.a.toFixed(2)}, ${sc.b.toFixed(2)}]`;
+
+        const outEl = document.getElementById('scanOuter');
+        const setupEl = document.getElementById('scanSetup');
+        const stateKey = `${scanState.preset}-${scanState.order}`;
+        if (setupEl.dataset.skey !== stateKey) {
+          outEl.innerHTML = `$${cfg.outerTex}$`;
+          setupEl.innerHTML = `$${cfg.setupTex}$`;
+          setupEl.dataset.skey = stateKey;
+          document.getElementById('scanValSub').textContent = cfg.valSub;
+          renderMath(outEl);
+          renderMath(setupEl);
+        }
+      }
+
+      function stopScanAnim() {
+        scanState.playing = false;
+        if (scanState.rafId) cancelAnimationFrame(scanState.rafId);
+        scanState.rafId = null;
+        playScanBtn.innerHTML = '&#9654; Play Scan Sweep';
+      }
+
+      function stepScanAnim(ts) {
+        if (!scanState.playing) return;
+        if (!scanState.lastTs) scanState.lastTs = ts;
+        const dt = Math.min(0.05, (ts - scanState.lastTs) / 1000);
+        scanState.lastTs = ts;
+        scanState.pct += 25 * dt;
+        if (scanState.pct >= 98) scanState.pct = 2;
+        scanSlider.value = scanState.pct;
+        drawScanner();
+        scanState.rafId = requestAnimationFrame(stepScanAnim);
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2A: 3D FUBINI VOLUME ISOMETRIC CANVAS
+         ---------------------------------------------------------------------- */
+      const volPresets = {
+        plane: {
+          xMax: 1, yMax: 2, zMax: 4,
+          exact: 5, exactTex: '5',
+          formula: '∫₀¹ ∫₀² (4 - x - y) dy dx = 5',
+          inR: () => true,
+          f: (x, y) => Math.max(0, 4 - x - y)
+        },
+        tetra: {
+          xMax: 1, yMax: 2, zMax: 4,
+          exact: 4 / 3, exactTex: '4/3 ≈ 1.3333',
+          formula: '∫₀¹ ∫₀^(2-2x) (4 - 4x - 2y) dy dx = 4/3',
+          inR: (x, y) => y <= 2 - 2 * x + 1e-9,
+          f: (x, y) => Math.max(0, 4 - 4 * x - 2 * y)
+        },
+        parab: {
+          xMax: 1, yMax: 1, zMax: 1,
+          exact: 0.25, exactTex: '1/4 = 0.2500',
+          formula: '∫₀¹ ∫₀^x (1 - x²) dy dx = 1/4',
+          inR: (x, y) => y <= x + 1e-9,
+          f: (x) => Math.max(0, 1 - x * x)
+        }
+      };
+
+      const volCanvas = document.getElementById('volCanvas');
+
+      function draw3DVolume() {
+        const key = document.getElementById('volPreset').value;
+        const n = parseInt(document.getElementById('gridNSlider').value, 10);
+        const rotDeg = parseInt(document.getElementById('rotSlider').value, 10);
+        document.getElementById('gridNVal').textContent = `${n} × ${n}`;
+        document.getElementById('rotVal').innerHTML = `${rotDeg}&deg;`;
+
+        const pr = volPresets[key];
+        const { ctx, w, h } = setupCanvas(volCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        // Isometric projection centered in canvas
+        const yaw = (rotDeg * Math.PI) / 180;
+        const pitch = 0.46; // ~26 deg elevation
+        const scale = Math.min(w, h) * 0.29;
+        const ox = w * 0.48;
+        const oy = h * 0.78;
+
+        // Normalize coordinates so all 3 solids fit beautifully
+        const sx = 1.4 / pr.xMax;
+        const sy = 1.4 / pr.yMax;
+        const sz = 1.35 / pr.zMax;
+
+        function proj(x, y, z) {
+          const nx = x * sx, ny = y * sy, nz = z * sz;
+          const rx = nx * Math.cos(yaw) - ny * Math.sin(yaw);
+          const ry = nx * Math.sin(yaw) + ny * Math.cos(yaw);
+          return [
+            ox + rx * scale,
+            oy - (nz * Math.cos(pitch) - ry * Math.sin(pitch)) * scale,
+            ry // depth for painter's sort
+          ];
+        }
+
+        // Draw 3D coordinate axes
+        const p0 = proj(0, 0, 0);
+        const pxEnd = proj(pr.xMax * 1.18, 0, 0);
+        const pyEnd = proj(0, pr.yMax * 1.18, 0);
+        const pzEnd = proj(0, 0, pr.zMax * 1.15);
+
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.6;
+        [[pxEnd, 'x'], [pyEnd, 'y'], [pzEnd, 'z']].forEach(([pe, lbl]) => {
+          ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(pe[0], pe[1]); ctx.stroke();
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '700 12px "JetBrains Mono", monospace';
+          ctx.fillText(lbl, pe[0] + 6, pe[1] + 4);
+        });
+
+        // Build Riemann prisms over base region R
+        const dx = pr.xMax / n;
+        const dy = pr.yMax / n;
+        const prisms = [];
+        let volSum = 0;
+
+        for (let i = 0; i < n; i++) {
+          for (let j = 0; j < n; j++) {
+            const x0 = i * dx, x1 = (i + 1) * dx;
+            const y0 = j * dy, y1 = (j + 1) * dy;
+            const xm = 0.5 * (x0 + x1), ym = 0.5 * (y0 + y1);
+            if (!pr.inR(xm, ym)) continue;
+            const zm = pr.f(xm, ym);
+            volSum += zm * dx * dy;
+            const depth = proj(xm, ym, 0)[2];
+            prisms.push({ x0, x1, y0, y1, z: zm, depth });
+          }
+        }
+
+        // Sort back-to-front (smaller depth first -> draw farthest first)
+        prisms.sort((a, b) => a.depth - b.depth);
+
+        function drawQuad(pts, fill, stroke) {
+          ctx.fillStyle = fill;
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = 0.85;
+          ctx.beginPath();
+          pts.forEach((p, idx) => idx === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        prisms.forEach((b) => {
+          const b00 = proj(b.x0, b.y0, 0), b10 = proj(b.x1, b.y0, 0);
+          const b11 = proj(b.x1, b.y1, 0), b01 = proj(b.x0, b.y1, 0);
+          const t00 = proj(b.x0, b.y0, b.z), t10 = proj(b.x1, b.y0, b.z);
+          const t11 = proj(b.x1, b.y1, b.z), t01 = proj(b.x0, b.y1, b.z);
+
+          // Front-facing side faces
+          drawQuad([b10, b11, t11, t10], 'rgba(56, 189, 248, 0.28)', 'rgba(56, 189, 248, 0.55)');
+          drawQuad([b01, b11, t11, t01], 'rgba(129, 140, 248, 0.32)', 'rgba(129, 140, 248, 0.55)');
+          // Top cap
+          drawQuad([t00, t10, t11, t01], 'rgba(52, 211, 153, 0.44)', 'rgba(52, 211, 153, 0.85)');
+        });
+
+        // Update Telemetry
+        const relErr = (Math.abs(volSum - pr.exact) / pr.exact) * 100;
+        document.getElementById('volApprox').textContent = volSum.toFixed(4);
+        document.getElementById('volPrismCount').textContent = `${prisms.length} active prisms inside R`;
+        document.getElementById('volExact').textContent = pr.exactTex;
+        document.getElementById('volExactFormula').textContent = pr.formula;
+        document.getElementById('volErr').textContent = `${relErr.toFixed(2)}%`;
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 2B: STEP-BY-STEP REVERSE-ORDER WORKSHOP
+         ---------------------------------------------------------------------- */
+      const wsData = [
+        {
+          steps: [
+            { tag: 'Step 1: Read Inequalities', body: 'From $\\displaystyle \\int_0^4 \\int_{\\sqrt{x}}^2 \\sin(y^3)\\,dy\\,dx$, the region $R$ is described by $0 \\le x \\le 4$ and $\\sqrt{x} \\le y \\le 2$.' },
+            { tag: 'Step 2: Sketch & Find Corners', body: 'The curve $y = \\sqrt{x}$ starts at $(0,0)$ and meets the top line $y = 2$ at $(4, 2)$. Together with the $y$-axis ($x = 0$), the corners are $(0,0)$, $(0,2)$, and $(4,2)$.' },
+            { tag: 'Step 3: Invert Boundary Equations', body: 'Solve $y = \\sqrt{x}$ for $x$: $x = y^2$. Scanning horizontally ($dx\\,dy$), $y$ runs from $0$ to $2$, and $x$ enters at $x = 0$ and exits at $x = y^2$.' },
+            { tag: 'Step 4: Rewrite & Evaluate', final: true, body: '$$\\int_0^2 \\int_0^{y^2} \\sin(y^3)\\,dx\\,dy = \\int_0^2 y^2\\sin(y^3)\\,dy = \\left[-\\frac{\\cos(y^3)}{3}\\right]_0^2 = \\frac{1 - \\cos 8}{3}.$$' }
+          ]
+        },
+        {
+          steps: [
+            { tag: 'Step 1: Read Inequalities', body: 'From $\\displaystyle \\int_1^3 \\int_0^{\\ln x} x\\,dy\\,dx$, we have $1 \\le x \\le 3$ and $0 \\le y \\le \\ln x$.' },
+            { tag: 'Step 2: Sketch & Find Corners', body: 'The curve $y = \\ln x$ meets $y = 0$ at $(1,0)$ and meets $x = 3$ at $(3, \\ln 3)$. Corners: $(1,0)$, $(3,0)$, $(3, \\ln 3)$.' },
+            { tag: 'Step 3: Invert Boundary Equations', body: 'Invert $y = \\ln x \\iff x = e^y$. Scanning horizontally ($dx\\,dy$): $0 \\le y \\le \\ln 3$ and $e^y \\le x \\le 3$.' },
+            { tag: 'Step 4: Rewrite & Evaluate', final: true, body: '$$\\int_0^{\\ln 3}\\int_{e^y}^3 x\\,dx\\,dy = \\frac{1}{2}\\int_0^{\\ln 3}(9 - e^{2y})\\,dy = \\frac{1}{2}\\left[9y - \\frac{e^{2y}}{2}\\right]_0^{\\ln 3} = \\frac{9}{2}\\ln 3 - 2.$$' }
+          ]
+        },
+        {
+          steps: [
+            { tag: 'Step 1: Read Inequalities', body: 'From $\\displaystyle \\int_0^1 \\int_{\\sin^{-1} y}^{\\pi/2} f(x,y)\\,dx\\,dy$, we read $0 \\le y \\le 1$ and $\\sin^{-1} y \\le x \\le \\frac{\\pi}{2}$.' },
+            { tag: 'Step 2: Sketch & Find Corners', body: 'At $y = 0$, $x = \\sin^{-1} 0 = 0$; at $y = 1$, $x = \\sin^{-1} 1 = \\frac{\\pi}{2}$. Corners: $(0,0)$, $(\\frac{\\pi}{2}, 0)$, $(\\frac{\\pi}{2}, 1)$.' },
+            { tag: 'Step 3: Invert Boundary Equations', body: 'Invert $x = \\sin^{-1} y \\iff y = \\sin x$ (for $x \\in [0, \\frac{\\pi}{2}]$). Scanning vertically ($dy\\,dx$): $0 \\le x \\le \\frac{\\pi}{2}$ and $0 \\le y \\le \\sin x$.' },
+            { tag: 'Step 4: Rewrite in Reversed Order', final: true, body: '$$\\int_0^1 \\int_{\\sin^{-1} y}^{\\pi/2} f(x,y)\\,dx\\,dy = \\int_0^{\\pi/2} \\int_0^{\\sin x} f(x,y)\\,dy\\,dx.$$' }
+          ]
+        }
+      ];
+
+      let wsIdx = 0;
+      let wsStep = 1;
+
+      function renderWorkshop() {
+        const steps = wsData[wsIdx].steps;
+        document.querySelectorAll('#wsPipeBar .pipe-node').forEach((n) => {
+          const s = parseInt(n.dataset.wstep, 10);
+          n.classList.toggle('current', s === wsStep);
+          n.classList.toggle('done', s < wsStep);
+        });
+
+        const wrap = document.getElementById('wsStepsWrap');
+        wrap.innerHTML = steps.map((st, i) => `
+          <div class="step-card ${i < wsStep ? 'visible' : ''} ${st.final ? 'final' : ''}">
+            <div class="step-tag">${st.tag}</div>
+            <div>${st.body}</div>
+          </div>
+        `).join('');
+
+        document.getElementById('wsCounter').textContent = `Step ${wsStep} of ${steps.length}`;
+        document.getElementById('wsPrevBtn').disabled = wsStep <= 1;
+        document.getElementById('wsNextBtn').disabled = wsStep >= steps.length;
+        renderMath(wrap);
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const vaultData = [
+        {
+          id: 'v1', cat: 'setup', exam: 'Final 2023 Q5(a)', topic: 'Type I / II Setup',
+          q: 'Let $R$ be the trapezoid with vertices $(1,3), (5,3), (2,1), (4,1)$. Fill in the missing limits of integration for:<br/>(i) $\\displaystyle \\iint_R f(x,y)\\,dA = \\int_1^2\\!\\int_{\\square}^{\\square} f\\,dy\\,dx + \\int_2^4\\!\\int_{\\square}^{\\square} f\\,dy\\,dx + \\int_4^5\\!\\int_{\\square}^{\\square} f\\,dy\\,dx$<br/>(ii) $\\displaystyle \\iint_R f(x,y)\\,dA = \\int_{\\square}^{\\square}\\!\\int_{\\square}^{\\square} f(x,y)\\,dx\\,dy$.',
+          hint: 'Find the equations of the left slanted edge through $(1,3),(2,1)$ and the right slanted edge through $(4,1),(5,3)$: $y = 5 - 2x$ and $y = 2x - 7$.',
+          sol: `<strong>Boundary Equations:</strong><br/>
+                &bull; Left edge through $(1,3)$ and $(2,1)$: slope $m = -2 \\implies y = 5 - 2x \\iff x = \\frac{5-y}{2}$.<br/>
+                &bull; Right edge through $(4,1)$ and $(5,3)$: slope $m = 2 \\implies y = 2x - 7 \\iff x = \\frac{y+7}{2}$.<br/>
+                <strong>(i) 3-Piece Type I ($dy\\,dx$):</strong>
+                $$\\int_1^2\\int_{5-2x}^{3} f(x,y)\\,dy\\,dx + \\int_2^4\\int_{1}^{3} f(x,y)\\,dy\\,dx + \\int_4^5\\int_{2x-7}^{3} f(x,y)\\,dy\\,dx.$$
+                <strong>(ii) 1-Piece Type II ($dx\\,dy$):</strong>
+                $$\\int_1^3\\int_{(5-y)/2}^{(y+7)/2} f(x,y)\\,dx\\,dy.$$`
+        },
+        {
+          id: 'v2', cat: 'reverse', exam: '2nd Incourse 2025 Q4', topic: 'Reverse Order',
+          q: 'Evaluate $\\displaystyle \\iint_R \\sin(y^3)\\,dA$, where $R$ is the region bounded by $y = \\sqrt{x}$, $y = 2$, and $x = 0$.',
+          hint: 'Integrating $\\sin(y^3)$ with respect to $y$ is non-elementary! Set up Type II ($dx\\,dy$) over $0 \\le y \\le 2$, $0 \\le x \\le y^2$.',
+          sol: `Rewriting $y = \\sqrt{x}$ as $x = y^2$, the region $R$ is Type II: $0 \\le y \\le 2$ and $0 \\le x \\le y^2$:
+                $$\\iint_R \\sin(y^3)\\,dA = \\int_0^2 \\int_0^{y^2} \\sin(y^3)\\,dx\\,dy = \\int_0^2 y^2\\sin(y^3)\\,dy.$$
+                Let $u = y^3 \\implies du = 3y^2\\,dy$ ($y=0 \\Rightarrow u=0$, $y=2 \\Rightarrow u=8$):
+                $$= \\frac{1}{3}\\int_0^8 \\sin u\\,du = \\frac{1}{3}\\big[-\\cos u\\big]_0^8 = \\frac{1 - \\cos 8}{3}.$$`
+        },
+        {
+          id: 'v3', cat: 'setup', exam: 'Final 2025 Q5(b)', topic: 'Type I / II Setup',
+          q: 'Evaluate $\\displaystyle \\iint_R x(1 + y^2)^{-1/2}\\,dA$, where $R$ is the region in the first quadrant enclosed by $y = x^2$, $y = 4$, and $x = 0$.',
+          hint: 'Use Type II ($dx\\,dy$): $0 \\le y \\le 4$ and $0 \\le x \\le \\sqrt{y}$. Integrating $x$ first produces $\\frac{y}{2}$, which pairs cleanly with $(1+y^2)^{-1/2}$!',
+          sol: `In the first quadrant, $y = x^2 \\iff x = \\sqrt{y}$ for $0 \\le y \\le 4$:
+                $$\\int_0^4 \\int_0^{\\sqrt{y}} x(1 + y^2)^{-1/2}\\,dx\\,dy = \\int_0^4 (1 + y^2)^{-1/2}\\left[\\frac{x^2}{2}\\right]_0^{\\sqrt{y}} dy = \\frac{1}{2}\\int_0^4 \\frac{y}{\\sqrt{1 + y^2}}\\,dy.$$
+                Let $u = 1 + y^2 \\implies du = 2y\\,dy$ ($u(0)=1, u(4)=17$):
+                $$= \\frac{1}{4}\\int_1^{17} u^{-1/2}\\,du = \\frac{1}{4}\\big[2\\sqrt{u}\\big]_1^{17} = \\frac{\\sqrt{17} - 1}{2}.$$`
+        },
+        {
+          id: 'v4', cat: 'volume', exam: '2nd Incourse 2021 Q4', topic: 'Volume & Average',
+          q: 'Find the volume under the surface $z = 1 - x^2$ and above the triangle formed by $y = x$, $x = 1$, and the $x$-axis ($y = 0$).',
+          hint: 'Set up Type I: $0 \\le x \\le 1$ and $0 \\le y \\le x$. Since $1 - x^2$ does not depend on $y$, the inner integral is instant!',
+          sol: `Over the triangle $R = \\{(x,y): 0 \\le x \\le 1,\\; 0 \\le y \\le x\\}$:
+                $$V = \\iint_R (1 - x^2)\\,dA = \\int_0^1 \\int_0^x (1 - x^2)\\,dy\\,dx = \\int_0^1 (1 - x^2)x\\,dx$$
+                $$= \\int_0^1 (x - x^3)\\,dx = \\left[\\frac{x^2}{2} - \\frac{x^4}{4}\\right]_0^1 = \\frac{1}{2} - \\frac{1}{4} = \\frac{1}{4}.$$`
+        },
+        {
+          id: 'v5', cat: 'reverse', exam: 'Class Notes Ex 56', topic: 'Reverse Order',
+          q: 'Reverse the order of integration and evaluate $\\displaystyle \\int_1^3 \\int_0^{\\ln x} x\\,dy\\,dx$.',
+          hint: 'Region is $1 \\le x \\le 3$ and $0 \\le y \\le \\ln x$. Inverting $y = \\ln x$ gives $x = e^y$, so $0 \\le y \\le \\ln 3$ and $e^y \\le x \\le 3$.',
+          sol: `Reversing to $dx\\,dy$ ($0 \\le y \\le \\ln 3$, $e^y \\le x \\le 3$):
+                $$\\int_0^{\\ln 3} \\int_{e^y}^3 x\\,dx\\,dy = \\int_0^{\\ln 3} \\left[\\frac{x^2}{2}\\right]_{e^y}^3 dy = \\frac{1}{2}\\int_0^{\\ln 3} (9 - e^{2y})\\,dy$$
+                $$= \\frac{1}{2}\\left[9y - \\frac{1}{2}e^{2y}\\right]_0^{\\ln 3} = \\frac{1}{2}\\left(9\\ln 3 - \\frac{9}{2} + \\frac{1}{2}\\right) = \\frac{9}{2}\\ln 3 - 2.$$`
+        },
+        {
+          id: 'v6', cat: 'reverse', exam: 'Class Notes Ex 51', topic: 'Reverse Order',
+          q: 'Reverse the order of integration for $\\displaystyle \\int_0^1 \\int_{\\sin^{-1} y}^{\\pi/2} f(x, y)\\,dx\\,dy$.',
+          hint: 'From $x = \\sin^{-1} y$ with $y \\in [0, 1]$, we get $y = \\sin x$ on $x \\in [0, \\frac{\\pi}{2}]$.',
+          sol: `The region is $0 \\le y \\le 1$ and $\\sin^{-1} y \\le x \\le \\frac{\\pi}{2}$.<br/>
+                Inverting $x = \\sin^{-1} y \\iff y = \\sin x$ for $0 \\le x \\le \\frac{\\pi}{2}$, vertical scan arrows enter at $y = 0$ and exit at $y = \\sin x$:
+                $$\\int_0^1 \\int_{\\sin^{-1} y}^{\\pi/2} f(x, y)\\,dx\\,dy = \\int_0^{\\pi/2} \\int_0^{\\sin x} f(x, y)\\,dy\\,dx.$$`
+        },
+        {
+          id: 'v7', cat: 'volume', exam: 'Class Notes 14.2 Ex 5', topic: 'Volume & Average',
+          q: 'Use a double integral to find the volume of the tetrahedron in the first octant bounded by the coordinate planes and the plane $z = 4 - 4x - 2y$.',
+          hint: 'Set $z = 0$ to find the base triangle in the $xy$-plane: $4 - 4x - 2y = 0 \\implies y = 2 - 2x$ for $0 \\le x \\le 1$.',
+          sol: `In the $xy$-plane ($z = 0$), the plane intersects along $4x + 2y = 4 \\implies y = 2 - 2x$ ($0 \\le x \\le 1$). Thus:
+                $$V = \\int_0^1 \\int_0^{2 - 2x} (4 - 4x - 2y)\\,dy\\,dx = \\int_0^1 \\Big[(4 - 4x)y - y^2\\Big]_0^{2-2x} dx$$
+                $$= \\int_0^1 \\left[2(2-2x)^2 - (2-2x)^2\\right]dx = \\int_0^1 (2 - 2x)^2\\,dx = 4\\left[-\\frac{(1-x)^3}{3}\\right]_0^1 = \\frac{4}{3}.$$`
+        },
+        {
+          id: 'v8', cat: 'volume', exam: 'Class Notes 14.2 Ex 62', topic: 'Volume & Average',
+          q: 'Find the average value of $f(x, y) = x^2 - xy$ over the region $R$ enclosed by $y = x$ and $y = 3x - x^2$.',
+          hint: 'Find intersections ($x = 0, 2$), compute Area $A = \\int_0^2 (2x - x^2)\\,dx = \\frac{4}{3}$, then evaluate $\\iint_R (x^2 - xy)\\,dA$ and divide by $A$.',
+          sol: `<strong>Step 1 (Intersections &amp; Area):</strong> $x = 3x - x^2 \\implies x(x - 2) = 0 \\implies x = 0, 2$.
+                $$A = \\int_0^2 \\left[(3x - x^2) - x\\right]dx = \\int_0^2 (2x - x^2)\\,dx = \\left[x^2 - \\frac{x^3}{3}\\right]_0^2 = \\frac{4}{3}.$$
+                <strong>Step 2 (Double Integral):</strong>
+                $$\\iint_R (x^2 - xy)\\,dA = \\int_0^2 \\left[x^2 y - \\frac{1}{2}x y^2\\right]_x^{3x-x^2} dx = \\int_0^2 \\left(-2x^3 + 2x^4 - \\frac{1}{2}x^5\\right)dx$$
+                $$= \\left[-\\frac{x^4}{2} + \\frac{2x^5}{5} - \\frac{x^6}{12}\\right]_0^2 = -8 + \\frac{64}{5} - \\frac{16}{3} = -\\frac{8}{15}.$$
+                <strong>Step 3 (Average Value):</strong>
+                $$f_{\\text{ave}} = \\frac{-8/15}{4/3} = -\\frac{2}{5}.$$`
+        }
+      ];
+
+      const reviewedVault = new Set();
+
+      function renderVault(filter) {
+        const list = document.getElementById('vaultList');
+        list.innerHTML = '';
+        vaultData.filter((v) => filter === 'all' || v.cat === filter).forEach((v) => {
+          const isRev = reviewedVault.has(v.id);
+          const card = document.createElement('div');
+          card.className = `vault-item ${isRev ? 'reviewed' : ''}`;
+          card.innerHTML = `
+            <div class="vault-head">
+              <span class="badge">${v.exam}</span>
+              <span class="badge sky">${v.topic}</span>
+            </div>
+            <p>${v.q}</p>
+            <div class="vault-actions">
+              <button type="button" class="btn" data-toggle="${v.id}-hint">Show Hint</button>
+              <button type="button" class="btn btn-primary" data-toggle="${v.id}-sol">Step-by-Step Solution</button>
+              <label class="check-label">
+                <input type="checkbox" class="vault-cb" data-vid="${v.id}" ${isRev ? 'checked' : ''} />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="reveal-box hint-box" id="${v.id}-hint"><strong>Hint:</strong> ${v.hint}</div>
+            <div class="reveal-box" id="${v.id}-sol">${v.sol}</div>
+          `;
+          list.appendChild(card);
+        });
+
+        list.querySelectorAll('[data-toggle]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const box = document.getElementById(btn.dataset.toggle);
+            const open = box.classList.toggle('open');
+            if (btn.dataset.toggle.endsWith('-hint')) {
+              btn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            } else {
+              btn.textContent = open ? 'Hide Solution' : 'Step-by-Step Solution';
+            }
+            if (open) renderMath(box);
+          });
+        });
+
+        list.querySelectorAll('.vault-cb').forEach((cb) => {
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) reviewedVault.add(vid);
+            else reviewedVault.delete(vid);
+            cb.closest('.vault-item').classList.toggle('reviewed', cb.checked);
+            updateProgress();
+          });
+        });
+
+        renderMath(list);
+      }
+
+      /* ----------------------------------------------------------------------
+         7. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. Which of the following iterated integral setups is <strong>invalid</strong> because it violates the outer-limit rule?',
+          opts: [
+            '$\\displaystyle \\int_0^2 \\int_0^{x^2} xy\\,dy\\,dx$',
+            '$\\displaystyle \\int_0^{y^2} \\int_0^2 xy\\,dy\\,dx$',
+            '$\\displaystyle \\int_1^3 \\int_{(5-y)/2}^{(y+7)/2} f(x,y)\\,dx\\,dy$',
+            '$\\displaystyle \\int_0^{\\pi/2} \\int_0^{\\sin x} f(x,y)\\,dy\\,dx$'
+          ],
+          ans: 1,
+          exp: 'The outer limits of a definite double integral must <strong>always be constants</strong>. Having $y^2$ in the outer integral makes the final value depend on $y$.'
+        },
+        {
+          q: '2. Reversing the order of integration of $\\displaystyle \\int_0^4 \\int_{\\sqrt{x}}^2 \\sin(y^3)\\,dy\\,dx$ yields:',
+          opts: [
+            '$\\displaystyle \\int_{\\sqrt{x}}^2 \\int_0^4 \\sin(y^3)\\,dx\\,dy$',
+            '$\\displaystyle \\int_0^2 \\int_0^{\\sqrt{y}} \\sin(y^3)\\,dx\\,dy$',
+            '$\\displaystyle \\int_0^2 \\int_0^{y^2} \\sin(y^3)\\,dx\\,dy$',
+            '$\\displaystyle \\int_0^2 \\int_{y^2}^4 \\sin(y^3)\\,dx\\,dy$'
+          ],
+          ans: 2,
+          exp: 'Region $R$ has $0 \\le y \\le 2$, entering at $x = 0$ and exiting at $y = \\sqrt{x} \\iff x = y^2$, giving $\\int_0^2\\int_0^{y^2} \\sin(y^3)\\,dx\\,dy$.'
+        },
+        {
+          q: '3. For the Final 2023 Q5(a) trapezoid with vertices $(1,3), (5,3), (2,1), (4,1)$, what are the <strong>Type II ($dx\\,dy$)</strong> limits?',
+          opts: [
+            '$1 \\le y \\le 3,\\; \\dfrac{5-y}{2} \\le x \\le \\dfrac{y+7}{2}$',
+            '$1 \\le y \\le 3,\\; 5 - 2y \\le x \\le 2y - 7$',
+            '$1 \\le y \\le 5,\\; 1 \\le x \\le 3$',
+            '$1 \\le y \\le 3,\\; 2 \\le x \\le 4$'
+          ],
+          ans: 0,
+          exp: 'Inverting the left edge $y = 5 - 2x$ gives $x = \\frac{5-y}{2}$, and inverting the right edge $y = 2x - 7$ gives $x = \\frac{y+7}{2}$ for $1 \\le y \\le 3$.'
+        },
+        {
+          q: '4. By Fubini\'s Theorem, when can you simply swap the two integral signs <em>without changing the limits</em>?',
+          opts: [
+            'Whenever $f(x, y)$ is a polynomial',
+            'Whenever the region $R$ is symmetric across $y = x$',
+            'Whenever $R$ is a rectangle $[a,b] \\times [c,d]$ with constant limits (and $f$ is continuous)',
+            'Never — limits must always be inverted'
+          ],
+          ans: 2,
+          exp: 'On a rectangle $[a,b]\\times[c,d]$, both $x$ and $y$ have independent constant bounds, so $\\int_a^b\\int_c^d f\\,dy\\,dx = \\int_c^d\\int_a^b f\\,dx\\,dy$.'
+        },
+        {
+          q: '5. If a region $R$ has area $\\frac{4}{3}$ and $\\displaystyle \\iint_R f(x,y)\\,dA = -\\frac{8}{15}$, what is the average value $f_{\\text{ave}}$ of $f$ on $R$?',
+          opts: ['$-\\dfrac{32}{45}$', '$-\\dfrac{2}{5}$', '$\\dfrac{2}{5}$', '$-\\dfrac{5}{2}$'],
+          ans: 1,
+          exp: '$f_{\\text{ave}} = \\dfrac{1}{\\text{Area}(R)}\\iint_R f(x,y)\\,dA = \\dfrac{-8/15}{4/3} = -\\dfrac{8}{15}\\cdot\\dfrac{3}{4} = -\\dfrac{2}{5}$.'
+        }
+      ];
+
+      const quizAnswered = new Map();
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        quizData.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'quiz-q';
+          div.innerHTML = `
+            <p><strong>${item.q}</strong></p>
+            <div class="options" id="q-opts-${idx}"></div>
+            <div class="feedback" id="q-fb-${idx}"></div>
+          `;
+          container.appendChild(div);
+          const optsDiv = div.querySelector(`#q-opts-${idx}`);
+          item.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'opt-btn';
+            btn.innerHTML = opt;
+            btn.addEventListener('click', () => handleQuizAnswer(idx, oi));
+            optsDiv.appendChild(btn);
+          });
+        });
+        renderMath(container);
+      }
+
+      function handleQuizAnswer(qIdx, oIdx) {
+        if (quizAnswered.has(qIdx)) return;
+        const item = quizData[qIdx];
+        const ok = oIdx === item.ans;
+        quizAnswered.set(qIdx, ok);
+
+        const btns = document.querySelectorAll(`#q-opts-${qIdx} .opt-btn`);
+        btns.forEach((b, i) => {
+          b.disabled = true;
+          if (i === item.ans) b.classList.add('correct');
+          else if (i === oIdx) b.classList.add('wrong');
+        });
+
+        const fb = document.getElementById(`q-fb-${qIdx}`);
+        fb.innerHTML = (ok ? '<strong style="color:var(--green)">Correct!</strong> ' : '<strong style="color:var(--rose)">Not quite.</strong> ') + item.exp;
+        fb.classList.add('show');
+        renderMath(fb);
+
+        const score = [...quizAnswered.values()].filter(Boolean).length;
+        document.getElementById('quizScore').textContent = `${score} / ${quizData.length}`;
+        updateProgress();
+      }
+
+      /* ----------------------------------------------------------------------
+         8. MASTERY PROGRESS (8 VAULT + 5 QUIZ = 13 TASKS)
+         ---------------------------------------------------------------------- */
+      function updateProgress() {
+        const total = vaultData.length + quizData.length;
+        const done = reviewedVault.size + quizAnswered.size;
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressDetail').textContent = `${done} / ${total} tasks (${reviewedVault.size}/8 Vault, ${quizAnswered.size}/5 Quiz)`;
+      }
+
+      /* ----------------------------------------------------------------------
+         9. DOM INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile drawer
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        function setDrawer(open) {
+          sidebar.classList.toggle('open', open);
+          overlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+        menuToggle.addEventListener('click', () => setDrawer(!sidebar.classList.contains('open')));
+        overlay.addEventListener('click', () => setDrawer(false));
+        document.querySelectorAll('#sideNav a').forEach((a) => a.addEventListener('click', () => setDrawer(false)));
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 11 — Polar Coordinates & Polar Area');
+        });
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          showToast('Next Up: Lesson 13 — Double Integrals in Polar Coordinates');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('main section');
+        const navLinks = document.querySelectorAll('#sideNav a');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.sec === entry.target.id));
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Controls
+        document.getElementById('scanPreset').addEventListener('change', (e) => {
+          stopScanAnim();
+          scanState.preset = e.target.value;
+          scanState.pct = 50;
+          scanSlider.value = 50;
+          drawScanner();
+        });
+
+        document.getElementById('btnType1').addEventListener('click', () => {
+          scanState.order = 'type1';
+          drawScanner();
+        });
+
+        document.getElementById('btnType2').addEventListener('click', () => {
+          scanState.order = 'type2';
+          drawScanner();
+        });
+
+        scanSlider.addEventListener('input', () => {
+          stopScanAnim();
+          scanState.pct = parseFloat(scanSlider.value);
+          drawScanner();
+        });
+
+        playScanBtn.addEventListener('click', () => {
+          if (scanState.playing) {
+            stopScanAnim();
+          } else {
+            scanState.playing = true;
+            scanState.lastTs = 0;
+            playScanBtn.textContent = '❚❚ Pause';
+            scanState.rafId = requestAnimationFrame(stepScanAnim);
+          }
+        });
+
+        document.getElementById('resetScanBtn').addEventListener('click', () => {
+          stopScanAnim();
+          scanState.pct = 50;
+          scanSlider.value = 50;
+          drawScanner();
+        });
+
+        // Section 2 Tabs & Controls
+        document.querySelectorAll('[data-lab2]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-lab2]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tgt = btn.dataset.lab2;
+            document.getElementById('lab2-vol3d').style.display = tgt === 'vol3d' ? 'block' : 'none';
+            document.getElementById('lab2-workshop').style.display = tgt === 'workshop' ? 'block' : 'none';
+            if (tgt === 'vol3d') requestAnimationFrame(draw3DVolume);
+          });
+        });
+
+        document.getElementById('volPreset').addEventListener('change', draw3DVolume);
+        document.getElementById('gridNSlider').addEventListener('input', draw3DVolume);
+        document.getElementById('rotSlider').addEventListener('input', draw3DVolume);
+
+        // Section 2B Workshop controls
+        document.querySelectorAll('#wsTabs .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#wsTabs .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            wsIdx = parseInt(btn.dataset.ws, 10);
+            wsStep = 1;
+            renderWorkshop();
+          });
+        });
+
+        document.querySelectorAll('#wsPipeBar .pipe-node').forEach((node) => {
+          node.addEventListener('click', () => {
+            wsStep = parseInt(node.dataset.wstep, 10);
+            renderWorkshop();
+          });
+        });
+
+        document.getElementById('wsPrevBtn').addEventListener('click', () => {
+          if (wsStep > 1) { wsStep--; renderWorkshop(); }
+        });
+        document.getElementById('wsNextBtn').addEventListener('click', () => {
+          if (wsStep < 4) { wsStep++; renderWorkshop(); }
+        });
+        document.getElementById('wsAllBtn').addEventListener('click', () => {
+          wsStep = 4; renderWorkshop();
+        });
+
+        // Section 4 Vault Filters
+        document.querySelectorAll('#vaultFilters .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#vaultFilters .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderVault(btn.dataset.vcat);
+          });
+        });
+
+        // Section 5 Reset Quiz
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          quizAnswered.clear();
+          document.getElementById('quizScore').textContent = `0 / ${quizData.length}`;
+          renderQuiz();
+          updateProgress();
+        });
+
+        // Initial Render
+        renderVault('all');
+        renderQuiz();
+        renderWorkshop();
+        drawScanner();
+        draw3DVolume();
+        updateProgress();
+        renderMath(document.body);
+
+        // Responsive Canvas Scaling
+        const ro = new ResizeObserver(() => {
+          drawScanner();
+          draw3DVolume();
+        });
+        ro.observe(document.getElementById('scanCanvasWrap'));
+        ro.observe(document.getElementById('volCanvasWrap'));
+      });
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawScanner();
+        draw3DVolume();
+      });
+    })();
+  </script>
+</body>
+</html>

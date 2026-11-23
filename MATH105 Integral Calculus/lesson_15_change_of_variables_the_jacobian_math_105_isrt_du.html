@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 15: Change of Variables &amp; the Jacobian | MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK SLATE ACADEMIC THEME (MATCHING LESSONS 1–14)
+       ========================================================================== */
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --accent-border: rgba(56, 189, 248, 0.38);
+      --accent2-soft: rgba(129, 140, 248, 0.15);
+      --accent2-border: rgba(129, 140, 248, 0.38);
+      --green-soft: rgba(52, 211, 153, 0.14);
+      --green-border: rgba(52, 211, 153, 0.38);
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.38);
+      --rose-soft: rgba(251, 113, 133, 0.12);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 270px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ==========================================================================
+       MOBILE TOP BAR (< 900px)
+       ========================================================================== */
+    .mobile-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .mobile-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .menu-toggle {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .mobile-bar-title {
+      font-size: 0.9rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-pct-pill {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
+      color: var(--green); background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       FIXED LEFT SIDEBAR (270px)
+       ========================================================================== */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      z-index: 55; backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    aside.sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 60;
+      transition: transform 0.25s ease;
+    }
+    .brand { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .brand .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .brand h1 { font-size: 1.06rem; margin-top: 5px; line-height: 1.3; font-weight: 800; }
+    .brand p { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
+
+    .progress-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; margin-bottom: 7px; font-weight: 600;
+    }
+    .progress-bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--green));
+      transition: width 0.35s ease;
+    }
+    .progress-detail {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; color: var(--muted); margin-top: 7px;
+    }
+
+    nav.side-nav { display: flex; flex-direction: column; gap: 5px; }
+    .nav-heading {
+      font-size: 0.69rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); padding: 0 10px; margin-bottom: 4px;
+    }
+    nav.side-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.18s ease;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    nav.side-nav a:hover { background: var(--surface-2); color: var(--text); }
+    nav.side-nav a.active {
+      background: var(--surface-2);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .foot-btn {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .foot-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 34px 40px 84px;
+      max-width: calc(1140px + var(--sidebar-w));
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(129, 140, 248, 0.17));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-bottom: 34px;
+    }
+    .hero .pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      background: var(--accent-soft); border: 1px solid var(--accent-border);
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .hero h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    .hero p { color: var(--muted); max-width: 830px; font-size: 0.95rem; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .hero-chip {
+      font-size: 0.77rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(11, 17, 32, 0.55); border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 1.32rem; font-weight: 800; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .num {
+      background: var(--accent); color: var(--bg);
+      font-family: var(--font-mono); font-weight: 800; font-size: 0.85rem;
+      width: 28px; height: 28px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-sub { color: var(--muted); font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================================================
+       CONTROLS, BUTTONS & CANVASES
+       ========================================================================== */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn, .btn {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.84rem; font-weight: 600;
+      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .tab-btn:hover, .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+    .tab-btn.active, .btn-primary {
+      background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700;
+    }
+    .btn-primary:hover:not(:disabled) { background: #7dd3fc; border-color: #7dd3fc; color: var(--bg); }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .control-group label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted); font-weight: 600;
+    }
+    .control-group label strong {
+      font-family: var(--font-mono); color: var(--accent); font-size: 0.82rem;
+    }
+    .control-group select {
+      width: 100%;
+      background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 11px; font-size: 0.86rem; cursor: pointer;
+    }
+    .control-group select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .control-group input[type="range"] {
+      width: 100%; accent-color: var(--accent); cursor: pointer; height: 6px;
+    }
+
+    .canvas-wrap {
+      background: #070d19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+      width: 100%;
+      height: 410px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .canvas-wrap.compact { height: 350px; cursor: default; }
+    .canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+
+    .canvas-hint {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(17, 24, 39, 0.86);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-mono); font-size: 0.71rem;
+      padding: 4px 10px; border-radius: 999px;
+      pointer-events: none;
+    }
+    .plane-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(17, 24, 39, 0.88);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .legend-row {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      overflow-x: auto;
+    }
+    .stat.highlight { background: var(--green-soft); border-color: var(--green-border); }
+    .stat.accent { background: var(--accent-soft); border-color: var(--accent-border); }
+    .stat.amber { background: var(--amber-soft); border-color: var(--amber-border); }
+    .stat.rose { background: var(--rose-soft); border-color: var(--rose-border); }
+    .stat .label {
+      font-size: 0.71rem; color: var(--muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat .val {
+      font-family: var(--font-mono);
+      font-size: 0.96rem; font-weight: 700; margin-top: 4px; color: var(--accent);
+    }
+    .stat .sub { font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+
+    /* Section 2 Two-Column & Stepper */
+    .lab2-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(290px, 1fr);
+      gap: 18px; align-items: start;
+    }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .orient-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
+      font-family: var(--font-mono); font-size: 0.76rem; font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .orient-badge.pos { background: var(--green-soft); border: 1px solid var(--green-border); color: var(--green); }
+    .orient-badge.neg { background: var(--rose-soft); border: 1px solid var(--rose-border); color: var(--rose); }
+    .orient-badge.zero { background: var(--amber-soft); border: 1px solid var(--amber-border); color: var(--amber); }
+
+    .pipe-bar {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px;
+    }
+    .pipe-node {
+      padding: 10px 8px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--muted); font-size: 0.79rem; font-weight: 700;
+      text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .pipe-node.done { border-color: var(--green-border); background: var(--green-soft); color: var(--green); }
+    .pipe-node.current { border-color: var(--accent); background: var(--accent); color: var(--bg); }
+
+    .step-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .step-card {
+      display: none;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent-2); border-radius: 8px;
+      padding: 14px 16px; overflow-x: auto; font-size: 0.91rem;
+    }
+    .step-card.visible { display: block; animation: fadeIn 0.22s ease; }
+    .step-card.final { border-left-color: var(--green); background: rgba(52, 211, 153, 0.08); }
+    .step-tag {
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+      color: var(--accent-2); text-transform: uppercase; margin-bottom: 5px;
+    }
+    .step-card.final .step-tag { color: var(--green); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ==========================================================================
+       SECTION 3: THEORY, TABLE & EXAM TRAPS
+       ========================================================================== */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
+    .formula-box {
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent-2);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .trap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .trap-box {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+    }
+    .trap-box strong { color: var(--rose); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    /* ==========================================================================
+       SECTION 4: VAULT
+       ========================================================================== */
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .vault-item.reviewed { border-color: var(--green-border); }
+    .vault-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+      border-radius: 999px; background: var(--accent2-soft); color: var(--accent-2);
+      border: 1px solid var(--accent2-border);
+    }
+    .badge.sky { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+
+    .vault-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .reveal-box {
+      display: none; margin-top: 12px; padding: 14px 16px;
+      background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.91rem;
+    }
+    .reveal-box.open { display: block; }
+    .reveal-box.hint-box { background: var(--amber-soft); border-color: var(--amber-border); }
+    .check-label {
+      margin-left: auto; font-size: 0.82rem; font-weight: 600; color: var(--green);
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+      padding: 6px 11px; border-radius: 8px;
+      background: var(--green-soft); border: 1px solid var(--green-border);
+      user-select: none;
+    }
+    .check-label input { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; }
+
+    /* ==========================================================================
+       SECTION 5: QUIZ
+       ========================================================================== */
+    .quiz-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    }
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; margin-top: 12px; }
+    .opt-btn {
+      text-align: left; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px;
+      cursor: pointer; font-size: 0.89rem; transition: all 0.18s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .opt-btn.correct { background: var(--green-soft); border-color: var(--green); color: var(--green); font-weight: 600; }
+    .opt-btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); }
+    .feedback {
+      margin-top: 11px; font-size: 0.87rem; color: var(--text);
+      padding: 10px 13px; border-radius: 8px; background: var(--surface-2);
+      border: 1px solid var(--border); display: none;
+    }
+    .feedback.show { display: block; }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 80;
+      background: var(--surface-2); border: 1px solid var(--accent-border);
+      color: var(--text); padding: 11px 16px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+      opacity: 0; transform: translateY(10px); pointer-events: none; transition: all 0.22s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 980px) {
+      .lab2-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .mobile-bar { display: flex; }
+      aside.sidebar {
+        transform: translateX(-100%);
+        top: 63px;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+      }
+      aside.sidebar.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 22px 16px 64px; }
+      section { scroll-margin-top: 78px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Header -->
+  <header class="mobile-bar">
+    <div class="mobile-bar-left">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-bar-title">Lesson 15: Change of Variables &amp; Jacobian</span>
+    </div>
+    <span class="mobile-pct-pill" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Fixed Left Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Lesson 15 navigation">
+    <div class="brand">
+      <div class="tag">MATH 105 · ISRT, DU</div>
+      <h1>Lesson 15: Change of Variables &amp; the Jacobian</h1>
+      <p>Module 4 · Multiple Integrals</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Mastery Progress</span>
+        <strong id="progressPct" style="color:var(--green)">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-detail" id="progressDetail">0 / 13 tasks completed</div>
+    </div>
+
+    <nav class="side-nav" id="sideNav">
+      <div class="nav-heading">Sections (14.7)</div>
+      <a href="#sec1" class="active" data-sec="sec1">1. Jacobian Grid Warper</a>
+      <a href="#sec2" data-sec="sec2">2. Matrix &amp; Inverse Lab</a>
+      <a href="#sec3" data-sec="sec3">3. Core Theory &amp; Traps</a>
+      <a href="#sec4" data-sec="sec4">4. ISRT Past-Exam Vault (8)</a>
+      <a href="#sec5" data-sec="sec5">5. Quick Mastery Check (5)</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="foot-btn" id="prevBtn"><span>&larr; Prev Lesson</span><span class="mono">L14</span></button>
+      <button type="button" class="foot-btn" id="nextBtn"><span>Next Lesson &rarr;</span><span class="mono" style="color:var(--accent)">L16</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <span class="pill">Module 4 Capstone · Section 14.7 · Year Final Core</span>
+      <h2>Change of Variables &amp; the Jacobian</h2>
+      <p>
+        Morph simple rectangles, triangles, and disks in the $uv$-plane into slanted parallelograms, ellipses, and hyperbolic webs in the $xy$-plane, watch infinitesimal cells scale by $|J(u,v)|$, master the Inverse Jacobian shortcut, and solve 8 authentic ISRT exam problems.
+      </p>
+      <div class="hero-chips">
+        <span class="hero-chip">$dA_{xy} = \left|\frac{\partial(x,y)}{\partial(u,v)}\right|dA_{uv}$</span>
+        <span class="hero-chip">Inverse Jacobian Shortcut</span>
+        <span class="hero-chip">Ellipse &amp; Ellipsoid Scaling</span>
+        <span class="hero-chip">8 Solved ISRT Problems</span>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         SECTION 1: INTERACTIVE JACOBIAN GRID WARPER
+         ====================================================================== -->
+    <section id="sec1">
+      <h3 class="section-title"><span class="num">1</span> Interactive Jacobian Grid Warper (Dual-Plane Morphing Sandbox)</h3>
+      <p class="section-sub">Slide $t$ from $0$ ($uv$-plane $S$) to $1$ ($xy$-plane $R$) to watch the coordinate grid warp. Click or hover over any cell to inspect how its area scales by $|J(u, v)|$.</p>
+
+      <div class="card">
+        <div class="controls-grid">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="warpPreset"><span>ISRT Exam Transformation Preset (5 Presets)</span></label>
+            <select id="warpPreset">
+              <option value="slanted">1) Final 2025 &amp; 2023 Q7a: Slanted Parallelogram (u=y-4x, v=y+4x, |J|=1/8)</option>
+              <option value="ellipse">2) Final 2024 Q7b: Ellipse to Unit Disk (x=3u, y=4v, |J|=12)</option>
+              <option value="hyperbolic">3) Final 2018 &amp; 2024 Q7a: Hyperbolic Web (u=y/x, v=xy, |J|=1/(2u))</option>
+              <option value="unit_sq">4) Final 2020 Q8: Parallelogram to Unit Square (x=u+v, y=2v, |J|=2)</option>
+              <option value="tri_rot">5) Class Notes: Triangle Rotation/Scale (x=(u+v)/2, y=(v-u)/2, |J|=1/2)</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="resSlider">
+              <span>Grid Resolution</span>
+              <strong id="resLabel">6 &times; 6</strong>
+            </label>
+            <input type="range" id="resSlider" min="4" max="12" step="1" value="6" />
+          </div>
+        </div>
+
+        <div class="controls-grid" style="margin-bottom:14px;">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="morphSlider">
+              <span>Morph Parameter $t \in [0, 1]$</span>
+              <strong id="morphLabel">t = 0.00 (uv-plane S)</strong>
+            </label>
+            <input type="range" id="morphSlider" min="0" max="1" step="0.01" value="0" />
+          </div>
+          <div class="control-group" style="display:flex;flex-direction:row;gap:8px;align-items:flex-end;">
+            <button type="button" class="btn btn-primary" id="playMorphBtn" style="flex:1;">&#9654; Play Morph</button>
+            <button type="button" class="btn" id="snapUVBtn">uv (0)</button>
+            <button type="button" class="btn" id="snapXYBtn">xy (1)</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="warpCanvasWrap">
+          <canvas id="warpCanvas" aria-label="Jacobian grid warper interactive canvas"></canvas>
+          <span class="plane-badge" id="planeBadge">uv-plane (Region S)</span>
+          <span class="canvas-hint">Click or hover a cell to inspect |J(u,v)|</span>
+        </div>
+
+        <div class="legend-row">
+          <span class="legend-item"><span class="swatch" style="background:var(--accent)"></span> $u$-grid / Region Boundary</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--accent-2)"></span> $v$-grid Curves</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Highlighted Cell $\Delta A_{uv} \to \Delta A_{xy}$</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--green)"></span> Area Scaling Ratio $\Delta A_{xy} / \Delta A_{uv} \approx |J|$</span>
+        </div>
+
+        <!-- Live 4-Card Telemetry Bar -->
+        <div class="telemetry">
+          <div class="stat accent">
+            <div class="label">1. Transformation $T(u, v)$</div>
+            <div class="val" id="wTeleTrans" style="font-size:0.88rem;color:var(--text)">—</div>
+            <div class="sub" id="wTeleTransSub">Forward mapping $(x(u,v), y(u,v))$</div>
+          </div>
+          <div class="stat">
+            <div class="label">2. Region $S$ in $uv$-Plane</div>
+            <div class="val" id="wTeleRegion" style="font-size:0.88rem;color:var(--text)">—</div>
+            <div class="sub" id="wTeleCellCoord">Highlighted cell center $(u, v)$</div>
+          </div>
+          <div class="stat amber">
+            <div class="label">3. Jacobian $|J| = |\partial(x,y)/\partial(u,v)|$</div>
+            <div class="val" id="wTeleJac" style="color:var(--amber)">—</div>
+            <div class="sub" id="wTeleCellArea">Cell area: $\Delta A_{uv} \to \Delta A_{xy}$</div>
+          </div>
+          <div class="stat highlight">
+            <div class="label">4. Transformed Integral &amp; Answer</div>
+            <div class="val" id="wTeleInt" style="font-size:0.85rem;color:var(--green)">—</div>
+            <div class="sub" id="wTeleAnsSub">Exact exam result</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 2: JACOBIAN MATRIX & INVERSE SHORTCUT LAB (2 TABS)
+         ====================================================================== -->
+    <section id="sec2">
+      <h3 class="section-title"><span class="num">2</span> Jacobian Matrix &amp; Inverse Shortcut Lab</h3>
+      <p class="section-sub">Test how a $2\times 2$ linear matrix scales and flips orientation of the unit square, then master the Inverse Jacobian shortcut for non-linear substitutions.</p>
+
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-lab2="linear">Tab A: 2&times;2 Linear Transformation &amp; Area Scaling Lab</button>
+          <button type="button" class="tab-btn" data-lab2="inverse">Tab B: The Inverse Jacobian Shortcut Stepper</button>
+        </div>
+
+        <!-- TAB A: 2x2 Linear Transformation Lab -->
+        <div id="lab2-linear">
+          <div class="tabs" style="margin-bottom:14px;">
+            <button type="button" class="btn" id="linPrePolar">Polar Linearization ($r=2, \theta=\pi/2$)</button>
+            <button type="button" class="btn" id="linPre2020">Final 2020 ($x=u+v, y=2v$)</button>
+            <button type="button" class="btn" id="linPreEllipse">Ellipse ($3u, 4v$)</button>
+            <button type="button" class="btn" id="linPreFlip">Orientation Flip ($J &lt; 0$)</button>
+          </div>
+
+          <div class="lab2-grid">
+            <div class="canvas-wrap compact" id="linCanvasWrap">
+              <canvas id="linCanvas" aria-label="2x2 linear transformation parallelogram canvas"></canvas>
+            </div>
+
+            <div>
+              <div class="orient-badge pos" id="linOrientBadge">&#10003; Orientation Preserved ($J &gt; 0$)</div>
+
+              <div class="matrix-grid">
+                <div class="control-group">
+                  <label for="matA"><span>$a = \partial x/\partial u$</span><strong id="valA">1.0</strong></label>
+                  <input type="range" id="matA" min="-4" max="4" step="0.25" value="1" />
+                </div>
+                <div class="control-group">
+                  <label for="matB"><span>$b = \partial x/\partial v$</span><strong id="valB">1.0</strong></label>
+                  <input type="range" id="matB" min="-4" max="4" step="0.25" value="1" />
+                </div>
+                <div class="control-group">
+                  <label for="matC"><span>$c = \partial y/\partial u$</span><strong id="valC">0.0</strong></label>
+                  <input type="range" id="matC" min="-4" max="4" step="0.25" value="0" />
+                </div>
+                <div class="control-group">
+                  <label for="matD"><span>$d = \partial y/\partial v$</span><strong id="valD">2.0</strong></label>
+                  <input type="range" id="matD" min="-4" max="4" step="0.25" value="2" />
+                </div>
+              </div>
+
+              <div class="formula-box" id="linMatrixBox" style="font-size:0.88rem;">
+                <!-- Populated dynamically -->
+              </div>
+
+              <div class="telemetry" style="grid-template-columns:repeat(2,1fr);">
+                <div class="stat">
+                  <div class="label">Signed Determinant $J = ad - bc$</div>
+                  <div class="val" id="linDetVal">2.00</div>
+                </div>
+                <div class="stat highlight" id="linAbsCard">
+                  <div class="label">Area Scaling Factor $|J|$</div>
+                  <div class="val" id="linAbsVal" style="color:var(--green)">2.00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: Inverse Jacobian Shortcut Stepper -->
+        <div id="lab2-inverse" style="display:none;">
+          <p style="font-size:0.9rem;color:var(--muted);margin-bottom:14px;">
+            For non-linear ISRT exam substitutions like $u = y/x,\; v = xy$, solving for $x = \sqrt{v/u},\; y = \sqrt{uv}$ and differentiating square roots is tedious and error-prone. Watch how the <strong>Inverse Jacobian Shortcut</strong> computes $|J|$ in 2 lines:
+          </p>
+
+          <div class="pipe-bar" id="invPipe">
+            <button type="button" class="pipe-node current" data-istep="1">1. Differentiate $(u, v)$ Directly</button>
+            <button type="button" class="pipe-node" data-istep="2">2. Take the Reciprocal $1 / J^{-1}$</button>
+            <button type="button" class="pipe-node" data-istep="3">3. Express in $(u, v)$ &amp; Take $|J|$</button>
+          </div>
+
+          <div class="step-list" id="invStepsWrap"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="mono" style="font-size:0.8rem;color:var(--muted)" id="invCounter">Step 1 of 3</span>
+            <div style="display:flex;gap:8px;">
+              <button type="button" class="btn" id="invPrevBtn">&larr; Prev</button>
+              <button type="button" class="btn btn-primary" id="invNextBtn">Next Step &rarr;</button>
+              <button type="button" class="btn" id="invAllBtn">Show All</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: CORE THEORY, 2D & 3D FORMULAS & ISRT EXAM TRAPS
+         ====================================================================== -->
+    <section id="sec3">
+      <h3 class="section-title"><span class="num">3</span> Core Theory, 2D &amp; 3D Formulas &amp; ISRT Exam Traps</h3>
+
+      <div class="grid-3">
+        <div class="card">
+          <h4 style="color:var(--accent)">1. 2D Change of Variables</h4>
+          <p style="font-size:0.86rem;color:var(--muted);margin-top:4px;">If $T(u,v) = (x(u,v), y(u,v))$ maps $S$ one-to-one onto $R$ with continuous partials:</p>
+          <div class="formula-box">
+            $$\iint_R f(x, y)\,dA_{xy} = \iint_S f\big(x(u,v), y(u,v)\big)\left|\frac{\partial(x,y)}{\partial(u,v)}\right|dA_{uv}$$
+          </div>
+          <p style="font-size:0.82rem;color:var(--muted);">The factor $|J|$ compensates for local area stretching or shrinking.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--accent-2)">2. Jacobian &amp; Inverse Property</h4>
+          <div class="formula-box">
+            $$J = \frac{\partial(x,y)}{\partial(u,v)} = \det\begin{pmatrix} \dfrac{\partial x}{\partial u} & \dfrac{\partial x}{\partial v} \\[8pt] \dfrac{\partial y}{\partial u} & \dfrac{\partial y}{\partial v} \end{pmatrix} = x_u y_v - x_v y_u$$
+            $$\frac{\partial(x,y)}{\partial(u,v)} = \left(\frac{\partial(u,v)}{\partial(x,y)}\right)^{-1}$$
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--green)">3. 3D Unification &amp; Ellipsoids</h4>
+          <p style="font-size:0.86rem;color:var(--muted);margin-top:4px;">All earlier coordinate systems are special cases of the Jacobian!</p>
+          <div class="formula-box" style="border-left-color:var(--green)">
+            $$\text{Polar: } |J| = r, \qquad \text{Cylindrical: } |J| = r$$
+            $$\text{Spherical: } |J| = \rho^2\sin\phi$$
+            $$\text{Ellipsoid } (au, bv, cw): |J| = abc$$
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 style="color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h4>
+        <div class="trap-grid">
+          <div class="trap-box">
+            <strong>Trap 1: Forgetting the Absolute Value Bars $|J|$</strong>
+            In Final 2025 &amp; 2023 Q7(a), $J = -\frac{1}{8}$. You <strong>must</strong> take the absolute value $|J| = +\frac{1}{8}$, otherwise your final integral will have the wrong sign!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 2: Forgetting to Invert $\partial(u,v)/\partial(x,y)$</strong>
+            When using the Inverse Jacobian shortcut (e.g., $\frac{\partial(u,v)}{\partial(x,y)} = -2u$), don't multiply by $2u$ — take the <strong>reciprocal</strong> $|J| = \frac{1}{2u}$!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 3: Leaving $x$ and $y$ Inside the $uv$-Integral</strong>
+            Every occurrence of $x$ and $y$ in the integrand AND in $|J|$ must be rewritten purely in terms of $u$ and $v$ before integrating with respect to $du\,dv$.
+          </div>
+          <div class="trap-box">
+            <strong>Trap 4: Forgetting $r$ When Chaining Ellipse &rarr; Polar</strong>
+            In Final 2024 Q7(b), $x=3u, y=4v$ gives $dA_{xy} = 12\,dA_{uv}$. When you next switch $S$ (unit disk) to polar coordinates, $dA_{uv} = r\,dr\,d\theta$, so the total area element is <strong>$12r\,dr\,d\theta$</strong>!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ====================================================================== -->
+    <section id="sec4">
+      <h3 class="section-title"><span class="num">4</span> ISRT Past-Exam &amp; Class-Notes Vault (8 Problems)</h3>
+      <div class="tabs" id="vaultFilters">
+        <button type="button" class="tab-btn active" data-vcat="all">All (8)</button>
+        <button type="button" class="tab-btn" data-vcat="linear">Linear / Parallelogram (4)</button>
+        <button type="button" class="tab-btn" data-vcat="hyperbolic">Hyperbolic / Non-Linear (2)</button>
+        <button type="button" class="tab-btn" data-vcat="ellipse3d">Ellipse &amp; 3D (2)</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ====================================================================== -->
+    <section id="sec5">
+      <h3 class="section-title"><span class="num">5</span> Quick Mastery Check</h3>
+      <div class="quiz-bar">
+        <span style="color:var(--muted);font-size:0.9rem;">Quiz Score: <strong id="quizScore" style="color:var(--green);font-family:var(--font-mono)">0 / 5</strong></span>
+        <button type="button" class="btn" id="resetQuizBtn">&#8634; Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2600);
+      }
+
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(220, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function polyArea(pts) {
+        let sum = 0;
+        for (let i = 0; i < pts.length; i++) {
+          const [x1, y1] = pts[i];
+          const [x2, y2] = pts[(i + 1) % pts.length];
+          sum += x1 * y2 - x2 * y1;
+        }
+        return Math.abs(sum) * 0.5;
+      }
+
+      /* ----------------------------------------------------------------------
+         2. SECTION 1: INTERACTIVE JACOBIAN GRID WARPER (5 ISRT PRESETS)
+         ---------------------------------------------------------------------- */
+      const warpPresets = {
+        slanted: {
+          mode: 'rect',
+          uRange: [0, 2], vRange: [2, 5],
+          map: (u, v) => [(v - u) / 8, (u + v) / 2],
+          jac: () => 1 / 8,
+          transTex: 'x = \\frac{v-u}{8},\\; y = \\frac{u+v}{2}',
+          regionTex: '0 \\le u \\le 2,\\; 2 \\le v \\le 5',
+          jacTex: '|J| = \\left|-\\frac{1}{8}\\right| = \\frac{1}{8}',
+          intTex: '\\frac{1}{8}\\int_2^5\\!\\int_0^2 \\frac{u}{v}\\,du\\,dv = \\frac{1}{4}\\ln\\frac{5}{2}',
+          ansSub: 'Final 2025 & 2023 Q7(a) (≈ 0.2291)'
+        },
+        ellipse: {
+          mode: 'disk',
+          uRange: [-1, 1], vRange: [-1, 1],
+          map: (u, v) => [3 * u, 4 * v],
+          jac: () => 12,
+          transTex: 'x = 3u,\\; y = 4v',
+          regionTex: 'u^2 + v^2 \\le 1\\; (\\text{Unit Disk})',
+          jacTex: '|J| = 12',
+          intTex: '144\\int_0^{2\\pi}\\!\\int_0^1 r^2\\,dr\\,d\\theta = 96\\pi',
+          ansSub: 'Final 2024 Q7(b) (≈ 301.59)'
+        },
+        hyperbolic: {
+          mode: 'rect',
+          uRange: [1, 3], vRange: [1, 4],
+          map: (u, v) => [Math.sqrt(v / u), Math.sqrt(u * v)],
+          jac: (u) => 1 / (2 * u),
+          transTex: 'x = \\sqrt{v/u},\\; y = \\sqrt{uv}',
+          regionTex: '1 \\le u \\le 3,\\; 1 \\le v \\le 4',
+          jacTex: '|J(u,v)| = \\frac{1}{2u}\\; (\\text{non-constant!})',
+          intTex: '\\int_1^4\\!\\int_1^3 uv^2\\cdot\\frac{1}{2u}\\,du\\,dv = 21',
+          ansSub: 'Final 2018 Q8(b) & 2024 Q7(a) pattern'
+        },
+        unit_sq: {
+          mode: 'rect',
+          uRange: [0, 1], vRange: [0, 1],
+          map: (u, v) => [u + v, 2 * v],
+          jac: () => 2,
+          transTex: 'x = u + v,\\; y = 2v',
+          regionTex: '0 \\le u \\le 1,\\; 0 \\le v \\le 1',
+          jacTex: '|J| = 2',
+          intTex: '\\int_0^1\\!\\int_0^1 (u+v)\\cdot 2\\,du\\,dv = 2',
+          ansSub: 'Final 2020 Q8 (Exact = 2)'
+        },
+        tri_rot: {
+          mode: 'tri',
+          uRange: [0, Math.PI / 4], vRange: [0, Math.PI / 4],
+          map: (u, v) => [(u + v) / 2, (v - u) / 2],
+          jac: () => 0.5,
+          transTex: 'x = \\frac{u+v}{2},\\; y = \\frac{v-u}{2}',
+          regionTex: '0 \\le v \\le \\frac{\\pi}{4},\\; 0 \\le u \\le v',
+          jacTex: '|J| = \\frac{1}{2}',
+          intTex: '\\frac{1}{2}\\int_0^{\\pi/4}\\!\\int_0^v \\frac{\\sin u}{\\cos v}\\,du\\,dv = \\frac{1}{2}\\big[\\ln(\\sqrt{2}+1)-\\frac{\\pi}{4}\\big]',
+          ansSub: 'Class Notes (≈ 0.0480)'
+        }
+      };
+
+      const warpState = {
+        preset: 'slanted',
+        t: 0,
+        res: 6,
+        selI: 2,
+        selJ: 2,
+        playing: false,
+        dir: 1,
+        rafId: null,
+        lastTs: 0,
+        cellsCache: [] // store screen quads for hover/click picking
+      };
+
+      const warpCanvas = document.getElementById('warpCanvas');
+      const morphSlider = document.getElementById('morphSlider');
+      const resSlider = document.getElementById('resSlider');
+      const playMorphBtn = document.getElementById('playMorphBtn');
+
+      // Generate grid cell vertices in uv-plane for a given preset & resolution N
+      function buildUVCells(pr, N) {
+        const cells = [];
+        if (pr.mode === 'rect') {
+          const [u0, u1] = pr.uRange, [v0, v1] = pr.vRange;
+          const du = (u1 - u0) / N, dv = (v1 - v0) / N;
+          for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+              const ua = u0 + i * du, ub = ua + du;
+              const va = v0 + j * dv, vb = va + dv;
+              cells.push({
+                i, j,
+                uc: 0.5 * (ua + ub), vc: 0.5 * (va + vb),
+                uvPts: [[ua, va], [ub, va], [ub, vb], [ua, vb]]
+              });
+            }
+          }
+        } else if (pr.mode === 'disk') {
+          // Polar grid on unit disk: N radial rings x (2*N) angular sectors
+          const nR = N, nT = N * 2;
+          for (let i = 0; i < nR; i++) {
+            const ra = (i / nR), rb = ((i + 1) / nR);
+            for (let j = 0; j < nT; j++) {
+              const ta = (j / nT) * Math.PI * 2;
+              const tb = ((j + 1) / nT) * Math.PI * 2;
+              const rm = 0.5 * (ra + rb), tm = 0.5 * (ta + tb);
+              cells.push({
+                i, j,
+                uc: rm * Math.cos(tm), vc: rm * Math.sin(tm),
+                uvPts: [
+                  [ra * Math.cos(ta), ra * Math.sin(ta)],
+                  [rb * Math.cos(ta), rb * Math.sin(ta)],
+                  [rb * Math.cos(tb), rb * Math.sin(tb)],
+                  [ra * Math.cos(tb), ra * Math.sin(tb)]
+                ]
+              });
+            }
+          }
+        } else if (pr.mode === 'tri') {
+          // Triangle 0 <= v <= pi/4, 0 <= u <= v parameterized by (s, v) with u = s*v
+          const maxV = Math.PI / 4;
+          for (let i = 0; i < N; i++) {
+            const sa = i / N, sb = (i + 1) / N;
+            for (let j = 0; j < N; j++) {
+              const va = (j / N) * maxV, vb = ((j + 1) / N) * maxV;
+              const sm = 0.5 * (sa + sb), vm = 0.5 * (va + vb);
+              cells.push({
+                i, j,
+                uc: sm * vm, vc: vm,
+                uvPts: [
+                  [sa * va, va],
+                  [sb * va, va],
+                  [sb * vb, vb],
+                  [sa * vb, vb]
+                ]
+              });
+            }
+          }
+        }
+        return cells;
+      }
+
+      function drawWarper() {
+        const pr = warpPresets[warpState.preset];
+        const t = warpState.t;
+        const N = warpState.res;
+        const cells = buildUVCells(pr, N);
+
+        // Clamp selected cell indices
+        const maxI = Math.max(...cells.map((c) => c.i));
+        const maxJ = Math.max(...cells.map((c) => c.j));
+        warpState.selI = Math.min(warpState.selI, maxI);
+        warpState.selJ = Math.min(warpState.selJ, maxJ);
+
+        // Compute combined bounding box of S (t=0) and R (t=1) for rock-steady morphing
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        const includePt = ([px, py]) => {
+          if (px < minX) minX = px; if (px > maxX) maxX = px;
+          if (py < minY) minY = py; if (py > maxY) maxY = py;
+        };
+        includePt([0, 0]);
+        cells.forEach((c) => {
+          c.uvPts.forEach((pt) => {
+            includePt(pt);
+            includePt(pr.map(pt[0], pt[1]));
+          });
+        });
+
+        const padX = (maxX - minX) * 0.14 + 0.2;
+        const padY = (maxY - minY) * 0.14 + 0.2;
+        minX -= padX; maxX += padX; minY -= padY; maxY += padY;
+
+        const { ctx, w, h } = setupCanvas(warpCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        // Uniform aspect-preserving scale so areas look geometrically true!
+        const margin = 38;
+        const availW = w - margin * 2;
+        const availH = h - margin * 2;
+        const scale = Math.min(availW / (maxX - minX), availH / (maxY - minY));
+        const midX = 0.5 * (minX + maxX);
+        const midY = 0.5 * (minY + maxY);
+        const toX = (x) => w * 0.5 + (x - midX) * scale;
+        const toY = (y) => h * 0.5 - (y - midY) * scale;
+
+        // Draw coordinate grid & axes
+        const step = (maxX - minX) > 6 ? 1 : 0.5;
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.11)';
+        ctx.lineWidth = 1;
+        ctx.font = '500 10.5px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#64748b';
+        for (let xv = Math.ceil(minX / step) * step; xv <= maxX; xv += step) {
+          const px = toX(xv);
+          ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, h); ctx.stroke();
+        }
+        for (let yv = Math.ceil(minY / step) * step; yv <= maxY; yv += step) {
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(w, py); ctx.stroke();
+        }
+        // Main axes
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0));
+        ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h);
+        ctx.stroke();
+
+        ctx.fillStyle = '#94a3b8'; ctx.font = '700 11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+        ctx.fillText(t < 0.5 ? 'u' : 'x', w - 10, Math.min(h - 10, Math.max(20, toY(0) - 6)));
+        ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+        ctx.fillText(t < 0.5 ? 'v' : 'y', Math.min(w - 20, Math.max(10, toX(0) + 8)), 10);
+
+        // Morph interpolation helper
+        const lerpPt = (uv) => {
+          const xy = pr.map(uv[0], uv[1]);
+          return [uv[0] + (xy[0] - uv[0]) * t, uv[1] + (xy[1] - uv[1]) * t];
+        };
+
+        // Draw all cells & cache screen polygons for picking
+        warpState.cellsCache = [];
+        let selCell = cells[0];
+
+        cells.forEach((c) => {
+          const morphed = c.uvPts.map(lerpPt);
+          const screenPts = morphed.map(([x, y]) => [toX(x), toY(y)]);
+          const isSel = (c.i === warpState.selI && c.j === warpState.selJ);
+          if (isSel) selCell = c;
+
+          warpState.cellsCache.push({ i: c.i, j: c.j, screenPts });
+
+          ctx.fillStyle = isSel ? 'rgba(251, 191, 36, 0.42)' : 'rgba(56, 189, 248, 0.14)';
+          ctx.strokeStyle = isSel ? '#fbbf24' : 'rgba(129, 140, 248, 0.48)';
+          ctx.lineWidth = isSel ? 2.6 : 1.1;
+          ctx.beginPath();
+          screenPts.forEach(([sx, sy], idx) => idx === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy));
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        });
+
+        // Draw highlighted cell on top so border glows crisply
+        const selMorphed = selCell.uvPts.map(lerpPt);
+        const selScreen = selMorphed.map(([x, y]) => [toX(x), toY(y)]);
+        ctx.save();
+        ctx.shadowColor = '#fbbf24'; ctx.shadowBlur = 10;
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        selScreen.forEach(([sx, sy], idx) => idx === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy));
+        ctx.closePath(); ctx.stroke();
+        ctx.restore();
+
+        // Compute cell areas in uv vs xy
+        const areaUV = polyArea(selCell.uvPts);
+        const areaXY = polyArea(selCell.uvPts.map((pt) => pr.map(pt[0], pt[1])));
+        const exactJ = pr.jac(selCell.uc, selCell.vc);
+
+        // Update UI labels & Telemetry
+        document.getElementById('resLabel').textContent = `${N} × ${N}`;
+        const planeText = t <= 0.02 ? 'uv-plane (Region S)' : t >= 0.98 ? 'xy-plane (Region R)' : `Morphing S → R (${Math.round(t * 100)}%)`;
+        document.getElementById('morphLabel').textContent = `t = ${t.toFixed(2)} (${planeText})`;
+        document.getElementById('planeBadge').textContent = planeText;
+
+        document.getElementById('wTeleCellCoord').textContent = `Cell center: (u, v) = (${selCell.uc.toFixed(2)}, ${selCell.vc.toFixed(2)})`;
+        document.getElementById('wTeleCellArea').textContent =
+          `Cell: ΔA_uv = ${areaUV.toFixed(4)} → ΔA_xy = ${areaXY.toFixed(4)} (|J| ≈ ${exactJ.toFixed(3)})`;
+
+        const tEl = document.getElementById('wTeleTrans');
+        const rEl = document.getElementById('wTeleRegion');
+        const jEl = document.getElementById('wTeleJac');
+        const iEl = document.getElementById('wTeleInt');
+        if (iEl.dataset.pkey !== warpState.preset) {
+          tEl.innerHTML = `$${pr.transTex}$`;
+          rEl.innerHTML = `$${pr.regionTex}$`;
+          jEl.innerHTML = `$${pr.jacTex}$`;
+          iEl.innerHTML = `$${pr.intTex}$`;
+          document.getElementById('wTeleAnsSub').textContent = pr.ansSub;
+          iEl.dataset.pkey = warpState.preset;
+          renderMath(tEl); renderMath(rEl); renderMath(jEl); renderMath(iEl);
+        }
+      }
+
+      // Point-in-polygon helper for clicking/hovering cells
+      function pointInPoly(px, py, poly) {
+        let inside = false;
+        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+          const [xi, yi] = poly[i], [xj, yj] = poly[j];
+          const intersect = ((yi > py) !== (yj > py)) && (px < ((xj - xi) * (py - yi)) / (yj - yi + 1e-9) + xi);
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      }
+
+      function pickCellAt(clientX, clientY) {
+        const rect = warpCanvas.getBoundingClientRect();
+        const px = clientX - rect.left;
+        const py = clientY - rect.top;
+        for (let k = 0; k < warpState.cellsCache.length; k++) {
+          const c = warpState.cellsCache[k];
+          if (pointInPoly(px, py, c.screenPts)) {
+            if (warpState.selI !== c.i || warpState.selJ !== c.j) {
+              warpState.selI = c.i;
+              warpState.selJ = c.j;
+              drawWarper();
+            }
+            return;
+          }
+        }
+      }
+
+      function stopMorphAnim() {
+        warpState.playing = false;
+        if (warpState.rafId) cancelAnimationFrame(warpState.rafId);
+        warpState.rafId = null;
+        playMorphBtn.innerHTML = '&#9654; Play Morph';
+      }
+
+      function stepMorphAnim(ts) {
+        if (!warpState.playing) return;
+        if (!warpState.lastTs) warpState.lastTs = ts;
+        const dt = Math.min(0.05, (ts - warpState.lastTs) / 1000);
+        warpState.lastTs = ts;
+        warpState.t += warpState.dir * 0.45 * dt;
+        if (warpState.t >= 1) { warpState.t = 1; warpState.dir = -1; }
+        else if (warpState.t <= 0) { warpState.t = 0; warpState.dir = 1; }
+        morphSlider.value = warpState.t.toFixed(2);
+        drawWarper();
+        warpState.rafId = requestAnimationFrame(stepMorphAnim);
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 2A: 2x2 LINEAR TRANSFORMATION & AREA SCALING LAB
+         ---------------------------------------------------------------------- */
+      const linCanvas = document.getElementById('linCanvas');
+      const matA = document.getElementById('matA');
+      const matB = document.getElementById('matB');
+      const matC = document.getElementById('matC');
+      const matD = document.getElementById('matD');
+
+      function drawLinearLab() {
+        const a = parseFloat(matA.value);
+        const b = parseFloat(matB.value);
+        const c = parseFloat(matC.value);
+        const d = parseFloat(matD.value);
+        const det = a * d - b * c;
+        const absDet = Math.abs(det);
+
+        document.getElementById('valA').textContent = a.toFixed(2);
+        document.getElementById('valB').textContent = b.toFixed(2);
+        document.getElementById('valC').textContent = c.toFixed(2);
+        document.getElementById('valD').textContent = d.toFixed(2);
+
+        const badge = document.getElementById('linOrientBadge');
+        const absCard = document.getElementById('linAbsCard');
+        if (Math.abs(det) < 1e-6) {
+          badge.className = 'orient-badge zero';
+          badge.innerHTML = '&#9888; Collapsed / Singular (J = 0, Zero Area)';
+          absCard.className = 'stat amber';
+        } else if (det > 0) {
+          badge.className = 'orient-badge pos';
+          badge.innerHTML = '&#10003; Orientation Preserved (J &gt; 0)';
+          absCard.className = 'stat highlight';
+        } else {
+          badge.className = 'orient-badge neg';
+          badge.innerHTML = '&#8634; Orientation Flipped (J &lt; 0 — Use |J|!)';
+          absCard.className = 'stat rose';
+        }
+
+        document.getElementById('linDetVal').textContent = det.toFixed(2);
+        document.getElementById('linAbsVal').textContent = absDet.toFixed(2);
+
+        const mBox = document.getElementById('linMatrixBox');
+        mBox.innerHTML = `$$J = \\det\\begin{pmatrix} ${a} & ${b} \\\\ ${c} & ${d} \\end{pmatrix} = (${a})(${d}) - (${b})(${c}) = ${det.toFixed(2)}$$`;
+        renderMath(mBox);
+
+        // HiDPI Canvas Draw
+        const { ctx, w, h } = setupCanvas(linCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const pts = [[0,0], [1,0], [1,1], [0,1], [a,c], [b,d], [a+b, c+d]];
+        let maxAbs = 2.5;
+        pts.forEach(([x, y]) => { maxAbs = Math.max(maxAbs, Math.abs(x) + 0.8, Math.abs(y) + 0.8); });
+
+        const scale = (Math.min(w, h) * 0.44) / maxAbs;
+        const cx = w * 0.5, cy = h * 0.5;
+        const toX = (x) => cx + x * scale;
+        const toY = (y) => cy - y * scale;
+
+        // Gridlines
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.11)'; ctx.lineWidth = 1;
+        const lim = Math.ceil(maxAbs);
+        for (let k = -lim; k <= lim; k++) {
+          ctx.beginPath(); ctx.moveTo(toX(k), 0); ctx.lineTo(toX(k), h); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, toY(k)); ctx.lineTo(w, toY(k)); ctx.stroke();
+        }
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, cy); ctx.lineTo(w, cy);
+        ctx.moveTo(cx, 0); ctx.lineTo(cx, h);
+        ctx.stroke();
+
+        // Unit square [0,1]^2 dashed reference
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.10)';
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(0)); ctx.lineTo(toX(1), toY(0));
+        ctx.lineTo(toX(1), toY(1)); ctx.lineTo(toX(0), toY(1));
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Mapped parallelogram
+        const fillCol = Math.abs(det) < 1e-6 ? 'rgba(251, 191, 36, 0.35)' : det > 0 ? 'rgba(52, 211, 153, 0.28)' : 'rgba(251, 113, 133, 0.28)';
+        const strokeCol = Math.abs(det) < 1e-6 ? '#fbbf24' : det > 0 ? '#34d399' : '#fb7185';
+        ctx.fillStyle = fillCol;
+        ctx.strokeStyle = strokeCol; ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(0));
+        ctx.lineTo(toX(a), toY(c));
+        ctx.lineTo(toX(a + b), toY(c + d));
+        ctx.lineTo(toX(b), toY(d));
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Basis vector arrows (a,c) in sky and (b,d) in indigo
+        function drawVec(vx, vy, col, lbl) {
+          const ex = toX(vx), ey = toY(vy);
+          ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2.6;
+          ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+          if (Math.hypot(ex - cx, ey - cy) > 8) {
+            const ang = Math.atan2(ey - cy, ex - cx);
+            ctx.beginPath();
+            ctx.moveTo(ex, ey);
+            ctx.lineTo(ex - 10 * Math.cos(ang - 0.4), ey - 10 * Math.sin(ang - 0.4));
+            ctx.lineTo(ex - 10 * Math.cos(ang + 0.4), ey - 10 * Math.sin(ang + 0.4));
+            ctx.closePath(); ctx.fill();
+          }
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.textAlign = vx >= 0 ? 'left' : 'right';
+          ctx.textBaseline = vy >= 0 ? 'bottom' : 'top';
+          ctx.fillText(lbl, ex + (vx >= 0 ? 6 : -6), ey + (vy >= 0 ? -4 : 4));
+        }
+        drawVec(a, c, '#38bdf8', `(${a}, ${c})`);
+        drawVec(b, d, '#818cf8', `(${b}, ${d})`);
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2B: INVERSE JACOBIAN SHORTCUT STEPPER
+         ---------------------------------------------------------------------- */
+      const invSteps = [
+        {
+          tag: 'Step 1: Compute ∂(u, v) / ∂(x, y) Directly (No Square Roots!)',
+          body: 'Given the non-linear ISRT substitution $u = \\dfrac{y}{x}$ and $v = xy$, differentiate directly with respect to $x$ and $y$: $$\\frac{\\partial(u, v)}{\\partial(x, y)} = \\det\\begin{pmatrix} u_x & u_y \\\\[4pt] v_x & v_y \\end{pmatrix} = \\det\\begin{pmatrix} -\\dfrac{y}{x^2} & \\dfrac{1}{x} \\\\[8pt] y & x \\end{pmatrix} = -\\frac{y}{x} - \\frac{y}{x} = -\\frac{2y}{x}.$$'
+        },
+        {
+          tag: 'Step 2: Apply the Inverse Jacobian Property',
+          body: 'By the Inverse Function Theorem, $\\dfrac{\\partial(x,y)}{\\partial(u,v)} = \\left(\\dfrac{\\partial(u,v)}{\\partial(x,y)}\\right)^{-1}$: $$J = \\frac{\\partial(x, y)}{\\partial(u, v)} = \\frac{1}{-2y/x} = -\\frac{x}{2y}.$$'
+        },
+        {
+          tag: 'Step 3: Substitute u = y/x & Take Absolute Value |J|',
+          final: true,
+          body: 'Since $\\dfrac{y}{x} = u$, we have $J = -\\dfrac{1}{2u}$. Taking the mandatory absolute value (in Quadrant I, $u &gt; 0$): $$|J| = \\left|-\\frac{1}{2u}\\right| = \\frac{1}{2u} \\implies dA_{xy} = \\frac{1}{2u}\\,du\\,dv.$$ <em>Saved 10+ lines of square-root differentiation on $x = \\sqrt{v/u},\\; y = \\sqrt{uv}$!</em>'
+        }
+      ];
+
+      let invStep = 1;
+      function renderInvStepper() {
+        document.querySelectorAll('#invPipe .pipe-node').forEach((n) => {
+          const s = parseInt(n.dataset.istep, 10);
+          n.classList.toggle('current', s === invStep);
+          n.classList.toggle('done', s < invStep);
+        });
+        const wrap = document.getElementById('invStepsWrap');
+        wrap.innerHTML = invSteps.map((st, i) => `
+          <div class="step-card ${i < invStep ? 'visible' : ''} ${st.final ? 'final' : ''}">
+            <div class="step-tag">${st.tag}</div>
+            <div>${st.body}</div>
+          </div>
+        `).join('');
+        document.getElementById('invCounter').textContent = `Step ${invStep} of 3`;
+        document.getElementById('invPrevBtn').disabled = invStep <= 1;
+        document.getElementById('invNextBtn').disabled = invStep >= 3;
+        renderMath(wrap);
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const vaultData = [
+        {
+          id: 'v1', cat: 'linear', exam: 'Final 2025 Q7(a) & Final 2023 Q7(a)', topic: 'Linear / Parallelogram',
+          q: 'Evaluate $\\displaystyle \\iint_R \\frac{y - 4x}{y + 4x}\\,dA$ by making an appropriate change of variables, where $R$ is enclosed by $y = 4x$, $y = 4x + 2$, $y = 2 - 4x$, and $y = 5 - 4x$.',
+          hint: 'Set $u = y - 4x \\in [0, 2]$ and $v = y + 4x \\in [2, 5]$. Compute $\\partial(u,v)/\\partial(x,y) = -8$, invert, and take $|J| = 1/8$.',
+          sol: `Let $u = y - 4x$ and $v = y + 4x$. Then $S$ is the rectangle $0 \\le u \\le 2,\\; 2 \\le v \\le 5$.<br/>
+                $$\\frac{\\partial(u,v)}{\\partial(x,y)} = \\det\\begin{pmatrix} -4 & 1 \\\\ 4 & 1 \\end{pmatrix} = -8 \\implies |J| = \\left|-\\frac{1}{8}\\right| = \\frac{1}{8}.$$
+                $$\\iint_R \\frac{y-4x}{y+4x}\\,dA = \\int_2^5\\int_0^2 \\frac{u}{v}\\cdot\\frac{1}{8}\\,du\\,dv = \\frac{1}{8}\\left[\\frac{u^2}{2}\\right]_0^2 \\big[\\ln v\\big]_2^5 = \\frac{1}{8}(2)\\ln\\frac{5}{2} = \\frac{1}{4}\\ln\\frac{5}{2}.$$`
+        },
+        {
+          id: 'v2', cat: 'hyperbolic', exam: 'Final 2024 Q7(a)', topic: 'Hyperbolic / Non-Linear',
+          q: 'Evaluate $\\displaystyle \\iint_R e^{xy}\\,dA$, where $R$ is the region in the first quadrant enclosed by $y = \\frac{1}{2}x$, $y = x$, $y = \\frac{1}{x}$, and $y = \\frac{2}{x}$.',
+          hint: 'Set $u = y/x \\in [\\frac{1}{2}, 1]$ and $v = xy \\in [1, 2]$. By the inverse Jacobian shortcut, $|J| = \\frac{1}{2u}$.',
+          sol: `Set $u = \\frac{y}{x} \\in [\\frac{1}{2}, 1]$ and $v = xy \\in [1, 2]$. Using the inverse Jacobian:
+                $$\\frac{\\partial(u,v)}{\\partial(x,y)} = -\\frac{2y}{x} = -2u \\implies |J| = \\frac{1}{2u}.$$
+                $$\\iint_R e^{xy}\\,dA = \\int_1^2\\int_{1/2}^1 e^v\\cdot\\frac{1}{2u}\\,du\\,dv = \\frac{1}{2}\\big[\\ln u\\big]_{1/2}^1 \\big[e^v\\big]_1^2 = \\frac{\\ln 2}{2}(e^2 - e).$$`
+        },
+        {
+          id: 'v3', cat: 'ellipse3d', exam: 'Final 2024 Q7(b)', topic: 'Ellipse & 3D',
+          q: 'Evaluate $\\displaystyle \\iint_R \\sqrt{16x^2 + 9y^2}\\,dA$, where $R$ is the elliptical region $\\dfrac{x^2}{9} + \\dfrac{y^2}{16} \\le 1$.',
+          hint: 'Set $x = 3u, y = 4v$ ($|J| = 12$) to map the ellipse onto the unit disk $u^2+v^2 \\le 1$, then switch to polar coordinates ($dA_{uv} = r\\,dr\\,d\\theta$).',
+          sol: `Let $x = 3u,\\; y = 4v \\implies |J| = 12$. The ellipse becomes the unit disk $S: u^2 + v^2 \\le 1$, and:
+                $$\\sqrt{16x^2 + 9y^2} = \\sqrt{144u^2 + 144v^2} = 12\\sqrt{u^2 + v^2}.$$
+                Converting $S$ to polar coordinates ($u = r\\cos\\theta,\\; v = r\\sin\\theta,\\; dA_{uv} = r\\,dr\\,d\\theta$):
+                $$\\iint_R \\sqrt{16x^2+9y^2}\\,dA = 12\\cdot 12\\int_0^{2\\pi}\\int_0^1 r\\cdot r\\,dr\\,d\\theta = 144(2\\pi)\\left(\\frac{1}{3}\\right) = 96\\pi.$$`
+        },
+        {
+          id: 'v4', cat: 'linear', exam: 'Final 2020 Q8', topic: 'Linear / Parallelogram',
+          q: 'Use the transformation $x = u + v,\\; y = 2v$ to evaluate $\\displaystyle \\iint_D x\\,dA$, where $D$ is the parallelogram with vertices $(0,0), (1,0), (1,2)$, and $(2,2)$.',
+          hint: 'Solve for $(u,v)$ at each vertex: $v = y/2, u = x - y/2$. The vertices map to the unit square $[0,1]\\times[0,1]$ and $|J| = 2$.',
+          sol: `Inverting gives $v = \\frac{y}{2},\\; u = x - \\frac{y}{2}$, mapping the 4 vertices to $(0,0),(1,0),(0,1),(1,1)$, i.e., $S = [0,1]\\times[0,1]$.
+                $$J = \\det\\begin{pmatrix} 1 & 1 \\\\ 0 & 2 \\end{pmatrix} = 2.$$
+                $$\\iint_D x\\,dA = \\int_0^1\\int_0^1 (u + v)\\cdot 2\\,du\\,dv = 2\\int_0^1 \\left(\\frac{1}{2} + v\\right)dv = 2\\left(\\frac{1}{2} + \\frac{1}{2}\\right) = 2.$$`
+        },
+        {
+          id: 'v5', cat: 'hyperbolic', exam: 'Final 2018 Q8(b) & 2019 Q8(b)', topic: 'Hyperbolic / Non-Linear',
+          q: 'Use the transformation $u = y/x,\\; v = xy$ to evaluate $\\displaystyle \\iint_R xy^3\\,dA$, where $R$ is the region in the first quadrant enclosed by $y = x$, $y = 3x$, $xy = 1$, and $xy = 4$.',
+          hint: 'Rewrite $xy^3 = (xy)(y^2) = v(uv) = uv^2$. Multiply by $|J| = \\frac{1}{2u}$ and watch $u$ cancel completely!',
+          sol: `Region $S$: $1 \\le u \\le 3,\\; 1 \\le v \\le 4$, with $|J| = \\frac{1}{2u}$. Note $y^2 = (y/x)(xy) = uv$, so $xy^3 = (xy)(y^2) = uv^2$:
+                $$\\iint_R xy^3\\,dA = \\int_1^4\\int_1^3 (uv^2)\\cdot\\frac{1}{2u}\\,du\\,dv = \\frac{1}{2}\\left(\\int_1^3 1\\,du\\right)\\left(\\int_1^4 v^2\\,dv\\right) = \\frac{1}{2}(2)\\left[\\frac{v^3}{3}\\right]_1^4 = \\frac{64 - 1}{3} = 21.$$`
+        },
+        {
+          id: 'v6', cat: 'linear', exam: 'Class Notes (Ashraful Ex 23)', topic: 'Linear / Parallelogram',
+          q: 'Use the transformation $u = \\frac{1}{2}(x + y),\\; v = \\frac{1}{2}(x - y)$ to evaluate $\\displaystyle \\iint_R \\sin\\frac{1}{2}(x+y)\\cos\\frac{1}{2}(x-y)\\,dA$ over the triangle with vertices $(0,0), (2,0), (1,1)$.',
+          hint: 'Solve for $x = u + v,\\; y = u - v$ ($|J| = 2$). The triangle maps to $0 \\le u \\le 1,\\; 0 \\le v \\le u$.',
+          sol: `Inverting gives $x = u + v,\\; y = u - v \\implies J = \\det\\begin{pmatrix} 1 & 1 \\\\ 1 & -1 \\end{pmatrix} = -2 \\implies |J| = 2$.<br/>
+                The edges $y=0$, $y=x$, $x+y=2$ become $v=u$, $v=0$, $u=1$ ($0 \\le u \\le 1,\\; 0 \\le v \\le u$):
+                $$\\int_0^1\\int_0^u 2\\sin u\\cos v\\,dv\\,du = 2\\int_0^1 \\sin u\\big[\\sin v\\big]_0^u du = 2\\int_0^1 \\sin^2 u\\,du = \\int_0^1 (1 - \\cos 2u)\\,du = 1 - \\frac{1}{2}\\sin 2.$$`
+        },
+        {
+          id: 'v7', cat: 'linear', exam: 'Class Notes (Adib & Ashraful)', topic: 'Linear / Parallelogram',
+          q: 'Evaluate $\\displaystyle \\iint_R \\frac{\\sin(x - y)}{\\cos(x + y)}\\,dA$ over the triangle enclosed by $y = 0$, $y = x$, and $x + y = \\frac{\\pi}{4}$.',
+          hint: 'Set $u = x - y,\\; v = x + y$ ($x = \\frac{u+v}{2},\\; y = \\frac{v-u}{2},\\; |J| = \\frac{1}{2}$). Region $S$ is $0 \\le v \\le \\frac{\\pi}{4},\\; 0 \\le u \\le v$.',
+          sol: `With $u = x - y,\\; v = x + y$, we get $|J| = \\frac{1}{2}$ and $0 \\le v \\le \\frac{\\pi}{4},\\; 0 \\le u \\le v$:
+                $$\\frac{1}{2}\\int_0^{\\pi/4}\\int_0^v \\frac{\\sin u}{\\cos v}\\,du\\,dv = \\frac{1}{2}\\int_0^{\\pi/4}\\frac{1 - \\cos v}{\\cos v}\\,dv = \\frac{1}{2}\\int_0^{\\pi/4} (\\sec v - 1)\\,dv$$
+                $$= \\frac{1}{2}\\Big[\\ln|\\sec v + \\tan v| - v\\Big]_0^{\\pi/4} = \\frac{1}{2}\\left[\\ln(\\sqrt{2} + 1) - \\frac{\\pi}{4}\\right].$$`
+        },
+        {
+          id: 'v8', cat: 'ellipse3d', exam: 'Class Notes (3D Jacobian)', topic: 'Ellipse & 3D',
+          q: 'Use a 3D change of variables $x = au,\\; y = bv,\\; z = cw$ ($a, b, c &gt; 0$) to find the volume of the ellipsoid $\\dfrac{x^2}{a^2} + \\dfrac{y^2}{b^2} + \\dfrac{z^2}{c^2} \\le 1$.',
+          hint: 'Compute the $3\\times 3$ diagonal Jacobian $\\partial(x,y,z)/\\partial(u,v,w) = abc$ and multiply by the volume of the unit sphere $u^2+v^2+w^2 \\le 1$.',
+          sol: `Under $x = au,\\; y = bv,\\; z = cw$, the ellipsoid maps to the unit ball $G': u^2 + v^2 + w^2 \\le 1$, with 3D Jacobian:
+                $$\\frac{\\partial(x,y,z)}{\\partial(u,v,w)} = \\det\\begin{pmatrix} a & 0 & 0 \\\\ 0 & b & 0 \\\\ 0 & 0 & c \\end{pmatrix} = abc.$$
+                $$V = \\iiint_G 1\\,dx\\,dy\\,dz = \\iiint_{G'} abc\\,du\\,dv\\,dw = abc\\cdot\\text{Vol}(\\text{unit sphere}) = \\frac{4}{3}\\pi abc.$$`
+        }
+      ];
+
+      const reviewedVault = new Set();
+
+      function renderVault(filter) {
+        const list = document.getElementById('vaultList');
+        list.innerHTML = '';
+        vaultData.filter((v) => filter === 'all' || v.cat === filter).forEach((v) => {
+          const isRev = reviewedVault.has(v.id);
+          const card = document.createElement('div');
+          card.className = `vault-item ${isRev ? 'reviewed' : ''}`;
+          card.innerHTML = `
+            <div class="vault-head">
+              <span class="badge">${v.exam}</span>
+              <span class="badge sky">${v.topic}</span>
+            </div>
+            <p>${v.q}</p>
+            <div class="vault-actions">
+              <button type="button" class="btn" data-toggle="${v.id}-hint">Show Hint</button>
+              <button type="button" class="btn btn-primary" data-toggle="${v.id}-sol">Step-by-Step Solution</button>
+              <label class="check-label">
+                <input type="checkbox" class="vault-cb" data-vid="${v.id}" ${isRev ? 'checked' : ''} />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="reveal-box hint-box" id="${v.id}-hint"><strong>Hint:</strong> ${v.hint}</div>
+            <div class="reveal-box" id="${v.id}-sol">${v.sol}</div>
+          `;
+          list.appendChild(card);
+        });
+
+        list.querySelectorAll('[data-toggle]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const box = document.getElementById(btn.dataset.toggle);
+            const open = box.classList.toggle('open');
+            if (btn.dataset.toggle.endsWith('-hint')) {
+              btn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            } else {
+              btn.textContent = open ? 'Hide Solution' : 'Step-by-Step Solution';
+            }
+            if (open) renderMath(box);
+          });
+        });
+
+        list.querySelectorAll('.vault-cb').forEach((cb) => {
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) reviewedVault.add(vid);
+            else reviewedVault.delete(vid);
+            cb.closest('.vault-item').classList.toggle('reviewed', cb.checked);
+            updateProgress();
+          });
+        });
+
+        renderMath(list);
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. For the Final 2025 Q7(a) substitution $u = y - 4x,\\; v = y + 4x$, what is the area scaling factor $|J| = \\left|\\dfrac{\\partial(x,y)}{\\partial(u,v)}\\right|$?',
+          opts: ['$8$', '$\\dfrac{1}{8}$', '$-\\dfrac{1}{8}$', '$\\dfrac{1}{4}$'],
+          ans: 1,
+          exp: '$\\frac{\\partial(u,v)}{\\partial(x,y)} = \\det\\begin{pmatrix}-4 & 1\\\\ 4 & 1\\end{pmatrix} = -8 \\implies J = -\\frac{1}{8} \\implies |J| = \\frac{1}{8}$.'
+        },
+        {
+          q: '2. Using the Inverse Jacobian shortcut for $u = y/x,\\; v = xy$ (in Quadrant I), what is $|J| = \\left|\\dfrac{\\partial(x,y)}{\\partial(u,v)}\\right|$?',
+          opts: ['$2u$', '$\\dfrac{1}{2v}$', '$\\dfrac{1}{2u}$', '$\\dfrac{1}{u}$'],
+          ans: 2,
+          exp: '$\\frac{\\partial(u,v)}{\\partial(x,y)} = -\\frac{2y}{x} = -2u$, so taking the reciprocal and absolute value gives $|J| = \\frac{1}{2u}$.'
+        },
+        {
+          q: '3. Why are the absolute value bars $|J|$ mandatory in $\\iint_R f\\,dA_{xy} = \\iint_S f\\,|J|\\,dA_{uv}$ when $J &lt; 0$?',
+          opts: [
+            'Because $J &lt; 0$ means the transformation flips orientation, whereas the area element $dA_{xy}$ must remain positive',
+            'Because the Jacobian determinant is undefined when negative',
+            'Because $u$ and $v$ must always be positive',
+            'Because $J &lt; 0$ means the region collapses to zero area'
+          ],
+          ans: 0,
+          exp: 'A negative Jacobian simply indicates an orientation reversal (mirror flip). Since area scaling is always non-negative, we must multiply by $|J|$.'
+        },
+        {
+          q: '4. When chaining $x = 3u,\\; y = 4v$ (ellipse $\\to$ unit disk) with polar coordinates $u = r\\cos\\theta,\\; v = r\\sin\\theta$, what is the complete area element $dA_{xy}$?',
+          opts: ['$12\\,dr\\,d\\theta$', '$7r\\,dr\\,d\\theta$', '$12r\\,dr\\,d\\theta$', '$144r\\,dr\\,d\\theta$'],
+          ans: 2,
+          exp: 'The ellipse scaling contributes $|J_1| = 12$ ($dA_{xy} = 12\\,dA_{uv}$), and polar coordinates contribute $|J_2| = r$ ($dA_{uv} = r\\,dr\\,d\\theta$), giving $12r\\,dr\\,d\\theta$.'
+        },
+        {
+          q: '5. What is the 3D Jacobian $|J| = \\left|\\dfrac{\\partial(x,y,z)}{\\partial(u,v,w)}\\right|$ for the ellipsoid mapping $x = au,\\; y = bv,\\; z = cw$ ($a, b, c &gt; 0$)?',
+          opts: ['$a + b + c$', '$\\dfrac{1}{abc}$', '$a^2 b^2 c^2$', '$abc$'],
+          ans: 3,
+          exp: 'The Jacobian matrix is $\\text{diag}(a, b, c)$, whose determinant is $abc$, yielding $V = abc\\cdot\\frac{4}{3}\\pi = \\frac{4}{3}\\pi abc$.'
+        }
+      ];
+
+      const quizAnswered = new Map();
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        quizData.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'quiz-q';
+          div.innerHTML = `
+            <p><strong>${item.q}</strong></p>
+            <div class="options" id="q-opts-${idx}"></div>
+            <div class="feedback" id="q-fb-${idx}"></div>
+          `;
+          container.appendChild(div);
+          const optsDiv = div.querySelector(`#q-opts-${idx}`);
+          item.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'opt-btn';
+            btn.innerHTML = opt;
+            btn.addEventListener('click', () => handleQuizAnswer(idx, oi));
+            optsDiv.appendChild(btn);
+          });
+        });
+        renderMath(container);
+      }
+
+      function handleQuizAnswer(qIdx, oIdx) {
+        if (quizAnswered.has(qIdx)) return;
+        const item = quizData[qIdx];
+        const ok = oIdx === item.ans;
+        quizAnswered.set(qIdx, ok);
+
+        const btns = document.querySelectorAll(`#q-opts-${qIdx} .opt-btn`);
+        btns.forEach((b, i) => {
+          b.disabled = true;
+          if (i === item.ans) b.classList.add('correct');
+          else if (i === oIdx) b.classList.add('wrong');
+        });
+
+        const fb = document.getElementById(`q-fb-${qIdx}`);
+        fb.innerHTML = (ok ? '<strong style="color:var(--green)">Correct!</strong> ' : '<strong style="color:var(--rose)">Not quite.</strong> ') + item.exp;
+        fb.classList.add('show');
+        renderMath(fb);
+
+        const score = [...quizAnswered.values()].filter(Boolean).length;
+        document.getElementById('quizScore').textContent = `${score} / ${quizData.length}`;
+        updateProgress();
+      }
+
+      /* ----------------------------------------------------------------------
+         7. MASTERY PROGRESS (8 VAULT + 5 QUIZ = 13 TASKS)
+         ---------------------------------------------------------------------- */
+      function updateProgress() {
+        const total = vaultData.length + quizData.length;
+        const done = reviewedVault.size + quizAnswered.size;
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressDetail').textContent = `${done} / ${total} tasks completed`;
+      }
+
+      /* ----------------------------------------------------------------------
+         8. DOM INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile Drawer
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        function setDrawer(open) {
+          sidebar.classList.toggle('open', open);
+          overlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+        menuToggle.addEventListener('click', () => setDrawer(!sidebar.classList.contains('open')));
+        overlay.addEventListener('click', () => setDrawer(false));
+        document.querySelectorAll('#sideNav a').forEach((a) => a.addEventListener('click', () => setDrawer(false)));
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 14 — Triple Integrals (Rect, Cyl & Sph)');
+        });
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          showToast('Module 5 Starts Next: Lesson 16 — Vector Fields, Divergence, Curl & Line Integrals');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('main section');
+        const navLinks = document.querySelectorAll('#sideNav a');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.sec === entry.target.id));
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Warper Controls
+        document.getElementById('warpPreset').addEventListener('change', (e) => {
+          stopMorphAnim();
+          warpState.preset = e.target.value;
+          warpState.selI = 2; warpState.selJ = 2;
+          drawWarper();
+        });
+
+        resSlider.addEventListener('input', () => {
+          warpState.res = parseInt(resSlider.value, 10);
+          drawWarper();
+        });
+
+        morphSlider.addEventListener('input', () => {
+          stopMorphAnim();
+          warpState.t = parseFloat(morphSlider.value);
+          drawWarper();
+        });
+
+        playMorphBtn.addEventListener('click', () => {
+          if (warpState.playing) {
+            stopMorphAnim();
+          } else {
+            warpState.playing = true;
+            warpState.lastTs = 0;
+            playMorphBtn.textContent = '❚❚ Pause';
+            warpState.rafId = requestAnimationFrame(stepMorphAnim);
+          }
+        });
+
+        document.getElementById('snapUVBtn').addEventListener('click', () => {
+          stopMorphAnim(); warpState.t = 0; morphSlider.value = '0'; drawWarper();
+        });
+        document.getElementById('snapXYBtn').addEventListener('click', () => {
+          stopMorphAnim(); warpState.t = 1; morphSlider.value = '1'; drawWarper();
+        });
+
+        warpCanvas.addEventListener('mousemove', (e) => pickCellAt(e.clientX, e.clientY));
+        warpCanvas.addEventListener('click', (e) => pickCellAt(e.clientX, e.clientY));
+        warpCanvas.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) pickCellAt(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+
+        // Section 2 Tabs & Linear Matrix Controls
+        document.querySelectorAll('[data-lab2]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-lab2]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tgt = btn.dataset.lab2;
+            document.getElementById('lab2-linear').style.display = tgt === 'linear' ? 'block' : 'none';
+            document.getElementById('lab2-inverse').style.display = tgt === 'inverse' ? 'block' : 'none';
+            if (tgt === 'linear') requestAnimationFrame(drawLinearLab);
+          });
+        });
+
+        [matA, matB, matC, matD].forEach((sl) => sl.addEventListener('input', drawLinearLab));
+
+        function setMat(a, b, c, d, msg) {
+          matA.value = a; matB.value = b; matC.value = c; matD.value = d;
+          drawLinearLab();
+          showToast(msg);
+        }
+        document.getElementById('linPrePolar').addEventListener('click', () => setMat(0, -2, 1, 0, 'Polar Linearization at r=2, θ=π/2: J = r = 2'));
+        document.getElementById('linPre2020').addEventListener('click', () => setMat(1, 1, 0, 2, 'Final 2020 Q8: x = u + v, y = 2v (J = 2)'));
+        document.getElementById('linPreEllipse').addEventListener('click', () => setMat(3, 0, 0, 4, 'Final 2024 Q7b: x = 3u, y = 4v (J = 12)'));
+        document.getElementById('linPreFlip').addEventListener('click', () => setMat(1, 2, 2, 1, 'Orientation Flipped! J = -3, so |J| = 3'));
+
+        // Section 2B Inverse Stepper Controls
+        document.querySelectorAll('#invPipe .pipe-node').forEach((n) => {
+          n.addEventListener('click', () => {
+            invStep = parseInt(n.dataset.istep, 10);
+            renderInvStepper();
+          });
+        });
+        document.getElementById('invPrevBtn').addEventListener('click', () => { if (invStep > 1) { invStep--; renderInvStepper(); } });
+        document.getElementById('invNextBtn').addEventListener('click', () => { if (invStep < 3) { invStep++; renderInvStepper(); } });
+        document.getElementById('invAllBtn').addEventListener('click', () => { invStep = 3; renderInvStepper(); });
+
+        // Section 4 Vault Filters
+        document.querySelectorAll('#vaultFilters .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#vaultFilters .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderVault(btn.dataset.vcat);
+          });
+        });
+
+        // Section 5 Reset Quiz
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          quizAnswered.clear();
+          document.getElementById('quizScore').textContent = `0 / ${quizData.length}`;
+          renderQuiz();
+          updateProgress();
+        });
+
+        // Initial Renders
+        renderInvStepper();
+        renderVault('all');
+        renderQuiz();
+        drawWarper();
+        drawLinearLab();
+        updateProgress();
+        renderMath(document.body);
+
+        const ro = new ResizeObserver(() => {
+          drawWarper();
+          drawLinearLab();
+        });
+        ro.observe(document.getElementById('warpCanvasWrap'));
+        ro.observe(document.getElementById('linCanvasWrap'));
+      });
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawWarper();
+        drawLinearLab();
+      });
+    })();
+  </script>
+</body>
+</html>

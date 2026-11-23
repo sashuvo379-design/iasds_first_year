@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 11: Polar Coordinates &amp; Polar Area | MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK SLATE ACADEMIC THEME
+       ========================================================================== */
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+
+      --sky: #38bdf8;
+      --sky-soft: rgba(56, 189, 248, 0.15);
+      --sky-border: rgba(56, 189, 248, 0.38);
+
+      --indigo: #818cf8;
+      --indigo-soft: rgba(129, 140, 248, 0.16);
+      --indigo-border: rgba(129, 140, 248, 0.38);
+
+      --emerald: #34d399;
+      --emerald-soft: rgba(52, 211, 153, 0.15);
+      --emerald-border: rgba(52, 211, 153, 0.38);
+
+      --amber: #fbbf24;
+      --amber-soft: rgba(251, 191, 36, 0.15);
+      --amber-border: rgba(251, 191, 36, 0.38);
+
+      --rose: #fb7185;
+      --rose-soft: rgba(251, 113, 133, 0.14);
+      --rose-border: rgba(251, 113, 133, 0.4);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 270px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       BASE RESET & TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ==========================================================================
+       MOBILE TOP BAR
+       ========================================================================== */
+    .mobile-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .mobile-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .menu-toggle {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .mobile-bar-title {
+      font-size: 0.9rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-pct-pill {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
+      color: var(--emerald); background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+      padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       SIDEBAR (FIXED 270px ON DESKTOP, DRAWER ON MOBILE)
+       ========================================================================== */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      z-index: 55; backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    aside.sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 60;
+      transition: transform 0.25s ease;
+    }
+    .brand { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .brand .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--sky);
+    }
+    .brand h1 { font-size: 1.12rem; margin-top: 5px; line-height: 1.3; font-weight: 800; }
+    .brand p { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
+
+    .progress-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; margin-bottom: 7px; font-weight: 600;
+    }
+    .progress-bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--sky), var(--indigo), var(--emerald));
+      transition: width 0.35s ease;
+    }
+    .progress-detail {
+      font-family: var(--font-mono);
+      font-size: 0.73rem; color: var(--muted); margin-top: 7px;
+    }
+
+    nav.side-nav { display: flex; flex-direction: column; gap: 5px; }
+    .nav-heading {
+      font-size: 0.69rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); padding: 0 10px; margin-bottom: 4px;
+    }
+    nav.side-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.86rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.18s ease;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    nav.side-nav a:hover { background: var(--surface-2); color: var(--text); }
+    nav.side-nav a.active {
+      background: var(--surface-2);
+      color: var(--sky);
+      border-left-color: var(--sky);
+      font-weight: 600;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .foot-btn {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .foot-btn:hover { border-color: var(--sky); color: var(--text); }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 34px 40px 84px;
+      max-width: calc(1140px + var(--sidebar-w));
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(129, 140, 248, 0.14));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-bottom: 34px;
+      position: relative; overflow: hidden;
+    }
+    .hero .pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      background: var(--sky-soft); border: 1px solid var(--sky-border);
+      color: var(--sky); margin-bottom: 10px;
+    }
+    .hero h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    .hero p { color: var(--muted); max-width: 800px; font-size: 0.95rem; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .hero-chip {
+      font-size: 0.77rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(11, 17, 32, 0.55); border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 1.32rem; font-weight: 800; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .num {
+      background: var(--sky); color: var(--bg);
+      font-family: var(--font-mono); font-weight: 800; font-size: 0.85rem;
+      width: 28px; height: 28px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-sub { color: var(--muted); font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================================================
+       CONTROLS, BUTTONS & CANVASES
+       ========================================================================== */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn, .btn {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.84rem; font-weight: 600;
+      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .tab-btn:hover, .btn:hover { border-color: var(--sky); color: var(--sky); }
+    .tab-btn.active, .btn-primary {
+      background: var(--sky); color: var(--bg); border-color: var(--sky); font-weight: 700;
+    }
+    .btn-primary:hover { background: #7dd3fc; border-color: #7dd3fc; color: var(--bg); }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .control-group label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted); font-weight: 600;
+    }
+    .control-group label strong {
+      font-family: var(--font-mono); color: var(--sky); font-size: 0.82rem;
+    }
+    .control-group select {
+      width: 100%;
+      background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 11px; font-size: 0.86rem; cursor: pointer;
+    }
+    .control-group select:focus { outline: 2px solid var(--sky); outline-offset: 1px; }
+    .control-group input[type="range"] {
+      width: 100%; accent-color: var(--sky); cursor: pointer; height: 6px;
+    }
+    .check-inline {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      background: var(--surface-2); border: 1px solid var(--border);
+      font-size: 0.83rem; font-weight: 600; color: var(--text);
+      cursor: pointer; user-select: none;
+    }
+    .check-inline input { width: 16px; height: 16px; accent-color: var(--sky); cursor: pointer; }
+
+    .canvas-wrap {
+      background: #070d19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+      width: 100%;
+      height: 390px;
+    }
+    .canvas-wrap.mini { height: 330px; }
+    .canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+
+    .legend-row {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      overflow-x: auto;
+    }
+    .stat .label {
+      font-size: 0.71rem; color: var(--muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat .val {
+      font-family: var(--font-mono);
+      font-size: 1.02rem; font-weight: 700; margin-top: 4px; color: var(--sky);
+    }
+    .stat .sub { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+
+    /* Section 2 Two-Column Lab Layout */
+    .lab2-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 1fr);
+      gap: 18px; align-items: start;
+    }
+    .rep-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .rep-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--indigo);
+      border-radius: 8px;
+      padding: 9px 12px;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      font-size: 0.85rem;
+    }
+    .rep-item .rep-lbl { color: var(--muted); font-size: 0.76rem; font-weight: 600; }
+    .rep-item .rep-val { font-family: var(--font-mono); font-weight: 700; color: var(--text); }
+
+    /* ==========================================================================
+       SECTION 3: THEORY, TABLE & EXAM TRAPS
+       ========================================================================== */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .formula-box {
+      background: var(--surface-2);
+      border-left: 3px solid var(--indigo);
+      padding: 13px 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; }
+    table.ref-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; background: var(--surface-2); }
+    table.ref-table th, table.ref-table td {
+      padding: 11px 13px; text-align: left; border-bottom: 1px solid var(--border);
+    }
+    table.ref-table th {
+      background: var(--bg); color: var(--muted);
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    table.ref-table tr:last-child td { border-bottom: none; }
+
+    .trap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .trap-box {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+    }
+    .trap-box strong { color: var(--rose); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    /* ==========================================================================
+       SECTION 4: VAULT
+       ========================================================================== */
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .vault-item.reviewed { border-color: var(--emerald-border); }
+    .vault-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+      border-radius: 999px; background: var(--indigo-soft); color: var(--indigo);
+      border: 1px solid var(--indigo-border);
+    }
+    .badge.sky { background: var(--sky-soft); color: var(--sky); border-color: var(--sky-border); }
+    .badge.emerald { background: var(--emerald-soft); color: var(--emerald); border-color: var(--emerald-border); }
+
+    .vault-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .reveal-box {
+      display: none; margin-top: 12px; padding: 14px 16px;
+      background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.91rem;
+    }
+    .reveal-box.open { display: block; }
+    .reveal-box.hint-box { background: var(--amber-soft); border-color: var(--amber-border); }
+    .check-label {
+      margin-left: auto; font-size: 0.82rem; font-weight: 600; color: var(--emerald);
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+      padding: 6px 11px; border-radius: 8px;
+      background: var(--emerald-soft); border: 1px solid var(--emerald-border);
+      user-select: none;
+    }
+    .check-label input { width: 15px; height: 15px; accent-color: var(--emerald); cursor: pointer; }
+
+    /* ==========================================================================
+       SECTION 5: QUIZ
+       ========================================================================== */
+    .quiz-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    }
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; margin-top: 12px; }
+    .opt-btn {
+      text-align: left; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px;
+      cursor: pointer; font-size: 0.89rem; transition: all 0.18s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--sky); background: var(--sky-soft); }
+    .opt-btn.correct { background: var(--emerald-soft); border-color: var(--emerald); color: var(--emerald); font-weight: 600; }
+    .opt-btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); }
+    .feedback {
+      margin-top: 11px; font-size: 0.87rem; color: var(--text);
+      padding: 10px 13px; border-radius: 8px; background: var(--surface-2);
+      border: 1px solid var(--border); display: none;
+    }
+    .feedback.show { display: block; }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 80;
+      background: var(--surface-2); border: 1px solid var(--sky-border);
+      color: var(--text); padding: 11px 16px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+      opacity: 0; transform: translateY(10px); pointer-events: none; transition: all 0.22s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 960px) {
+      .lab2-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .mobile-bar { display: flex; }
+      aside.sidebar {
+        transform: translateX(-100%);
+        top: 63px;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+      }
+      aside.sidebar.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 22px 16px 64px; }
+      section { scroll-margin-top: 78px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Header -->
+  <header class="mobile-bar">
+    <div class="mobile-bar-left">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-bar-title">Lesson 11: Polar Coordinates &amp; Polar Area</span>
+    </div>
+    <span class="mobile-pct-pill" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Fixed Left Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Lesson 11 navigation">
+    <div class="brand">
+      <div class="tag">MATH 105 · ISRT, DU</div>
+      <h1>Lesson 11: Polar Coordinates &amp; Polar Area</h1>
+      <p>Module 3 · Geometric &amp; Physical Applications</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Mastery Progress</span>
+        <strong id="progressPct" style="color:var(--emerald)">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-detail" id="progressDetail">0 / 12 tasks (0/7 Vault, 0/5 Quiz)</div>
+    </div>
+
+    <nav class="side-nav" id="sideNav">
+      <div class="nav-heading">Sections (10.2 &amp; 10.3)</div>
+      <a href="#sec1" class="active" data-sec="sec1">1. Polar Ray Sweeper Lab</a>
+      <a href="#sec2" data-sec="sec2">2. Coordinates &amp; Curve Families</a>
+      <a href="#sec3" data-sec="sec3">3. Core Theory &amp; Exam Traps</a>
+      <a href="#sec4" data-sec="sec4">4. ISRT Past-Exam Vault (7)</a>
+      <a href="#sec5" data-sec="sec5">5. Quick Mastery Check (5)</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="foot-btn" id="prevBtn"><span>&larr; Prev Lesson</span><span class="mono">L10</span></button>
+      <button type="button" class="foot-btn" id="nextBtn"><span>Next Lesson &rarr;</span><span class="mono" style="color:var(--sky)">L12</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <span class="pill">Sections 10.2 &amp; 10.3 · Module 3 Capstone</span>
+      <h2>Polar Coordinates &amp; Polar Area</h2>
+      <p>
+        Sweep radial sectors from the pole to visualize how cardioids, circles, roses, and limaçons enclose area, discover why odd-petal roses double-trace on $[0, 2\pi]$, and master every ISRT polar area and coordinate-conversion problem.
+      </p>
+      <div class="hero-chips">
+        <span class="hero-chip">$A = \frac{1}{2}\int_\alpha^\beta r^2\,d\theta$</span>
+        <span class="hero-chip">Odd vs. Even Rose Parity</span>
+        <span class="hero-chip">Negative $r$ &amp; Inner Loops</span>
+        <span class="hero-chip">7 Solved ISRT &amp; Note Problems</span>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         SECTION 1: POLAR RAY SWEEPER & AREA SANDBOX
+         ====================================================================== -->
+    <section id="sec1">
+      <h3 class="section-title"><span class="num">1</span> Polar Ray Sweeper &amp; Area Sandbox</h3>
+      <p class="section-sub">Watch the radial ray sweep out sectors from the pole $(0,0)$, detect odd-rose overlap past $\pi$, and see how $r &lt; 0$ traces inner limaçon loops.</p>
+
+      <div class="card">
+        <div class="controls-grid">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="polarPreset"><span>ISRT Exam / Class Notes Preset</span></label>
+            <select id="polarPreset">
+              <option value="cardioid_circle">Final 2025 Q5a: Inside r = 4 + 4cos θ, Outside r = 6</option>
+              <option value="rose3">Final 2023 Q5b: Three-Petaled Rose r = sin 3θ</option>
+              <option value="rose4">Class Notes: Four-Petaled Rose r = cos 2θ</option>
+              <option value="cardioid">Class Notes Ex 6: Cardioid r = 1 - cos θ</option>
+              <option value="common_circles">Class Notes Ex 42: Common Area of r = 2sin θ &amp; r = 2cos θ</option>
+              <option value="limacon">Class Notes Ex 43: Limaçon r = 1/2 + cos θ (Inner vs Outer Loop)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="sweepSlider">
+              <span>Sweep Angle ($\theta$)</span>
+              <strong id="sweepDegLabel">120&deg; (2&pi;/3)</strong>
+            </label>
+            <input type="range" id="sweepSlider" min="0" max="360" step="1" value="120" />
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" id="playSweepBtn">&#9654; Play Sweep</button>
+            <button type="button" class="btn" id="resetSweepBtn">&#8634; Reset &theta; = 0&deg;</button>
+          </div>
+          <label class="check-inline">
+            <input type="checkbox" id="showGridCheck" checked />
+            <span>Show Polar Grid &amp; Intersection Rays</span>
+          </label>
+        </div>
+
+        <div class="canvas-wrap" id="sweeperCanvasWrap">
+          <canvas id="sweeperCanvas" aria-label="Polar ray sweeper interactive canvas"></canvas>
+        </div>
+
+        <div class="legend-row">
+          <span class="legend-item"><span class="swatch" style="background:var(--sky)"></span> Swept Target Area</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Sweeping Ray from Pole</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--rose)"></span> Overlap ($&theta;&gt;\pi$ Odd Rose) / Negative $r$ Inner Loop</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--emerald)"></span> Intersection / Pole Tangent Rays</span>
+        </div>
+
+        <!-- 4 Telemetry Cards -->
+        <div class="telemetry">
+          <div class="stat">
+            <div class="label">1. Current $\theta$ &amp; $r(\theta)$</div>
+            <div class="val" id="teleThetaR">—</div>
+            <div class="sub" id="teleThetaRSub">Radial distance from pole</div>
+          </div>
+          <div class="stat">
+            <div class="label">2. Swept Area (Numeric)</div>
+            <div class="val" id="teleSwept" style="color:var(--indigo)">—</div>
+            <div class="sub" id="teleSweptSub">Accumulated from $0^\circ$</div>
+          </div>
+          <div class="stat">
+            <div class="label">3. Exact Total / Target Area</div>
+            <div class="val" id="teleExact" style="color:var(--emerald)">—</div>
+            <div class="sub" id="teleExactSub">Closed-form exam result</div>
+          </div>
+          <div class="stat">
+            <div class="label">4. Integral Setup Formula</div>
+            <div class="val" id="teleFormula" style="font-size:0.86rem;color:var(--text)">—</div>
+            <div class="sub" id="teleFormulaSub">Exam formulation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 2: NON-UNIQUENESS & COORDINATE CONVERTER LAB (2-TAB WIDGET)
+         ====================================================================== -->
+    <section id="sec2">
+      <h3 class="section-title"><span class="num">2</span> Non-Uniqueness &amp; Coordinate Converter Lab</h3>
+      <p class="section-sub">Explore why polar coordinates are non-unique (including negative $r$ reflections) and test how $n$ and $a$ control rose petals and cardioids.</p>
+
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-lab2="point">Tab A: Polar Point &amp; Negative-$r$ Explorer</button>
+          <button type="button" class="tab-btn" data-lab2="family">Tab B: Rose Petal &amp; Cardioid Family Explorer</button>
+        </div>
+
+        <!-- TAB A: Polar Point & Negative-r Explorer -->
+        <div id="lab2-point">
+          <div class="lab2-grid">
+            <div class="canvas-wrap mini" id="pointCanvasWrap">
+              <canvas id="pointCanvas" aria-label="Polar point and negative r explorer"></canvas>
+            </div>
+            <div>
+              <div class="controls-grid" style="grid-template-columns:1fr;">
+                <div class="control-group">
+                  <label for="ptRSlider"><span>Radius ($r$)</span><strong id="ptRVal">r = 3.0</strong></label>
+                  <input type="range" id="ptRSlider" min="-4" max="4" step="0.5" value="3" />
+                </div>
+                <div class="control-group">
+                  <label for="ptThetaSlider"><span>Angle ($\theta$)</span><strong id="ptThetaVal">&theta; = 45&deg; (&pi;/4)</strong></label>
+                  <input type="range" id="ptThetaSlider" min="-360" max="360" step="15" value="45" />
+                </div>
+              </div>
+
+              <div class="rep-list" id="pointRepList">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: Rose Petal & Cardioid Family Explorer -->
+        <div id="lab2-family" style="display:none;">
+          <div class="lab2-grid">
+            <div class="canvas-wrap mini" id="familyCanvasWrap">
+              <canvas id="familyCanvas" aria-label="Rose and cardioid family plotter"></canvas>
+            </div>
+            <div>
+              <div class="controls-grid" style="grid-template-columns:1fr;">
+                <div class="control-group">
+                  <label for="famType"><span>Curve Family</span></label>
+                  <select id="famType">
+                    <option value="cos_rose">Rose: r = a cos(nθ)</option>
+                    <option value="sin_rose">Rose: r = a sin(nθ)</option>
+                    <option value="card_cos">Cardioid: r = a(1 + cos θ)</option>
+                    <option value="card_sin">Cardioid: r = a(1 - sin θ)</option>
+                  </select>
+                </div>
+                <div class="control-group" id="famNGroup">
+                  <label for="famNSlider"><span>Frequency ($n$)</span><strong id="famNVal">n = 3</strong></label>
+                  <input type="range" id="famNSlider" min="1" max="6" step="1" value="3" />
+                </div>
+                <div class="control-group">
+                  <label for="famASlider"><span>Amplitude ($a$)</span><strong id="famAVal">a = 2.0</strong></label>
+                  <input type="range" id="famASlider" min="1" max="4" step="0.5" value="2" />
+                </div>
+              </div>
+
+              <div class="telemetry" style="grid-template-columns:1fr;">
+                <div class="stat">
+                  <div class="label">Number of Petals / Shape</div>
+                  <div class="val" id="famPetals" style="color:var(--sky)">3 Petals (n is odd)</div>
+                </div>
+                <div class="stat">
+                  <div class="label">Period to Trace Once</div>
+                  <div class="val" id="famPeriod" style="color:var(--amber)">[0, π]</div>
+                </div>
+                <div class="stat">
+                  <div class="label">Exact Enclosed Area Formula</div>
+                  <div class="val" id="famArea" style="color:var(--emerald);font-size:0.95rem;">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: CORE THEORY, CURVE GALLERY & EXAM TRAPS
+         ====================================================================== -->
+    <section id="sec3">
+      <h3 class="section-title"><span class="num">3</span> Core Theory, Curve Gallery &amp; Exam Traps</h3>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4>1. Polar &harr; Cartesian Conversions &amp; Non-Uniqueness</h4>
+          <p style="font-size:0.88rem;color:var(--muted);margin-top:4px;">Unlike Cartesian coordinates, every point in the plane has infinitely many polar representations:</p>
+          <div class="formula-box">
+            $$x = r\cos\theta, \qquad y = r\sin\theta$$
+            $$r^2 = x^2 + y^2, \qquad \tan\theta = \frac{y}{x}$$
+            $$(r, \theta) \equiv (r, \theta \pm 2k\pi) \equiv (-r, \theta + \pi)$$
+          </div>
+          <p style="font-size:0.84rem;color:var(--muted);">When $r &lt; 0$, walk $|r|$ units in the <em>opposite</em> direction ($\theta + \pi$) from the pole.</p>
+        </div>
+
+        <div class="card">
+          <h4>2. Polar Area Formulas (Section 10.3)</h4>
+          <p style="font-size:0.88rem;color:var(--muted);margin-top:4px;">Summing thin circular sectors of area $\Delta A = \frac{1}{2}r^2\Delta\theta$:</p>
+          <div class="formula-box">
+            $$\text{Single Curve: } A = \frac{1}{2}\int_\alpha^\beta r^2\,d\theta = \frac{1}{2}\int_\alpha^\beta [f(\theta)]^2\,d\theta$$
+            $$\text{Between Two Curves: } A = \frac{1}{2}\int_\alpha^\beta \left(r_{\text{outer}}^2 - r_{\text{inner}}^2\right)d\theta$$
+          </div>
+          <p style="font-size:0.84rem;color:var(--muted);">Here $\alpha \le \theta \le \beta$ must sweep the region <strong>exactly once</strong> without overlapping.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>3. Rose Curve Parity &amp; Symmetry Rules ($r = a\cos(n\theta)$ or $r = a\sin(n\theta)$)</h4>
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th>Parity of $n$</th>
+                <th>Number of Petals</th>
+                <th>Single-Trace Period</th>
+                <th>Pole Tangents (1 Petal Bounds)</th>
+                <th>Total Area</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Odd $n$</strong> (e.g., $n=3$)</td>
+                <td>$n$ petals</td>
+                <td>$[0, \pi]$ (overlaps on $[\pi, 2\pi]$!)</td>
+                <td>Solve $r = 0$ for 2 consecutive angles (e.g., $\sin 3\theta = 0 \Rightarrow [0, \frac{\pi}{3}]$)</td>
+                <td>$\dfrac{\pi a^2}{4}$</td>
+              </tr>
+              <tr>
+                <td><strong>Even $n$</strong> (e.g., $n=2$)</td>
+                <td>$2n$ petals</td>
+                <td>$[0, 2\pi]$ (no overlap)</td>
+                <td>Solve $r = 0$ for 2 consecutive angles (e.g., $\cos 2\theta = 0 \Rightarrow [-\frac{\pi}{4}, \frac{\pi}{4}]$)</td>
+                <td>$\dfrac{\pi a^2}{2}$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 style="margin-top:20px;color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h4>
+        <div class="trap-grid">
+          <div class="trap-box">
+            <strong>Trap 1: Odd-n Rose Double-Tracing</strong>
+            Integrating odd-$n$ roses ($r = \sin 3\theta$, $r = \cos 3\theta$) from $0$ to $2\pi$ <em>doubles</em> the true area! Always find pole tangents ($r = 0$) for 1 petal and multiply by $n$, or integrate over $[0, \pi]$.
+          </div>
+          <div class="trap-box">
+            <strong>Trap 2: Missing Pole Intersections</strong>
+            Solving $r_1(\theta) = r_2(\theta)$ may miss the pole $(0,0)$ because curves reach the pole at <em>different</em> angles (e.g., $r = 2\sin\theta$ hits the pole at $\theta = 0$, while $r = 2\cos\theta$ hits it at $\theta = \pi/2$).
+          </div>
+          <div class="trap-box">
+            <strong>Trap 3: Squaring the Difference</strong>
+            For the area between two polar curves, always use $r_{\text{outer}}^2 - r_{\text{inner}}^2$, <strong>NEVER</strong> $(r_{\text{outer}} - r_{\text{inner}})^2$!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 4: Negative $r$ on Limaçons</strong>
+            On $r = \frac{1}{2} + \cos\theta$, when $r &lt; 0$ ($\frac{2\pi}{3} &lt; \theta &lt; \frac{4\pi}{3}$), the curve traces the inner loop. Because $r^2 \ge 0$, integrating $0$ to $2\pi$ <em>adds</em> the inner loop area instead of subtracting it!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (7 PROBLEMS)
+         ====================================================================== -->
+    <section id="sec4">
+      <h3 class="section-title"><span class="num">4</span> ISRT Past-Exam &amp; Class-Notes Vault (7 Problems)</h3>
+      <div class="tabs" id="vaultFilters">
+        <button type="button" class="tab-btn active" data-vcat="all">All (7)</button>
+        <button type="button" class="tab-btn" data-vcat="roses">Roses (2)</button>
+        <button type="button" class="tab-btn" data-vcat="cardioids">Cardioids &amp; Circles (3)</button>
+        <button type="button" class="tab-btn" data-vcat="limacons">Conversions &amp; Limaçons (2)</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ====================================================================== -->
+    <section id="sec5">
+      <h3 class="section-title"><span class="num">5</span> Quick Mastery Check</h3>
+      <div class="quiz-bar">
+        <span style="color:var(--muted);font-size:0.9rem;">Quiz Score: <strong id="quizScore" style="color:var(--emerald);font-family:var(--font-mono)">0 / 5</strong></span>
+        <button type="button" class="btn" id="resetQuizBtn">&#8634; Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2600);
+      }
+
+      /* ----------------------------------------------------------------------
+         2. HIDPI CANVAS & POLAR GRID HELPERS
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(220, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function drawPolarGrid(ctx, cx, cy, scale, maxR, ringStep, showLabels) {
+        ctx.save();
+        // Concentric dashed circles
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.16)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        for (let r = ringStep; r <= maxR + 1e-6; r += ringStep) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, r * scale, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
+
+        // Radial spokes every 30 deg & 45 deg
+        const spokeAngles = [
+          { deg: 0, lbl: '0' }, { deg: 30, lbl: 'π/6' }, { deg: 45, lbl: 'π/4' },
+          { deg: 60, lbl: 'π/3' }, { deg: 90, lbl: 'π/2' }, { deg: 120, lbl: '2π/3' },
+          { deg: 135, lbl: '3π/4' }, { deg: 150, lbl: '5π/6' }, { deg: 180, lbl: 'π' },
+          { deg: 210, lbl: '7π/6' }, { deg: 225, lbl: '5π/4' }, { deg: 240, lbl: '4π/3' },
+          { deg: 270, lbl: '3π/2' }, { deg: 300, lbl: '5π/3' }, { deg: 315, lbl: '7π/4' },
+          { deg: 330, lbl: '11π/6' }
+        ];
+        const outerPx = maxR * scale;
+        ctx.font = '500 10.5px "JetBrains Mono", monospace';
+        spokeAngles.forEach((sp) => {
+          const rad = (sp.deg * Math.PI) / 180;
+          const isAxis = sp.deg % 90 === 0;
+          ctx.strokeStyle = isAxis ? 'rgba(148, 163, 184, 0.35)' : 'rgba(148, 163, 184, 0.11)';
+          ctx.lineWidth = isAxis ? 1.3 : 1;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + outerPx * Math.cos(rad), cy - outerPx * Math.sin(rad));
+          ctx.stroke();
+
+          if (showLabels && (sp.deg % 30 === 0 || sp.deg === 45 || sp.deg === 135 || sp.deg === 225 || sp.deg === 315)) {
+            const lx = cx + (outerPx + 16) * Math.cos(rad);
+            const ly = cy - (outerPx + 16) * Math.sin(rad);
+            ctx.fillStyle = '#94a3b8';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(sp.lbl, lx, ly);
+          }
+        });
+
+        // Ring radius labels on positive x-axis
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let r = ringStep; r <= maxR + 1e-6; r += ringStep) {
+          ctx.fillText(Number(r.toFixed(1)).toString(), cx + r * scale, cy + 4);
+        }
+        ctx.restore();
+      }
+
+      function degToRadStr(deg) {
+        const g = (a, b) => (b === 0 ? a : g(b, a % b));
+        const d = Math.round(deg);
+        if (d === 0) return '0';
+        const sign = d < 0 ? '-' : '';
+        const ad = Math.abs(d);
+        const div = g(ad, 180);
+        const num = ad / div;
+        const den = 180 / div;
+        if (den === 1) return num === 1 ? `${sign}π` : `${sign}${num}π`;
+        return num === 1 ? `${sign}π/${den}` : `${sign}${num}π/${den}`;
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 1: POLAR RAY SWEEPER & AREA SANDBOX
+         ---------------------------------------------------------------------- */
+      const sweeperPresets = {
+        cardioid_circle: {
+          maxR: 8.5, ringStep: 2,
+          interRays: [Math.PI / 3, (5 * Math.PI) / 3],
+          exactTex: '18\\sqrt{3} - 4\\pi \\approx 18.6105',
+          formulaTex: 'A = \\frac{1}{2}\\int_{-\\pi/3}^{\\pi/3} \\big[(4+4\\cos\\theta)^2 - 6^2\\big]\\,d\\theta',
+          r1: (t) => 4 + 4 * Math.cos(t),
+          r2: () => 6,
+          evalInfo(t) {
+            const c = 4 + 4 * Math.cos(t);
+            return `r₁=${c.toFixed(2)}, r₂=6.00`;
+          },
+          sweptArea(thetaMax) {
+            const N = 400;
+            const dt = thetaMax / N;
+            let area = 0;
+            for (let i = 0; i < N; i++) {
+              const t = (i + 0.5) * dt;
+              const rOut = 4 + 4 * Math.cos(t);
+              if (rOut > 6) area += 0.5 * (rOut * rOut - 36) * dt;
+            }
+            return area;
+          },
+          draw(ctx, cx, cy, scale, thetaMax, showGrid) {
+            // Swept annular sector where 4+4cos(t) > 6
+            const steps = Math.max(1, Math.round((thetaMax / (2 * Math.PI)) * 360));
+            const dt = thetaMax / steps;
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.34)';
+            for (let i = 0; i < steps; i++) {
+              const t0 = i * dt, t1 = (i + 1) * dt;
+              const tm = 0.5 * (t0 + t1);
+              const rOut0 = 4 + 4 * Math.cos(t0), rOut1 = 4 + 4 * Math.cos(t1);
+              if (4 + 4 * Math.cos(tm) > 6) {
+                ctx.beginPath();
+                ctx.moveTo(cx + 6 * scale * Math.cos(t0), cy - 6 * scale * Math.sin(t0));
+                ctx.lineTo(cx + rOut0 * scale * Math.cos(t0), cy - rOut0 * scale * Math.sin(t0));
+                ctx.lineTo(cx + rOut1 * scale * Math.cos(t1), cy - rOut1 * scale * Math.sin(t1));
+                ctx.lineTo(cx + 6 * scale * Math.cos(t1), cy - 6 * scale * Math.sin(t1));
+                ctx.closePath();
+                ctx.fill();
+              }
+            }
+            // Reference circle r = 6
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.85)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 6 * scale, 0, Math.PI * 2);
+            ctx.stroke();
+            // Reference cardioid r = 4 + 4cos(t)
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            for (let i = 0; i <= 240; i++) {
+              const t = (i / 240) * Math.PI * 2;
+              const r = 4 + 4 * Math.cos(t);
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Intersection rays at ±π/3
+            if (showGrid) {
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.6; ctx.setLineDash([5, 4]);
+              this.interRays.forEach((a) => {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + 7.5 * scale * Math.cos(a), cy - 7.5 * scale * Math.sin(a));
+                ctx.stroke();
+              });
+              ctx.setLineDash([]);
+            }
+
+            // Sweeping ray
+            const rCur = 4 + 4 * Math.cos(thetaMax);
+            const rRay = Math.max(6, rCur);
+            ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + rRay * scale * Math.cos(thetaMax), cy - rRay * scale * Math.sin(thetaMax));
+            ctx.stroke();
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(cx + rCur * scale * Math.cos(thetaMax), cy - rCur * scale * Math.sin(thetaMax), 4.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        },
+
+        rose3: {
+          maxR: 1.25, ringStep: 0.5,
+          interRays: [0, Math.PI / 3, (2 * Math.PI) / 3],
+          exactTex: '\\frac{\\pi}{4} \\approx 0.7854',
+          formulaTex: 'A = 3\\cdot\\frac{1}{2}\\int_0^{\\pi/3} \\sin^2(3\\theta)\\,d\\theta = \\frac{\\pi}{4}',
+          r1: (t) => Math.sin(3 * t),
+          evalInfo(t) { return `r = ${Math.sin(3 * t).toFixed(3)}`; },
+          sweptArea(thetaMax) {
+            const N = 400, dt = thetaMax / N;
+            let area = 0;
+            for (let i = 0; i < N; i++) {
+              const t = (i + 0.5) * dt;
+              const r = Math.sin(3 * t);
+              area += 0.5 * r * r * dt;
+            }
+            return area;
+          },
+          draw(ctx, cx, cy, scale, thetaMax, showGrid, w) {
+            // Faint full rose
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i <= 240; i++) {
+              const t = (i / 240) * Math.PI;
+              const r = Math.sin(3 * t);
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // First pass [0, min(thetaMax, pi)] in sky
+            const tFirst = Math.min(thetaMax, Math.PI);
+            const s1 = Math.max(1, Math.round((tFirst / Math.PI) * 180));
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.34)';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            for (let i = 0; i <= s1; i++) {
+              const t = (i / s1) * tFirst;
+              const r = Math.sin(3 * t);
+              ctx.lineTo(cx + r * scale * Math.cos(t), cy - r * scale * Math.sin(t));
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Second overlapping pass (thetaMax > pi) in rose
+            if (thetaMax > Math.PI + 1e-4) {
+              const s2 = Math.max(1, Math.round(((thetaMax - Math.PI) / Math.PI) * 180));
+              ctx.fillStyle = 'rgba(251, 113, 133, 0.42)';
+              ctx.beginPath();
+              ctx.moveTo(cx, cy);
+              for (let i = 0; i <= s2; i++) {
+                const t = Math.PI + (i / s2) * (thetaMax - Math.PI);
+                const r = Math.sin(3 * t);
+                ctx.lineTo(cx + r * scale * Math.cos(t), cy - r * scale * Math.sin(t));
+              }
+              ctx.closePath();
+              ctx.fill();
+
+              // On-canvas overlap warning badge
+              ctx.save();
+              const msg = 'OVERLAP! Already traced on [0, π]';
+              ctx.font = '700 12px "JetBrains Mono", monospace';
+              const tw = ctx.measureText(msg).width;
+              const bx = Math.max(12, w - tw - 34), by = 14;
+              ctx.fillStyle = 'rgba(225, 29, 72, 0.9)';
+              ctx.beginPath();
+              ctx.roundRect(bx, by, tw + 22, 28, 8);
+              ctx.fill();
+              ctx.fillStyle = '#ffffff';
+              ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+              ctx.fillText(msg, bx + 11, by + 14);
+              ctx.restore();
+            }
+
+            if (showGrid) {
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.4; ctx.setLineDash([5, 4]);
+              this.interRays.forEach((a) => {
+                ctx.beginPath();
+                ctx.moveTo(cx - 1.15 * scale * Math.cos(a), cy + 1.15 * scale * Math.sin(a));
+                ctx.lineTo(cx + 1.15 * scale * Math.cos(a), cy - 1.15 * scale * Math.sin(a));
+                ctx.stroke();
+              });
+              ctx.setLineDash([]);
+            }
+
+            // Sweeping ray
+            const rCur = Math.sin(3 * thetaMax);
+            const px = cx + rCur * scale * Math.cos(thetaMax);
+            const py = cy - rCur * scale * Math.sin(thetaMax);
+            ctx.strokeStyle = thetaMax > Math.PI ? '#fb7185' : '#fbbf24';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+            ctx.fillStyle = thetaMax > Math.PI ? '#fb7185' : '#fbbf24';
+            ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+          }
+        },
+
+        rose4: {
+          maxR: 1.25, ringStep: 0.5,
+          interRays: [Math.PI / 4, (3 * Math.PI) / 4],
+          exactTex: '\\frac{\\pi}{2} \\approx 1.5708',
+          formulaTex: 'A = \\frac{1}{2}\\int_0^{2\\pi} \\cos^2(2\\theta)\\,d\\theta = \\frac{\\pi}{2}',
+          r1: (t) => Math.cos(2 * t),
+          evalInfo(t) { return `r = ${Math.cos(2 * t).toFixed(3)}`; },
+          sweptArea(thetaMax) {
+            const N = 400, dt = thetaMax / N;
+            let area = 0;
+            for (let i = 0; i < N; i++) {
+              const t = (i + 0.5) * dt;
+              const r = Math.cos(2 * t);
+              area += 0.5 * r * r * dt;
+            }
+            return area;
+          },
+          draw(ctx, cx, cy, scale, thetaMax, showGrid) {
+            // Faint full rose
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i <= 320; i++) {
+              const t = (i / 320) * Math.PI * 2;
+              const r = Math.cos(2 * t);
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Swept sector
+            const s = Math.max(1, Math.round((thetaMax / (2 * Math.PI)) * 320));
+            ctx.fillStyle = 'rgba(129, 140, 248, 0.36)';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            for (let i = 0; i <= s; i++) {
+              const t = (i / s) * thetaMax;
+              const r = Math.cos(2 * t);
+              ctx.lineTo(cx + r * scale * Math.cos(t), cy - r * scale * Math.sin(t));
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            if (showGrid) {
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.4; ctx.setLineDash([5, 4]);
+              this.interRays.forEach((a) => {
+                ctx.beginPath();
+                ctx.moveTo(cx - 1.15 * scale * Math.cos(a), cy + 1.15 * scale * Math.sin(a));
+                ctx.lineTo(cx + 1.15 * scale * Math.cos(a), cy - 1.15 * scale * Math.sin(a));
+                ctx.stroke();
+              });
+              ctx.setLineDash([]);
+            }
+
+            const rCur = Math.cos(2 * thetaMax);
+            const px = cx + rCur * scale * Math.cos(thetaMax);
+            const py = cy - rCur * scale * Math.sin(thetaMax);
+            ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.4;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+          }
+        },
+
+        cardioid: {
+          maxR: 2.3, ringStep: 0.5,
+          interRays: [0, Math.PI],
+          exactTex: '\\frac{3\\pi}{2} \\approx 4.7124',
+          formulaTex: 'A = \\frac{1}{2}\\int_0^{2\\pi} (1 - \\cos\\theta)^2\\,d\\theta = \\frac{3\\pi}{2}',
+          r1: (t) => 1 - Math.cos(t),
+          evalInfo(t) { return `r = ${(1 - Math.cos(t)).toFixed(3)}`; },
+          sweptArea(thetaMax) {
+            const N = 400, dt = thetaMax / N;
+            let area = 0;
+            for (let i = 0; i < N; i++) {
+              const t = (i + 0.5) * dt;
+              const r = 1 - Math.cos(t);
+              area += 0.5 * r * r * dt;
+            }
+            return area;
+          },
+          draw(ctx, cx, cy, scale, thetaMax) {
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            for (let i = 0; i <= 240; i++) {
+              const t = (i / 240) * Math.PI * 2;
+              const r = 1 - Math.cos(t);
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            const s = Math.max(1, Math.round((thetaMax / (2 * Math.PI)) * 240));
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.34)';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            for (let i = 0; i <= s; i++) {
+              const t = (i / s) * thetaMax;
+              const r = 1 - Math.cos(t);
+              ctx.lineTo(cx + r * scale * Math.cos(t), cy - r * scale * Math.sin(t));
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            const rCur = 1 - Math.cos(thetaMax);
+            const px = cx + rCur * scale * Math.cos(thetaMax);
+            const py = cy - rCur * scale * Math.sin(thetaMax);
+            ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.4;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+          }
+        },
+
+        common_circles: {
+          maxR: 2.3, ringStep: 0.5,
+          interRays: [Math.PI / 4],
+          exactTex: '\\frac{\\pi}{2} - 1 \\approx 0.5708',
+          formulaTex: 'A = 2\\cdot\\frac{1}{2}\\int_0^{\\pi/4} (2\\sin\\theta)^2\\,d\\theta = \\frac{\\pi}{2} - 1',
+          r1: (t) => 2 * Math.sin(t),
+          r2: (t) => 2 * Math.cos(t),
+          evalInfo(t) { return `r₁=${(2 * Math.sin(t)).toFixed(2)}, r₂=${(2 * Math.cos(t)).toFixed(2)}`; },
+          sweptArea(thetaMax) {
+            const lim = Math.min(thetaMax, Math.PI / 2);
+            const N = 300, dt = lim / N;
+            let area = 0;
+            for (let i = 0; i < N; i++) {
+              const t = (i + 0.5) * dt;
+              const r = Math.min(2 * Math.sin(t), 2 * Math.cos(t));
+              area += 0.5 * r * r * dt;
+            }
+            return area;
+          },
+          draw(ctx, cx, cy, scale, thetaMax, showGrid) {
+            // Swept common region in Q1
+            const lim = Math.min(thetaMax, Math.PI / 2);
+            const s = Math.max(1, Math.round((lim / (Math.PI / 2)) * 120));
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.38)';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            for (let i = 0; i <= s; i++) {
+              const t = (i / s) * lim;
+              const r = Math.min(2 * Math.sin(t), 2 * Math.cos(t));
+              ctx.lineTo(cx + r * scale * Math.cos(t), cy - r * scale * Math.sin(t));
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            // Circle r = 2 sin(t): center (0, 1), radius 1
+            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.2;
+            ctx.beginPath(); ctx.arc(cx, cy - 1 * scale, 1 * scale, 0, Math.PI * 2); ctx.stroke();
+
+            // Circle r = 2 cos(t): center (1, 0), radius 1
+            ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 2.2;
+            ctx.beginPath(); ctx.arc(cx + 1 * scale, cy, 1 * scale, 0, Math.PI * 2); ctx.stroke();
+
+            if (showGrid) {
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.6; ctx.setLineDash([5, 4]);
+              ctx.beginPath();
+              ctx.moveTo(cx, cy);
+              ctx.lineTo(cx + 2.1 * scale * Math.cos(Math.PI / 4), cy - 2.1 * scale * Math.sin(Math.PI / 4));
+              ctx.stroke();
+              ctx.setLineDash([]);
+            }
+
+            const rRay = thetaMax <= Math.PI / 2 ? Math.min(2 * Math.sin(thetaMax), 2 * Math.cos(thetaMax)) : 1.5;
+            const px = cx + rRay * scale * Math.cos(thetaMax);
+            const py = cy - rRay * scale * Math.sin(thetaMax);
+            ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.3;
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+          }
+        },
+
+        limacon: {
+          maxR: 1.7, ringStep: 0.5,
+          interRays: [(2 * Math.PI) / 3, (4 * Math.PI) / 3],
+          exactTex: '\\text{Inner: }\\frac{\\pi}{4}-\\frac{3\\sqrt{3}}{8} \\approx 0.1359',
+          formulaTex: 'A_{\\text{inner}} = \\frac{1}{2}\\int_{2\\pi/3}^{4\\pi/3} \\left(\\frac{1}{2}+\\cos\\theta\\right)^2 d\\theta',
+          r1: (t) => 0.5 + Math.cos(t),
+          evalInfo(t) {
+            const rv = 0.5 + Math.cos(t);
+            return `r = ${rv.toFixed(3)} ${rv < 0 ? '(NEGATIVE r!)' : ''}`;
+          },
+          sweptArea(thetaMax) {
+            const N = 400, dt = thetaMax / N;
+            let area = 0;
+            for (let i = 0; i < N; i++) {
+              const t = (i + 0.5) * dt;
+              const r = 0.5 + Math.cos(t);
+              area += 0.5 * r * r * dt;
+            }
+            return area;
+          },
+          draw(ctx, cx, cy, scale, thetaMax, showGrid, w) {
+            // Faint full limaçon
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            for (let i = 0; i <= 300; i++) {
+              const t = (i / 300) * Math.PI * 2;
+              const r = 0.5 + Math.cos(t);
+              const x = cx + r * scale * Math.cos(t), y = cy - r * scale * Math.sin(t);
+              i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Swept sectors: sky where r >= 0, rose where r < 0 (inner loop)
+            const steps = Math.max(1, Math.round((thetaMax / (2 * Math.PI)) * 300));
+            const dt = thetaMax / steps;
+            for (let i = 0; i < steps; i++) {
+              const t0 = i * dt, t1 = (i + 1) * dt;
+              const r0 = 0.5 + Math.cos(t0), r1 = 0.5 + Math.cos(t1);
+              ctx.fillStyle = (r0 + r1) < 0 ? 'rgba(251, 113, 133, 0.48)' : 'rgba(56, 189, 248, 0.30)';
+              ctx.beginPath();
+              ctx.moveTo(cx, cy);
+              ctx.lineTo(cx + r0 * scale * Math.cos(t0), cy - r0 * scale * Math.sin(t0));
+              ctx.lineTo(cx + r1 * scale * Math.cos(t1), cy - r1 * scale * Math.sin(t1));
+              ctx.closePath();
+              ctx.fill();
+            }
+
+            if (showGrid) {
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+              this.interRays.forEach((a) => {
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + 1.55 * scale * Math.cos(a), cy - 1.55 * scale * Math.sin(a));
+                ctx.stroke();
+              });
+              ctx.setLineDash([]);
+            }
+
+            const rCur = 0.5 + Math.cos(thetaMax);
+            const px = cx + rCur * scale * Math.cos(thetaMax);
+            const py = cy - rCur * scale * Math.sin(thetaMax);
+
+            if (rCur < 0) {
+              // Dashed guide along +theta direction
+              ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+              ctx.lineWidth = 1.6; ctx.setLineDash([4, 4]);
+              ctx.beginPath();
+              ctx.moveTo(cx, cy);
+              ctx.lineTo(cx + 1.2 * scale * Math.cos(thetaMax), cy - 1.2 * scale * Math.sin(thetaMax));
+              ctx.stroke(); ctx.setLineDash([]);
+
+              // Solid rose ray pointing opposite (inner loop)
+              ctx.strokeStyle = '#fb7185'; ctx.lineWidth = 2.6;
+              ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+              ctx.fillStyle = '#fb7185';
+              ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill();
+
+              // Badge
+              const msg = 'r < 0: Tracing Inner Loop (Opposite Ray)';
+              ctx.font = '700 11.5px "JetBrains Mono", monospace';
+              const tw = ctx.measureText(msg).width;
+              const bx = Math.max(12, w - tw - 34), by = 14;
+              ctx.fillStyle = 'rgba(225, 29, 72, 0.88)';
+              ctx.beginPath(); ctx.roundRect(bx, by, tw + 20, 26, 7); ctx.fill();
+              ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+              ctx.fillText(msg, bx + 10, by + 13);
+            } else {
+              ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.4;
+              ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+              ctx.fillStyle = '#fbbf24';
+              ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+            }
+          }
+        }
+      };
+
+      const sweeperState = {
+        preset: 'cardioid_circle',
+        deg: 120,
+        showGrid: true,
+        playing: false,
+        rafId: null,
+        lastTs: 0
+      };
+
+      const sweeperCanvas = document.getElementById('sweeperCanvas');
+      const sweepSlider = document.getElementById('sweepSlider');
+      const playSweepBtn = document.getElementById('playSweepBtn');
+
+      function drawSweeper() {
+        const pr = sweeperPresets[sweeperState.preset];
+        const thetaRad = (sweeperState.deg * Math.PI) / 180;
+        const { ctx, w, h } = setupCanvas(sweeperCanvas);
+
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w * 0.5;
+        const cy = h * 0.5;
+        const radiusPx = Math.min(w, h) * 0.41;
+        const scale = radiusPx / pr.maxR;
+
+        if (sweeperState.showGrid) {
+          drawPolarGrid(ctx, cx, cy, scale, pr.maxR, pr.ringStep, true);
+        } else {
+          // Minimal axes
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(cx - radiusPx, cy); ctx.lineTo(cx + radiusPx, cy);
+          ctx.moveTo(cx, cy - radiusPx); ctx.lineTo(cx, cy + radiusPx);
+          ctx.stroke();
+        }
+
+        pr.draw(ctx, cx, cy, scale, thetaRad, sweeperState.showGrid, w);
+
+        // Pole dot
+        ctx.fillStyle = '#f1f5f9';
+        ctx.beginPath(); ctx.arc(cx, cy, 3.2, 0, Math.PI * 2); ctx.fill();
+
+        // Update UI labels & Telemetry
+        document.getElementById('sweepDegLabel').textContent = `${Math.round(sweeperState.deg)}° (${degToRadStr(sweeperState.deg)})`;
+        document.getElementById('teleThetaR').textContent = `${Math.round(sweeperState.deg)}° | ${pr.evalInfo(thetaRad)}`;
+        const swept = pr.sweptArea(thetaRad);
+        document.getElementById('teleSwept').textContent = swept.toFixed(4);
+        document.getElementById('teleSweptSub').textContent = sweeperState.preset === 'rose3' && sweeperState.deg > 180
+          ? 'Includes double-counted overlap!'
+          : `Swept from 0° to ${Math.round(sweeperState.deg)}°`;
+
+        const exactEl = document.getElementById('teleExact');
+        const formEl = document.getElementById('teleFormula');
+        if (exactEl.dataset.pkey !== sweeperState.preset) {
+          exactEl.innerHTML = `$${pr.exactTex}$`;
+          formEl.innerHTML = `$${pr.formulaTex}$`;
+          exactEl.dataset.pkey = sweeperState.preset;
+          renderMath(exactEl);
+          renderMath(formEl);
+        }
+      }
+
+      function stopSweepAnim() {
+        sweeperState.playing = false;
+        if (sweeperState.rafId) cancelAnimationFrame(sweeperState.rafId);
+        sweeperState.rafId = null;
+        playSweepBtn.innerHTML = '&#9654; Play Sweep';
+      }
+
+      function stepSweepAnim(ts) {
+        if (!sweeperState.playing) return;
+        if (!sweeperState.lastTs) sweeperState.lastTs = ts;
+        const dt = Math.min(0.05, (ts - sweeperState.lastTs) / 1000);
+        sweeperState.lastTs = ts;
+        sweeperState.deg = (sweeperState.deg + 52 * dt) % 361;
+        if (sweeperState.deg >= 360) sweeperState.deg = 0;
+        sweepSlider.value = Math.round(sweeperState.deg);
+        drawSweeper();
+        sweeperState.rafId = requestAnimationFrame(stepSweepAnim);
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2A: POLAR POINT & NEGATIVE-r EXPLORER
+         ---------------------------------------------------------------------- */
+      const pointCanvas = document.getElementById('pointCanvas');
+      const ptRSlider = document.getElementById('ptRSlider');
+      const ptThetaSlider = document.getElementById('ptThetaSlider');
+
+      function drawPointExplorer() {
+        const r = parseFloat(ptRSlider.value);
+        const deg = parseInt(ptThetaSlider.value, 10);
+        const rad = (deg * Math.PI) / 180;
+        const x = r * Math.cos(rad);
+        const y = r * Math.sin(rad);
+
+        document.getElementById('ptRVal').textContent = `r = ${r.toFixed(1)}`;
+        document.getElementById('ptThetaVal').textContent = `θ = ${deg}° (${degToRadStr(deg)})`;
+
+        const { ctx, w, h } = setupCanvas(pointCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w * 0.5, cy = h * 0.5;
+        const scale = (Math.min(w, h) * 0.40) / 4.2;
+        drawPolarGrid(ctx, cx, cy, scale, 4, 1, true);
+
+        // Angle arc at origin
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 24, 0, -rad, rad > 0);
+        ctx.stroke();
+
+        // Terminal ray along theta (dashed rose if r < 0, solid amber if r >= 0)
+        const rayLen = 4.0 * scale;
+        ctx.save();
+        if (r < 0) {
+          ctx.strokeStyle = 'rgba(251, 113, 133, 0.55)';
+          ctx.setLineDash([5, 4]);
+        } else {
+          ctx.strokeStyle = 'rgba(251, 191, 36, 0.7)';
+        }
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + rayLen * Math.cos(rad), cy - rayLen * Math.sin(rad));
+        ctx.stroke();
+        ctx.restore();
+
+        // Actual plotted point (x, y)
+        const px = cx + x * scale;
+        const py = cy - y * scale;
+
+        // Solid vector from pole to plotted point
+        ctx.strokeStyle = r < 0 ? '#fb7185' : '#38bdf8';
+        ctx.lineWidth = 2.8;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+
+        // Cartesian projections
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.7)';
+        ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(px, py); ctx.lineTo(px, cy);
+        ctx.moveTo(px, py); ctx.lineTo(cx, py);
+        ctx.stroke(); ctx.setLineDash([]);
+
+        // Point dot
+        ctx.fillStyle = '#34d399';
+        ctx.strokeStyle = '#0b1120';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        // Label near point
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '700 11.5px "JetBrains Mono", monospace';
+        ctx.textAlign = x >= 0 ? 'left' : 'right';
+        ctx.textBaseline = y >= 0 ? 'bottom' : 'top';
+        ctx.fillText(`(${x.toFixed(2)}, ${y.toFixed(2)})`, px + (x >= 0 ? 9 : -9), py + (y >= 0 ? -7 : 7));
+
+        // Update 4 Equivalent Representations + Cartesian
+        const repEl = document.getElementById('pointRepList');
+        const rStr = Number(r.toFixed(1)).toString();
+        const negRStr = Number((-r).toFixed(1)).toString();
+        repEl.innerHTML = `
+          <div class="rep-item" style="border-left-color:var(--emerald)">
+            <span class="rep-lbl">Cartesian (x, y)</span>
+            <span class="rep-val">(${x.toFixed(3)}, ${y.toFixed(3)})</span>
+          </div>
+          <div class="rep-item" style="border-left-color:var(--sky)">
+            <span class="rep-lbl">1. Given (r, θ)</span>
+            <span class="rep-val">(${rStr}, ${deg}°) = (${rStr}, ${degToRadStr(deg)})</span>
+          </div>
+          <div class="rep-item">
+            <span class="rep-lbl">2. Co-terminal (r, θ + 2π)</span>
+            <span class="rep-val">(${rStr}, ${deg + 360}°) = (${rStr}, ${degToRadStr(deg + 360)})</span>
+          </div>
+          <div class="rep-item" style="border-left-color:var(--rose)">
+            <span class="rep-lbl">3. Opposite (-r, θ + π)</span>
+            <span class="rep-val">(${negRStr}, ${deg + 180}°) = (${negRStr}, ${degToRadStr(deg + 180)})</span>
+          </div>
+          <div class="rep-item" style="border-left-color:var(--amber)">
+            <span class="rep-lbl">4. Opposite (-r, θ - π)</span>
+            <span class="rep-val">(${negRStr}, ${deg - 180}°) = (${negRStr}, ${degToRadStr(deg - 180)})</span>
+          </div>
+        `;
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 2B: ROSE PETAL & CARDIOID FAMILY EXPLORER
+         ---------------------------------------------------------------------- */
+      const familyCanvas = document.getElementById('familyCanvas');
+      const famType = document.getElementById('famType');
+      const famNSlider = document.getElementById('famNSlider');
+      const famASlider = document.getElementById('famASlider');
+
+      function drawFamilyExplorer() {
+        const type = famType.value;
+        const n = parseInt(famNSlider.value, 10);
+        const a = parseFloat(famASlider.value);
+        const isRose = type === 'cos_rose' || type === 'sin_rose';
+
+        document.getElementById('famNGroup').style.opacity = isRose ? '1' : '0.4';
+        famNSlider.disabled = !isRose;
+        document.getElementById('famNVal').textContent = `n = ${n}`;
+        document.getElementById('famAVal').textContent = `a = ${a.toFixed(1)}`;
+
+        const maxR = isRose ? Math.max(4, a + 0.5) : Math.max(4, 2 * a + 0.5);
+        const { ctx, w, h } = setupCanvas(familyCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w * 0.5, cy = h * 0.5;
+        const scale = (Math.min(w, h) * 0.40) / maxR;
+        drawPolarGrid(ctx, cx, cy, scale, maxR, maxR > 5 ? 2 : 1, true);
+
+        const isOddRose = isRose && (n % 2 === 1);
+        const period = isOddRose ? Math.PI : Math.PI * 2;
+
+        ctx.fillStyle = 'rgba(129, 140, 248, 0.25)';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        const steps = 360;
+        for (let i = 0; i <= steps; i++) {
+          const t = (i / steps) * period;
+          let r = 0;
+          if (type === 'cos_rose') r = a * Math.cos(n * t);
+          else if (type === 'sin_rose') r = a * Math.sin(n * t);
+          else if (type === 'card_cos') r = a * (1 + Math.cos(t));
+          else r = a * (1 - Math.sin(t));
+          const x = cx + r * scale * Math.cos(t);
+          const y = cy - r * scale * Math.sin(t);
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Update Family Readouts
+        const petalsEl = document.getElementById('famPetals');
+        const periodEl = document.getElementById('famPeriod');
+        const areaEl = document.getElementById('famArea');
+
+        if (isRose) {
+          const count = isOddRose ? n : 2 * n;
+          petalsEl.textContent = n === 1 ? '1 Circle (n = 1, diameter a)' : `${count} Petals (${isOddRose ? 'n is odd' : 'n is even'})`;
+          periodEl.textContent = isOddRose ? '[0, π] (Length π)' : '[0, 2π] (Length 2π)';
+          const areaVal = isOddRose ? (Math.PI * a * a) / 4 : (Math.PI * a * a) / 2;
+          const tex = isOddRose
+            ? `\\frac{\\pi a^2}{4} = \\frac{${(a * a).toFixed(2)}\\pi}{4} \\approx ${areaVal.toFixed(3)}`
+            : `\\frac{\\pi a^2}{2} = \\frac{${(a * a).toFixed(2)}\\pi}{2} \\approx ${areaVal.toFixed(3)}`;
+          areaEl.innerHTML = `$${tex}$`;
+        } else {
+          petalsEl.textContent = 'Cardioid (Heart-shaped, 1 cusp at pole)';
+          periodEl.textContent = '[0, 2π] (Length 2π)';
+          const areaVal = (3 * Math.PI * a * a) / 2;
+          areaEl.innerHTML = `$\\frac{3\\pi a^2}{2} = ${(1.5 * a * a).toFixed(2)}\\pi \\approx ${areaVal.toFixed(3)}$`;
+        }
+        renderMath(areaEl);
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (7 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const vaultData = [
+        {
+          id: 'v1', cat: 'cardioids', exam: 'Final 2025 Q5(a)', topic: 'Cardioid & Circle',
+          q: 'Find the area of the region that is <strong>inside</strong> the cardioid $r = 4 + 4\\cos\\theta$ and <strong>outside</strong> the circle $r = 6$.',
+          hint: 'Set $4 + 4\\cos\\theta = 6 \\implies \\cos\\theta = \\frac{1}{2}$, giving $\\theta = \\pm\\frac{\\pi}{3}$. Use symmetry: $2 \\cdot \\frac{1}{2}\\int_0^{\\pi/3} (r_{\\text{outer}}^2 - r_{\\text{inner}}^2)\\,d\\theta$.',
+          sol: `<strong>Step 1 (Intersections):</strong> $4 + 4\\cos\\theta = 6 \\implies \\cos\\theta = \\frac{1}{2} \\implies \\theta = -\\frac{\\pi}{3},\\; \\frac{\\pi}{3}$.<br/>
+                <strong>Step 2 (Setup with Symmetry):</strong>
+                $$A = 2\\cdot\\frac{1}{2}\\int_0^{\\pi/3} \\left[(4 + 4\\cos\\theta)^2 - 6^2\\right]d\\theta = \\int_0^{\\pi/3} \\left(16 + 32\\cos\\theta + 16\\cos^2\\theta - 36\\right)d\\theta$$
+                <strong>Step 3 (Half-angle identity $16\\cos^2\\theta = 8 + 8\\cos 2\\theta$):</strong>
+                $$A = \\int_0^{\\pi/3} \\left(-12 + 32\\cos\\theta + 8\\cos 2\\theta\\right)d\\theta = \\Big[-12\\theta + 32\\sin\\theta + 4\\sin 2\\theta\\Big]_0^{\\pi/3}$$
+                $$= -4\\pi + 32\\left(\\frac{\\sqrt{3}}{2}\\right) + 4\\left(\\frac{\\sqrt{3}}{2}\\right) = 18\\sqrt{3} - 4\\pi \\approx 18.6105.$$`
+        },
+        {
+          id: 'v2', cat: 'roses', exam: 'Final 2023 Q5(b)', topic: 'Odd-Petal Rose',
+          q: 'Find the area enclosed by the three-petaled rose $r = \\sin 3\\theta$ using a polar single integral (and note its equivalence to a polar double integral).',
+          hint: 'Find two consecutive angles where $r = \\sin 3\\theta = 0$ ($\\theta = 0$ and $\\theta = \\pi/3$) to isolate 1 petal, then multiply by 3!',
+          sol: `<strong>Step 1 (One Petal Bounds):</strong> $\\sin 3\\theta = 0 \\implies 3\\theta = n\\pi \\implies \\theta = 0, \\frac{\\pi}{3}$. Thus one petal lies on $[0, \\frac{\\pi}{3}]$.<br/>
+                <strong>Step 2 (Polar Single Integral):</strong>
+                $$A = 3\\cdot\\frac{1}{2}\\int_0^{\\pi/3} \\sin^2(3\\theta)\\,d\\theta = \\frac{3}{2}\\int_0^{\\pi/3} \\frac{1 - \\cos 6\\theta}{2}\\,d\\theta = \\frac{3}{4}\\left[\\theta - \\frac{\\sin 6\\theta}{6}\\right]_0^{\\pi/3} = \\frac{3}{4}\\left(\\frac{\\pi}{3} - 0\\right) = \\frac{\\pi}{4}.$$
+                <strong>Polar Double Integral Equivalence:</strong>
+                $$A = 3\\int_0^{\\pi/3}\\int_0^{\\sin 3\\theta} r\\,dr\\,d\\theta = 3\\int_0^{\\pi/3} \\frac{1}{2}\\sin^2(3\\theta)\\,d\\theta = \\frac{\\pi}{4}.$$`
+        },
+        {
+          id: 'v3', cat: 'roses', exam: 'Class Notes (Ashraful & Adib)', topic: 'Even-Petal Rose',
+          q: 'Find the total area enclosed by the four-petaled rose $r = \\cos 2\\theta$, as well as the area of a single petal.',
+          hint: 'Since $n = 2$ is even, the rose has $2n = 4$ petals and traces once on $[0, 2\\pi]$. For 1 petal, solve $\\cos 2\\theta = 0 \\implies \\theta = \\pm\\frac{\\pi}{4}$.',
+          sol: `<strong>Single Petal ($-\\frac{\\pi}{4} \\le \\theta \\le \\frac{\\pi}{4}$):</strong>
+                $$A_{\\text{petal}} = \\frac{1}{2}\\int_{-\\pi/4}^{\\pi/4} \\cos^2(2\\theta)\\,d\\theta = \\frac{1}{2}\\int_{-\\pi/4}^{\\pi/4} \\frac{1 + \\cos 4\\theta}{2}\\,d\\theta = \\frac{1}{4}\\left[\\theta + \\frac{\\sin 4\\theta}{4}\\right]_{-\\pi/4}^{\\pi/4} = \\frac{1}{4}\\left(\\frac{\\pi}{2}\\right) = \\frac{\\pi}{8}.$$
+                <strong>Total Area (4 Petals):</strong>
+                $$A_{\\text{total}} = 4\\cdot\\frac{\\pi}{8} = \\frac{\\pi}{2} \\quad\\left(= \\frac{1}{2}\\int_0^{2\\pi} \\cos^2(2\\theta)\\,d\\theta\\right).$$`
+        },
+        {
+          id: 'v4', cat: 'cardioids', exam: 'Class Notes Ex 6 (Anton p.724)', topic: 'Cardioid',
+          q: 'Find the total area enclosed by the cardioid $r = 1 - \\cos\\theta$.',
+          hint: 'Integrate $\\frac{1}{2}\\int_0^{2\\pi} (1 - \\cos\\theta)^2\\,d\\theta$ using $\\cos^2\\theta = \\frac{1 + \\cos 2\\theta}{2}$.',
+          sol: `$$A = \\frac{1}{2}\\int_0^{2\\pi} (1 - \\cos\\theta)^2\\,d\\theta = \\frac{1}{2}\\int_0^{2\\pi} \\left(1 - 2\\cos\\theta + \\frac{1 + \\cos 2\\theta}{2}\\right)d\\theta$$
+                $$= \\frac{1}{2}\\left[\\frac{3}{2}\\theta - 2\\sin\\theta + \\frac{1}{4}\\sin 2\\theta\\right]_0^{2\\pi} = \\frac{1}{2}\\left(3\\pi - 0\\right) = \\frac{3\\pi}{2}.$$`
+        },
+        {
+          id: 'v5', cat: 'cardioids', exam: 'Class Notes Ex 42 (Anton p.727)', topic: 'Common Circle Area',
+          q: 'Find the area of the region common to the two circles $r = 2\\sin\\theta$ and $r = 2\\cos\\theta$.',
+          hint: 'Solve $2\\sin\\theta = 2\\cos\\theta \\implies \\theta = \\frac{\\pi}{4}$. By symmetry across $\\theta = \\frac{\\pi}{4}$, double the sector under $r = 2\\sin\\theta$ on $[0, \\frac{\\pi}{4}]$.',
+          sol: `<strong>Step 1 (Intersection):</strong> $2\\sin\\theta = 2\\cos\\theta \\implies \\tan\\theta = 1 \\implies \\theta = \\frac{\\pi}{4}$ (plus the pole $(0,0)$ reached at $\\theta = 0$ and $\\theta = \\frac{\\pi}{2}$).<br/>
+                <strong>Step 2 (Symmetric Integral):</strong> On $[0, \\frac{\\pi}{4}]$, the boundary of the common lens is $r = 2\\sin\\theta$:
+                $$A = 2\\cdot\\frac{1}{2}\\int_0^{\\pi/4} (2\\sin\\theta)^2\\,d\\theta = 4\\int_0^{\\pi/4} \\frac{1 - \\cos 2\\theta}{2}\\,d\\theta = \\Big[2\\theta - \\sin 2\\theta\\Big]_0^{\\pi/4} = \\frac{\\pi}{2} - 1.$$`
+        },
+        {
+          id: 'v6', cat: 'limacons', exam: 'Class Notes Ex 43', topic: 'Limaçon Inner Loop',
+          q: 'For the limaçon $r = \\frac{1}{2} + \\cos\\theta$, find: (a) the area of the <strong>inner loop</strong>, and (b) the area inside the outer loop but <strong>outside</strong> the inner loop.',
+          hint: 'Set $r = 0 \\implies \\cos\\theta = -\\frac{1}{2} \\implies \\theta = \\frac{2\\pi}{3}, \\frac{4\\pi}{3}$. The inner loop is traced on $[\\frac{2\\pi}{3}, \\frac{4\\pi}{3}]$.',
+          sol: `<strong>Antiderivative:</strong> $\\int \\left(\\frac{1}{2}+\\cos\\theta\\right)^2 d\\theta = \\int\\left(\\frac{3}{4} + \\cos\\theta + \\frac{\\cos 2\\theta}{2}\\right)d\\theta = \\frac{3}{4}\\theta + \\sin\\theta + \\frac{1}{4}\\sin 2\\theta$.<br/>
+                <strong>(a) Inner Loop ($\\frac{2\\pi}{3} \\le \\theta \\le \\frac{4\\pi}{3}$):</strong>
+                $$A_{\\text{inner}} = \\frac{1}{2}\\left[\\frac{3}{4}\\theta + \\sin\\theta + \\frac{1}{4}\\sin 2\\theta\\right]_{2\\pi/3}^{4\\pi/3} = \\frac{1}{2}\\left(\\frac{\\pi}{2} - \\sqrt{3} + \\frac{\\sqrt{3}}{4}\\right) = \\frac{\\pi}{4} - \\frac{3\\sqrt{3}}{8}.$$
+                <strong>(b) Outer Loop ($-\\frac{2\\pi}{3} \\le \\theta \\le \\frac{2\\pi}{3}$):</strong>
+                $$A_{\\text{outer}} = \\frac{1}{2}\\left[\\frac{3}{4}\\theta + \\sin\\theta + \\frac{1}{4}\\sin 2\\theta\\right]_{-2\\pi/3}^{2\\pi/3} = \\frac{\\pi}{2} + \\frac{3\\sqrt{3}}{8}.$$
+                <strong>Between Outer &amp; Inner:</strong>
+                $$A_{\\text{between}} = A_{\\text{outer}} - A_{\\text{inner}} = \\left(\\frac{\\pi}{2} + \\frac{3\\sqrt{3}}{8}\\right) - \\left(\\frac{\\pi}{4} - \\frac{3\\sqrt{3}}{8}\\right) = \\frac{\\pi}{4} + \\frac{3\\sqrt{3}}{4}.$$`
+        },
+        {
+          id: 'v7', cat: 'limacons', exam: 'Class Notes (Section 10.2)', topic: 'Polar Conversions',
+          q: 'Convert the polar equations $r = a\\sin\\theta$ and $r = a\\cos\\theta$ to Cartesian form and identify their centers and radii. Also write 3 alternate polar representations of $(3, \\frac{\\pi}{4})$.',
+          hint: 'Multiply both sides by $r$, then substitute $r^2 = x^2+y^2$, $r\\sin\\theta = y$, $r\\cos\\theta = x$, and complete the square.',
+          sol: `<strong>1. $r = a\\sin\\theta$:</strong> Multiply by $r$: $r^2 = ar\\sin\\theta \\implies x^2 + y^2 = ay \\implies x^2 + \\left(y - \\frac{a}{2}\\right)^2 = \\left(\\frac{a}{2}\\right)^2$.<br/>
+                Circle with center $\\left(0, \\frac{a}{2}\\right)$ and radius $\\frac{|a|}{2}$.<br/>
+                <strong>2. $r = a\\cos\\theta$:</strong> Multiply by $r$: $x^2 + y^2 = ax \\implies \\left(x - \\frac{a}{2}\\right)^2 + y^2 = \\left(\\frac{a}{2}\\right)^2$.<br/>
+                Circle with center $\\left(\\frac{a}{2}, 0\\right)$ and radius $\\frac{|a|}{2}$.<br/>
+                <strong>3. Alternate representations of $(3, \\frac{\\pi}{4})$:</strong> $\\left(3, \\frac{9\\pi}{4}\\right)$, $\\left(3, -\\frac{7\\pi}{4}\\right)$, $\\left(-3, \\frac{5\\pi}{4}\\right)$, and $\\left(-3, -\\frac{3\\pi}{4}\\right)$.`
+        }
+      ];
+
+      const reviewedVault = new Set();
+
+      function renderVault(filter) {
+        const list = document.getElementById('vaultList');
+        list.innerHTML = '';
+        vaultData.filter((v) => filter === 'all' || v.cat === filter).forEach((v) => {
+          const isRev = reviewedVault.has(v.id);
+          const card = document.createElement('div');
+          card.className = `vault-item ${isRev ? 'reviewed' : ''}`;
+          card.innerHTML = `
+            <div class="vault-head">
+              <span class="badge">${v.exam}</span>
+              <span class="badge sky">${v.topic}</span>
+            </div>
+            <p>${v.q}</p>
+            <div class="vault-actions">
+              <button type="button" class="btn" data-toggle="${v.id}-hint">Show Hint</button>
+              <button type="button" class="btn btn-primary" data-toggle="${v.id}-sol">Step-by-Step Solution</button>
+              <label class="check-label">
+                <input type="checkbox" class="vault-cb" data-vid="${v.id}" ${isRev ? 'checked' : ''} />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="reveal-box hint-box" id="${v.id}-hint"><strong>Hint:</strong> ${v.hint}</div>
+            <div class="reveal-box" id="${v.id}-sol">${v.sol}</div>
+          `;
+          list.appendChild(card);
+        });
+
+        list.querySelectorAll('[data-toggle]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const box = document.getElementById(btn.dataset.toggle);
+            const open = box.classList.toggle('open');
+            if (btn.dataset.toggle.endsWith('-hint')) {
+              btn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            } else {
+              btn.textContent = open ? 'Hide Solution' : 'Step-by-Step Solution';
+            }
+            if (open) renderMath(box);
+          });
+        });
+
+        list.querySelectorAll('.vault-cb').forEach((cb) => {
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) reviewedVault.add(vid);
+            else reviewedVault.delete(vid);
+            cb.closest('.vault-item').classList.toggle('reviewed', cb.checked);
+            updateProgress();
+          });
+        });
+
+        renderMath(list);
+      }
+
+      /* ----------------------------------------------------------------------
+         7. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. How many petals does $r = 5\\cos(4\\theta)$ have, and what interval traces it exactly once?',
+          opts: ['4 petals, $[0, \\pi]$', '8 petals, $[0, 2\\pi]$', '4 petals, $[0, 2\\pi]$', '8 petals, $[0, \\pi]$'],
+          ans: 1,
+          exp: 'Because $n = 4$ is <strong>even</strong>, $r = 5\\cos(4\\theta)$ has $2n = 8$ petals and requires the full interval $[0, 2\\pi]$ to trace once.'
+        },
+        {
+          q: '2. If you evaluate $\\displaystyle \\frac{1}{2}\\int_0^{2\\pi} \\sin^2(3\\theta)\\,d\\theta$, how does it compare to the true area of the rose $r = \\sin 3\\theta$?',
+          opts: [
+            'It equals the exact true area',
+            'It is half the true area',
+            'It is twice the true area',
+            'It equals zero due to cancellation'
+          ],
+          ans: 2,
+          exp: 'Since $n = 3$ is <strong>odd</strong>, $r = \\sin 3\\theta$ completes all 3 petals on $[0, \\pi]$ and overlaps itself on $[\\pi, 2\\pi]$. Integrating $0$ to $2\\pi$ gives <strong>twice</strong> the true area ($\\frac{\\pi}{2}$ instead of $\\frac{\\pi}{4}$).'
+        },
+        {
+          q: '3. What are the intersection angles of $r = 4 + 4\\cos\\theta$ and $r = 6$?',
+          opts: ['$\\theta = \\pm\\dfrac{\\pi}{6}$', '$\\theta = \\pm\\dfrac{\\pi}{4}$', '$\\theta = \\pm\\dfrac{\\pi}{3}$', '$\\theta = \\pm\\dfrac{2\\pi}{3}$'],
+          ans: 2,
+          exp: 'Setting $4 + 4\\cos\\theta = 6$ gives $4\\cos\\theta = 2 \\implies \\cos\\theta = \\frac{1}{2} \\implies \\theta = \\pm\\frac{\\pi}{3}$.'
+        },
+        {
+          q: '4. Which point in polar coordinates represents the exact same location as $\\left(2, \\dfrac{\\pi}{6}\\right)$?',
+          opts: ['$\\left(-2, \\dfrac{\\pi}{6}\\right)$', '$\\left(2, \\dfrac{7\\pi}{6}\\right)$', '$\\left(-2, -\\dfrac{\\pi}{6}\\right)$', '$\\left(-2, \\dfrac{7\\pi}{6}\\right)$'],
+          ans: 3,
+          exp: 'By $(r, \\theta) \\equiv (-r, \\theta + \\pi)$, adding $\\pi$ to $\\frac{\\pi}{6}$ gives $\\frac{7\\pi}{6}$ and negating $r$ gives $\\left(-2, \\frac{7\\pi}{6}\\right)$.'
+        },
+        {
+          q: '5. What is the correct integral for the area inside $r = 2 + 2\\cos\\theta$ and outside $r = 3$?',
+          opts: [
+            '$\\displaystyle \\int_0^{\\pi/3} \\left[(2 + 2\\cos\\theta)^2 - 9\\right]d\\theta$',
+            '$\\displaystyle \\frac{1}{2}\\int_0^{\\pi/3} \\left[(2 + 2\\cos\\theta)^2 - 9\\right]d\\theta$',
+            '$\\displaystyle \\int_0^{\\pi/3} (2\\cos\\theta - 1)^2\\,d\\theta$',
+            '$\\displaystyle \\int_0^{\\pi/2} \\left[(2 + 2\\cos\\theta)^2 - 9\\right]d\\theta$'
+          ],
+          ans: 0,
+          exp: 'Intersections satisfy $2 + 2\\cos\\theta = 3 \\implies \\cos\\theta = \\frac{1}{2} \\implies \\theta = \\pm\\frac{\\pi}{3}$. By symmetry, $A = 2\\cdot\\frac{1}{2}\\int_0^{\\pi/3}[(2+2\\cos\\theta)^2 - 3^2]\\,d\\theta = \\int_0^{\\pi/3}[(2+2\\cos\\theta)^2 - 9]\\,d\\theta$.'
+        }
+      ];
+
+      const quizAnswered = new Map();
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        quizData.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'quiz-q';
+          div.innerHTML = `
+            <p><strong>${item.q}</strong></p>
+            <div class="options" id="q-opts-${idx}"></div>
+            <div class="feedback" id="q-fb-${idx}"></div>
+          `;
+          container.appendChild(div);
+          const optsDiv = div.querySelector(`#q-opts-${idx}`);
+          item.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'opt-btn';
+            btn.innerHTML = opt;
+            btn.addEventListener('click', () => handleQuizAnswer(idx, oi));
+            optsDiv.appendChild(btn);
+          });
+        });
+        renderMath(container);
+      }
+
+      function handleQuizAnswer(qIdx, oIdx) {
+        if (quizAnswered.has(qIdx)) return;
+        const item = quizData[qIdx];
+        const ok = oIdx === item.ans;
+        quizAnswered.set(qIdx, ok);
+
+        const btns = document.querySelectorAll(`#q-opts-${qIdx} .opt-btn`);
+        btns.forEach((b, i) => {
+          b.disabled = true;
+          if (i === item.ans) b.classList.add('correct');
+          else if (i === oIdx) b.classList.add('wrong');
+        });
+
+        const fb = document.getElementById(`q-fb-${qIdx}`);
+        fb.innerHTML = (ok ? '<strong style="color:var(--emerald)">Correct!</strong> ' : '<strong style="color:var(--rose)">Not quite.</strong> ') + item.exp;
+        fb.classList.add('show');
+        renderMath(fb);
+
+        const score = [...quizAnswered.values()].filter(Boolean).length;
+        document.getElementById('quizScore').textContent = `${score} / ${quizData.length}`;
+        updateProgress();
+      }
+
+      /* ----------------------------------------------------------------------
+         8. MASTERY PROGRESS TRACKING (7 VAULT + 5 QUIZ = 12 TASKS)
+         ---------------------------------------------------------------------- */
+      function updateProgress() {
+        const total = vaultData.length + quizData.length;
+        const done = reviewedVault.size + quizAnswered.size;
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressDetail').textContent = `${done} / ${total} tasks (${reviewedVault.size}/7 Vault, ${quizAnswered.size}/5 Quiz)`;
+      }
+
+      /* ----------------------------------------------------------------------
+         9. INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile Drawer
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        function setDrawer(open) {
+          sidebar.classList.toggle('open', open);
+          overlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+        menuToggle.addEventListener('click', () => setDrawer(!sidebar.classList.contains('open')));
+        overlay.addEventListener('click', () => setDrawer(false));
+        document.querySelectorAll('#sideNav a').forEach((a) => a.addEventListener('click', () => setDrawer(false)));
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 10 — Arc Length, Surface Area, Work & Centroids');
+        });
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          showToast('Module 4 Starts Next: Lesson 12 — Double Integrals over General Regions');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('main section');
+        const navLinks = document.querySelectorAll('#sideNav a');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.sec === entry.target.id));
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Controls
+        document.getElementById('polarPreset').addEventListener('change', (e) => {
+          stopSweepAnim();
+          sweeperState.preset = e.target.value;
+          sweeperState.deg = e.target.value === 'rose3' ? 210 : e.target.value === 'limacon' ? 180 : 120;
+          sweepSlider.value = sweeperState.deg;
+          drawSweeper();
+        });
+
+        sweepSlider.addEventListener('input', () => {
+          stopSweepAnim();
+          sweeperState.deg = parseFloat(sweepSlider.value);
+          drawSweeper();
+        });
+
+        playSweepBtn.addEventListener('click', () => {
+          if (sweeperState.playing) {
+            stopSweepAnim();
+          } else {
+            sweeperState.playing = true;
+            sweeperState.lastTs = 0;
+            playSweepBtn.textContent = '❚❚ Pause';
+            sweeperState.rafId = requestAnimationFrame(stepSweepAnim);
+          }
+        });
+
+        document.getElementById('resetSweepBtn').addEventListener('click', () => {
+          stopSweepAnim();
+          sweeperState.deg = 0;
+          sweepSlider.value = 0;
+          drawSweeper();
+        });
+
+        document.getElementById('showGridCheck').addEventListener('change', (e) => {
+          sweeperState.showGrid = e.target.checked;
+          drawSweeper();
+        });
+
+        // Section 2 Tabs & Controls
+        document.querySelectorAll('[data-lab2]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-lab2]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const target = btn.dataset.lab2;
+            document.getElementById('lab2-point').style.display = target === 'point' ? 'block' : 'none';
+            document.getElementById('lab2-family').style.display = target === 'family' ? 'block' : 'none';
+            requestAnimationFrame(() => {
+              if (target === 'point') drawPointExplorer();
+              else drawFamilyExplorer();
+            });
+          });
+        });
+
+        ptRSlider.addEventListener('input', drawPointExplorer);
+        ptThetaSlider.addEventListener('input', drawPointExplorer);
+        famType.addEventListener('change', drawFamilyExplorer);
+        famNSlider.addEventListener('input', drawFamilyExplorer);
+        famASlider.addEventListener('input', drawFamilyExplorer);
+
+        // Section 4 Vault Filters
+        document.querySelectorAll('#vaultFilters .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#vaultFilters .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderVault(btn.dataset.vcat);
+          });
+        });
+
+        // Section 5 Reset Quiz
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          quizAnswered.clear();
+          document.getElementById('quizScore').textContent = `0 / ${quizData.length}`;
+          renderQuiz();
+          updateProgress();
+        });
+
+        // Initial Renders
+        renderVault('all');
+        renderQuiz();
+        drawSweeper();
+        drawPointExplorer();
+        drawFamilyExplorer();
+        updateProgress();
+        renderMath(document.body);
+
+        // Responsive Canvas Scaling
+        const ro = new ResizeObserver(() => {
+          drawSweeper();
+          drawPointExplorer();
+          drawFamilyExplorer();
+        });
+        ro.observe(document.getElementById('sweeperCanvasWrap'));
+        ro.observe(document.getElementById('pointCanvasWrap'));
+        ro.observe(document.getElementById('familyCanvasWrap'));
+      });
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawSweeper();
+        drawPointExplorer();
+        drawFamilyExplorer();
+      });
+    })();
+  </script>
+</body>
+</html>

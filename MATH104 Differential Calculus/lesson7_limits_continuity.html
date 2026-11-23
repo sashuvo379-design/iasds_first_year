@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 7: Limits &amp; Continuity | MATH104 Differential Calculus</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #064e3b 0%, #059669 48%, #2563eb 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.86rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 7: Limits &amp; Continuity</h2>
+      <p>Module 2 of 5 &bull; The Heart of Calculus</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Core Theory &amp; Theorems</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 7.pdf &amp; 7a.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">1st Incourse 2024 &amp; 2025</span>
+      <span class="source-pill">Year Final 2024</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 7 of 15</span>
+        <span class="hero-badge">High Yield: 1st In-course Q5–Q7 &amp; Final Q3</span>
+        <span class="hero-badge">Interactive Web Lab</span>
+      </div>
+      <h1>Limits, $\varepsilon$-$\delta$ Definitions, Squeeze Theorem &amp; Continuity</h1>
+      <p>
+        Enter Module 2! Tune piecewise parameters to heal jump discontinuities, test $\varepsilon$-$\delta$ and
+        $\varepsilon$-$N$ target boxes visually, evaluate indeterminate $0/0$ and trigonometric limits, and master
+        continuity on $[a, b]$ and the Intermediate Value Theorem.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-heal', this)">Discontinuity Healer (Exam Q7)</button>
+          <button class="tab-btn" onclick="switchTab('tab-eps', this)">&epsilon;-&delta; &amp; &epsilon;-N Box Lab</button>
+          <button class="tab-btn" onclick="switchTab('tab-squeeze', this)">Squeeze &amp; Trig Limits Lab</button>
+        </div>
+
+        <!-- TAB 1: DISCONTINUITY HEALER -->
+        <div id="tab-heal" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="healCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="healMode">Select Discontinuity Scenario</label>
+                <select id="healMode" onchange="setupHealControls()">
+                  <option value="inc24">1st Incourse 2024 Q7: Tune m &amp; k to Heal Both Jumps!</option>
+                  <option value="removable">Removable Hole: (x&sup2; - 4)/(x - 2) vs. f(2) = k</option>
+                  <option value="osc">Oscillating DNE: f(x) = sin(&pi;/x) as x &rarr; 0</option>
+                </select>
+              </div>
+              <div class="control-group" id="kGroup">
+                <label><span>Constant $k$</span><span id="kVal">2.0</span></label>
+                <input type="range" id="kSlider" min="0" max="8" step="0.2" value="2" oninput="drawHealCanvas()" />
+              </div>
+              <div class="control-group" id="mGroup">
+                <label><span>Slope $m$</span><span id="mVal">1.00</span></label>
+                <input type="range" id="mSlider" min="-1" max="4" step="0.05" value="1" oninput="drawHealCanvas()" />
+              </div>
+              <div class="btn-row" id="healBtns">
+                <button class="btn btn-primary" onclick="snapContinuous()">Snap to Exact Continuous Solution</button>
+              </div>
+              <div class="readout-card" id="healReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: EPSILON-DELTA / EPSILON-N -->
+        <div id="tab-eps" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="epsCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="epsMode">Choose Formal Limit Proof</label>
+                <select id="epsMode" onchange="setupEpsControls()">
+                  <option value="ed_linear">Def 1.4.1 (&epsilon;-&delta;): lim(x&rarr;2) (3x - 1) = 5 [Ashraful's Notes]</option>
+                  <option value="en_inf">1st Incourse 2025 Q3 (&epsilon;-N): lim(x&rarr;&infin;) 1/x&sup2; = 0</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Tolerance $\varepsilon$</span><span id="epsVal">0.90</span></label>
+                <input type="range" id="epsSlider" min="0.2" max="1.8" step="0.05" value="0.9" oninput="drawEpsCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span id="deltaLabel">Radius $\delta$</span><span id="deltaVal">0.30</span></label>
+                <input type="range" id="deltaSlider" min="0.05" max="1.0" step="0.02" value="0.3" oninput="drawEpsCanvas()" />
+              </div>
+              <div class="readout-card" id="epsReadout"></div>
+              <p style="font-size: 0.79rem; color: var(--text-muted);">
+                <strong>Goal:</strong> Adjust $\delta$ (or $N$) so the entire blue curve inside the vertical band stays strictly inside the green horizontal $\varepsilon$-corridor!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: SQUEEZE & TRIG LIMITS -->
+        <div id="tab-squeeze" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="sqCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="sqMode">Choose Limit Phenomenon</label>
+                <select id="sqMode" onchange="drawSqCanvas()">
+                  <option value="squeeze">Squeeze Theorem: -x&sup2; &le; x&sup2; sin(1/x) &le; x&sup2; (x &rarr; 0)</option>
+                  <option value="trig_ratio">Final 2024 Q3(d): tan(ax) / sin(bx) &rarr; a/b</option>
+                </select>
+              </div>
+              <div class="control-group" id="sqParamGroup" style="display:none;">
+                <label><span>Ratio $a / b$ (with $b = 2$): $a =$</span><span id="sqAVal">3</span></label>
+                <input type="range" id="sqASlider" min="1" max="5" step="1" value="3" oninput="drawSqCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span>Probe $x \to 0$</span><span id="sqXVal">0.35</span></label>
+                <input type="range" id="sqXSlider" min="-1.0" max="1.0" step="0.02" value="0.35" oninput="drawSqCanvas()" />
+              </div>
+              <div class="readout-card" id="sqReadout"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory (Lecture 7, 7a + Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Limit Existence, Indeterminate Forms &amp; Limits at Infinity</h3>
+        <p>
+          A two-sided limit $\lim_{x \to a} f(x) = L$ exists if and only if both one-sided limits exist and are equal:
+          $$\lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x) = L$$
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Limit Situation</th>
+                <th>Algebraic Strategy</th>
+                <th>Key Formula / Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Indeterminate $\dfrac{0}{0}$</strong></td>
+                <td>Factor &amp; cancel common factor $(x - a)$, or multiply by the radical conjugate.</td>
+                <td>$\lim_{x\to 1}\dfrac{x-1}{\sqrt{x}-1} = \lim_{x\to 1}(\sqrt{x}+1) = 2$</td>
+              </tr>
+              <tr>
+                <td><strong>Limits as $x \to \pm\infty$</strong></td>
+                <td>Divide numerator &amp; denominator by highest power of $x$. Watch $\sqrt{x^2} = |x| = \begin{cases} +x, & x>0 \\ -x, & x<0 \end{cases}$!</td>
+                <td>$\lim_{x\to +\infty} \dfrac{4x^3 - x}{2x^3 - 5} = 2$; &nbsp; $\lim_{x\to\pm\infty}\dfrac{1}{x^p} = 0\;(p>0)$</td>
+              </tr>
+              <tr>
+                <td><strong>Trigonometric Limits</strong></td>
+                <td>Rewrite using $\lim_{u\to 0}\dfrac{\sin u}{u} = 1$ and $\lim_{u\to 0}\dfrac{1 - \cos u}{u} = 0$.</td>
+                <td>$\lim_{x\to 0}\dfrac{\sin(kx)}{x} = k$; &nbsp; $\lim_{x\to 0}\dfrac{\tan(ax)}{\sin(bx)} = \dfrac{a}{b}$</td>
+              </tr>
+              <tr>
+                <td><strong>Squeeze (Sandwich) Theorem</strong></td>
+                <td>If $g(x) \le f(x) \le h(x)$ near $a$ and $\lim_{x\to a} g(x) = \lim_{x\to a} h(x) = L$, then $\lim_{x\to a} f(x) = L$.</td>
+                <td>$-x^2 \le x^2\sin(1/x) \le x^2 \implies \lim_{x\to 0} x^2\sin(1/x) = 0$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout note-bn">
+          <strong>Ashraful's Note on Non-Existent Limits:</strong>
+          &bull; $\lim_{x\to 0} \sin(\pi/x)$ &rarr; <em>কোথায় আছে তা বুঝা যায় না</em> (oscillates infinitely between $-1$ and $1$, so DNE!).<br />
+          &bull; $\lim_{x\to 3^+} \frac{x}{x-3} = +\infty$ এবং $\lim_{x\to 3^-} \frac{x}{x-3} = -\infty$ &rarr; <em>লিমিটের finite value নাই (DNE)</em>।
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Formal $\varepsilon$-$\delta$ (Def 1.4.1) &amp; $\varepsilon$-$N$ Definitions</h3>
+        <ul style="margin-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+          <li><strong>Finite Limit ($\lim_{x \to a} f(x) = L$):</strong> For every $\varepsilon > 0$, there exists $\delta > 0$ such that
+            $$0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon$$
+          </li>
+          <li><strong>Limit at Infinity ($\lim_{x \to +\infty} f(x) = L$):</strong> For every $\varepsilon > 0$, there exists $N > 0$ such that
+            $$x > N \implies |f(x) - L| < \varepsilon$$
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>2.3 Continuity at a Point, on $[a, b]$, Discontinuities &amp; IVT</h3>
+        <p>A function $f(x)$ is <strong>continuous at $x = c$</strong> if and only if all <strong>three conditions</strong> hold:</p>
+        <ol style="margin: 8px 0 12px 22px;">
+          <li>$f(c)$ is <strong>defined</strong>;</li>
+          <li>$\lim_{x \to c} f(x)$ <strong>exists</strong> (i.e., LHL $=$ RHL);</li>
+          <li>$\lim_{x \to c} f(x) = f(c)$.</li>
+        </ol>
+        <p>
+          <strong>Continuity on a closed interval $[a, b]$:</strong> Continuous on open $(a, b)$, continuous from the <strong>right</strong> at $a$ ($\lim_{x\to a^+} f(x) = f(a)$), and continuous from the <strong>left</strong> at $b$ ($\lim_{x\to b^-} f(x) = f(b)$).
+        </p>
+        <div class="callout">
+          <strong>Removable Discontinuity vs. Jump / Infinite Discontinuity:</strong>
+          A discontinuity at $x = c$ is <strong>removable</strong> if $\lim_{x \to c} f(x) = L$ exists finitely, so redefining $f(c) = L$ makes $f$ continuous (e.g., a hole). If $\text{LHL} \ne \text{RHL}$ (jump) or $\pm\infty$, it is <strong>non-removable</strong>.
+        </div>
+        <div class="callout note-bn">
+          <strong>Intermediate Value Theorem (IVT) — Root Existence Shortcut:</strong>
+          যদি $f(x)$ closed interval $[a, b]$-এ continuous হয় এবং $f(a)$ ও $f(b)$ বিপরীত চিহ্নের হয় (অর্থাৎ $f(a)\cdot f(b) < 0$), তবে $(a, b)$-এর মাঝে অন্তত একটি <strong>root $c$</strong> আছে যেখানে $f(c) = 0$!
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Lecture 7 &amp; Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1 -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Definition 1.4.1</span>
+            <h3 style="margin-top: 6px;">Example 1: Formal $\varepsilon$-$\delta$ Proof of $\lim_{x \to 2} (3x - 1) = 5$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Use Definition 1.4.1 to prove that $\lim_{x \to 2} (3x - 1) = 5$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Set up the Target Inequality:</strong> Given any $\varepsilon > 0$, we need $\delta > 0$ such that $0 < |x - 2| < \delta \implies |(3x - 1) - 5| < \varepsilon$.</div>
+          <div class="step-item"><strong>Step 2 — Factor $|f(x) - L|$:</strong> $|(3x - 1) - 5| = |3x - 6| = 3|x - 2|$.</div>
+          <div class="step-item"><strong>Step 3 — Choose $\delta$:</strong> We want $3|x - 2| < \varepsilon \iff |x - 2| < \dfrac{\varepsilon}{3}$. So choose <strong>$\delta = \dfrac{\varepsilon}{3}$</strong>.</div>
+          <div class="step-item"><strong>Step 4 — Formal Verification:</strong> Whenever $0 < |x - 2| < \delta = \frac{\varepsilon}{3}$, we have $|(3x - 1) - 5| = 3|x - 2| < 3\left(\frac{\varepsilon}{3}\right) = \varepsilon$. Hence $\lim_{x \to 2}(3x - 1) = 5$. $\blacksquare$</div>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Ashraful's Notes &bull; Closed Interval Continuity</span>
+            <h3 style="margin-top: 6px;">Example 2: Prove $f(x) = \sqrt{9 - x^2}$ is Continuous on $[-3, 3]$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Verify all three closed-interval continuity requirements on $[-3, 3]$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Open Interval $(-3, 3)$:</strong> Let $c \in (-3, 3)$. Then $f(c) = \sqrt{9 - c^2}$ is defined, and $\lim_{x \to c} \sqrt{9 - x^2} = \sqrt{9 - c^2} = f(c)$. So $f$ is continuous on $(-3, 3)$.</div>
+          <div class="step-item"><strong>Step 2 — Right-Continuity at $a = -3$:</strong> $f(-3) = \sqrt{9 - 9} = 0$, and $\lim_{x \to -3^+} \sqrt{9 - x^2} = 0 = f(-3)$.</div>
+          <div class="step-item"><strong>Step 3 — Left-Continuity at $b = 3$:</strong> $f(3) = 0$, and $\lim_{x \to 3^-} \sqrt{9 - x^2} = 0 = f(3)$. Therefore, $f$ is continuous on $[-3, 3]$.</div>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; IVT Proof</span>
+            <h3 style="margin-top: 6px;">Example 3: Crossing Curves Theorem via IVT</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Prove: If $f$ and $g$ are continuous on $[a, b]$ with $f(a) > g(a)$ and $f(b) < g(b)$, then $f(x) = g(x)$ has at least one solution in $(a, b)$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Define Helper Function:</strong> Let $h(x) = f(x) - g(x)$. Since $f$ and $g$ are continuous on $[a, b]$, their difference $h(x)$ is also continuous on $[a, b]$.</div>
+          <div class="step-item"><strong>Step 2 — Check Endpoint Signs:</strong> At $x = a$, $h(a) = f(a) - g(a) > 0$. At $x = b$, $h(b) = f(b) - g(b) < 0$.</div>
+          <div class="step-item"><strong>Step 3 — Apply IVT:</strong> Because $0$ lies between $h(a) > 0$ and $h(b) < 0$, the IVT guarantees at least one $c \in (a, b)$ such that $h(c) = 0 \implies f(c) = g(c)$. $\blacksquare$</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Filtered MATH104)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: 1st Incourse 2024 Q7 & Final 2024 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">1st In-course 2024 Q7 &amp; Year Final 2024</span>
+          <span class="pill pill-amber">3 Marks (Classic Repeat!)</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Find values of the constants $k$ and $m$, if possible, that will make the function $f$ continuous everywhere:
+          $$f(x) = \begin{cases} x^2 + 5, & x > 2 \\ m(x + 1) + k, & -1 < x \le 2 \\ 2x^3 + x + 7, & x \le -1 \end{cases}$$
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> Each piece is a polynomial (already continuous on its interior), so you only need to match LHL $=$ RHL at the two boundary points $x = -1$ and $x = 2$!
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          <strong>At $x = -1$:</strong><br />
+          &bull; $\text{LHL} = \lim_{x \to -1^-} (2x^3 + x + 7) = 2(-1)^3 + (-1) + 7 = -2 - 1 + 7 = 4$.<br />
+          &bull; $\text{RHL} = \lim_{x \to -1^+} [m(x + 1) + k] = m(0) + k = k$.<br />
+          Setting $\text{LHL} = \text{RHL} \implies \mathbf{k = 4}$.<br /><br />
+          <strong>At $x = 2$:</strong><br />
+          &bull; $\text{LHL} = \lim_{x \to 2^-} [m(x + 1) + k] = 3m + k = 3m + 4$.<br />
+          &bull; $\text{RHL} = \lim_{x \to 2^+} (x^2 + 5) = 2^2 + 5 = 9$.<br />
+          Setting $\text{LHL} = \text{RHL} \implies 3m + 4 = 9 \implies 3m = 5 \implies \mathbf{m = \dfrac{5}{3}}$.<br />
+          *(Try this exact function in Tab 1 of the Sandbox and click "Snap to Exact Continuous Solution"!)*
+        </div>
+      </div>
+
+      <!-- Exam Q2: 1st Incourse 2025 Q3 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">1st In-course Exam 2025 &bull; Q3</span>
+          <span class="pill pill-amber">4 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> A positive number $\varepsilon$ and the limit $L$ of a function at $x \to \infty$ are given:
+          $$\lim_{x \to \infty} \frac{1}{x^2} = 0; \qquad \varepsilon = 0.01$$
+          Find a positive number $N$ such that $|f(x) - L| < \varepsilon$ if $x > N$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          We require $\left|\dfrac{1}{x^2} - 0\right| < 0.01$ for $x > N > 0$.<br />
+          Since $x > 0$, $\dfrac{1}{x^2} < 0.01 = \dfrac{1}{100} \iff x^2 > 100 \iff x > \sqrt{100} = 10$.<br />
+          Therefore, choosing <strong>$N = 10$</strong> (or any $N \ge 10$) guarantees $\left|\dfrac{1}{x^2} - 0\right| < 0.01$ whenever $x > N$.
+        </div>
+      </div>
+
+      <!-- Exam Q3: Year Final 2024 Q3(c) & Q3(d) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2024 &bull; Q3(c) &amp; Q3(d)</span>
+          <span class="pill pill-amber">3 + 3 = 6 Marks</span>
+        </div>
+        <p>
+          <strong>(c)</strong> Find the values of $x$ at which $f(x) = \begin{cases} 3x^2 + 5, & x \ne 1 \\ 6, & x = 1 \end{cases}$ is not continuous, and determine whether it is a <strong>removable discontinuity</strong>.<br />
+          <strong>(d)</strong> Evaluate: (i) $\displaystyle\lim_{x \to 0} \frac{\tan(ax)}{\sin(bx)}$ ($a \ne 0, b \ne 0$) &nbsp;&nbsp;&nbsp; (ii) $\displaystyle\lim_{x \to 0} \frac{\sin^2(kx)}{x^2}$ ($k \ne 0$).
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Part (c):</strong><br />
+          For $x \ne 1$, $3x^2 + 5$ is a polynomial (continuous everywhere). At $x = 1$:<br />
+          &bull; $f(1) = 6$, while $\lim_{x \to 1} f(x) = \lim_{x \to 1} (3x^2 + 5) = 3(1)^2 + 5 = 8$.<br />
+          &bull; Since $\lim_{x \to 1} f(x) = 8 \ne 6 = f(1)$, $f$ is discontinuous at <strong>$x = 1$</strong>.<br />
+          &bull; Because the limit $8$ exists finitely, this is a <strong>removable discontinuity</strong> (redefining $f(1) = 8$ removes it).<br /><br />
+          <strong>Part (d):</strong><br />
+          (i) Rewrite $\tan(ax) = \dfrac{\sin(ax)}{\cos(ax)}$:
+          $$\lim_{x \to 0} \frac{\tan(ax)}{\sin(bx)} = \lim_{x \to 0} \left(\frac{\sin(ax)}{ax} \cdot \frac{bx}{\sin(bx)} \cdot \frac{a}{b\cos(ax)}\right) = 1 \cdot 1 \cdot \frac{a}{b(1)} = \mathbf{\frac{a}{b}}$$
+          (ii) Multiply numerator and denominator by $k^2$:
+          $$\lim_{x \to 0} \frac{\sin^2(kx)}{x^2} = k^2 \left(\lim_{x \to 0} \frac{\sin(kx)}{kx}\right)^2 = k^2 (1)^2 = \mathbf{k^2}$$
+        </div>
+      </div>
+
+      <!-- Exam Q4: 1st Incourse 2024 Q6 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">1st In-course Exam 2024 &bull; Q6</span>
+          <span class="pill pill-amber">3 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Show that $f(x) = |x|$ is continuous everywhere on $\mathbb{R}$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm4-sol')">Toggle Full Proof</button>
+        </div>
+        <div id="exm4-sol" class="toggle-box">
+          <strong>Proof:</strong> Write $f(x) = |x| = \begin{cases} x, & x \ge 0 \\ -x, & x < 0 \end{cases}$.<br />
+          &bull; For $c > 0$: $f(x) = x$ near $c$ (polynomial &rarr; continuous on $(0, \infty)$).<br />
+          &bull; For $c < 0$: $f(x) = -x$ near $c$ (polynomial &rarr; continuous on $(-\infty, 0)$).<br />
+          &bull; At $c = 0$: $f(0) = 0$; $\text{LHL} = \lim_{x \to 0^-} (-x) = 0$; $\text{RHL} = \lim_{x \to 0^+} x = 0$. Since $\lim_{x \to 0} |x| = 0 = f(0)$, $f$ is continuous at $0$.<br />
+          Hence $|x|$ is continuous everywhere on $(-\infty, \infty)$. $\blacksquare$
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawHealCanvas();
+      drawEpsCanvas();
+      drawSqCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-heal') drawHealCanvas();
+      if (id === 'tab-eps') drawEpsCanvas();
+      if (id === 'tab-squeeze') drawSqCanvas();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    /* ================= CANVAS HELPERS ================= */
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        greenFill: dark ? 'rgba(16, 185, 129, 0.16)' : 'rgba(5, 150, 105, 0.14)',
+        blueFill: dark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(37, 99, 235, 0.13)',
+        amber: '#d97706',
+        red: '#dc2626'
+      };
+    }
+
+    function drawAxes(ctx, w, h, xMin, xMax, yMin, yMax, xStep = 1, yStep = 1) {
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      ctx.strokeStyle = c.grid;
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+      }
+
+      ctx.strokeStyle = c.axis;
+      ctx.lineWidth = 1.8;
+      if (yMin <= 0 && yMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
+      }
+      if (xMin <= 0 && xMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+      }
+
+      ctx.fillStyle = c.text;
+      ctx.font = '11px Inter, sans-serif';
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        if (Math.abs(x) > 1e-6) ctx.fillText(Math.round(x * 10) / 10, toX(x) - 6, toY(0) + 14);
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        if (Math.abs(y) > 1e-6) ctx.fillText(Math.round(y * 100) / 100, toX(0) + 6, toY(y) + 4);
+      }
+      return { toX, toY };
+    }
+
+    function plotSegment(ctx, fn, a, b, toX, toY, color, width = 3, dashed = false) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      if (dashed) ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      const steps = 250;
+      for (let i = 0; i <= steps; i++) {
+        const x = a + (b - a) * (i / steps);
+        const y = fn(x);
+        if (i === 0) ctx.moveTo(toX(x), toY(y));
+        else ctx.lineTo(toX(x), toY(y));
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ================= TAB 1: DISCONTINUITY HEALER ================= */
+    function setupHealControls() {
+      const mode = document.getElementById('healMode').value;
+      document.getElementById('kGroup').style.display = (mode === 'osc') ? 'none' : 'block';
+      document.getElementById('mGroup').style.display = (mode === 'inc24') ? 'block' : 'none';
+      document.getElementById('healBtns').style.display = (mode === 'osc') ? 'none' : 'flex';
+      if (mode === 'removable') {
+        document.getElementById('kSlider').value = 3;
+      }
+      drawHealCanvas();
+    }
+
+    function snapContinuous() {
+      const mode = document.getElementById('healMode').value;
+      if (mode === 'inc24') {
+        document.getElementById('kSlider').value = 4.0;
+        document.getElementById('mSlider').value = 1.6667;
+      } else if (mode === 'removable') {
+        document.getElementById('kSlider').value = 4.0;
+      }
+      drawHealCanvas();
+    }
+
+    function drawHealCanvas() {
+      const canvas = document.getElementById('healCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('healMode').value;
+      const k = parseFloat(document.getElementById('kSlider').value);
+      const m = parseFloat(document.getElementById('mSlider').value);
+      document.getElementById('kVal').textContent = k.toFixed(2);
+      document.getElementById('mVal').textContent = m.toFixed(2);
+      const c = getColors();
+
+      if (mode === 'inc24') {
+        const xMin = -2.2, xMax = 3.5, yMin = -2, yMax = 14;
+        const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 1, 2);
+
+        // Branches
+        plotSegment(ctx, x => 2*x*x*x + x + 7, xMin, -1, toX, toY, c.blue, 3);
+        plotSegment(ctx, x => m*(x + 1) + k, -1, 2, toX, toY, c.purple, 3);
+        plotSegment(ctx, x => x*x + 5, 2, xMax, toX, toY, c.green, 3);
+
+        // Endpoints
+        const leftEnd = 4;
+        const midStart = k;
+        const midEnd = 3*m + k;
+        const rightStart = 9;
+
+        const okLeft = Math.abs(midStart - leftEnd) < 0.08;
+        const okRight = Math.abs(midEnd - rightStart) < 0.12;
+
+        // Draw boundary dots
+        ctx.fillStyle = c.blue; ctx.beginPath(); ctx.arc(toX(-1), toY(leftEnd), 5.5, 0, Math.PI*2); ctx.fill();
+        if (!okLeft) {
+          ctx.fillStyle = c.bg; ctx.strokeStyle = c.purple; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(toX(-1), toY(midStart), 5.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        }
+        ctx.fillStyle = c.purple; ctx.beginPath(); ctx.arc(toX(2), toY(midEnd), 5.5, 0, Math.PI*2); ctx.fill();
+        if (!okRight) {
+          ctx.fillStyle = c.bg; ctx.strokeStyle = c.green; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(toX(2), toY(rightStart), 5.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        }
+
+        const b1 = okLeft ? '<span class="pill pill-green">Healed! (4 = 4)</span>' : `<span class="pill pill-red">Jump! (4 ≠ ${midStart.toFixed(1)})</span>`;
+        const b2 = okRight ? '<span class="pill pill-green">Healed! (9 = 9)</span>' : `<span class="pill pill-red">Jump! (${midEnd.toFixed(1)} ≠ 9)</span>`;
+
+        document.getElementById('healReadout').innerHTML = `
+          <div class="readout-row"><span>At x = -1 (LHL = 4, RHL = k):</span>${b1}</div>
+          <div class="readout-row"><span>At x = 2 (LHL = 3m+k, RHL = 9):</span>${b2}</div>
+          <div class="readout-row"><span>Exact Solution:</span><strong>k = 4, m = 5/3 ≈ 1.67</strong></div>
+        `;
+      } else if (mode === 'removable') {
+        const xMin = -2, xMax = 5, yMin = -1, yMax = 7;
+        const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 1, 1);
+
+        plotSegment(ctx, x => x + 2, xMin, xMax, toX, toY, c.blue, 3);
+        const healed = Math.abs(k - 4) < 0.08;
+
+        // Hole at (2, 4)
+        ctx.fillStyle = healed ? c.green : c.bg;
+        ctx.strokeStyle = healed ? c.green : c.red;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(toX(2), toY(4), 6.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+        // Point (2, k)
+        if (!healed) {
+          ctx.fillStyle = c.amber;
+          ctx.beginPath(); ctx.arc(toX(2), toY(k), 6, 0, Math.PI*2); ctx.fill();
+        }
+
+        document.getElementById('healReadout').innerHTML = `
+          <div class="readout-row"><span>Limit as x &rarr; 2:</span><strong>lim (x²-4)/(x-2) = 4</strong></div>
+          <div class="readout-row"><span>Assigned Value f(2) = k:</span><strong>${k.toFixed(1)}</strong></div>
+          <div class="readout-row"><span>Status:</span>${healed ? '<span class="pill pill-green">Continuous! Hole Filled</span>' : '<span class="pill pill-red">Removable Discontinuity (f(2) ≠ 4)</span>'}</div>
+        `;
+      } else {
+        const xMin = -1.2, xMax = 1.2, yMin = -1.5, yMax = 1.5;
+        const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 0.5, 0.5);
+
+        ctx.strokeStyle = c.blue; ctx.lineWidth = 2;
+        ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= 1200; i++) {
+          const x = xMin + (xMax - xMin) * (i / 1200);
+          if (Math.abs(x) < 0.015) { started = false; continue; }
+          const y = Math.sin(Math.PI / x);
+          if (!started) { ctx.moveTo(toX(x), toY(y)); started = true; }
+          else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+
+        document.getElementById('healReadout').innerHTML = `
+          <div class="readout-row"><span>Function:</span><strong>f(x) = sin(π / x)</strong></div>
+          <div class="readout-row"><span>Limit as x &rarr; 0:</span><span class="pill pill-red">Does Not Exist (Oscillation)</span></div>
+          <div style="margin-top:6px; font-size:0.81rem; color:var(--text-muted);">As x approaches 0, π/x blows up to ±∞, forcing sin(π/x) to bounce infinitely between -1 and +1 without settling on any single number L.</div>
+        `;
+      }
+    }
+
+    /* ================= TAB 2: EPSILON-DELTA & EPSILON-N ================= */
+    function setupEpsControls() {
+      const mode = document.getElementById('epsMode').value;
+      const eSl = document.getElementById('epsSlider');
+      const dSl = document.getElementById('deltaSlider');
+      if (mode === 'ed_linear') {
+        eSl.min = 0.3; eSl.max = 1.8; eSl.step = 0.05; eSl.value = 0.9;
+        dSl.min = 0.05; dSl.max = 0.8; dSl.step = 0.02; dSl.value = 0.3;
+        document.getElementById('deltaLabel').textContent = 'Radius δ';
+      } else {
+        eSl.min = 0.01; eSl.max = 0.10; eSl.step = 0.005; eSl.value = 0.01;
+        dSl.min = 2; dSl.max = 14; dSl.step = 0.5; dSl.value = 10;
+        document.getElementById('deltaLabel').textContent = 'Cutoff N';
+      }
+      drawEpsCanvas();
+    }
+
+    function drawEpsCanvas() {
+      const canvas = document.getElementById('epsCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('epsMode').value;
+      const eps = parseFloat(document.getElementById('epsSlider').value);
+      const val2 = parseFloat(document.getElementById('deltaSlider').value);
+      const c = getColors();
+
+      if (mode === 'ed_linear') {
+        document.getElementById('epsVal').textContent = eps.toFixed(2);
+        document.getElementById('deltaVal').textContent = val2.toFixed(2);
+
+        const xMin = 0, xMax = 4, yMin = 1, yMax = 9;
+        const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 0.5, 1);
+
+        // Horizontal epsilon band around L = 5
+        ctx.fillStyle = c.greenFill;
+        ctx.fillRect(0, toY(5 + eps), canvas.width, toY(5 - eps) - toY(5 + eps));
+
+        // Vertical delta band around a = 2
+        ctx.fillStyle = c.blueFill;
+        ctx.fillRect(toX(2 - val2), 0, toX(2 + val2) - toX(2 - val2), canvas.height);
+
+        // Curve f(x) = 3x - 1
+        plotSegment(ctx, x => 3*x - 1, xMin, xMax, toX, toY, c.blue, 3);
+
+        // Center point (2, 5)
+        ctx.fillStyle = c.purple;
+        ctx.beginPath(); ctx.arc(toX(2), toY(5), 5.5, 0, Math.PI*2); ctx.fill();
+
+        const maxDelta = eps / 3;
+        const ok = val2 <= maxDelta + 0.005;
+
+        document.getElementById('epsReadout').innerHTML = `
+          <div class="readout-row"><span>Required δ ≤ ε/3:</span><strong>δ ≤ ${maxDelta.toFixed(3)}</strong></div>
+          <div class="readout-row"><span>Your δ:</span><strong>${val2.toFixed(2)}</strong></div>
+          <div class="readout-row"><span>Box Check:</span>${ok ? '<span class="pill pill-green">SUCCESS! Stays inside ε-band</span>' : '<span class="pill pill-red">FAILS! Curve exits ε-band</span>'}</div>
+        `;
+      } else {
+        document.getElementById('epsVal').textContent = eps.toFixed(3);
+        document.getElementById('deltaVal').textContent = `N = ${val2.toFixed(1)}`;
+
+        const xMin = 0, xMax = 16, yMin = -0.02, yMax = 0.14;
+        const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 2, 0.02);
+
+        // Horizontal epsilon band [0, eps]
+        ctx.fillStyle = c.greenFill;
+        ctx.fillRect(0, toY(eps), canvas.width, toY(0) - toY(eps));
+
+        // Vertical region x > N
+        ctx.fillStyle = c.blueFill;
+        ctx.fillRect(toX(val2), 0, canvas.width - toX(val2), canvas.height);
+
+        // Curve 1/x^2
+        plotSegment(ctx, x => 1 / (x * x), 2.5, xMax, toX, toY, c.blue, 3);
+
+        const minN = 1 / Math.sqrt(eps);
+        const ok = val2 >= minN - 0.05;
+
+        document.getElementById('epsReadout').innerHTML = `
+          <div class="readout-row"><span>Required N ≥ 1/√ε:</span><strong>N ≥ ${minN.toFixed(2)}</strong></div>
+          <div class="readout-row"><span>Your N:</span><strong>${val2.toFixed(1)}</strong></div>
+          <div class="readout-row"><span>Check (1/N² &lt; ε):</span>${ok ? '<span class="pill pill-green">SUCCESS! 1/x² &lt; ε for all x &gt; N</span>' : '<span class="pill pill-red">TOO SMALL! Increase N</span>'}</div>
+        `;
+      }
+    }
+
+    /* ================= TAB 3: SQUEEZE & TRIG LIMITS ================= */
+    function drawSqCanvas() {
+      const canvas = document.getElementById('sqCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('sqMode').value;
+      document.getElementById('sqParamGroup').style.display = (mode === 'trig_ratio') ? 'block' : 'none';
+      const x0 = parseFloat(document.getElementById('sqXSlider').value);
+      document.getElementById('sqXVal').textContent = x0.toFixed(2);
+      const c = getColors();
+
+      if (mode === 'squeeze') {
+        const xMin = -1.1, xMax = 1.1, yMin = -1.2, yMax = 1.2;
+        const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 0.5, 0.5);
+
+        // Upper & Lower bounds
+        plotSegment(ctx, x => x*x, xMin, xMax, toX, toY, c.green, 2.2, true);
+        plotSegment(ctx, x => -x*x, xMin, xMax, toX, toY, c.red, 2.2, true);
+
+        // Squeezed curve
+        ctx.strokeStyle = c.blue; ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        for (let i = 0; i <= 900; i++) {
+          const x = xMin + (xMax - xMin) * (i / 900);
+          const y = Math.abs(x) < 1e-4 ? 0 : x*x*Math.sin(1/x);
+          if (i === 0) ctx.moveTo(toX(x), toY(y)); else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+
+        const yVal = Math.abs(x0) < 1e-4 ? 0 : x0*x0*Math.sin(1/x0);
+        ctx.fillStyle = c.amber;
+        ctx.beginPath(); ctx.arc(toX(x0), toY(yVal), 6, 0, Math.PI*2); ctx.fill();
+
+        document.getElementById('sqReadout').innerHTML = `
+          <div class="readout-row"><span>Lower Bound -x²:</span><strong style="color:var(--danger);">${(-x0*x0).toFixed(4)}</strong></div>
+          <div class="readout-row"><span>f(x) = x² sin(1/x):</span><strong style="color:var(--primary);">${yVal.toFixed(4)}</strong></div>
+          <div class="readout-row"><span>Upper Bound +x²:</span><strong style="color:var(--success);">${(x0*x0).toFixed(4)}</strong></div>
+          <div class="readout-row"><span>Squeeze Limit (x &rarr; 0):</span><span class="pill pill-green">0</span></div>
+        `;
+      } else {
+        const a = parseInt(document.getElementById('sqASlider').value);
+        const b = 2;
+        document.getElementById('sqAVal').textContent = a;
+        const target = a / b;
+
+        const xMin = -0.6, xMax = 0.6, yMin = 0, yMax = Math.max(3, target + 1.2);
+        const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, 0.2, 0.5);
+
+        const fn = x => Math.abs(x) < 1e-4 ? target : Math.tan(a*x) / Math.sin(b*x);
+        plotSegment(ctx, fn, -0.5, 0.5, toX, toY, c.blue, 3);
+
+        // Hole at (0, a/b)
+        ctx.fillStyle = c.bg; ctx.strokeStyle = c.red; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(toX(0), toY(target), 6, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+        const clampedX = Math.max(-0.5, Math.min(0.5, x0));
+        const yVal = fn(clampedX);
+        ctx.fillStyle = c.amber;
+        ctx.beginPath(); ctx.arc(toX(clampedX), toY(yVal), 6, 0, Math.PI*2); ctx.fill();
+
+        document.getElementById('sqReadout').innerHTML = `
+          <div class="readout-row"><span>Function:</span><strong>tan(${a}x) / sin(${b}x)</strong></div>
+          <div class="readout-row"><span>Exact Limit a/b:</span><span class="pill pill-purple">${a}/${b} = ${target.toFixed(2)}</span></div>
+          <div class="readout-row"><span>Value at x = ${clampedX.toFixed(2)}:</span><strong>${Math.abs(clampedX) < 1e-4 ? '0/0 (Hole at ' + target.toFixed(2) + ')' : yVal.toFixed(4)}</strong></div>
+        `;
+      }
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. What is lim(x → 1) (x - 1) / (√x - 1)? (Ashraful\'s Notes)',
+        opts: ['0', '1', '2', 'Does not exist'],
+        ans: 2,
+        exp: 'Factor x - 1 = (√x - 1)(√x + 1), cancel (√x - 1), and substitute x = 1 to get √1 + 1 = 2.'
+      },
+      {
+        q: '2. For lim(x → ∞) 1/x² = 0 with ε = 0.01, what is the smallest positive N such that |1/x² - 0| < 0.01 for all x > N? (1st Incourse 2025 Q3)',
+        opts: ['N = 5', 'N = 10', 'N = 100', 'N = 0.1'],
+        ans: 1,
+        exp: '1/x² < 0.01 = 1/100 ⇔ x² > 100 ⇔ x > 10, so N = 10.'
+      },
+      {
+        q: '3. What is the exact value of lim(x → 0) tan(ax) / sin(bx) (a, b ≠ 0)? (Year Final 2024 Q3d)',
+        opts: ['0', '1', 'a / b', 'b / a'],
+        ans: 2,
+        exp: 'Rewrite as [sin(ax)/(ax)] · [bx/sin(bx)] · [a/(b cos(ax))] → 1 · 1 · (a/b) = a/b.'
+      },
+      {
+        q: '4. What type of discontinuity does f(x) = { 3x² + 5 (x ≠ 1), 6 (x = 1) } have at x = 1? (Year Final 2024 Q3c)',
+        opts: [
+          'Continuous at x = 1',
+          'Removable discontinuity (since lim = 8 ≠ 6)',
+          'Jump discontinuity',
+          'Infinite discontinuity'
+        ],
+        ans: 1,
+        exp: 'lim(x → 1) f(x) = 3(1)² + 5 = 8 exists finitely, while f(1) = 6. Redefining f(1) = 8 removes the discontinuity.'
+      },
+      {
+        q: '5. In 1st Incourse 2024 Q7, what values of k and m make the piecewise function continuous at both x = -1 and x = 2?',
+        opts: ['k = 4, m = 5/3', 'k = 4, m = 2', 'k = 7, m = 1', 'No values exist'],
+        ans: 0,
+        exp: 'Matching at x = -1 gives k = 4; matching at x = 2 gives 3m + 4 = 9 ⇒ m = 5/3.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      setupHealControls();
+      setupEpsControls();
+      drawSqCanvas();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

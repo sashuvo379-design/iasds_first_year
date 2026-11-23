@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1: Functions, Domain, Range &amp; Symmetry | MATH104 Differential Calculus</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 55%, #7c3aed 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 720px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .control-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] {
+      width: 100%;
+    }
+    select {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 0.9rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn {
+      padding: 8px 15px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 1: Functions, Domain &amp; Symmetry</h2>
+      <p>Module 1 of 5 &bull; Foundations</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Core Theory &amp; Shortcuts</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 1.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">1st Incourse 2024</span>
+      <span class="source-pill">Year Final 2024</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 1 of 15</span>
+        <span class="hero-badge">High Yield: 1st In-course &amp; Final Q1–Q2</span>
+        <span class="hero-badge">Interactive Web Lab</span>
+      </div>
+      <h1>Functions, Natural Domain &amp; Range, Piecewise Graphs &amp; Symmetry</h1>
+      <p>
+        Master the foundational language of Differential Calculus. Explore how inputs map to outputs visually,
+        pinpoint domain restrictions and ranges (Direct &amp; Inverse methods), decode piecewise branches,
+        and prove even/odd symmetry with real ISRT exam problems.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-domain', this)">Domain, Range &amp; VLT</button>
+          <button class="tab-btn" onclick="switchTab('tab-piecewise', this)">Piecewise Branch Tracer</button>
+          <button class="tab-btn" onclick="switchTab('tab-symmetry', this)">Even / Odd Symmetry Lab</button>
+        </div>
+
+        <!-- TAB 1: DOMAIN & RANGE -->
+        <div id="tab-domain" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="domainCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="funcSelect">Choose a Course / Exam Function</label>
+                <select id="funcSelect" onchange="drawDomainCanvas()">
+                  <option value="sqrt_shift">f(x) = 2 + &radic;(x - 1) [1st Incourse 2024]</option>
+                  <option value="rational_shift">f(x) = (x + 1) / (x - 1) [1st Incourse 2024]</option>
+                  <option value="rational_ash">g(x) = 3x / (x&sup2; - 4) [Ashraful's Notes]</option>
+                  <option value="sqrt_ash">h(x) = &radic;(4 - 3x) [Ashraful's Notes]</option>
+                  <option value="quad_root">f(x) = &radic;(x&sup2; - 5x + 6) [Year Final 2024]</option>
+                  <option value="circle_vlt">x&sup2; + y&sup2; = 9 (Circle — Fails VLT!)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label for="xProbe">Slide Probe $x_0$: <span id="xProbeVal">2.0</span></label>
+                <input type="range" id="xProbe" min="-5" max="7" step="0.1" value="2" oninput="drawDomainCanvas()" />
+              </div>
+              <div class="readout-card" id="domainReadout"></div>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">
+                <strong>Visual Key:</strong> Blue shading on the $x$-axis shows the <strong>Domain</strong>; purple shading on the $y$-axis shows the <strong>Range</strong>; dashed vertical line tests the <strong>Vertical Line Test (VLT)</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: PIECEWISE -->
+        <div id="tab-piecewise" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="piecewiseCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label>ISRT 1st Incourse 2024 Piecewise Function</label>
+                <div class="readout-card" style="font-family: 'Cambria Math', serif; font-size: 0.96rem;">
+                  $$f(x) = \begin{cases} 0, & x \le -1 \\ 1 - x^2, & -1 < x < 1 \\ x, & x \ge 1 \end{cases}$$
+                </div>
+              </div>
+              <div class="control-group">
+                <label for="pwSlider">Drag $x$ across branches: <span id="pwVal">0.0</span></label>
+                <input type="range" id="pwSlider" min="-3.5" max="3.5" step="0.1" value="0" oninput="drawPiecewiseCanvas()" />
+              </div>
+              <div class="readout-card" id="pwReadout"></div>
+              <div class="btn-row">
+                <button class="btn btn-outline" onclick="setPwX(-1)">Jump to $x = -1$</button>
+                <button class="btn btn-outline" onclick="setPwX(0)">Jump to $x = 0$</button>
+                <button class="btn btn-outline" onclick="setPwX(1)">Jump to $x = 1$</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: SYMMETRY -->
+        <div id="tab-symmetry" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="symCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="symSelect">Choose a Function to Test</label>
+                <select id="symSelect" onchange="drawSymCanvas()">
+                  <option value="x2">f(x) = x&sup2; (Even — y-axis symmetry)</option>
+                  <option value="cos">f(x) = 2 cos(x) (Even — y-axis symmetry)</option>
+                  <option value="x3">f(x) = 0.25 x&sup3; (Odd — Origin symmetry)</option>
+                  <option value="sin">f(x) = 2 sin(x) (Odd — Origin symmetry)</option>
+                  <option value="shifted">f(x) = (x - 1.5)&sup2; (Neither)</option>
+                  <option value="line">f(x) = x + 1.5 (Neither)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label for="symSlider">Compare $+x$ and $-x$: $x =$ <span id="symVal">1.5</span></label>
+                <input type="range" id="symSlider" min="0.2" max="3.2" step="0.1" value="1.5" oninput="drawSymCanvas()" />
+              </div>
+              <div class="readout-card" id="symReadout"></div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="animateSymmetry()">Animate Symmetry Check</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory (Slides + Handwritten Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Definition of a Function &amp; Vertical Line Test</h3>
+        <p>
+          A <strong>function</strong> $f$ is a rule that assigns to each element $x$ in a set $D$ (called the <strong>domain</strong>)
+          <strong>exactly one</strong> element, called $f(x)$, in a set $E$ (the codomain). The set of all possible output values
+          $f(x)$ as $x$ varies throughout the domain is called the <strong>range</strong>.
+        </p>
+        <div class="callout note-bn">
+          <strong>Ashraful's Class Note Shortcut:</strong>
+          Vertical line test: যদি কোনো vertical line গ্রাফকে <strong>২ বা ততোধিক জায়গায় cut করে</strong>, তবে সেটি function-ই না!
+          Similarly, a curve symmetric about the <strong>$x$-axis</strong> (like $x = y^2$ or $x^2 + y^2 = r^2$) is <em>not a function</em> of $x$, though it is a valid equation.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Natural Domain &amp; Finding Range (Two Methods)</h3>
+        <p>When a function is given by a formula without an explicit domain, its <strong>natural domain</strong> is the largest set of real numbers $x$ for which $f(x)$ produces a real number.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Expression Type</th>
+                <th>Domain Restriction</th>
+                <th>Course / Exam Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Fraction $\dfrac{p(x)}{q(x)}$</td>
+                <td>Denominator cannot be zero: $q(x) \ne 0$</td>
+                <td>$g(x) = \dfrac{3x}{x^2 - 4} \implies x \ne \pm 2$, so $D = \mathbb{R} - \{-2, 2\}$</td>
+              </tr>
+              <tr>
+                <td>Even Root $\sqrt[2n]{g(x)}$</td>
+                <td>Inside must be non-negative: $g(x) \ge 0$</td>
+                <td>$h(t) = \sqrt{4 - 3t} \implies 4 - 3t \ge 0 \implies D = \left(-\infty, \frac{4}{3}\right]$</td>
+              </tr>
+              <tr>
+                <td>Root in Denominator $\dfrac{1}{\sqrt{g(x)}}$</td>
+                <td>Strictly positive: $g(x) > 0$</td>
+                <td>$f(x) = \dfrac{1}{\sqrt{x-1}} \implies x > 1 \implies D = (1, \infty)$</td>
+              </tr>
+              <tr>
+                <td>Tangent $\tan x = \dfrac{\sin x}{\cos x}$</td>
+                <td>$\cos x \ne 0 \implies x \ne (2n+1)\dfrac{\pi}{2},\; n \in \mathbb{Z}$</td>
+                <td>Year Final 2024 Q2(a)(iii): $D = \mathbb{R} - \left\{ \frac{(2n+1)\pi}{2} : n \in \mathbb{Z} \right\}$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <strong>Two Ways to Find the Range:</strong>
+          1. <strong>Direct Bound Method:</strong> Start from a known inequality (e.g., $\sqrt{x-1} \ge 0$) and build $f(x)$ step-by-step ($2 + \sqrt{x-1} \ge 2 \implies \text{Range} = [2, \infty)$).<br />
+          2. <strong>Inverse Method:</strong> Write $y = f(x)$, solve for $x$ in terms of $y$, and find the domain of that inverse expression. <em>Watch out!</em> Always record any hidden restriction before squaring (e.g., $y - 2 = \sqrt{x-1}$ forces $y \ge 2$ before you square both sides!).
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.3 Symmetry Tests: Even, Odd &amp; Neither</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Classification</th>
+                <th>Algebraic Condition</th>
+                <th>Geometric Symmetry</th>
+                <th>Classic Examples</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill pill-blue">Even Function</span></td>
+                <td>$f(-x) = f(x)$ for all $x \in D$</td>
+                <td>Symmetric about the <strong>$y$-axis</strong> (mirror reflection)</td>
+                <td>$y = x^2,\; y = x^4,\; y = |x|,\; y = \cos x$</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-purple">Odd Function</span></td>
+                <td>$f(-x) = -f(x)$ for all $x \in D$</td>
+                <td>Symmetric about the <strong>origin</strong> ($180^\circ$ rotational symmetry)</td>
+                <td>$y = x^3,\; y = x,\; y = \frac{1}{x},\; y = \sin x$</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-amber">Neither</span></td>
+                <td>$f(-x) \ne f(x)$ and $f(-x) \ne -f(x)$</td>
+                <td>No $y$-axis or origin symmetry</td>
+                <td>$y = (x - 2)^2,\; y = x + 1,\; y = e^x$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout note-bn">
+          <strong>Ashraful's Visual Check for Odd Functions:</strong>
+          Origin সাপেক্ষে প্রতিসম মানে গ্রাফটিকে <strong>$180^\circ$ ঘুরালে একই থাকে</strong> — এক কোণায় (Quadrant I) যা আছে, উল্টো কোণায় (Quadrant III) ঠিক তার বিপরীত থাকে!
+        </div>
+        <div class="callout warn">
+          <strong>Common Exam Trap:</strong>
+          Not every function is either even or odd — most functions are <em>neither</em>. Also, if a function is odd and defined at $x = 0$, it <em>must</em> pass through the origin $(0,0)$ because $f(0) = -f(0) \implies f(0) = 0$.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Step-by-Step)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1 -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Class Notes</span>
+            <h3 style="margin-top: 6px;">Example 1: Domain &amp; Intercepts of $f(x) = \dfrac{x + 1}{x + 2}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Find (a) the domain, (b) whether $(1, 2)$ lies on the graph, (c) the point on the graph where $x = 2$, and (d) the $x$- and $y$-intercepts.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Domain:</strong> Set the denominator $\ne 0$: $x + 2 \ne 0 \implies x \ne -2$. Thus $\text{Domain} = \mathbb{R} - \{-2\}$.</div>
+          <div class="step-item"><strong>Step 2 — Point Check $(1, 2)$:</strong> Compute $f(1) = \dfrac{1+1}{1+2} = \dfrac{2}{3} \ne 2$. So <strong>No</strong>, $(1, 2)$ is not on the graph.</div>
+          <div class="step-item"><strong>Step 3 — Value at $x = 2$:</strong> $f(2) = \dfrac{2+1}{2+2} = \dfrac{3}{4}$. The point on the graph is $\left(2, \dfrac{3}{4}\right)$.</div>
+          <div class="step-item"><strong>Step 4 — Intercepts:</strong> For $x$-intercept set $y = 0 \implies x + 1 = 0 \implies (-1, 0)$. For $y$-intercept set $x = 0 \implies y = \dfrac{1}{2} \implies \left(0, \dfrac{1}{2}\right)$.</div>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">1st Incourse 2024 &bull; Inverse Method</span>
+            <h3 style="margin-top: 6px;">Example 2: Domain &amp; Range of $f(x) = 2 + \sqrt{x - 1}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Find both the natural domain and the range using the <strong>Inverse Method</strong> (and verify with the Direct Method).</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Domain:</strong> Inside the square root must be $\ge 0$: $x - 1 \ge 0 \implies x \ge 1$. So $\text{Domain} = [1, \infty)$.</div>
+          <div class="step-item"><strong>Step 2 — Isolate the Radical:</strong> Let $y = 2 + \sqrt{x - 1}$. Subtract 2 from both sides: $y - 2 = \sqrt{x - 1}$.</div>
+          <div class="step-item"><strong>Step 3 — Capture the Hidden Restriction:</strong> Since a principal square root is always non-negative ($\sqrt{x - 1} \ge 0$), we must have $y - 2 \ge 0 \implies y \ge 2$.</div>
+          <div class="step-item"><strong>Step 4 — Solve for $x$ &amp; Conclude:</strong> Squaring gives $x = (y - 2)^2 + 1$, which is defined for all $y$, subject to our restriction $y \ge 2$. Therefore, $\text{Range} = [2, \infty)$.</div>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">1st Incourse 2024</span>
+            <h3 style="margin-top: 6px;">Example 3: Domain &amp; Range of $f(x) = \dfrac{x + 1}{x - 1}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Determine the natural domain and range of the rational function $f(x) = \dfrac{x + 1}{x - 1}$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Domain:</strong> Denominator $x - 1 \ne 0 \implies x \ne 1$. Thus $\text{Domain} = \mathbb{R} - \{1\} = (-\infty, 1) \cup (1, \infty)$.</div>
+          <div class="step-item"><strong>Step 2 — Set $y = f(x)$ and Cross-Multiply:</strong> $y = \dfrac{x + 1}{x - 1} \implies y(x - 1) = x + 1 \implies xy - y = x + 1$.</div>
+          <div class="step-item"><strong>Step 3 — Collect $x$-terms:</strong> $xy - x = y + 1 \implies x(y - 1) = y + 1 \implies x = \dfrac{y + 1}{y - 1}$.</div>
+          <div class="step-item"><strong>Step 4 — Range:</strong> For $x$ to be a real number, the denominator $y - 1 \ne 0 \implies y \ne 1$. Hence $\text{Range} = \mathbb{R} - \{1\}$.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Filtered MATH104)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">1st In-course Exam 2024 &bull; Q3</span>
+          <span class="pill pill-amber">2 + 2 = 4 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Suppose that the function $f$ has domain all real numbers. Determine whether each function can be classified as <strong>even</strong> or <strong>odd</strong>. Explain.<br />
+          (i) $g(x) = \dfrac{f(x) + f(-x)}{2}$ &nbsp;&nbsp;&nbsp;&nbsp; (ii) $h(x) = \dfrac{f(x) - f(-x)}{2}$
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exam1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exam1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exam1-hint" class="toggle-box">
+          <strong>Hint:</strong> Replace $x$ with $-x$ in $g(x)$ and $h(x)$ directly. Remember that $-(-x) = x$. Compare the result with the original function!
+        </div>
+        <div id="exam1-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          (i) Substitute $-x$ into $g$:
+          $$g(-x) = \frac{f(-x) + f(-(-x))}{2} = \frac{f(-x) + f(x)}{2} = \frac{f(x) + f(-x)}{2} = g(x)$$
+          Since $g(-x) = g(x)$ for all $x \in \mathbb{R}$, <strong>$g(x)$ is an EVEN function</strong>.<br /><br />
+          (ii) Substitute $-x$ into $h$:
+          $$h(-x) = \frac{f(-x) - f(-(-x))}{2} = \frac{f(-x) - f(x)}{2} = -\frac{f(x) - f(-x)}{2} = -h(x)$$
+          Since $h(-x) = -h(x)$ for all $x \in \mathbb{R}$, <strong>$h(x)$ is an ODD function</strong>.<br />
+          <em>Bonus Insight:</em> Notice $f(x) = g(x) + h(x)$, which proves every function on $\mathbb{R}$ is the sum of an even part and an odd part!
+        </div>
+      </div>
+
+      <!-- Exam Q2 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2024 &bull; Q2(a)</span>
+          <span class="pill pill-amber">4.5 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Find the natural domain of:<br />
+          (i) $f(x) = \dfrac{1}{(x - 1)(x - 3)}$ &nbsp;&nbsp;&nbsp; (ii) $f(x) = \tan x$ &nbsp;&nbsp;&nbsp; (iii) $f(x) = \sqrt{x^2 - 5x + 6}$
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exam2-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exam2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exam2-hint" class="toggle-box">
+          <strong>Hint:</strong> For (iii), factor the quadratic $x^2 - 5x + 6 = (x - 2)(x - 3)$ and test the signs on $(-\infty, 2)$, $(2, 3)$, and $(3, \infty)$.
+        </div>
+        <div id="exam2-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          (i) Denominator $(x - 1)(x - 3) \ne 0 \implies x \ne 1, 3$.<br />
+          <strong>Domain:</strong> $\mathbb{R} - \{1, 3\} = (-\infty, 1) \cup (1, 3) \cup (3, \infty)$.<br /><br />
+          (ii) $\tan x = \dfrac{\sin x}{\cos x}$ is undefined whenever $\cos x = 0$, i.e., $x = \dfrac{(2n+1)\pi}{2}$ for $n \in \mathbb{Z}$.<br />
+          <strong>Domain:</strong> $\left\{ x \in \mathbb{R} : x \ne \dfrac{(2n+1)\pi}{2},\; n \in \mathbb{Z} \right\}$.<br /><br />
+          (iii) Need $x^2 - 5x + 6 \ge 0 \implies (x - 2)(x - 3) \ge 0$.<br />
+          Critical values are $x = 2$ and $x = 3$. Testing intervals shows $(x-2)(x-3) \ge 0$ when $x \le 2$ or $x \ge 3$.<br />
+          <strong>Domain:</strong> $(-\infty, 2] \cup [3, \infty)$.
+        </div>
+      </div>
+
+      <!-- Exam Q3 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2024 &bull; Q1(a) &amp; Q2(b)</span>
+          <span class="pill pill-amber">4.5 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> (a) Write down the definition of a <strong>Function</strong> with an example. (b) State the <strong>symmetry tests</strong> and explain using examples.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exam3-sol')">Toggle Model Answer</button>
+        </div>
+        <div id="exam3-sol" class="toggle-box">
+          <strong>Model Answer (Exam-Ready):</strong><br />
+          <strong>(a) Function:</strong> A function $f$ from a set $D$ to a set $E$ is a rule that assigns to each element $x \in D$ a unique element $f(x) \in E$. Example: $f(x) = x^2$ assigns each real number to its square (e.g., $f(3) = 9$).<br /><br />
+          <strong>(b) Symmetry Tests:</strong>
+          <ul style="margin-left: 20px; margin-top: 6px;">
+            <li><strong>$y$-axis symmetry (Even):</strong> Replacing $x$ by $-x$ yields an equivalent equation ($f(-x) = f(x)$). Example: $y = x^2$ since $(-x)^2 = x^2$.</li>
+            <li><strong>Origin symmetry (Odd):</strong> Replacing $x$ by $-x$ and $y$ by $-y$ yields an equivalent equation ($f(-x) = -f(x)$). Example: $y = x^3$ since $(-x)^3 = -x^3$.</li>
+            <li><strong>$x$-axis symmetry (Relations only):</strong> Replacing $y$ by $-y$ yields an equivalent equation. Example: $x = y^2$ (not a function of $x$ because it fails the Vertical Line Test).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME TOGGLE ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawDomainCanvas();
+      drawPiecewiseCanvas();
+      drawSymCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-domain') drawDomainCanvas();
+      if (id === 'tab-piecewise') drawPiecewiseCanvas();
+      if (id === 'tab-symmetry') drawSymCanvas();
+    }
+
+    /* ================= PROGRESS TRACKER ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= GUIDED EXAMPLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+
+    /* ================= EXAM TOGGLES ================= */
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    /* ================= CANVAS HELPERS ================= */
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        curve: '#2563eb',
+        curve2: '#7c3aed',
+        dom: 'rgba(37, 99, 235, 0.28)',
+        ran: 'rgba(124, 58, 237, 0.28)',
+        probe: '#d97706',
+        danger: '#dc2626',
+        success: '#059669'
+      };
+    }
+
+    function drawAxes(ctx, w, h, xMin, xMax, yMin, yMax) {
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      // Grid
+      ctx.strokeStyle = c.grid;
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+        ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+      }
+      for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+        ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+      }
+
+      // Main Axes
+      ctx.strokeStyle = c.axis;
+      ctx.lineWidth = 1.8;
+      if (yMin <= 0 && yMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
+      }
+      if (xMin <= 0 && xMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+      }
+
+      // Tick labels
+      ctx.fillStyle = c.text;
+      ctx.font = '11px Inter, sans-serif';
+      for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+        if (x !== 0) ctx.fillText(x, toX(x) - 4, toY(0) + 14);
+      }
+      for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+        if (y !== 0) ctx.fillText(y, toX(0) + 6, toY(y) + 4);
+      }
+      return { toX, toY };
+    }
+
+    /* ================= TAB 1: DOMAIN & RANGE CANVAS ================= */
+    const domainFuncs = {
+      sqrt_shift: {
+        name: 'f(x) = 2 + √(x - 1)',
+        domainStr: '[1, ∞)',
+        rangeStr: '[2, ∞)',
+        vlt: 'Passes VLT (Function)',
+        eval: x => x >= 1 ? [2 + Math.sqrt(x - 1)] : [],
+        domIntervals: [[1, 7]],
+        ranIntervals: [[2, 6]],
+        asymptotes: []
+      },
+      rational_shift: {
+        name: 'f(x) = (x + 1) / (x - 1)',
+        domainStr: 'ℝ - {1}',
+        rangeStr: 'ℝ - {1}',
+        vlt: 'Passes VLT (Function)',
+        eval: x => Math.abs(x - 1) > 0.04 ? [(x + 1) / (x - 1)] : [],
+        domIntervals: [[-5, 0.92], [1.08, 7]],
+        ranIntervals: [[-4, 0.92], [1.08, 6]],
+        asymptotes: [1]
+      },
+      rational_ash: {
+        name: 'g(x) = 3x / (x² - 4)',
+        domainStr: 'ℝ - {-2, 2}',
+        rangeStr: '(-∞, ∞)',
+        vlt: 'Passes VLT (Function)',
+        eval: x => Math.abs(x * x - 4) > 0.12 ? [(3 * x) / (x * x - 4)] : [],
+        domIntervals: [[-5, -2.08], [-1.92, 1.92], [2.08, 7]],
+        ranIntervals: [[-4, 6]],
+        asymptotes: [-2, 2]
+      },
+      sqrt_ash: {
+        name: 'h(x) = √(4 - 3x)',
+        domainStr: '(-∞, 4/3]',
+        rangeStr: '[0, ∞)',
+        vlt: 'Passes VLT (Function)',
+        eval: x => (4 - 3 * x) >= 0 ? [Math.sqrt(4 - 3 * x)] : [],
+        domIntervals: [[-5, 4/3]],
+        ranIntervals: [[0, 6]],
+        asymptotes: []
+      },
+      quad_root: {
+        name: 'f(x) = √(x² - 5x + 6)',
+        domainStr: '(-∞, 2] ∪ [3, ∞)',
+        rangeStr: '[0, ∞)',
+        vlt: 'Passes VLT (Function)',
+        eval: x => (x*x - 5*x + 6) >= 0 ? [Math.sqrt(x*x - 5*x + 6)] : [],
+        domIntervals: [[-5, 2], [3, 7]],
+        ranIntervals: [[0, 6]],
+        asymptotes: []
+      },
+      circle_vlt: {
+        name: 'x² + y² = 9',
+        domainStr: '[-3, 3]',
+        rangeStr: '[-3, 3]',
+        vlt: 'FAILS VLT (2 outputs!)',
+        eval: x => Math.abs(x) <= 3 ? [Math.sqrt(Math.max(0, 9 - x*x)), -Math.sqrt(Math.max(0, 9 - x*x))] : [],
+        domIntervals: [[-3, 3]],
+        ranIntervals: [[-3, 3]],
+        asymptotes: []
+      }
+    };
+
+    function drawDomainCanvas() {
+      const canvas = document.getElementById('domainCanvas');
+      const ctx = canvas.getContext('2d');
+      const key = document.getElementById('funcSelect').value;
+      const fn = domainFuncs[key];
+      const x0 = parseFloat(document.getElementById('xProbe').value);
+      document.getElementById('xProbeVal').textContent = x0.toFixed(1);
+
+      const xMin = -5, xMax = 7, yMin = -4, yMax = 6;
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax);
+      const c = getColors();
+
+      // Highlight Domain on x-axis
+      ctx.strokeStyle = c.dom;
+      ctx.lineWidth = 10;
+      fn.domIntervals.forEach(([a, b]) => {
+        ctx.beginPath(); ctx.moveTo(toX(a), toY(0)); ctx.lineTo(toX(b), toY(0)); ctx.stroke();
+      });
+
+      // Highlight Range on y-axis
+      ctx.strokeStyle = c.ran;
+      ctx.lineWidth = 10;
+      fn.ranIntervals.forEach(([a, b]) => {
+        ctx.beginPath(); ctx.moveTo(toX(0), toY(a)); ctx.lineTo(toX(0), toY(b)); ctx.stroke();
+      });
+
+      // Asymptotes
+      ctx.setLineDash([6, 5]);
+      ctx.strokeStyle = c.danger;
+      ctx.lineWidth = 1.5;
+      fn.asymptotes.forEach(a => {
+        ctx.beginPath(); ctx.moveTo(toX(a), 0); ctx.lineTo(toX(a), canvas.height); ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // Curve
+      ctx.strokeStyle = c.curve;
+      ctx.lineWidth = 2.8;
+      if (key === 'circle_vlt') {
+        ctx.beginPath();
+        for (let t = 0; t <= Math.PI * 2 + 0.05; t += 0.03) {
+          const px = toX(3 * Math.cos(t));
+          const py = toY(3 * Math.sin(t));
+          if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      } else {
+        let drawing = false;
+        let lastY = null;
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.025) {
+          const ys = fn.eval(x);
+          if (ys.length === 1 && ys[0] >= yMin - 2 && ys[0] <= yMax + 2) {
+            const py = toY(ys[0]);
+            if (!drawing || (lastY !== null && Math.abs(ys[0] - lastY) > 4)) {
+              ctx.moveTo(toX(x), py);
+              drawing = true;
+            } else {
+              ctx.lineTo(toX(x), py);
+            }
+            lastY = ys[0];
+          } else {
+            drawing = false;
+            lastY = null;
+          }
+        }
+        ctx.stroke();
+      }
+
+      // Vertical Line Probe
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = c.probe;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(toX(x0), 0); ctx.lineTo(toX(x0), canvas.height); ctx.stroke();
+      ctx.setLineDash([]);
+
+      const vals = fn.eval(x0);
+      vals.forEach(y => {
+        ctx.fillStyle = vals.length > 1 ? c.danger : c.probe;
+        ctx.beginPath(); ctx.arc(toX(x0), toY(y), 6, 0, Math.PI * 2); ctx.fill();
+      });
+
+      const outStr = vals.length === 0
+        ? '<span class="pill pill-red">Undefined (Outside Domain)</span>'
+        : vals.length === 1
+          ? `<strong>${vals[0].toFixed(2)}</strong>`
+          : `<span class="pill pill-red">${vals[0].toFixed(2)} and ${vals[1].toFixed(2)}</span>`;
+
+      document.getElementById('domainReadout').innerHTML = `
+        <div class="readout-row"><span>Function:</span><strong>${fn.name}</strong></div>
+        <div class="readout-row"><span>Natural Domain:</span><span class="pill pill-blue">${fn.domainStr}</span></div>
+        <div class="readout-row"><span>Range:</span><span class="pill pill-purple">${fn.rangeStr}</span></div>
+        <div class="readout-row"><span>Output at x = ${x0.toFixed(1)}:</span>${outStr}</div>
+        <div class="readout-row"><span>Vertical Line Test:</span><span class="pill ${vals.length > 1 || key === 'circle_vlt' ? 'pill-red' : 'pill-green'}">${fn.vlt}</span></div>
+      `;
+    }
+
+    /* ================= TAB 2: PIECEWISE CANVAS ================= */
+    function setPwX(val) {
+      document.getElementById('pwSlider').value = val;
+      drawPiecewiseCanvas();
+    }
+
+    function drawPiecewiseCanvas() {
+      const canvas = document.getElementById('piecewiseCanvas');
+      const ctx = canvas.getContext('2d');
+      const x0 = parseFloat(document.getElementById('pwSlider').value);
+      document.getElementById('pwVal').textContent = x0.toFixed(1);
+
+      const xMin = -4, xMax = 4, yMin = -1.5, yMax = 4.5;
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax);
+      const c = getColors();
+
+      // Branch 1: x <= -1 -> 0
+      ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(toX(xMin), toY(0)); ctx.lineTo(toX(-1), toY(0)); ctx.stroke();
+
+      // Branch 2: -1 < x < 1 -> 1 - x^2
+      ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let x = -1; x <= 1; x += 0.02) {
+        const px = toX(x), py = toY(1 - x * x);
+        if (x === -1) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Branch 3: x >= 1 -> x
+      ctx.strokeStyle = '#059669'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(toX(1), toY(1)); ctx.lineTo(toX(xMax), toY(xMax)); ctx.stroke();
+
+      // Boundary Dots
+      // Closed at (-1, 0)
+      ctx.fillStyle = '#2563eb'; ctx.beginPath(); ctx.arc(toX(-1), toY(0), 5.5, 0, Math.PI * 2); ctx.fill();
+      // Open at (1, 0)
+      ctx.fillStyle = c.bg; ctx.strokeStyle = '#7c3aed'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(toX(1), toY(0), 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      // Closed at (1, 1)
+      ctx.fillStyle = '#059669'; ctx.beginPath(); ctx.arc(toX(1), toY(1), 5.5, 0, Math.PI * 2); ctx.fill();
+
+      // Active Point
+      let y0, branchName, ruleStr, badgeClass;
+      if (x0 <= -1) {
+        y0 = 0; branchName = 'Branch 1 (x ≤ -1)'; ruleStr = 'f(x) = 0'; badgeClass = 'pill-blue';
+      } else if (x0 < 1) {
+        y0 = 1 - x0 * x0; branchName = 'Branch 2 (-1 < x < 1)'; ruleStr = 'f(x) = 1 - x²'; badgeClass = 'pill-purple';
+      } else {
+        y0 = x0; branchName = 'Branch 3 (x ≥ 1)'; ruleStr = 'f(x) = x'; badgeClass = 'pill-green';
+      }
+
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = c.probe; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(toX(x0), toY(0)); ctx.lineTo(toX(x0), toY(y0)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = c.probe; ctx.beginPath(); ctx.arc(toX(x0), toY(y0), 6.5, 0, Math.PI * 2); ctx.fill();
+
+      document.getElementById('pwReadout').innerHTML = `
+        <div class="readout-row"><span>Active Branch:</span><span class="pill ${badgeClass}">${branchName}</span></div>
+        <div class="readout-row"><span>Formula Used:</span><strong>${ruleStr}</strong></div>
+        <div class="readout-row"><span>Point (x, f(x)):</span><strong>(${x0.toFixed(1)}, ${y0.toFixed(2)})</strong></div>
+        <div class="readout-row"><span>Boundary Note:</span><span>Closed dot at (-1,0) &amp; (1,1); Open circle at (1,0)</span></div>
+      `;
+    }
+
+    /* ================= TAB 3: SYMMETRY CANVAS ================= */
+    const symFuncs = {
+      x2: { name: 'f(x) = x²', type: 'Even', badge: 'pill-blue', fn: x => x * x },
+      cos: { name: 'f(x) = 2 cos(x)', type: 'Even', badge: 'pill-blue', fn: x => 2 * Math.cos(x) },
+      x3: { name: 'f(x) = 0.25 x³', type: 'Odd', badge: 'pill-purple', fn: x => 0.25 * x * x * x },
+      sin: { name: 'f(x) = 2 sin(x)', type: 'Odd', badge: 'pill-purple', fn: x => 2 * Math.sin(x) },
+      shifted: { name: 'f(x) = (x - 1.5)²', type: 'Neither', badge: 'pill-amber', fn: x => (x - 1.5) * (x - 1.5) },
+      line: { name: 'f(x) = x + 1.5', type: 'Neither', badge: 'pill-amber', fn: x => x + 1.5 }
+    };
+
+    let symAnimFrame = null;
+    function animateSymmetry() {
+      if (symAnimFrame) cancelAnimationFrame(symAnimFrame);
+      let val = 0.2;
+      const step = () => {
+        val += 0.04;
+        if (val > 3.1) { val = 1.5; document.getElementById('symSlider').value = val; drawSymCanvas(); return; }
+        document.getElementById('symSlider').value = val;
+        drawSymCanvas();
+        symAnimFrame = requestAnimationFrame(step);
+      };
+      step();
+    }
+
+    function drawSymCanvas() {
+      const canvas = document.getElementById('symCanvas');
+      const ctx = canvas.getContext('2d');
+      const key = document.getElementById('symSelect').value;
+      const obj = symFuncs[key];
+      const x0 = parseFloat(document.getElementById('symSlider').value);
+      document.getElementById('symVal').textContent = x0.toFixed(1);
+
+      const xMin = -4, xMax = 4, yMin = -4, yMax = 5;
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax);
+      const c = getColors();
+
+      // Plot curve
+      ctx.strokeStyle = c.curve;
+      ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      let started = false;
+      for (let x = xMin; x <= xMax; x += 0.03) {
+        const y = obj.fn(x);
+        if (y >= yMin - 2 && y <= yMax + 2) {
+          if (!started) { ctx.moveTo(toX(x), toY(y)); started = true; }
+          else ctx.lineTo(toX(x), toY(y));
+        } else { started = false; }
+      }
+      ctx.stroke();
+
+      const yPos = obj.fn(x0);
+      const yNeg = obj.fn(-x0);
+
+      // Connecting line between (-x, f(-x)) and (x, f(x))
+      ctx.setLineDash([5, 4]);
+      ctx.strokeStyle = obj.type === 'Even' ? c.success : (obj.type === 'Odd' ? c.curve2 : c.probe);
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(toX(-x0), toY(yNeg)); ctx.lineTo(toX(x0), toY(yPos)); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Points
+      ctx.fillStyle = '#059669';
+      ctx.beginPath(); ctx.arc(toX(x0), toY(yPos), 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath(); ctx.arc(toX(-x0), toY(yNeg), 6, 0, Math.PI * 2); ctx.fill();
+
+      const eqCheck = Math.abs(yNeg - yPos) < 0.01
+        ? 'f(-x) = f(x) ✓ (Even)'
+        : Math.abs(yNeg + yPos) < 0.01
+          ? 'f(-x) = -f(x) ✓ (Odd)'
+          : 'f(-x) ≠ ±f(x) (Neither)';
+
+      document.getElementById('symReadout').innerHTML = `
+        <div class="readout-row"><span>Classification:</span><span class="pill ${obj.badge}">${obj.type}</span></div>
+        <div class="readout-row"><span>f(+${x0.toFixed(1)}) [Green]:</span><strong>${yPos.toFixed(2)}</strong></div>
+        <div class="readout-row"><span>f(-${x0.toFixed(1)}) [Red]:</span><strong>${yNeg.toFixed(2)}</strong></div>
+        <div class="readout-row"><span>Algebraic Test:</span><strong>${eqCheck}</strong></div>
+      `;
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. What is the natural domain of h(t) = √(4 - 3t)? (Ashraful\'s Notes)',
+        opts: ['(-∞, 4/3]', '[4/3, ∞)', '(-∞, 4/3)', 'ℝ - {4/3}'],
+        ans: 0,
+        exp: 'We require 4 - 3t ≥ 0 ⇒ 4 ≥ 3t ⇒ t ≤ 4/3, which is (-∞, 4/3].'
+      },
+      {
+        q: '2. Using the Inverse Method on f(x) = 2 + √(x - 1), why is the range [2, ∞) and not (-∞, ∞)?',
+        opts: [
+          'Because x - 1 cannot be negative',
+          'Because y - 2 = √(x - 1) ≥ 0 forces y ≥ 2 before squaring',
+          'Because there is a vertical asymptote at y = 2',
+          'Because squaring removes negative x values'
+        ],
+        ans: 1,
+        exp: 'A principal square root is always ≥ 0, so y - 2 ≥ 0 ⇒ y ≥ 2 must be enforced before squaring both sides.'
+      },
+      {
+        q: '3. Which of the following is the natural domain of f(x) = √(x² - 5x + 6)? (Final 2024)',
+        opts: ['[2, 3]', '(-∞, 2) ∪ (3, ∞)', '(-∞, 2] ∪ [3, ∞)', 'ℝ - {2, 3}'],
+        ans: 2,
+        exp: 'Factoring gives (x - 2)(x - 3) ≥ 0, which holds for x ≤ 2 or x ≥ 3.'
+      },
+      {
+        q: '4. If f has domain ℝ, the function h(x) = [f(x) - f(-x)] / 2 is always:',
+        opts: ['Even', 'Odd', 'Neither even nor odd', 'Constant'],
+        ans: 1,
+        exp: 'h(-x) = [f(-x) - f(x)] / 2 = -h(x), so h(x) is always an odd function.'
+      },
+      {
+        q: '5. A curve in the xy-plane is symmetric about the x-axis (e.g., x = y²). Is it a function of x?',
+        opts: [
+          'Yes, it is an even function',
+          'Yes, if it passes through the origin',
+          'No, it fails the Vertical Line Test',
+          'Only for positive x'
+        ],
+        ans: 2,
+        exp: 'x-axis symmetry means for any (x, y) with y ≠ 0, (x, -y) is also on the graph — a vertical line hits 2 points, failing the VLT.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      drawDomainCanvas();
+      drawPiecewiseCanvas();
+      drawSymCanvas();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

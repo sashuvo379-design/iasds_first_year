@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 8: Algebraic Properties of Regression & Correlation</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #4f46e5, #7c3aed, #db2777);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #4f46e5, #db2777);
+      color: #fff; font-weight: 800; font-size: 15px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #4f46e5, var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #312e81 0%, #4f46e5 48%, #be185d 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.78;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .mini-input {
+      width: 82px; padding: 6px 8px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 16.5px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 8</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L8</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 8 Progress</span>
+          <span id="progress-text">0 / 6</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Summary of 5 Algebraic Properties</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Dual Regression Line Visualizer</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Origin &amp; Scale Shift Simulator</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Complete Proofs Vault (5 Theorems)</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Reverse-Line Exam Solver Tool</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 3 of 4 • Final Exam Theory Core</span>
+          <span class="badge">Lesson 8 of 12 (Slide Deck L7)</span>
+          <span class="badge">⏱ Est. Study Time: 55 mins</span>
+        </div>
+        <h1>Algebraic Properties of Regression &amp; Correlation</h1>
+        <p class="subtitle">
+          Connect correlation and regression algebraically—master origin &amp; scale transformations of β̂ and α̂, see why the two regression lines intersect at (x̄, ȳ) with r = ±√(β̂<sub>xy</sub>·β̂<sub>yx</sub>), and prove R² = r² in simple linear regression.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L7 Slides + Mihad Notes</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 33–34</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2017–2024</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>The 5 Core Algebraic Properties at a Glance</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p>Using Dr. Masud's notation from <span class="mono">L7_Algebraic_properties.pdf</span>: let <span class="mono">β̂<sub>xy</sub></span> denote the slope when regressing <strong>Y on X</strong> (<span class="mono">Y = α̂<sub>xy</sub> + β̂<sub>xy</sub> X</span>), and <span class="mono">β̂<sub>yx</sub></span> denote the slope when regressing <strong>X on Y</strong> (<span class="mono">X = α̂<sub>yx</sub> + β̂<sub>yx</sub> Y</span>).</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Property</th><th>Mathematical Statement</th><th>Exam Takeaway</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Two-Point Exact Fit</strong></td>
+                <td>For <span class="mono">n = 2</span> distinct points, <span class="mono">r = ±1</span> and <span class="mono">β̂ = (y₁−y₂)/(x₁−x₂)</span></td>
+                <td>Zero residual error (<span class="mono">SSE = 0</span>); exact straight line through both points.</td>
+              </tr>
+              <tr>
+                <td><strong>2. Origin &amp; Scale Effect</strong></td>
+                <td>For <span class="mono">U = a₁ + b₁X</span>, <span class="mono">V = a₂ + b₂Y</span>:<br><span class="mono">β̂<sub>uv</sub> = (b₂ / b₁) · β̂<sub>xy</sub></span></td>
+                <td><strong>β̂</strong> is <em>independent of origin</em>, <em>dependent on scale</em> (cancels if <span class="mono">b₁ = b₂</span>).<br><strong>α̂</strong> depends on <em>both</em> origin and scale (even if <span class="mono">b₁ = b₂</span>!).</td>
+              </tr>
+              <tr>
+                <td><strong>3. Asymmetry &amp; Same Sign</strong></td>
+                <td><span class="mono">β̂<sub>xy</sub> ≠ β̂<sub>yx</sub></span>, but <span class="mono">sign(β̂<sub>xy</sub>) = sign(β̂<sub>yx</sub>) = sign(r<sub>xy</sub>)</span></td>
+                <td>Both lines cross at <span class="mono">(x̄, ȳ)</span>. They coincide <em>only</em> when <span class="mono">|r| = 1</span>!</td>
+              </tr>
+              <tr>
+                <td><strong>4. Geometric Mean Link</strong></td>
+                <td><span class="mono">r<sub>xy</sub>² = β̂<sub>xy</sub> · β̂<sub>yx</sub></span> &nbsp;⇒&nbsp; <span class="mono">r<sub>xy</sub> = ±√(β̂<sub>xy</sub> · β̂<sub>yx</sub>)</span></td>
+                <td><span class="mono">r</span> is the geometric mean of the two slopes (taking their common sign). Also <span class="mono">β̂<sub>xy</sub> = r (s<sub>y</sub>/s<sub>x</sub>)</span>.</td>
+              </tr>
+              <tr>
+                <td><strong>5. R² Equals r² (SLR)</strong></td>
+                <td><span class="mono">R² = SSR / SST = r<sub>xy</sub>²</span></td>
+                <td>In Simple Linear Regression, the proportion of Y-variation explained equals Pearson's <span class="mono">r²</span>.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout trap">
+          <strong class="callout-title">Classic Exam Sanity Check</strong>
+          Can a dataset have <span class="mono">β̂<sub>xy</sub> = +1.5</span> and <span class="mono">β̂<sub>yx</sub> = −0.4</span>? <strong>NO!</strong> They must share the same sign.<br>
+          Can a dataset have <span class="mono">β̂<sub>xy</sub> = 1.8</span> and <span class="mono">β̂<sub>yx</sub> = 0.7</span>? <strong>NO!</strong> Because their product is <span class="mono">1.8 × 0.7 = 1.26 &gt; 1</span>, which violates <span class="mono">r² = β̂<sub>xy</sub> · β̂<sub>yx</sub> ≤ 1</span>!
+        </div>
+      </section>
+
+      <!-- SECTION 2: INTERACTIVE DUAL REGRESSION LINE VISUALIZER -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02 • Interactive Lab 1</div>
+            <h2>Dual Regression Line Visualizer (<em>Y</em> on <em>X</em> vs. <em>X</em> on <em>Y</em>)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>Drag the <strong>Correlation (<em>r</em>)</strong> slider to watch how the angle between the two regression lines behaves! Notice three geometric laws in action: (1) Both lines <strong>always intersect at <span class="mono">(x̄, ȳ)</span></strong>; (2) As <span class="mono">|r| → 1</span>, the two lines <strong>scissor together and merge</strong>; (3) When <span class="mono">r = 0</span>, they become <strong>perpendicular</strong> (horizontal <span class="mono">y = ȳ</span> and vertical <span class="mono">x = x̄</span>).</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <span style="min-width:170px">Target Correlation (<strong>r</strong>): <strong id="dual-r-val" style="color:var(--primary)">0.75</strong></span>
+            <input type="range" id="dual-r" min="-0.99" max="0.99" step="0.01" value="0.75" style="flex:1" oninput="renderDualLab()" />
+            <button class="tab-btn" onclick="setDualR(0.99)">r = +0.99</button>
+            <button class="tab-btn" onclick="setDualR(0)">r = 0</button>
+            <button class="tab-btn" onclick="setDualR(-0.85)">r = −0.85</button>
+          </div>
+          <div class="control-row">
+            <label>s<sub>x</sub>: <input class="mini-input" type="number" step="0.5" min="1" max="20" id="dual-sx" value="4" oninput="renderDualLab()"></label>
+            <label>s<sub>y</sub>: <input class="mini-input" type="number" step="0.5" min="1" max="20" id="dual-sy" value="6" oninput="renderDualLab()"></label>
+            <span style="font-size:13px; color:var(--text-muted)">(Centered at <span class="mono">x̄ = 50, ȳ = 50</span>)</span>
+          </div>
+
+          <div style="text-align:center">
+            <svg id="dual-svg" viewBox="0 0 680 340" width="100%" style="max-width:680px; height:auto; background:var(--surface); border:1px solid var(--border); border-radius:10px"></svg>
+          </div>
+
+          <div class="metric-grid" id="dual-metrics"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: ORIGIN & SCALE SHIFT SIMULATOR -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03 • Interactive Lab 2</div>
+            <h2>Origin &amp; Scale Shift Simulator for α̂ and β̂</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <p>Start with an original fitted line <span class="mono">Ŷ = α̂ + β̂ X</span> (pre-loaded with <strong>Final 2024 Q1</strong>: <span class="mono">Expenditure = 5654 + 0.88 × Income</span>, <span class="mono">r = 0.79</span>). Apply <span class="mono">U = a₁ + b₁X</span> and <span class="mono">V = a₂ + b₂Y</span> to see the exact transformation of both the slope and the intercept:</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Quick Scenarios:</strong>
+            <button class="tab-btn active" onclick="loadShiftPreset(5654, 0.88, 0.79, 0, 2, 0, 3, this)">Final 2024 Q1(f): U=2X, V=3Y</button>
+            <button class="tab-btn" onclick="loadShiftPreset(5654, 0.88, 0.79, 500, 1, -200, 1, this)">Pure Origin Shift (b₁=b₂=1)</button>
+            <button class="tab-btn" onclick="loadShiftPreset(5654, 0.88, 0.79, 0, 10, 0, 10, this)">Same Scale (b₁=b₂=10)</button>
+          </div>
+
+          <div class="control-row">
+            <label>Original α̂: <input class="mini-input" type="number" step="any" id="sh-a" value="5654" oninput="calcShift()"></label>
+            <label>Original β̂: <input class="mini-input" type="number" step="any" id="sh-b" value="0.88" oninput="calcShift()"></label>
+            <label>Original r: <input class="mini-input" type="number" step="0.01" min="-1" max="1" id="sh-r" value="0.79" oninput="calcShift()"></label>
+          </div>
+          <div class="control-row">
+            <label>a₁ (X origin): <input class="mini-input" type="number" step="any" id="sh-a1" value="0" oninput="calcShift()"></label>
+            <label>b₁ (X scale): <input class="mini-input" type="number" step="any" id="sh-b1" value="2" oninput="calcShift()"></label>
+            <label>a₂ (Y origin): <input class="mini-input" type="number" step="any" id="sh-a2" value="0" oninput="calcShift()"></label>
+            <label>b₂ (Y scale): <input class="mini-input" type="number" step="any" id="sh-b2" value="3" oninput="calcShift()"></label>
+          </div>
+
+          <div id="shift-out" class="formula-box" style="margin-bottom:0"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: COMPLETE PROOFS VAULT -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • L7 Slides &amp; Mihad Notes</div>
+            <h2>Complete Proofs &amp; Derivations Vault (5 Core Theorems)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 1</span> Effect of Origin &amp; Scale on β̂ (Independent of Origin, Dependent on Scale)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Let u<sub>i</sub> = a<sub>1</sub> + b<sub>1</sub>x<sub>i</sub> and v<sub>i</sub> = a<sub>2</sub> + b<sub>2</sub>y<sub>i</sub> (b<sub>1</sub>, b<sub>2</sub> ≠ 0). Then ū = a<sub>1</sub> + b<sub>1</sub>x̄ and v̄ = a<sub>2</sub> + b<sub>2</sub>ȳ.</div>
+            <div class="proof-step">Deviations: u<sub>i</sub> − ū = b<sub>1</sub>(x<sub>i</sub> − x̄) and v<sub>i</sub> − v̄ = b<sub>2</sub>(y<sub>i</sub> − ȳ). (Origin shifts a<sub>1</sub>, a<sub>2</sub> vanish!)</div>
+            <div class="proof-step">β̂<sub>uv</sub> = Σ(u<sub>i</sub> − ū)(v<sub>i</sub> − v̄) / Σ(u<sub>i</sub> − ū)² = [ b<sub>1</sub>b<sub>2</sub> Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) ] / [ b<sub>1</sub>² Σ(x<sub>i</sub> − x̄)² ] = <strong>(b<sub>2</sub> / b<sub>1</sub>) · β̂<sub>xy</sub></strong>.</div>
+            <div class="proof-step">Thus β̂ does not depend on origin (a<sub>1</sub>, a<sub>2</sub>), but depends on the ratio of scales (b<sub>2</sub>/b<sub>1</sub>). [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 2</span> Effect of Origin &amp; Scale on α̂ (Depends on BOTH Origin and Scale)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">α̂<sub>uv</sub> = v̄ − β̂<sub>uv</sub> ū = (a<sub>2</sub> + b<sub>2</sub>ȳ) − (b<sub>2</sub>/b<sub>1</sub>)β̂<sub>xy</sub> (a<sub>1</sub> + b<sub>1</sub>x̄)</div>
+            <div class="proof-step">= a<sub>2</sub> + b<sub>2</sub>(ȳ − β̂<sub>xy</sub>x̄) − (b<sub>2</sub>/b<sub>1</sub>)a<sub>1</sub>β̂<sub>xy</sub> = <strong>a<sub>2</sub> − (b<sub>2</sub>/b<sub>1</sub>)a<sub>1</sub>β̂<sub>xy</sub> + b<sub>2</sub>α̂<sub>xy</sub></strong>.</div>
+            <div class="proof-step">Even when b<sub>1</sub> = b<sub>2</sub> = b (same scale change on both variables), α̂<sub>uv</sub> = a<sub>2</sub> − a<sub>1</sub>β̂<sub>xy</sub> + b·α̂<sub>xy</sub>, which still depends on both origin and scale! [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 3</span> <span class="exam-badge">Final 2019 Q7(c),(d)</span> Asymmetry (β̂<sub>xy</sub> ≠ β̂<sub>yx</sub>) &amp; Identical Sign with r</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Correlation: r<sub>xy</sub> = S<sub>xy</sub> / √(S<sub>xx</sub>·S<sub>yy</sub>) = S<sub>yx</sub> / √(S<sub>yy</sub>·S<sub>xx</sub>) = r<sub>yx</sub>  ⇒  <strong>Symmetric</strong>.</div>
+            <div class="proof-step">Regression slopes: β̂<sub>xy</sub> = S<sub>xy</sub> / S<sub>xx</sub>  and  β̂<sub>yx</sub> = S<sub>xy</sub> / S<sub>yy</sub>. Because S<sub>xx</sub> ≠ S<sub>yy</sub> in general, <strong>β̂<sub>xy</sub> ≠ β̂<sub>yx</sub></strong> (Asymmetric).</div>
+            <div class="proof-step"><strong>Same Sign:</strong> In all three formulas (r<sub>xy</sub>, β̂<sub>xy</sub>, β̂<sub>yx</sub>), the denominators √(S<sub>xx</sub>S<sub>yy</sub>), S<sub>xx</sub>, and S<sub>yy</sub> are strictly positive sums of squares. Therefore, the sign of all three quantities is determined solely by the shared numerator S<sub>xy</sub> = Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ)! [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 4</span> Correlation Coefficient is the Geometric Mean of the Two Regression Slopes: r<sub>xy</sub> = ±√(β̂<sub>xy</sub> · β̂<sub>yx</sub>)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">β̂<sub>xy</sub> × β̂<sub>yx</sub> = [ Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) / Σ(x<sub>i</sub> − x̄)² ] × [ Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) / Σ(y<sub>i</sub> − ȳ)² ]</div>
+            <div class="proof-step">= [ Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) ]² / [ Σ(x<sub>i</sub> − x̄)² · Σ(y<sub>i</sub> − ȳ)² ] = <strong>r<sub>xy</sub>²</strong>.</div>
+            <div class="proof-step">Taking the square root (preserving the common sign of β̂<sub>xy</sub> and β̂<sub>yx</sub>): <strong>r<sub>xy</sub> = ±√(β̂<sub>xy</sub> · β̂<sub>yx</sub>)</strong>. [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 5</span> For Simple Linear Regression, R² = r²</span></summary>
+          <div class="details-body">
+            <div class="proof-step">R² = SSR / SST = Σ(ŷ<sub>i</sub> − ȳ)² / Σ(y<sub>i</sub> − ȳ)².</div>
+            <div class="proof-step">Since ŷ<sub>i</sub> = α̂ + β̂x<sub>i</sub> and ȳ = α̂ + β̂x̄, we have ŷ<sub>i</sub> − ȳ = β̂(x<sub>i</sub> − x̄).</div>
+            <div class="proof-step">Substitute into SSR: Σ(ŷ<sub>i</sub> − ȳ)² = β̂² Σ(x<sub>i</sub> − x̄)² = [ S<sub>xy</sub> / S<sub>xx</sub> ]² · S<sub>xx</sub> = S<sub>xy</sub>² / S<sub>xx</sub>.</div>
+            <div class="proof-step">Divide by SST = S<sub>yy</sub>: R² = S<sub>xy</sub>² / (S<sub>xx</sub> · S<sub>yy</sub>) = <strong>r²</strong>.  [Proved]</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 5: REVERSE-LINE SOLVER -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Interactive Exam Tool</div>
+            <h2>Reverse-Line Solver (Final 2022 Q7b Pattern)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <p>Given the regression line of <em>Y</em> on <em>X</em> (<span class="mono">Ŷ = α̂<sub>xy</sub> + β̂<sub>xy</sub>X</span>), <span class="mono">R²</span>, and one known point <span class="mono">(x̂₀, y₀)</span> on the reverse line of <em>X</em> on <em>Y</em>, this solver recovers <span class="mono">α̂<sub>yx</sub></span>, <span class="mono">β̂<sub>yx</sub></span>, <span class="mono">r</span>, and the exact intersection point <span class="mono">(x̄, ȳ)</span>. Pre-loaded with <strong>Final 2022 Q7(b)</strong>:</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <label>α̂<sub>xy</sub>: <input class="mini-input" type="number" step="any" id="rev-axy" value="-12" oninput="solveReverse()"></label>
+            <label>β̂<sub>xy</sub>: <input class="mini-input" type="number" step="any" id="rev-bxy" value="1.74" oninput="solveReverse()"></label>
+            <label>R²: <input class="mini-input" type="number" step="0.01" min="0" max="1" id="rev-r2" value="0.87" oninput="solveReverse()"></label>
+            <label>Given y₀: <input class="mini-input" type="number" step="any" id="rev-y0" value="8" oninput="solveReverse()"></label>
+            <label>Fitted x̂₀: <input class="mini-input" type="number" step="any" id="rev-x0" value="7" oninput="solveReverse()"></label>
+          </div>
+          <div id="rev-out" class="formula-box" style="margin-bottom:0"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2017–2024)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Problems &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2022 • Q7(b) [4 Marks]</span> Finding the Reverse Regression Line (X on Y) from R² = 0.87</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> Fitted regression of <em>Y</em> on <em>X</em> is <span class="mono">Ŷ<sub>i</sub> = −12 + 1.74 x<sub>i</sub></span>. For the regression of <em>X</em> on <em>Y</em> (<span class="mono">X̂<sub>i</sub> = α̂<sub>yx</sub> + β̂<sub>yx</sub> y<sub>i</sub></span>), the fitted value of <em>X</em> at <span class="mono">y = 8</span> is <span class="mono">X̂ = 7</span>, and <span class="mono">R² = 0.87</span>. Find <span class="mono">α̂<sub>yx</sub></span> and <span class="mono">β̂<sub>yx</sub></span>.</p>
+            <p><strong>Worked Solution:</strong></p>
+            <ul>
+              <li><strong>Step 1 (Use R² = r² = β̂<sub>xy</sub> · β̂<sub>yx</sub>):</strong><br>
+                <span class="mono">1.74 × β̂<sub>yx</sub> = 0.87 ⇒ <strong>β̂<sub>yx</sub> = 0.87 / 1.74 = 0.50</strong></span>.</li>
+              <li><strong>Step 2 (Substitute y = 8, X̂ = 7):</strong><br>
+                <span class="mono">7 = α̂<sub>yx</sub> + 0.50(8) = α̂<sub>yx</sub> + 4 ⇒ <strong>α̂<sub>yx</sub> = 3.0</strong></span>.</li>
+              <li><strong>Answer:</strong> <span class="mono">X̂<sub>i</sub> = 3 + 0.50 y<sub>i</sub></span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2024 • Q1(e)–(f)</span> Income Doubled (U = 2X) &amp; Expenditure Tripled (V = 3Y)</span></summary>
+          <div class="details-body">
+            <p><strong>Given:</strong> <span class="mono">r = 0.79</span> and <span class="mono">Expenditure (Y) = 5654 + 0.88 × Income (X)</span>. In 2025, <span class="mono">U = 2X</span> and <span class="mono">V = 3Y</span>.</p>
+            <ul>
+              <li><strong>(e) Variation in Expenditure explained:</strong> <span class="mono">R² = r² = (0.79)² = 0.6241</span> → <strong>62.41%</strong> of the variation in expenditure is explained by income.</li>
+              <li><strong>(f1) New correlation coefficient:</strong> Since both scale factors (+2 and +3) are positive, <span class="mono">r<sub>uv</sub> = <strong>+0.79</strong></span> (unchanged).</li>
+              <li><strong>(f2) Slope of new Expenditure (V) on Income (U):</strong> <span class="mono">β̂<sub>uv</sub> = (b₂/b₁)β̂<sub>xy</sub> = (3/2)(0.88) = <strong>1.32</strong></span>; Intercept <span class="mono">α̂<sub>uv</sub> = 3(5654) = <strong>16,962</strong></span> ⇒ <span class="mono">V̂ = 16962 + 1.32 U</span>.</li>
+              <li><strong>(f3) Slope of new Income (U) on Expenditure (V):</strong> First, original reverse slope <span class="mono">β̂<sub>yx</sub> = r² / β̂<sub>xy</sub> = 0.6241 / 0.88 = 0.7092</span>. Scaling <span class="mono">U = 2X</span> and <span class="mono">V = 3Y</span> gives <span class="mono">β̂<sub>vu</sub> = (2/3)(0.7092) = <strong>0.4728</strong></span> (note: the intercept of the reverse line additionally requires <span class="mono">x̄</span> or <span class="mono">ȳ</span>).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2019 • Q7(c),(d) [5 Marks] &amp; Final 2017 • Q6(c) [1 Mark]</span> Theory Checklist</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>Final 2019 Q7(c):</strong> Show <span class="mono">r<sub>xy</sub> = r<sub>yx</sub></span> (symmetric) while <span class="mono">β̂<sub>xy</sub> = S<sub>xy</sub>/S<sub>xx</sub> ≠ S<sub>xy</sub>/S<sub>yy</sub> = β̂<sub>yx</sub></span> (asymmetric) → Theorem 3 above.</li>
+              <li><strong>Final 2019 Q7(d):</strong> Explain why <span class="mono">r</span> and <span class="mono">β̂</span> share the same sign → both have strictly positive denominators and identical numerator <span class="mono">S<sub>xy</sub></span>; equivalently <span class="mono">β̂<sub>xy</sub> = r(s<sub>y</sub>/s<sub>x</sub>)</span> where <span class="mono">s<sub>y</sub>/s<sub>x</sub> &gt; 0</span>.</li>
+              <li><strong>Final 2017 Q6(c):</strong> State <span class="mono">β̂<sub>xy</sub> = r · (s<sub>y</sub> / s<sub>x</sub>)</span> and <span class="mono">r = ±√(β̂<sub>xy</sub> · β̂<sub>yx</sub>)</span>.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l8_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l8_theme') || localStorage.getItem('ast101_l7_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l8_done') || '[]');
+    function syncProgress() {
+      const total = 6;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l8_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l8_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Lab 1: Dual Regression Line Visualizer ----------
+    // Fixed standard-normal-like pseudo-random pairs (z1, z2) so points morph smoothly with r
+    const baseZ = [
+      [-1.5,-0.4],[-1.2,0.8],[-1.0,-0.9],[-0.8,0.2],[-0.6,1.1],[-0.4,-1.2],[-0.2,0.5],[0.0,-0.3],
+      [0.2,0.9],[0.4,-0.8],[0.6,0.4],[0.8,-0.5],[1.0,1.2],[1.2,-0.2],[1.5,0.6],[-1.3,0.1],
+      [-0.7,-0.7],[-0.1,1.3],[0.5,-1.1],[1.1,0.3],[-0.9,0.9],[0.3,0.1],[0.9,-0.9],[1.4,-0.7]
+    ];
+
+    function setDualR(val) {
+      document.getElementById('dual-r').value = val;
+      renderDualLab();
+    }
+
+    function renderDualLab() {
+      const r = parseFloat(document.getElementById('dual-r').value);
+      const sxVal = Math.max(1, parseFloat(document.getElementById('dual-sx').value) || 4);
+      const syVal = Math.max(1, parseFloat(document.getElementById('dual-sy').value) || 6);
+      document.getElementById('dual-r-val').textContent = r.toFixed(2);
+
+      const mx = 50, my = 50;
+      const b_xy = r * (syVal / sxVal); // Y on X
+      const b_yx = r * (sxVal / syVal); // X on Y
+      const a_xy = my - b_xy * mx;
+      const a_yx = mx - b_yx * my;
+
+      // Angle between the two lines in Y-vs-X plane (slopes m1 = b_xy, m2 = 1/b_yx)
+      let deg = 90;
+      if (Math.abs(r) > 0.001) {
+        const m1 = b_xy, m2 = 1 / b_yx;
+        const tanT = Math.abs((m2 - m1) / (1 + m1 * m2));
+        deg = (Math.atan(tanT) * 180) / Math.PI;
+      }
+
+      document.getElementById('dual-metrics').innerHTML = [
+        ["β̂_xy (Y on X)", b_xy.toFixed(3)],
+        ["β̂_yx (X on Y)", b_yx.toFixed(3)],
+        ["β̂_xy × β̂_yx", (b_xy * b_yx).toFixed(4)],
+        ["r² (= R²)", (r * r).toFixed(4)],
+        ["Angle Between Lines", deg.toFixed(1) + "°"],
+        ["Intersection", "(50, 50)"]
+      ].map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+      const svg = document.getElementById('dual-svg');
+      const W = 680, H = 340, padL = 52, padR = 24, padT = 22, padB = 38;
+      const pW = W - padL - padR, pH = H - padT - padB;
+      const minV = 20, maxV = 80;
+      const sx = x => padL + ((x - minV) / (maxV - minV)) * pW;
+      const sy = y => padT + pH - ((y - minV) / (maxV - minV)) * pH;
+
+      let out = `<defs><clipPath id="dualClip"><rect x="${padL}" y="${padT}" width="${pW}" height="${pH}"/></clipPath></defs>`;
+      out += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+pH}" stroke="currentColor" opacity="0.4"/>`;
+      out += `<line x1="${padL}" y1="${padT+pH}" x2="${padL+pW}" y2="${padT+pH}" stroke="currentColor" opacity="0.4"/>`;
+
+      for (let v = 20; v <= 80; v += 15) {
+        out += `<text x="${sx(v)}" y="${padT+pH+16}" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.7">${v}</text>`;
+        out += `<text x="${padL-8}" y="${sy(v)+4}" text-anchor="end" font-size="10.5" fill="currentColor" opacity="0.7">${v}</text>`;
+      }
+
+      // Clipped content
+      let inner = '';
+      // Points
+      const rt = Math.sqrt(Math.max(0, 1 - r * r));
+      baseZ.forEach(([z1, z2]) => {
+        const px = mx + sxVal * z1;
+        const py = my + syVal * (r * z1 + rt * z2);
+        inner += `<circle cx="${sx(px)}" cy="${sy(py)}" r="4.5" fill="#64748b" opacity="0.55"/>`;
+      });
+
+      // Line 1: Y on X (blue): y = a_xy + b_xy * x
+      inner += `<line x1="${sx(minV)}" y1="${sy(a_xy + b_xy * minV)}" x2="${sx(maxV)}" y2="${sy(a_xy + b_xy * maxV)}" stroke="#2563eb" stroke-width="3"/>`;
+
+      // Line 2: X on Y (pink/magenta): x = a_yx + b_yx * y
+      inner += `<line x1="${sx(a_yx + b_yx * minV)}" y1="${sy(minV)}" x2="${sx(a_yx + b_yx * maxV)}" y2="${sy(maxV)}" stroke="#db2777" stroke-width="3"/>`;
+
+      // Intersection (x̄, ȳ)
+      inner += `<circle cx="${sx(mx)}" cy="${sy(my)}" r="6.5" fill="#059669" stroke="#fff" stroke-width="2"/>`;
+      out += `<g clip-path="url(#dualClip)">${inner}</g>`;
+
+      // Legend
+      out += `<text x="${padL+10}" y="36" font-size="11.5" font-weight="700" fill="#2563eb">━━ Y on X: Ŷ = ${a_xy.toFixed(1)} ${b_xy>=0?'+':'−'} ${Math.abs(b_xy).toFixed(2)}X</text>`;
+      out += `<text x="${padL+10}" y="53" font-size="11.5" font-weight="700" fill="#db2777">━━ X on Y: X̂ = ${a_yx.toFixed(1)} ${b_yx>=0?'+':'−'} ${Math.abs(b_yx).toFixed(2)}Y</text>`;
+      out += `<text x="${sx(mx)+10}" y="${sy(my)-10}" font-size="11" font-weight="700" fill="#059669">(x̄, ȳ)</text>`;
+      svg.innerHTML = out;
+    }
+    renderDualLab();
+
+    // ---------- Lab 2: Origin & Scale Shift Simulator ----------
+    function loadShiftPreset(a, b, r, a1, b1, a2, b2, btn) {
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('sh-a').value = a;
+      document.getElementById('sh-b').value = b;
+      document.getElementById('sh-r').value = r;
+      document.getElementById('sh-a1').value = a1;
+      document.getElementById('sh-b1').value = b1;
+      document.getElementById('sh-a2').value = a2;
+      document.getElementById('sh-b2').value = b2;
+      calcShift();
+    }
+
+    function calcShift() {
+      const a = parseFloat(document.getElementById('sh-a').value) || 0;
+      const b = parseFloat(document.getElementById('sh-b').value) || 0;
+      const r = parseFloat(document.getElementById('sh-r').value) || 0;
+      const a1 = parseFloat(document.getElementById('sh-a1').value) || 0;
+      const b1 = parseFloat(document.getElementById('sh-b1').value) || 0;
+      const a2 = parseFloat(document.getElementById('sh-a2').value) || 0;
+      const b2 = parseFloat(document.getElementById('sh-b2').value) || 0;
+      const out = document.getElementById('shift-out');
+      if (b1 === 0 || b2 === 0) { out.textContent = "Scale factors b₁ and b₂ must be non-zero."; return; }
+
+      const newB = (b2 / b1) * b;
+      const newA = a2 - newB * a1 + b2 * a;
+      const newR = (b1 * b2 > 0 ? 1 : -1) * r;
+      const oldRevB = b !== 0 ? (r * r) / b : NaN;
+      const newRevB = !isNaN(oldRevB) ? (b1 / b2) * oldRevB : NaN;
+
+      out.innerHTML = `New Slope (V on U):  β̂<sub>uv</sub> = (${b2}/${b1}) × ${b} = <strong>${newB.toFixed(4)}</strong><br>
+        New Intercept (V on U): α̂<sub>uv</sub> = ${a2} − (${newB.toFixed(3)})(${a1}) + (${b2})(${a}) = <strong>${newA.toFixed(2)}</strong><br>
+        New Correlation: r<sub>uv</sub> = <strong>${newR.toFixed(4)}</strong> &nbsp;|&nbsp; New Reverse Slope (U on V): β̂<sub>vu</sub> = <strong>${isNaN(newRevB) ? 'N/A' : newRevB.toFixed(4)}</strong>`;
+    }
+    calcShift();
+
+    // ---------- Reverse-Line Solver ----------
+    function solveReverse() {
+      const axy = parseFloat(document.getElementById('rev-axy').value);
+      const bxy = parseFloat(document.getElementById('rev-bxy').value);
+      const r2 = parseFloat(document.getElementById('rev-r2').value);
+      const y0 = parseFloat(document.getElementById('rev-y0').value);
+      const x0 = parseFloat(document.getElementById('rev-x0').value);
+      const out = document.getElementById('rev-out');
+      if ([axy, bxy, r2, y0, x0].some(isNaN) || bxy === 0 || r2 < 0 || r2 > 1) {
+        out.textContent = "Enter valid numbers (β̂_xy ≠ 0 and 0 ≤ R² ≤ 1).";
+        return;
+      }
+      const byx = r2 / bxy;
+      const ayx = x0 - byx * y0;
+      const r = (bxy >= 0 ? 1 : -1) * Math.sqrt(r2);
+      const denom = 1 - r2;
+      const xbar = denom > 1e-6 ? (ayx + byx * axy) / denom : NaN;
+      const ybar = !isNaN(xbar) ? axy + bxy * xbar : NaN;
+
+      out.innerHTML = `Step 1: β̂<sub>yx</sub> = R² / β̂<sub>xy</sub> = ${r2} / ${bxy} = <strong>${byx.toFixed(4)}</strong><br>
+        Step 2: α̂<sub>yx</sub> = x̂₀ − β̂<sub>yx</sub>·y₀ = ${x0} − (${byx.toFixed(4)})(${y0}) = <strong>${ayx.toFixed(4)}</strong><br>
+        Reverse Line: <strong>X̂ = ${ayx.toFixed(3)} ${byx >= 0 ? '+' : '−'} ${Math.abs(byx).toFixed(4)} Y</strong> &nbsp;|&nbsp; r = <strong>${r.toFixed(4)}</strong>` +
+        (!isNaN(xbar) ? `<br>Intersection (x̄, ȳ) = <strong>(${xbar.toFixed(2)}, ${ybar.toFixed(2)})</strong>` : '');
+    }
+    solveReverse();
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "L7 Property",
+        q: "If U = 5 + 2X and V = 10 + 6Y, how is the new regression slope β̂_uv related to β̂_xy?",
+        opts: ["β̂_uv = β̂_xy", "β̂_uv = 3 · β̂_xy", "β̂_uv = (1/3) · β̂_xy", "β̂_uv = 12 · β̂_xy"],
+        ans: 1,
+        exp: "β̂_uv = (b₂ / b₁) · β̂_xy = (6 / 2) · β̂_xy = 3 · β̂_xy. Origin shifts (5 and 10) have zero effect on the slope."
+      },
+      {
+        tag: "L7 Property",
+        q: "If BOTH X and Y are multiplied by the same constant (b₁ = b₂ = 10) with no origin shift, what happens to α̂ and β̂?",
+        opts: ["Both remain unchanged", "β̂ is unchanged, but α̂ is multiplied by 10", "α̂ is unchanged, but β̂ is multiplied by 10", "Both are multiplied by 10"],
+        ans: 1,
+        exp: "β̂_uv = (10/10)β̂_xy = β̂_xy (unchanged), while α̂_uv = 10·α̂_xy (still depends on scale!)."
+      },
+      {
+        tag: "L7 Geometric Mean",
+        q: "The regression slope of Y on X is −0.8 and the regression slope of X on Y is −0.45. What is Pearson's r?",
+        opts: ["+0.60", "−0.60", "−0.36", "+0.36"],
+        ans: 1,
+        exp: "r = ±√(β̂_xy · β̂_yx) = −√(0.8 × 0.45) = −√0.36 = −0.60 (must take the common negative sign of the slopes!)."
+      },
+      {
+        tag: "L7 Sanity Check",
+        q: "Which of the following pairs of regression slopes (β̂_xy, β̂_yx) is MATHEMATICALLY IMPOSSIBLE?",
+        opts: ["(0.4, 0.9)", "(−2.0, −0.3)", "(1.5, 0.8)", "(−0.5, −0.5)"],
+        ans: 2,
+        exp: "For (1.5, 0.8), the product β̂_xy · β̂_yx = 1.20 > 1, which is impossible because r² ≤ 1."
+      },
+      {
+        tag: "L7 Geometry",
+        q: "When do the two regression lines (Y on X and X on Y) coincide into a single identical line?",
+        opts: ["When r = 0", "When s_x = s_y", "When |r| = 1", "Always"],
+        ans: 2,
+        exp: "When |r| = 1, β̂_xy · β̂_yx = 1 ⇒ β̂_xy = 1 / β̂_yx, so both lines have the exact same slope and pass through (x̄, ȳ)."
+      },
+      {
+        tag: "Final 2024 Q1(e)",
+        q: "In Simple Linear Regression, if Pearson's correlation is r = −0.70, what percentage of the variation in Y is explained by X?",
+        opts: ["70%", "−49%", "49%", "30%"],
+        ans: 2,
+        exp: "In SLR, R² = r² = (−0.70)² = 0.49 = 49%."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON107 • Lesson 4: Market Equilibrium &amp; Dynamics</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f4c81;
+      --primary-light: #e0f2fe;
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+      --warn: #d97706;
+      --warn-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-elevated: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-light: rgba(56, 189, 248, 0.14);
+      --accent: #2dd4bf;
+      --accent-light: rgba(45, 212, 191, 0.14);
+      --warn: #fbbf24;
+      --warn-light: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.14);
+      --success: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.14);
+      --purple: #a78bfa;
+      --purple-light: rgba(167, 139, 250, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1rem; }
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .brand-badge { color: #0b1120; }
+    .top-controls { display: flex; align-items: center; gap: 0.75rem; }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .progress-bar-wrap { width: 72px; height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+    .btn-icon {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+    .scroll-track { height: 3px; background: transparent; width: 100%; }
+    .scroll-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.1s linear; }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 4.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 9px;
+      transition: all 0.18s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-link.active .nav-num { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .nav-link.active .nav-num { color: #0b1120; }
+    .sidebar-meta {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sidebar-meta strong { color: var(--text); }
+
+    /* Main */
+    .main { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #0f4c81 48%, #7c3aed 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+    }
+    .pill-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-accent { background: var(--accent-light); color: var(--accent); }
+    .pill-warn { background: var(--warn-light); color: var(--warn); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+
+    .hero h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.65rem; }
+    .hero p { color: rgba(255, 255, 255, 0.92); max-width: 72ch; font-size: 1rem; }
+    .hero-stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+    }
+    .hero-stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+    .hero-stat-val { font-size: 1rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.85rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .section-card h2 { font-size: 1.45rem; line-height: 1.25; }
+    .section-card h3 { font-size: 1.1rem; margin: 1.15rem 0 0.5rem; }
+    .section-card p { margin-bottom: 0.85rem; color: var(--text); }
+    .muted { color: var(--text-muted); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.2rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-light); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.95rem; }
+
+    /* Grids & Mini Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .mini-card h4 { font-size: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem; }
+    .mini-card ul { padding-left: 1.15rem; font-size: 0.91rem; color: var(--text-muted); }
+    .mini-card li { margin-bottom: 0.35rem; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-subtle); font-weight: 700; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr.active-row { background: var(--primary-light); font-weight: 700; }
+
+    /* Interactive Labs */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+    .canvas-wrap {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+    }
+    .control-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .readout-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-size: 0.88rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .chip-btn {
+      padding: 0.42rem 0.75rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .chip-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .chip-btn.active { color: #0b1120; }
+
+    /* Tabs & Buttons */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .tab-btn.active { color: #0b1120; }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .btn-primary { color: #0b1120; }
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .slider-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; }
+
+    /* Algebra Solver Inputs */
+    .eq-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin: 0.85rem 0;
+    }
+    .eq-field {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+    .eq-field label { display: block; font-size: 0.76rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .eq-field input {
+      width: 100%;
+      padding: 0.4rem 0.55rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .math-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 0.85rem 1.05rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    /* Accordion */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .acc-item { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated); }
+    .acc-btn {
+      width: 100%;
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: none;
+      padding: 0.95rem 1.15rem;
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .acc-btn:hover { filter: brightness(0.97); }
+    .acc-chevron { transition: transform 0.2s; font-size: 0.85rem; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 1.1rem 1.2rem; border-top: 1px solid var(--border); font-size: 0.92rem; }
+    .acc-item.open .acc-body { display: block; }
+
+    /* Quiz */
+    .quiz-q {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--bg-subtle);
+    }
+    .quiz-q-title { font-weight: 700; margin-bottom: 0.7rem; }
+    .quiz-opts { display: grid; gap: 0.45rem; }
+    .quiz-opt {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .quiz-opt.is-correct { background: var(--success-light); border-color: var(--success); font-weight: 600; }
+    .quiz-opt.is-wrong { background: var(--danger-light); border-color: var(--danger); }
+    .quiz-exp { margin-top: 0.65rem; font-size: 0.86rem; color: var(--text-muted); display: none; }
+    .quiz-exp.show { display: block; }
+
+    /* Done Button */
+    .done-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .done-btn.completed { background: var(--success-light); color: var(--success); border-color: var(--success); }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-2, .grid-3, .lab-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge">ECON107</span>
+        <span>Lesson 4: Market Equilibrium &amp; Dynamics</span>
+      </div>
+      <div class="top-controls">
+        <div class="progress-pill">
+          <span id="progressText">0/6 Done</span>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="scroll-track"><div class="scroll-fill" id="scrollFill"></div></div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lesson 4 Roadmap</div>
+      <ul class="nav-list">
+        <li><a class="nav-link active" href="#sec-eq"><span class="nav-num">1</span> Market-Clearing Price</a></li>
+        <li><a class="nav-link" href="#sec-sandbox"><span class="nav-num">2</span> Surplus/Shortage Sandbox</a></li>
+        <li><a class="nav-link" href="#sec-shifts"><span class="nav-num">3</span> Shifts &amp; Immigration Lab</a></li>
+        <li><a class="nav-link" href="#sec-algebra"><span class="nav-num">4</span> Algebraic Equilibrium Solver</a></li>
+        <li><a class="nav-link" href="#sec-dynamic"><span class="nav-num">5</span> Dynamic Pricing &amp; Rationing</a></li>
+        <li><a class="nav-link" href="#sec-pyq"><span class="nav-num">6</span> ISRT PYQ Vault</a></li>
+        <li><a class="nav-link" href="#sec-quiz"><span class="nav-num">7</span> Mastery Check</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <div><strong>Course:</strong> ECON107 (4 Credits)</div>
+        <div><strong>Institution:</strong> ISRT, University of Dhaka</div>
+        <div><strong>Sources:</strong> ECON107_L4.pdf, Ch. 3C</div>
+        <div><strong>Exam Focus:</strong> 1st In-course &amp; Final Q2–Q3</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-badges">
+          <span class="pill pill-glass">Module 1 • 1st In-Course Scope</span>
+          <span class="pill pill-glass">Lecture 4 • ECON107</span>
+          <span class="pill pill-glass">Table, Graph &amp; Algebra Heavy</span>
+        </div>
+        <h1>Market Equilibrium, Shocks &amp; Price Dynamics</h1>
+        <p>
+          Put supply and demand together to see how competitive markets clear: why prices above equilibrium trigger
+          surpluses and downward pressure, why prices below equilibrium create shortages, how single and simultaneous
+          shifts move equilibrium (including immigration &amp; tech advances), and how to solve equilibrium algebraically.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Core Condition</div>
+            <div class="hero-stat-val">Q_D = Q_S (Clears Market)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">4 Laws of Shifts</div>
+            <div class="hero-stat-val">Table 3-6 Mastery</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Interactive Labs</div>
+            <div class="hero-stat-val">Sandbox + Shift + Solver</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Past Questions</div>
+            <div class="hero-stat-val">7 ISRT PYQs (2017–25)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Core Equilibrium & Table 3-5 -->
+      <section class="section-card" id="sec-eq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 01 • Finding the Balance</div>
+            <h2>Market Equilibrium &amp; The Market-Clearing Price</h2>
+          </div>
+          <button class="done-btn" data-section="s1">✓ Mark Done</button>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Definition of Market Equilibrium (ECON107_L4 / Samuelson &amp; Nordhaus)</div>
+          A <strong>market equilibrium</strong> occurs at the price where <strong>quantity demanded equals quantity supplied</strong>
+          (the intersection of the D and S curves). At this <strong>market-clearing price</strong>, all buy and sell orders are filled,
+          there are no shortages or surpluses, and there is <em>no tendency for the price to rise or fall</em>.
+        </div>
+
+        <div class="grid-3">
+          <div class="mini-card" style="border-top:4px solid var(--danger);">
+            <h4>📦 Price Too High (P &gt; P*)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              <strong>Q<sub>S</sub> &gt; Q<sub>D</sub> → Surplus (Excess Supply).</strong> Unsold inventories pile up; sellers cut
+              prices to clear stock, pushing price <strong>downward</strong> toward P*.
+            </p>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--success);">
+            <h4>⚖️ Equilibrium (P = P*)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              <strong>Q<sub>D</sub> = Q<sub>S</sub> → Market Clears.</strong> Consumers willingly buy the exact amount firms
+              willingly sell. Price pressure is <strong>neutral</strong>.
+            </p>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--warn);">
+            <h4>🔥 Price Too Low (P &lt; P*)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              <strong>Q<sub>D</sub> &gt; Q<sub>S</sub> → Shortage (Excess Demand).</strong> Long queues form; frustrated buyers
+              bid prices <strong>upward</strong> toward P*.
+            </p>
+          </div>
+        </div>
+
+        <h3>Table 3-5: Combining Demand &amp; Supply for Cornflakes</h3>
+        <div class="table-wrap">
+          <table id="cornflakesTable">
+            <thead>
+              <tr>
+                <th>Situation</th>
+                <th>Possible Price ($/box)</th>
+                <th>Qty Demanded (M boxes)</th>
+                <th>Qty Supplied (M boxes)</th>
+                <th>State of Market</th>
+                <th>Pressure on Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-p="5"><td><strong>A</strong></td><td>$5</td><td>9</td><td>18</td><td><span class="pill pill-danger">Surplus (+9)</span></td><td>↓ Downward</td></tr>
+              <tr data-p="4"><td><strong>B</strong></td><td>$4</td><td>10</td><td>16</td><td><span class="pill pill-danger">Surplus (+6)</span></td><td>↓ Downward</td></tr>
+              <tr data-p="3" class="active-row"><td><strong>C</strong></td><td><strong>$3</strong></td><td><strong>12</strong></td><td><strong>12</strong></td><td><span class="pill pill-success">Equilibrium</span></td><td><strong>Neutral</strong></td></tr>
+              <tr data-p="2"><td><strong>D</strong></td><td>$2</td><td>15</td><td>7</td><td><span class="pill pill-warn">Shortage (−8)</span></td><td>↑ Upward</td></tr>
+              <tr data-p="1"><td><strong>E</strong></td><td>$1</td><td>20</td><td>0</td><td><span class="pill pill-warn">Shortage (−20)</span></td><td>↑ Upward</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 2: Interactive Equilibrium Sandbox -->
+      <section class="section-card" id="sec-sandbox">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 02 • Interactive Price Mechanism</div>
+            <h2>Equilibrium Sandbox: Surplus &amp; Shortage Visualizer</h2>
+          </div>
+          <button class="done-btn" data-section="s2">✓ Mark Done</button>
+        </div>
+
+        <p class="muted" style="font-size:0.92rem;">
+          Drag the <strong>Manual Market Price</strong> slider away from equilibrium to see how excess supply (surplus) or
+          excess demand (shortage) appears on the graph and why market forces automatically pull the price back to P*.
+        </p>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="sbCorn" onclick="setSandboxPreset('corn')">🥣 Cornflakes (Table 3-5)</button>
+          <button class="tab-btn" id="sbPizza" onclick="setSandboxPreset('pizza')">🍕 Pizzas (ISRT 2019 PYQ)</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="sandboxCanvas" width="520" height="370"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label">
+                <span>Manual Market Price (P)</span>
+                <span id="sbPriceVal" style="color:var(--primary);">$3.00</span>
+              </div>
+              <input type="range" id="sbPriceSlider" min="1" max="5" step="0.5" value="3" />
+            </div>
+
+            <div class="readout-card" id="sbReadout"></div>
+
+            <button class="btn btn-primary" type="button" onclick="snapToEq()">⚖️ Let Market Clear (Snap to P*)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Shifts & Simultaneous Shocks Lab -->
+      <section class="section-card" id="sec-shifts">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 03 • Comparative Statics</div>
+            <h2>Single &amp; Simultaneous Shifts (Table 3-6 &amp; Immigration)</h2>
+          </div>
+          <button class="done-btn" data-section="s3">✓ Mark Done</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Shock / Curve Shift</th><th>Direction of Shift</th><th>Effect on Equilibrium Price (P*)</th><th>Effect on Equilibrium Qty (Q*)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Demand Rises</strong></td><td>D shifts right (D → D')</td><td><strong>P* ↑</strong> (Rises)</td><td><strong>Q* ↑</strong> (Rises)</td></tr>
+              <tr><td><strong>Demand Falls</strong></td><td>D shifts left (D → D')</td><td><strong>P* ↓</strong> (Falls)</td><td><strong>Q* ↓</strong> (Falls)</td></tr>
+              <tr><td><strong>Supply Rises</strong></td><td>S shifts right (S → S')</td><td><strong>P* ↓</strong> (Falls)</td><td><strong>Q* ↑</strong> (Rises)</td></tr>
+              <tr><td><strong>Supply Falls</strong></td><td>S shifts left (S → S')</td><td><strong>P* ↑</strong> (Rises)</td><td><strong>Q* ↓</strong> (Falls)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Interactive Shift &amp; PYQ Scenario Simulator</h3>
+        <p class="muted" style="font-size:0.9rem;">
+          Click any past-exam or textbook scenario below—or drag both sliders simultaneously to see why simultaneous shifts
+          make one variable unambiguous and the other depend on relative shift magnitudes!
+        </p>
+
+        <div class="preset-chips" style="margin-bottom:1rem;">
+          <button class="chip-btn active" onclick="applyShiftPreset(0, 0, 'Baseline Equilibrium', this)">Baseline</button>
+          <button class="chip-btn" onclick="applyShiftPreset(0, 22, 'Computers: Cheaper Chips (Final 2025)', this)">💻 Computers (Chips ↓)</button>
+          <button class="chip-btn" onclick="applyShiftPreset(-22, 0, 'Typewriters: Cheaper Computers (Final 2025)', this)">⌨️ Typewriters (Sub ↓)</button>
+          <button class="chip-btn" onclick="applyShiftPreset(22, 0, 'Chicken Burgers: Beef Price ↑ (Final 2024)', this)">🍔 Burgers (Beef ↑)</button>
+          <button class="chip-btn" onclick="applyShiftPreset(0, -22, 'Chicken Burgers: Wages ↑ (Final 2024)', this)">🍔 Burgers (Wages ↑)</button>
+          <button class="chip-btn" onclick="applyShiftPreset(0, 24, 'Fig 3-10(a): Immigration Alone (Labor Market)', this)">🚶 Immigration Alone</button>
+          <button class="chip-btn" onclick="applyShiftPreset(24, 24, 'Fig 3-10(b): Immigration to Growing Cities', this)">🏙️ Immigration + Growth</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="shiftCanvas" width="520" height="370"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label">
+                <span>Demand Shift (ΔD)</span>
+                <span id="dShiftVal" style="color:var(--primary);">0</span>
+              </div>
+              <input type="range" id="dShiftSlider" min="-30" max="30" step="2" value="0" />
+            </div>
+            <div>
+              <div class="slider-label">
+                <span>Supply Shift (ΔS)</span>
+                <span id="sShiftVal" style="color:var(--accent);">0</span>
+              </div>
+              <input type="range" id="sShiftSlider" min="-30" max="30" step="2" value="0" />
+            </div>
+            <div class="readout-card" id="shiftReadout"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Algebraic Equilibrium Solver -->
+      <section class="section-card" id="sec-algebra">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 04 • Quantitative Tools</div>
+            <h2>Algebraic Equilibrium Solver (Linear Markets)</h2>
+          </div>
+          <button class="done-btn" data-section="s4">✓ Mark Done</button>
+        </div>
+
+        <p>
+          To solve for market equilibrium mathematically, set <strong>Q<sub>D</sub> = Q<sub>S</sub></strong>, solve for
+          equilibrium price <strong>P*</strong>, and substitute P* back into either equation to get <strong>Q*</strong>.
+          Use the presets below to verify the <strong>2019 ISRT Pizza PYQ</strong> (both original and when demand triples!).
+        </p>
+
+        <div class="preset-chips" style="margin-bottom:0.5rem;">
+          <button class="chip-btn active" onclick="loadEqPreset(50, 5, -10, 5, this)">🍕 2019 Pizza PYQ (Original)</button>
+          <button class="chip-btn" onclick="loadEqPreset(150, 15, -10, 5, this)">🍕 2019 Pizza PYQ (Demand Triples!)</button>
+          <button class="chip-btn" onclick="loadEqPreset(100, 2, 10, 4, this)">📘 General Linear Example</button>
+        </div>
+
+        <div class="eq-inputs">
+          <div class="eq-field">
+            <label for="eqA">Demand Intercept (a in Q<sub>d</sub> = a − bP)</label>
+            <input type="number" id="eqA" value="50" />
+          </div>
+          <div class="eq-field">
+            <label for="eqB">Demand Slope (b in Q<sub>d</sub> = a − bP)</label>
+            <input type="number" id="eqB" value="5" min="0.1" step="0.5" />
+          </div>
+          <div class="eq-field">
+            <label for="eqC">Supply Intercept (c in Q<sub>s</sub> = c + dP)</label>
+            <input type="number" id="eqC" value="-10" />
+          </div>
+          <div class="eq-field">
+            <label for="eqD">Supply Slope (d in Q<sub>s</sub> = c + dP)</label>
+            <input type="number" id="eqD" value="5" min="0.1" step="0.5" />
+          </div>
+        </div>
+
+        <div class="math-box" id="algebraOutput"></div>
+      </section>
+
+      <!-- Section 5: Rationing by Prices & Dynamic Pricing -->
+      <section class="section-card" id="sec-dynamic">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 05 • Conceptual Depth &amp; Data Science Link</div>
+            <h2>Rationing by Prices &amp; Algorithmic Dynamic Pricing</h2>
+          </div>
+          <button class="done-btn" data-section="s5">✓ Mark Done</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="mini-card" style="border-left:4px solid var(--primary);">
+            <h4>🎯 Rationing by Prices &amp; The Accounting Identity Trap</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              In an accounting sense, recorded purchases always equal recorded sales—even during a shortage!
+              <strong>Economic equilibrium</strong> specifically means <em>desired</em> quantity demanded equals
+              <em>desired</em> quantity supplied. Competitive prices automatically ration scarce goods to those
+              willing to pay the market-clearing price without queues or black markets.
+            </p>
+          </div>
+          <div class="mini-card" style="border-left:4px solid var(--purple);">
+            <h4>🤖 Dynamic Pricing Algorithms (Final 2024 Q3(c))</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Platforms like <strong>Uber</strong> (surge pricing) and <strong>Amazon</strong> adjust prices in real time
+              using machine learning and live demand/supply telemetry. This challenges traditional <em>static</em>
+              equilibrium models by: (1) replacing slow price adjustment with continuous micro-equilibria; (2) introducing
+              personalized/time-varying price discrimination rather than a single market price; and (3) reacting to
+              predictive demand spikes before shortages even form.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: ISRT PYQ Vault -->
+      <section class="section-card" id="sec-pyq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 06 • Exam Preparation</div>
+            <h2>ISRT Past Exam Question (PYQ) Vault (2017–2025)</h2>
+          </div>
+          <button class="done-btn" data-section="s6">✓ Mark Done</button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">Final 2025 • Q2(c) [4 Marks]</span> Technological advances reduced the cost of computer chips. How did this affect equilibrium P &amp; Q for (i) computers and (ii) typewriters?</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(i) Computer Market:</strong> Computer chips are a key input. Lower chip costs reduce production costs, shifting the computer <strong>supply curve rightward (S → S')</strong>. Result: equilibrium <strong>price of computers falls (P ↓)</strong> and equilibrium <strong>quantity rises (Q ↑)</strong>.</p>
+              <p style="margin:0;"><strong>(ii) Typewriter Market:</strong> Computers and typewriters are close substitutes. As computers become much cheaper, consumers switch away from typewriters, shifting the typewriter <strong>demand curve leftward (D → D')</strong>. Result: equilibrium <strong>price falls (P ↓)</strong> and equilibrium <strong>quantity falls (Q ↓)</strong>.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-accent">1st In-course 2025 • Q3(a,b) [5 Marks]</span> Curd market: Determine equilibrium; why won't price settle higher? Show effect of (i) rise in milk price; (ii) fall in ice-cream price.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) Equilibrium &amp; Why Price Won't Settle Higher:</strong> Equilibrium comes at the intersection of D and S where Q<sub>D</sub> = Q<sub>S</sub>. If price were set above P*, Q<sub>S</sub> &gt; Q<sub>D</sub>, creating an unsold <strong>surplus</strong>. To clear perishable unsold curd, sellers cut prices, pushing market price back down to P*.</p>
+              <p style="margin:0;"><strong>(b) Shocks:</strong> (i) <strong>Milk price rises:</strong> Milk is a key raw input for curd → production cost rises → Supply shifts left (S → S') → <strong>P* ↑, Q* ↓</strong>. (ii) <strong>Ice-cream price falls:</strong> Ice-cream is a substitute dessert → buyers switch from curd to cheaper ice-cream → Demand shifts left (D → D') → <strong>P* ↓, Q* ↓</strong>.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-warn">Final 2024 • Q2(b) [4 Marks]</span> Impact on equilibrium P &amp; Q of chicken burgers: (i) rise in price of beef burgers; (ii) rise in wages of burger-shop employees.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(i) Rise in Beef Burger Price:</strong> Beef burgers are a substitute for chicken burgers. Demand for chicken burgers shifts <strong>rightward (D → D')</strong> → <strong>P* ↑, Q* ↑</strong>.</p>
+              <p style="margin:0;"><strong>(ii) Rise in Employee Wages:</strong> Labor is a production input. Higher wages raise marginal costs, shifting supply of chicken burgers <strong>leftward (S → S')</strong> → <strong>P* ↑, Q* ↓</strong>.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-purple">1st In-course 2019 Q2 &amp; Final 2019 Q2(b) [6 Marks]</span> Pizza table (P=10..0): Find equilibrium P* &amp; Q*. What if demand triples at each price? What if price is initially set at $4?</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Original Equilibrium:</strong> At P = $6, Q<sub>D</sub> = 20 and Q<sub>S</sub> = 20 → <strong>P* = $6, Q* = 20 pizzas</strong>.</p>
+              <p><strong>If Demand Triples at Each Price:</strong> New Q<sub>D</sub>' at P=$10 is 0; at P=$8 is 30 (which equals Q<sub>S</sub> = 30!). Thus the new equilibrium is <strong>P* = $8, Q* = 30 pizzas</strong>. (You can verify this in the Algebraic Solver above!)</p>
+              <p style="margin:0;"><strong>If Price Is Initially Set at $4 (original market):</strong> At P = $4, Q<sub>D</sub> = 30 while Q<sub>S</sub> = 10 → <strong>Shortage of 20 pizzas</strong>. Excess demand puts upward pressure on price until it rises to $6.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-danger">Final 2022 • Q2(c) [4 Marks]</span> Attaining labor market equilibrium (wage &amp; quantity) and possible impact of immigration on this equilibrium.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Case 1 — Immigration Alone (Fig 3-10a):</strong> An influx of workers shifts the labor supply curve rightward (S → S') while labor demand stays fixed. Result: equilibrium employment rises (L ↑) and equilibrium wage falls (W ↓).</p>
+              <p style="margin:0;"><strong>Case 2 — Immigration to Growing Cities (Fig 3-10b):</strong> Immigrants typically move to booming cities where labor demand is also shifting rightward (D → D'). Because both S and D shift right simultaneously, employment rises sharply (L ↑↑), while the net effect on wages is <strong>ambiguous</strong> (often staying nearly unchanged or even rising slightly).</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">1st In-course 2024 • Q3 [6 Marks]</span> Fish market: (a) artificially raising price above equilibrium; (b) price of fishing net increases; (c) average income increases.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) Price Above Equilibrium:</strong> Creates a <strong>surplus</strong> (Q<sub>S</sub> &gt; Q<sub>D</sub>) of unsold fish, generating downward pressure on price.</p>
+              <p><strong>(b) Fishing Net Price Increases:</strong> Higher input cost shifts supply of fish <strong>leftward (S → S')</strong> → <strong>P* ↑, Q* ↓</strong>.</p>
+              <p style="margin:0;"><strong>(c) Average Income Increases:</strong> Fish is a normal good; higher income shifts demand <strong>rightward (D → D')</strong> → <strong>P* ↑, Q* ↑</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Quick Mastery Check -->
+      <section class="section-card" id="sec-quiz">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 07 • Self-Assessment</div>
+            <h2>Lesson 4 Quick Mastery Check</h2>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="resetQuiz()">↻ Reset Quiz</button>
+        </div>
+        <div id="quizContainer"></div>
+        <div class="callout accent" id="quizSummary" style="display:none;"></div>
+      </section>
+
+      <footer>
+        ECON107 Interactive Course Series • Lesson 4: Market Equilibrium &amp; Dynamics • Built for ISRT, University of Dhaka
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme Toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('econ107_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('econ107_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      drawSandbox(); drawShifts();
+    });
+
+    // ---------- Scroll Progress & Active Nav ----------
+    const scrollFill = document.getElementById('scrollFill');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section-card');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      scrollFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      let currentId = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) currentId = sec.id; });
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + currentId));
+    });
+
+    // ---------- Completion Tracker ----------
+    const doneBtns = document.querySelectorAll('.done-btn');
+    let completedSet = new Set(JSON.parse(localStorage.getItem('econ107_l4_done') || '[]'));
+    function updateProgressUI() {
+      document.getElementById('progressText').textContent = `${completedSet.size}/${doneBtns.length} Done`;
+      document.getElementById('progressBar').style.width = `${(completedSet.size / doneBtns.length) * 100}%`;
+      doneBtns.forEach(btn => {
+        const isDone = completedSet.has(btn.dataset.section);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : '✓ Mark Done';
+      });
+    }
+    doneBtns.forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.section;
+      completedSet.has(k) ? completedSet.delete(k) : completedSet.add(k);
+      localStorage.setItem('econ107_l4_done', JSON.stringify([...completedSet]));
+      updateProgressUI();
+    }));
+    updateProgressUI();
+
+    // ---------- Accordion ----------
+    document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+
+    // ---------- Lab 1: Equilibrium Sandbox ----------
+    const sbCanvas = document.getElementById('sandboxCanvas');
+    const sbCtx = sbCanvas.getContext('2d');
+    const sbSlider = document.getElementById('sbPriceSlider');
+
+    const sbPresets = {
+      corn: {
+        name: "Cornflakes",
+        unit: "M boxes",
+        xLabel: "Quantity (millions of boxes)",
+        yLabel: "Price ($ per box)",
+        minP: 1, maxP: 5, stepP: 0.5, eqP: 3, maxQ: 24, maxY: 6,
+        // Piecewise / smooth fit matching Table 3-5 closely at integers
+        qd: p => Math.max(0, 22.5 - 3.5 * p),
+        qs: p => Math.max(0, -4.5 + 5.5 * p)
+      },
+      pizza: {
+        name: "Pizzas (ISRT 2019)",
+        unit: "pizzas",
+        xLabel: "Quantity (pizzas per semester)",
+        yLabel: "Price ($ per pizza)",
+        minP: 2, maxP: 10, stepP: 1, eqP: 6, maxQ: 45, maxY: 11,
+        qd: p => Math.max(0, 50 - 5 * p),
+        qs: p => Math.max(0, -10 + 5 * p)
+      }
+    };
+    let curSb = 'corn';
+
+    function setSandboxPreset(key) {
+      curSb = key;
+      const pr = sbPresets[key];
+      document.getElementById('sbCorn').classList.toggle('active', key === 'corn');
+      document.getElementById('sbPizza').classList.toggle('active', key === 'pizza');
+      sbSlider.min = pr.minP;
+      sbSlider.max = pr.maxP;
+      sbSlider.step = pr.stepP;
+      sbSlider.value = pr.eqP;
+      drawSandbox();
+    }
+
+    function snapToEq() {
+      sbSlider.value = sbPresets[curSb].eqP;
+      drawSandbox();
+    }
+
+    function drawSandbox() {
+      const pr = sbPresets[curSb];
+      const P = parseFloat(sbSlider.value);
+      const qd = pr.qd(P);
+      const qs = pr.qs(P);
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const W = sbCanvas.width, H = sbCanvas.height;
+      const pad = { l: 56, r: 24, t: 24, b: 46 };
+      const sx = q => pad.l + (q / pr.maxQ) * (W - pad.l - pad.r);
+      const sy = p => H - pad.b - (p / pr.maxY) * (H - pad.t - pad.b);
+
+      sbCtx.clearRect(0, 0, W, H);
+
+      // Grid
+      sbCtx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0';
+      sbCtx.lineWidth = 1;
+      for (let i = 1; i <= 5; i++) {
+        const gx = sx((pr.maxQ / 5) * i);
+        sbCtx.beginPath(); sbCtx.moveTo(gx, pad.t); sbCtx.lineTo(gx, H - pad.b); sbCtx.stroke();
+        const gy = sy((pr.maxY / 5) * i);
+        sbCtx.beginPath(); sbCtx.moveTo(pad.l, gy); sbCtx.lineTo(W - pad.r, gy); sbCtx.stroke();
+      }
+
+      // Axes
+      sbCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      sbCtx.lineWidth = 2;
+      sbCtx.beginPath();
+      sbCtx.moveTo(pad.l, pad.t); sbCtx.lineTo(pad.l, H - pad.b); sbCtx.lineTo(W - pad.r, H - pad.b);
+      sbCtx.stroke();
+
+      sbCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      sbCtx.font = 'bold 12px system-ui, sans-serif';
+      sbCtx.textAlign = 'center';
+      sbCtx.fillText(pr.xLabel, (pad.l + W - pad.r) / 2, H - 12);
+      sbCtx.save();
+      sbCtx.translate(18, (pad.t + H - pad.b) / 2);
+      sbCtx.rotate(-Math.PI / 2);
+      sbCtx.fillText(pr.yLabel, 0, 0);
+      sbCtx.restore();
+
+      // Demand Curve
+      sbCtx.strokeStyle = isDark ? '#38bdf8' : '#0f4c81';
+      sbCtx.lineWidth = 3.2;
+      sbCtx.beginPath();
+      sbCtx.moveTo(sx(pr.qd(pr.maxP)), sy(pr.maxP));
+      sbCtx.lineTo(sx(pr.qd(pr.minP)), sy(pr.minP));
+      sbCtx.stroke();
+      sbCtx.fillStyle = isDark ? '#38bdf8' : '#0f4c81';
+      sbCtx.fillText('D', sx(pr.qd(pr.minP)) + 10, sy(pr.minP) + 4);
+
+      // Supply Curve
+      sbCtx.strokeStyle = isDark ? '#2dd4bf' : '#0d9488';
+      sbCtx.lineWidth = 3.2;
+      sbCtx.beginPath();
+      sbCtx.moveTo(sx(pr.qs(pr.minP)), sy(pr.minP));
+      sbCtx.lineTo(sx(pr.qs(pr.maxP)), sy(pr.maxP));
+      sbCtx.stroke();
+      sbCtx.fillStyle = isDark ? '#2dd4bf' : '#0d9488';
+      sbCtx.fillText('S', sx(pr.qs(pr.maxP)) + 10, sy(pr.maxP) + 4);
+
+      // Equilibrium Point
+      const eqQ = pr.qd(pr.eqP);
+      sbCtx.fillStyle = '#16a34a';
+      sbCtx.beginPath(); sbCtx.arc(sx(eqQ), sy(pr.eqP), 6, 0, Math.PI * 2); sbCtx.fill();
+
+      // Horizontal Price Line
+      const diff = qs - qd;
+      const lineColor = Math.abs(diff) < 0.05 ? '#16a34a' : (diff > 0 ? '#dc2626' : '#d97706');
+      sbCtx.save();
+      sbCtx.setLineDash([5, 5]);
+      sbCtx.strokeStyle = lineColor;
+      sbCtx.lineWidth = 2;
+      sbCtx.beginPath(); sbCtx.moveTo(pad.l, sy(P)); sbCtx.lineTo(W - pad.r, sy(P)); sbCtx.stroke();
+      sbCtx.restore();
+
+      // Surplus / Shortage Bracket Bar
+      if (Math.abs(diff) >= 0.05) {
+        const x1 = sx(Math.min(qd, qs)), x2 = sx(Math.max(qd, qs));
+        sbCtx.fillStyle = diff > 0 ? 'rgba(220,38,38,0.22)' : 'rgba(217,119,6,0.22)';
+        sbCtx.fillRect(x1, sy(P) - 9, x2 - x1, 18);
+        sbCtx.strokeStyle = lineColor;
+        sbCtx.lineWidth = 3;
+        sbCtx.beginPath(); sbCtx.moveTo(x1, sy(P)); sbCtx.lineTo(x2, sy(P)); sbCtx.stroke();
+
+        sbCtx.fillStyle = lineColor;
+        sbCtx.font = 'bold 12px system-ui, sans-serif';
+        sbCtx.textAlign = 'center';
+        sbCtx.fillText(diff > 0 ? `SURPLUS (${diff.toFixed(1)}) ↓` : `SHORTAGE (${(-diff).toFixed(1)}) ↑`, (x1 + x2) / 2, sy(P) - 14);
+      } else {
+        sbCtx.fillStyle = '#16a34a';
+        sbCtx.font = 'bold 12px system-ui, sans-serif';
+        sbCtx.textAlign = 'left';
+        sbCtx.fillText(`Equilibrium E (${eqQ.toFixed(0)}, $${pr.eqP})`, sx(eqQ) + 10, sy(pr.eqP) - 10);
+      }
+
+      // Highlight Cornflakes Table Row
+      if (curSb === 'corn') {
+        document.querySelectorAll('#cornflakesTable tbody tr').forEach(tr => {
+          tr.classList.toggle('active-row', parseFloat(tr.dataset.p) === P);
+        });
+      }
+
+      document.getElementById('sbPriceVal').textContent = `$${P.toFixed(2)}`;
+      let badge, stateTitle, detail;
+      if (Math.abs(diff) < 0.05) {
+        badge = 'pill-success'; stateTitle = '⚖️ Market Equilibrium (Cleared)';
+        detail = `At $${P.toFixed(2)}, Q_D = ${qd.toFixed(1)} and Q_S = ${qs.toFixed(1)} ${pr.unit}. All orders are filled; price pressure is neutral.`;
+      } else if (diff > 0) {
+        badge = 'pill-danger'; stateTitle = `📦 Surplus of ${diff.toFixed(1)} ${pr.unit} (↓ Downward Pressure)`;
+        detail = `Sellers offer ${qs.toFixed(1)} ${pr.unit} but buyers only want ${qd.toFixed(1)}. Unsold inventory forces sellers to cut prices toward $${pr.eqP}.`;
+      } else {
+        badge = 'pill-warn'; stateTitle = `🔥 Shortage of ${(-diff).toFixed(1)} ${pr.unit} (↑ Upward Pressure)`;
+        detail = `Buyers want ${qd.toFixed(1)} ${pr.unit} while sellers only offer ${qs.toFixed(1)}. Competing buyers bid the price up toward $${pr.eqP}.`;
+      }
+      document.getElementById('sbReadout').innerHTML = `
+        <span class="status-badge ${badge}">${stateTitle}</span>
+        <div><strong>Q<sub>D</sub>:</strong> ${qd.toFixed(1)} &nbsp;|&nbsp; <strong>Q<sub>S</sub>:</strong> ${qs.toFixed(1)} ${pr.unit}</div>
+        <div class="muted" style="font-size:0.83rem; margin-top:0.25rem;">${detail}</div>
+      `;
+    }
+    sbSlider.addEventListener('input', drawSandbox);
+    drawSandbox();
+
+    // ---------- Lab 2: Simultaneous Shifts Simulator ----------
+    const shiftCanvas = document.getElementById('shiftCanvas');
+    const shCtx = shiftCanvas.getContext('2d');
+    const dShiftSlider = document.getElementById('dShiftSlider');
+    const sShiftSlider = document.getElementById('sShiftSlider');
+    let shiftLabel = 'Baseline Equilibrium';
+
+    function applyShiftPreset(dVal, sVal, label, btn) {
+      dShiftSlider.value = dVal;
+      sShiftSlider.value = sVal;
+      shiftLabel = label;
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      drawShifts();
+    }
+
+    function drawShifts() {
+      const dS = parseFloat(dShiftSlider.value);
+      const sS = parseFloat(sShiftSlider.value);
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const W = shiftCanvas.width, H = shiftCanvas.height;
+      const pad = { l: 55, r: 24, t: 24, b: 46 };
+      const sx = q => pad.l + (q / 100) * (W - pad.l - pad.r);
+      const sy = p => H - pad.b - (p / 100) * (H - pad.t - pad.b);
+
+      shCtx.clearRect(0, 0, W, H);
+
+      // Axes
+      shCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      shCtx.lineWidth = 2;
+      shCtx.beginPath();
+      shCtx.moveTo(pad.l, pad.t); shCtx.lineTo(pad.l, H - pad.b); shCtx.lineTo(W - pad.r, H - pad.b);
+      shCtx.stroke();
+
+      shCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      shCtx.font = 'bold 12px system-ui, sans-serif';
+      shCtx.textAlign = 'center';
+      shCtx.fillText('Quantity (Q)', (pad.l + W - pad.r) / 2, H - 12);
+      shCtx.save();
+      shCtx.translate(18, (pad.t + H - pad.b) / 2);
+      shCtx.rotate(-Math.PI / 2);
+      shCtx.fillText('Price / Wage (P)', 0, 0);
+      shCtx.restore();
+
+      // Baseline D: P = 100 - Q  and  S: P = Q  => E0 = (50, 50)
+      // Shifted D': Q = 100 - P + dS => P = 100 + dS - Q
+      // Shifted S': Q = P + sS       => P = Q - sS
+      // Intersection: 100 + dS - Q = Q - sS => Q1 = 50 + (dS + sS)/2,  P1 = 50 + (dS - sS)/2
+      const q0 = 50, p0 = 50;
+      const q1 = 50 + (dS + sS) / 2;
+      const p1 = 50 + (dS - sS) / 2;
+
+      function drawLine(fn, color, dashed, label) {
+        shCtx.save();
+        if (dashed) shCtx.setLineDash([6, 5]);
+        shCtx.strokeStyle = color;
+        shCtx.lineWidth = dashed ? 2.2 : 3.2;
+        shCtx.beginPath();
+        let started = false;
+        for (let q = 5; q <= 95; q += 1) {
+          const p = fn(q);
+          if (p >= 5 && p <= 95) {
+            if (!started) { shCtx.moveTo(sx(q), sy(p)); started = true; }
+            else shCtx.lineTo(sx(q), sy(p));
+          }
+        }
+        shCtx.stroke();
+        shCtx.restore();
+      }
+
+      // Draw Baselines
+      drawLine(q => 100 - q, dS !== 0 ? '#94a3b8' : (isDark ? '#38bdf8' : '#0f4c81'), dS !== 0);
+      drawLine(q => q, sS !== 0 ? '#94a3b8' : (isDark ? '#2dd4bf' : '#0d9488'), sS !== 0);
+
+      // Draw Shifted Curves
+      if (dS !== 0) drawLine(q => 100 + dS - q, isDark ? '#38bdf8' : '#0f4c81', false);
+      if (sS !== 0) drawLine(q => q - sS, isDark ? '#2dd4bf' : '#0d9488', false);
+
+      // E0 Point
+      shCtx.fillStyle = '#64748b';
+      shCtx.beginPath(); shCtx.arc(sx(q0), sy(p0), 5.5, 0, Math.PI * 2); shCtx.fill();
+      shCtx.font = 'bold 12px system-ui, sans-serif';
+      shCtx.fillText('E₀', sx(q0) - 14, sy(p0) - 8);
+
+      // E1 Point
+      if (dS !== 0 || sS !== 0) {
+        shCtx.save();
+        shCtx.setLineDash([4, 4]);
+        shCtx.strokeStyle = '#7c3aed';
+        shCtx.lineWidth = 1.5;
+        shCtx.beginPath();
+        shCtx.moveTo(pad.l, sy(p1)); shCtx.lineTo(sx(q1), sy(p1)); shCtx.lineTo(sx(q1), H - pad.b);
+        shCtx.stroke();
+        shCtx.restore();
+
+        shCtx.fillStyle = '#7c3aed';
+        shCtx.beginPath(); shCtx.arc(sx(q1), sy(p1), 7, 0, Math.PI * 2); shCtx.fill();
+        shCtx.strokeStyle = '#fff'; shCtx.lineWidth = 2; shCtx.stroke();
+        shCtx.fillText('E₁', sx(q1) + 12, sy(p1) - 8);
+      }
+
+      document.getElementById('dShiftVal').textContent = dS > 0 ? `+${dS} (Right)` : dS < 0 ? `${dS} (Left)` : '0';
+      document.getElementById('sShiftVal').textContent = sS > 0 ? `+${sS} (Right)` : sS < 0 ? `${sS} (Left)` : '0';
+
+      const pDir = p1 > p0 + 0.1 ? '↑ Rises' : p1 < p0 - 0.1 ? '↓ Falls' : '→ Unchanged';
+      const qDir = q1 > q0 + 0.1 ? '↑ Rises' : q1 < q0 - 0.1 ? '↓ Falls' : '→ Unchanged';
+      const bothNote = (dS !== 0 && sS !== 0)
+        ? (Math.sign(dS) === Math.sign(sS)
+            ? 'Simultaneous shift in SAME direction: Q* change is definite, P* depends on which curve shifts more!'
+            : 'Simultaneous shift in OPPOSITE directions: P* change is definite, Q* depends on which curve shifts more!')
+        : 'Single-curve shift: both P* and Q* move in predictable directions (Table 3-6).';
+
+      document.getElementById('shiftReadout').innerHTML = `
+        <span class="status-badge pill-purple">${shiftLabel}</span>
+        <div><strong>E₀:</strong> (Q = 50, P = 50) &nbsp;→&nbsp; <strong>E₁:</strong> (Q = ${q1.toFixed(1)}, P = ${p1.toFixed(1)})</div>
+        <div style="margin-top:0.3rem;"><strong>Price (P*):</strong> ${pDir} &nbsp;|&nbsp; <strong>Quantity (Q*):</strong> ${qDir}</div>
+        <div class="muted" style="font-size:0.81rem; margin-top:0.3rem;">${bothNote}</div>
+      `;
+    }
+    dShiftSlider.addEventListener('input', () => { shiftLabel = 'Custom Shift'; drawShifts(); });
+    sShiftSlider.addEventListener('input', () => { shiftLabel = 'Custom Shift'; drawShifts(); });
+    drawShifts();
+
+    // ---------- Lab 3: Algebraic Equilibrium Solver ----------
+    function loadEqPreset(a, b, c, d, btn) {
+      document.getElementById('eqA').value = a;
+      document.getElementById('eqB').value = b;
+      document.getElementById('eqC').value = c;
+      document.getElementById('eqD').value = d;
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+      solveAlgebra();
+    }
+
+    function solveAlgebra() {
+      const a = parseFloat(document.getElementById('eqA').value) || 0;
+      const b = parseFloat(document.getElementById('eqB').value) || 1;
+      const c = parseFloat(document.getElementById('eqC').value) || 0;
+      const d = parseFloat(document.getElementById('eqD').value) || 1;
+      const pStar = (a - c) / (b + d);
+      const qStar = a - b * pStar;
+      const cStr = c >= 0 ? `${c} + ${d}P` : `${c} + ${d}P`;
+      document.getElementById('algebraOutput').innerHTML = `
+        <strong>Step 1 (Set Q<sub>d</sub> = Q<sub>s</sub>):</strong> ${a} − ${b}P = ${cStr}<br>
+        <strong>Step 2 (Group P terms):</strong> ${a} − (${c}) = (${b} + ${d})P &nbsp;⇒&nbsp; ${(a - c).toFixed(2)} = ${(b + d).toFixed(2)}P<br>
+        <strong>Step 3 (Equilibrium Price):</strong> P* = ${(a - c).toFixed(2)} / ${(b + d).toFixed(2)} = <strong>${pStar.toFixed(2)}</strong><br>
+        <strong>Step 4 (Equilibrium Quantity):</strong> Q* = ${a} − ${b}(${pStar.toFixed(2)}) = <strong>${qStar.toFixed(2)}</strong>
+        ${(pStar < 0 || qStar < 0) ? '<br><span style="color:var(--danger);">⚠️ Economically non-viable (negative P* or Q*—adjust intercepts).</span>' : ''}
+      `;
+    }
+    ['eqA', 'eqB', 'eqC', 'eqD'].forEach(id => document.getElementById(id).addEventListener('input', solveAlgebra));
+    solveAlgebra();
+
+    // ---------- Quick Mastery Check Quiz ----------
+    const quizData = [
+      {
+        q: "1. If the market price of a commodity is currently ABOVE its equilibrium price, what happens?",
+        opts: [
+          "A shortage occurs and price is pushed upward.",
+          "A surplus occurs and sellers cut prices, pushing price downward.",
+          "The demand curve shifts to the right.",
+          "The market clears immediately with zero leftover inventory."
+        ],
+        ans: 1,
+        exp: "Above equilibrium, quantity supplied exceeds quantity demanded (surplus). Unsold inventory forces sellers to lower prices until P reaches P*."
+      },
+      {
+        q: "2. Technological advances reduce the cost of computer chips. What happens to the equilibrium price and quantity of computers?",
+        opts: [
+          "Price rises, Quantity rises",
+          "Price rises, Quantity falls",
+          "Price falls, Quantity rises",
+          "Price falls, Quantity falls"
+        ],
+        ans: 2,
+        exp: "Cheaper chips lower production costs, shifting the computer supply curve rightward → equilibrium price falls and equilibrium quantity rises."
+      },
+      {
+        q: "3. In the 2019 ISRT Pizza problem (Qd = 50 − 5P, Qs = −10 + 5P), if demand triples at every price, what is the new equilibrium?",
+        opts: ["P* = $6, Q* = 20", "P* = $8, Q* = 30", "P* = $10, Q* = 40", "P* = $4, Q* = 30"],
+        ans: 1,
+        exp: "Tripling demand gives Qd' = 150 − 15P. Setting 150 − 15P = −10 + 5P yields 20P = 160 → P* = $8, Q* = 30."
+      },
+      {
+        q: "4. When immigrants move into a booming city where BOTH labor supply and labor demand shift rightward simultaneously, what is guaranteed to happen?",
+        opts: [
+          "Wages must fall sharply.",
+          "Wages must rise sharply.",
+          "Equilibrium employment (quantity of labor) definitely increases, while the wage effect is ambiguous.",
+          "Equilibrium employment decreases."
+        ],
+        ans: 2,
+        exp: "Both rightward shifts push quantity upward, so employment definitely rises, whereas supply pushes wages down and demand pushes wages up (net wage change depends on relative magnitudes)."
+      },
+      {
+        q: "5. What happens to the equilibrium of chicken burgers when employee wages at burger shops rise?",
+        opts: [
+          "Supply shifts left → P* rises, Q* falls",
+          "Supply shifts right → P* falls, Q* rises",
+          "Demand shifts right → P* rises, Q* rises",
+          "Demand shifts left → P* falls, Q* falls"
+        ],
+        ans: 0,
+        exp: "Wages are an input cost. Higher wages reduce supply (leftward shift), raising equilibrium price and lowering equilibrium quantity."
+      },
+      {
+        q: "6. True or False: Because recorded oil sales always equal recorded oil purchases, the oil market is always in economic equilibrium.",
+        opts: ["True", "False"],
+        ans: 1,
+        exp: "False! Sales = purchases is just an accounting identity. Economic equilibrium requires that DESIRED quantity demanded equals DESIRED quantity supplied with no shortage or surplus."
+      }
+    ];
+
+    let quizAnswers = {};
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        div.innerHTML = `
+          <div class="quiz-q-title">${item.q}</div>
+          <div class="quiz-opts">
+            ${item.opts.map((opt, oIdx) => `<button class="quiz-opt" type="button" onclick="answerQuiz(${idx}, ${oIdx}, this)">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${idx}">${item.exp}</div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('quizSummary').style.display = 'none';
+    }
+
+    function answerQuiz(qIdx, oIdx, btn) {
+      if (quizAnswers[qIdx] !== undefined) return;
+      quizAnswers[qIdx] = oIdx;
+      const allBtns = btn.closest('.quiz-q').querySelectorAll('.quiz-opt');
+      const correctIdx = quizData[qIdx].ans;
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === correctIdx) b.classList.add('is-correct');
+        else if (i === oIdx) b.classList.add('is-wrong');
+      });
+      document.getElementById(`qexp-${qIdx}`).classList.add('show');
+
+      if (Object.keys(quizAnswers).length === quizData.length) {
+        let score = 0;
+        quizData.forEach((q, i) => { if (quizAnswers[i] === q.ans) score++; });
+        const summary = document.getElementById('quizSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `
+          <div class="callout-title">Mastery Check Complete: ${score} / ${quizData.length} (${Math.round(score / quizData.length * 100)}%)</div>
+          ${score === quizData.length
+            ? "Awesome! You've mastered Market Equilibrium, Surplus/Shortage dynamics, and Simultaneous Shifts—ready for Lesson 5 (Elasticity & Policy Applications)!"
+            : "Nice progress! Review the highlighted explanations above and reset the quiz to aim for 100%."}
+        `;
+      }
+    }
+
+    function resetQuiz() { quizAnswers = {}; renderQuiz(); }
+    renderQuiz();
+  </script>
+</body>
+</html>

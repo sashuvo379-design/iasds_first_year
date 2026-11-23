@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 14: Game Theory — MATH 103 (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Inter, Merriweather & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Merriweather:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX v0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Merriweather', 'Georgia', 'Cambria', 'serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Theme Tokens -->
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+    }
+    html.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #1e293b;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+  </style>
+
+  <!-- Persist Theme Before First Paint (Default: Light Mode) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('math103_theme');
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body class="bg-[#f8fafc] text-[#0f172a] dark:bg-[#0b1120] dark:text-[#f1f5f9] font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100 transition-colors duration-200">
+
+  <!-- ==================== TOP STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-[#111827]/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Mobile Sidebar Toggle + Brand -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              MATH 103 · ISRT, DU · Final Lesson
+            </p>
+            <h1 class="text-sm sm:text-base font-serif font-bold text-slate-900 dark:text-white truncate">
+              Lesson 14: Game Theory
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Capstone Badge + Progress Pill + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/70">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Group C · Lesson 14 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0 / 14 (0%)</span>
+        </div>
+
+        <button
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle light or dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <svg class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR (280px desktop) ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 lg:w-[280px] bg-white dark:bg-[#111827] lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white text-sm">MATH 103 · Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Course Header, Theme Toggle & Lesson 14 Progress Card -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <div class="text-xs font-serif font-bold text-slate-900 dark:text-white">MATH 103 · ISRT, DU</div>
+              <div class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">Module 3 · Final Lesson</div>
+            </div>
+            <button
+              type="button"
+              onclick="toggleTheme()"
+              title="Toggle Light / Dark Mode"
+              class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-indigo-500 transition shrink-0"
+            >
+              <svg class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+              </svg>
+              <svg class="w-4 h-4 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson 14 Progress</span>
+              <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0 / 14 (0%)</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="sidebar-progress-detail" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+              0/6 sections · 0/3 labs · 0/5 quiz
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. Scroll-Spy In-Page Table of Contents -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-xs sm:text-sm">
+            <li><a href="#sec-14-1" data-spy="sec-14-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">14.1</span> Zero-Sum Games</a></li>
+            <li><a href="#sec-14-2" data-spy="sec-14-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">14.2</span> Maximin &amp; Saddle Points</a></li>
+            <li><a href="#sec-14-3" data-spy="sec-14-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">14.3</span> Principle of Dominance</a></li>
+            <li><a href="#lab-1" data-spy="lab-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 1: Matrix &amp; Dominance</a></li>
+            <li><a href="#sec-14-4" data-spy="sec-14-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">14.4</span> Mixed Strategies (2×2)</a></li>
+            <li><a href="#lab-3" data-spy="lab-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 3: 2×2 &amp; Monte Carlo</a></li>
+            <li><a href="#sec-14-5" data-spy="sec-14-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">14.5</span> Graphical Minimax</a></li>
+            <li><a href="#lab-2" data-spy="lab-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 2: 2D Minimax Plotter</a></li>
+            <li><a href="#sec-14-6" data-spy="sec-14-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">14.6</span> Flowchart &amp; Wrap-Up</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" data-spy="exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault (6)</a>
+            </li>
+            <li>
+              <a href="#quiz-section" data-spy="quiz-section" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. Complete 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-1">Module 1 · Group A (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L01</span><span class="truncate">Real Numbers &amp; Divisibility</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L02</span><span class="truncate">Congruences &amp; Diophantine</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L03</span><span class="truncate">Inequalities &amp; Series</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L04</span><span class="truncate">Complex Numbers &amp; Unity</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L05</span><span class="truncate">Theory of Equations</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L06</span><span class="truncate">Gamma &amp; Beta Functions</span></div><span class="shrink-0 font-bold">✓</span></div>
+            </div>
+
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-2">Module 2 · Group B (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L07</span><span class="truncate">Fundamentals &amp; Formation</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L08</span><span class="truncate">Separable &amp; Homogeneous</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L09</span><span class="truncate">Exact, IF &amp; Bernoulli DEs</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L10</span><span class="truncate">Higher-Order Linear DEs</span></div><span class="shrink-0 font-bold">✓</span></div>
+            </div>
+
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-2">Module 3 · Group C: Discrete Math &amp; Games</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L11</span><span class="truncate">Logic &amp; Counting Principles</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L12</span><span class="truncate">Recurrences &amp; Gen. Functions</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L13</span><span class="truncate">Graph Theory &amp; Shortest-Path</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono">L14</span><span class="truncate">Game Theory</span></div>
+                <span class="text-[10px] uppercase font-mono bg-white/20 px-1.5 py-0.5 rounded">Final</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT (max-w-[920px]) ==================== -->
+    <main class="flex-1 min-w-0 max-w-[920px] mx-auto w-full space-y-10 pb-20">
+
+      <!-- ORIENTATION HERO HEADER -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              Module 3 · Group C: Discrete Mathematics &amp; Game Theory · Final Lesson
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              ⏱ Estimated Time: 55 min
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30 font-mono">
+              Source: year_final_2025.pdf Q8 (12 Marks)
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight leading-tight">
+            Lesson 14: Game Theory
+          </h2>
+
+          <p class="text-sm sm:text-base text-indigo-100 leading-relaxed max-w-3xl">
+            Complete the MATH 103 syllabus with the mathematics of strategic conflict! Master two-person zero-sum payoff matrices, Maximin–Minimax saddle points, strict/weak/convex dominance elimination, mixed-strategy $2 \times 2$ analytical solutions, and the 2D Graphical Minimax procedure for $2 \times n$ and $m \times 2$ games.
+          </p>
+
+          <div class="p-4 rounded-2xl bg-white/10 border border-white/15 text-xs sm:text-sm space-y-1.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold uppercase tracking-wider text-indigo-200 text-xs">Learning Objectives</span>
+              <span class="text-[11px] font-mono text-indigo-200">Prerequisites: Lessons 11–13 &amp; Basic Linear Equations</span>
+            </div>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-indigo-50 pt-1">
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Formulate two-person zero-sum games as payoff matrices $A = [a_{ij}]$.</span></li>
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Find saddle points via Maximin ($\underline{v}$) and Minimax ($\overline{v}$) checks.</span></li>
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Eliminate dominated rows &amp; columns cleanly without reversing Player 2's rule.</span></li>
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Solve $2\times 2$ mixed games analytically and $2\times n$ / $m\times 2$ games graphically.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 14.1: INTRODUCTION & TWO-PERSON ZERO-SUM GAMES              -->
+      <!-- =================================================================== -->
+      <section id="sec-14-1" data-track-sec="sec-14-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 14.1 · ISRT Final 2025 Q8(a)</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Introduction to Game Theory &amp; Two-Person Zero-Sum Games
+            </h3>
+          </div>
+          <span id="badge-sec-14-1" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-600 space-y-2.5 text-sm">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-xs uppercase tracking-wider">Core Definitions (Exam Standard)</h4>
+          <ul class="list-disc pl-5 space-y-1.5 text-slate-700 dark:text-slate-200 leading-relaxed">
+            <li><strong>Game Theory:</strong> The branch of mathematics that models strategic decision-making among rational competitors (<strong>players</strong>) whose outcomes depend jointly on all players' choices.</li>
+            <li><strong>Pure Strategy:</strong> A single, deterministic course of action chosen by a player (a specific row $i$ for Player 1 or column $j$ for Player 2).</li>
+            <li><strong>Two-Person Zero-Sum Game:</strong> A competitive game with exactly two players (Player 1 and Player 2) whose interests are strictly opposed: at every outcome, $\text{Gain of P1} + \text{Gain of P2} = 0$ (whatever Player 1 wins, Player 2 loses).</li>
+            <li><strong>Payoff Matrix $A = [a_{ij}]_{m \times n}$:</strong> A rectangular table where entry $a_{ij}$ represents the <strong>payoff received by Player 1</strong> (and simultaneously the loss suffered by Player 2) when Player 1 plays Row $i$ and Player 2 plays Column $j$.</li>
+          </ul>
+        </div>
+
+        <!-- 3 Classic Examples -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="font-bold text-indigo-600 dark:text-indigo-400">1. Matching Pennies</div>
+            <p class="text-slate-600 dark:text-slate-300">P1 wins $+1$ if coins match ($HH$ or $TT$), else loses $-1$.</p>
+            <div class="text-center font-mono text-xs bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800">
+              $$\begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix}$$
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="font-bold text-indigo-600 dark:text-indigo-400">2. Rock–Paper–Scissors</div>
+            <p class="text-slate-600 dark:text-slate-300">Symmetric $3 \times 3$ zero-sum game with $0$ for ties, $+1$ win, $-1$ loss.</p>
+            <div class="text-center font-mono text-xs bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800">
+              $$\begin{pmatrix} 0 & -1 & 1 \\ 1 & 0 & -1 \\ -1 & 1 & 0 \end{pmatrix}$$
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="font-bold text-indigo-600 dark:text-indigo-400">3. Competitive Advertising</div>
+            <p class="text-slate-600 dark:text-slate-300">Two rival firms split fixed market share (% gained by Firm 1 = % lost by Firm 2).</p>
+            <div class="text-center font-mono text-xs bg-white dark:bg-slate-900 p-2 rounded-xl border border-slate-200 dark:border-slate-800">
+              $$\text{TV vs. Digital Ads} \implies a_{ij} = \Delta\text{Share}_1$$
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 14.2: MAXIMIN-MINIMAX CRITERION & SADDLE POINTS             -->
+      <!-- =================================================================== -->
+      <section id="sec-14-2" data-track-sec="sec-14-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 14.2</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Pure Strategies, Maximin–Minimax Criterion &amp; Saddle Points
+            </h3>
+          </div>
+          <span id="badge-sec-14-2" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/70 space-y-2">
+            <div class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">Player 1 (Maximizing Row Player)</div>
+            <p class="text-slate-700 dark:text-slate-200 leading-relaxed">
+              For each row $i$, Player 1 finds the worst-case outcome $\min_j a_{ij}$ (<strong>Row Minimum</strong>), then picks the row with the largest guaranteed floor:
+              $$\underline{v} = \max_{i}\min_{j} a_{ij} \qquad \text{(Maximin / Lower Value)}$$
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/70 space-y-2">
+            <div class="text-xs font-mono font-bold text-rose-700 dark:text-rose-400 uppercase">Player 2 (Minimizing Column Player)</div>
+            <p class="text-slate-700 dark:text-slate-200 leading-relaxed">
+              For each column $j$, Player 2 finds the worst-case loss $\max_i a_{ij}$ (<strong>Column Maximum</strong>), then picks the column with the smallest ceiling:
+              $$\overline{v} = \min_{j}\max_{i} a_{ij} \qquad \text{(Minimax / Upper Value)}$$
+            </p>
+          </div>
+        </div>
+
+        <!-- Fundamental Inequality & Saddle Point Box -->
+        <div class="p-5 rounded-2xl bg-indigo-50/75 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-center space-y-2">
+          <div class="text-xs font-mono font-bold uppercase text-indigo-700 dark:text-indigo-300">Theorem 14.1 · Fundamental Inequality &amp; Saddle Point Criterion</div>
+          <div class="text-base sm:text-lg font-bold">
+            $$\underline{v} = \max_i \min_j a_{ij} \;\le\; v \;\le\; \min_j \max_i a_{ij} = \overline{v}$$
+          </div>
+          <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200">
+            A <strong>Saddle Point</strong> $(i^*, j^*)$ exists if and only if <strong>$\underline{v} = \overline{v} = v$</strong> (an entry that is simultaneously the minimum of its row and the maximum of its column). The game is then <em>strictly determined</em> with optimal pure strategy pair $(i^*, j^*)$ and value $v = a_{i^* j^*}$.
+          </p>
+        </div>
+
+        <!-- Exam Trap Callout -->
+        <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800/70 flex gap-3.5">
+          <div class="text-2xl shrink-0">⚠️</div>
+          <div class="space-y-1 text-xs sm:text-sm text-amber-950 dark:text-amber-200">
+            <h4 class="font-bold uppercase text-xs tracking-wider">Exam Trap: Never Reverse Player 1 &amp; Player 2!</h4>
+            <p>
+              <strong>Player 1 (Rows)</strong> always wants <strong>larger</strong> entries $\implies$ computes <strong>Row Minima</strong> and takes their <strong>Maximum (Maximin)</strong>.<br/>
+              <strong>Player 2 (Columns)</strong> always wants <strong>smaller</strong> entries (less loss!) $\implies$ computes <strong>Column Maxima</strong> and takes their <strong>Minimum (Minimax)</strong>.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 14.3: PRINCIPLE OF DOMINANCE (ROW & COLUMN ELIMINATION)     -->
+      <!-- =================================================================== -->
+      <section id="sec-14-3" data-track-sec="sec-14-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 14.3</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2025 Q8(b) — 4 Marks</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Principle of Dominance (Row &amp; Column Elimination)
+            </h3>
+          </div>
+          <span id="badge-sec-14-3" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          If one strategy is always at least as good as (weak dominance, $\le$ / $\ge$) or strictly better than (strict dominance, $<$ / $>$) another strategy regardless of what the opponent does, a rational player will never play the inferior strategy—so we can delete it to shrink the matrix!
+        </p>
+
+        <!-- Prominently Highlighted Reversed Direction Comparison Box -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/35 border-2 border-emerald-400 dark:border-emerald-700 space-y-2">
+            <div class="font-mono font-extrabold text-emerald-800 dark:text-emerald-300 uppercase text-xs">Row Rule (Player 1 Maximizes)</div>
+            <p class="text-slate-800 dark:text-slate-100">
+              Row $i$ is dominated by Row $k$ if:
+              $$a_{ij} \le a_{kj} \qquad \text{for every column } j$$
+            </p>
+            <div class="p-2.5 rounded-xl bg-white/90 dark:bg-slate-900/90 font-bold text-emerald-700 dark:text-emerald-300 text-center">
+              → DELETE Row $i$ (Keep the LARGER row!)
+            </div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/35 border-2 border-rose-400 dark:border-rose-700 space-y-2">
+            <div class="font-mono font-extrabold text-rose-800 dark:text-rose-300 uppercase text-xs">Column Rule (Player 2 Minimizes — REVERSED!)</div>
+            <p class="text-slate-800 dark:text-slate-100">
+              Column $j$ is dominated by Column $\ell$ if:
+              $$a_{ij} \ge a_{i\ell} \qquad \text{for every row } i$$
+            </p>
+            <div class="p-2.5 rounded-xl bg-white/90 dark:bg-slate-900/90 font-bold text-rose-700 dark:text-rose-300 text-center">
+              → DELETE Column $j$ (Keep the SMALLER column!)
+            </div>
+          </div>
+        </div>
+
+        <!-- Convex Combination Dominance -->
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+          <strong class="text-indigo-600 dark:text-indigo-400">Convex Combination Dominance:</strong> Even if no single row (or column) dominates Row $i$ (or Column $j$), it can still be eliminated if it is dominated by a <em>weighted average</em> $\sum \lambda_k (\text{Row } k)$ (with $\lambda_k \ge 0,\; \sum \lambda_k = 1$) of two or more other rows (or columns)!
+        </div>
+
+        <!-- Collapsible Full Derivation of ISRT Final 2025 Q8(b) -->
+        <details class="group rounded-2xl border border-indigo-200 dark:border-indigo-900/70 border-l-4 border-l-indigo-600 overflow-hidden">
+          <summary class="px-5 py-4 bg-indigo-50/60 dark:bg-indigo-950/40 flex items-center justify-between cursor-pointer hover:bg-indigo-100/60 dark:hover:bg-indigo-950/60 transition">
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Worked Exam Derivation · ISRT Final 2025 Q8(b)</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white mt-0.5">
+                Step-by-step dominance reduction of $A = \begin{pmatrix} -3 & 1 & 2 \\ 1 & 2 & 1 \\ 1 & 0 & -2 \end{pmatrix}$ to $v = 1$.
+              </p>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0 group-open:hidden">Show Steps</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 hidden group-open:inline">Hide Steps</span>
+          </summary>
+          <div class="px-5 py-4 bg-white dark:bg-[#111827] border-t border-indigo-100 dark:border-indigo-900/60 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <p><strong>Step 1 (Eliminate Row 3):</strong> Compare Row 3 $[1, 0, -2]$ with Row 2 $[1, 2, 1]$. Since $1 \le 1,\; 0 \le 2,\; -2 \le 1$, Row 3 is dominated by Row 2 $\implies$ <strong>Delete Row 3</strong>. Remaining: $\begin{pmatrix} -3 & 1 & 2 \\ 1 & 2 & 1 \end{pmatrix}$.</p>
+            <p><strong>Step 2 (Eliminate Col 2):</strong> Compare Col 2 $[1, 2]^T$ with Col 1 $[-3, 1]^T$. Since $1 \ge -3$ and $2 \ge 1$, Col 2 is dominated by Col 1 $\implies$ <strong>Delete Col 2</strong>. Remaining: $\begin{pmatrix} -3 & 2 \\ 1 & 1 \end{pmatrix}$.</p>
+            <p><strong>Step 3 (Eliminate Col 3):</strong> Compare Col 3 $[2, 1]^T$ with Col 1 $[-3, 1]^T$. Since $2 \ge -3$ and $1 \ge 1$, Col 3 is dominated by Col 1 $\implies$ <strong>Delete Col 3</strong>. Remaining: $\begin{pmatrix} -3 \\ 1 \end{pmatrix}$.</p>
+            <p><strong>Step 4 (Eliminate Row 1):</strong> Compare Row 1 $[-3]$ with Row 2 $[1]$. Since $-3 \le 1$, Row 1 is dominated by Row 2 $\implies$ <strong>Delete Row 1</strong>.</p>
+            <p class="font-bold text-emerald-700 dark:text-emerald-400">Result: Single cell $(2, 1) = 1$ remains! Optimal pure strategies: Player 1 plays Strategy 2, Player 2 plays Strategy 1, Game Value $v = 1$ (matching the saddle point $\underline{v} = \overline{v} = 1$). $\blacksquare$</p>
+          </div>
+        </details>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 1: PAYOFF MATRIX, SADDLE POINT & DOMINANCE ELIMINATOR           -->
+      <!-- =================================================================== -->
+      <section id="lab-1" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Payoff Matrix, Saddle Point &amp; Dominance Eliminator</h3>
+          </div>
+          <span id="l1-saddle-badge" class="px-3 py-1 rounded-full text-xs font-mono font-extrabold"></span>
+        </div>
+
+        <!-- Presets + Size Selector -->
+        <div class="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="loadL1Preset('isrt8b')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">ISRT 2025 Q8(b) (3×3)</button>
+            <button type="button" onclick="loadL1Preset('isrt8c')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">ISRT 2025 Q8(c) (2×3)</button>
+            <button type="button" onclick="loadL1Preset('dom22')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Dominance to 2×2 (3×3)</button>
+            <button type="button" onclick="loadL1Preset('pennies')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Matching Pennies (2×2)</button>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <label for="l1-size" class="font-semibold text-slate-500">Size:</label>
+            <select id="l1-size" onchange="resizeL1Matrix()" class="px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono font-bold">
+              <option value="2x2">2 × 2</option>
+              <option value="2x3">2 × 3</option>
+              <option value="3x2">3 × 2</option>
+              <option value="3x3" selected>3 × 3</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Matrix Table + Saddle Point Metrics -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 overflow-x-auto">
+            <div id="l1-matrix-wrap"></div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-3">
+            <!-- Maximin / Minimax Summary -->
+            <div id="l1-bounds" class="grid grid-cols-2 gap-3 text-center font-mono text-xs"></div>
+
+            <!-- Dominance Stepper Controls -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Dominance Elimination Stepper</div>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="stepDominance()" class="flex-1 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">Step Dominance →</button>
+                <button type="button" onclick="autoReduceDominance()" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">Auto-Reduce All</button>
+                <button type="button" onclick="resetDominance()" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold transition">↺ Reset</button>
+              </div>
+              <div id="l1-dom-log" class="space-y-1.5 text-xs font-mono max-h-44 overflow-y-auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 14.4: MIXED STRATEGIES & THE 2x2 ANALYTICAL FORMULA         -->
+      <!-- =================================================================== -->
+      <section id="sec-14-4" data-track-sec="sec-14-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 14.4</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Mixed Strategies &amp; The $2 \times 2$ Analytical Formula
+            </h3>
+          </div>
+          <span id="badge-sec-14-4" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          When $\underline{v} < \overline{v}$ (no saddle point), playing any pure strategy predictably lets the opponent exploit you. Players instead randomize using <strong>mixed strategies</strong>—probability distributions $\mathbf{x} = (x_1, \dots, x_m)$ with $x_i \ge 0,\; \sum x_i = 1$ for Player 1 and $\mathbf{y} = (y_1, \dots, y_n)$ with $y_j \ge 0,\; \sum y_j = 1$ for Player 2. The <strong>expected payoff</strong> is:
+          $$E(\mathbf{x}, \mathbf{y}) = \mathbf{x}^T A \mathbf{y} = \sum_{i=1}^m \sum_{j=1}^n x_i a_{ij} y_j$$
+          <strong>Von Neumann's Minimax Theorem (1928):</strong> Every finite two-person zero-sum game has a <em>unique</em> value $v$ and at least one optimal mixed-strategy pair $(\mathbf{x}^*, \mathbf{y}^*)$ satisfying $\max_{\mathbf{x}}\min_{\mathbf{y}} E(\mathbf{x}, \mathbf{y}) = \min_{\mathbf{y}}\max_{\mathbf{x}} E(\mathbf{x}, \mathbf{y}) = v$.
+        </p>
+
+        <!-- Complete 2x2 Closed-Form Formula Box -->
+        <div class="p-5 rounded-2xl bg-indigo-50/75 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-3">
+          <div class="text-xs font-mono font-bold uppercase text-indigo-700 dark:text-indigo-300">Closed-Form $2 \times 2$ Analytical Solution (No Saddle Point)</div>
+          <p class="text-sm text-slate-700 dark:text-slate-200">
+            For $A = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix}$ without a saddle point, let $D = (a_{11} + a_{22}) - (a_{12} + a_{21}) \neq 0$. Setting Player 1's expected payoffs equal against Col 1 and Col 2 (the <em>indifference principle</em>) yields:
+          </p>
+          <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900 overflow-x-auto text-center">
+            $$x_1^* = \frac{a_{22} - a_{21}}{D}, \qquad x_2^* = 1 - x_1^*, \qquad y_1^* = \frac{a_{22} - a_{12}}{D}, \qquad y_2^* = 1 - y_1^*, \qquad v = \frac{a_{11}a_{22} - a_{12}a_{21}}{D}$$
+          </div>
+          <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+            <strong>Oddments Shortcut (Exam Speed Hack):</strong> Compute the absolute row differences $|a_{11} - a_{12}|$ and $|a_{21} - a_{22}|$, <strong>swap them</strong>, and divide by their sum to get $(x_1^*, x_2^*)$! Do the exact same swap with the absolute column differences $|a_{11} - a_{21}|$ and $|a_{12} - a_{22}|$ to get $(y_1^*, y_2^*)$!
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 3: 2x2 MIXED STRATEGY & MONTE CARLO EXPECTED-PAYOFF SIMULATOR   -->
+      <!-- =================================================================== -->
+      <section id="lab-3" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">$2 \times 2$ Mixed Strategy &amp; Monte Carlo Expected-Payoff Simulator</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="loadL3Preset(-2, 2, 4, -3)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">ISRT 2025 Subgame [−2,2; 4,−3]</button>
+            <button type="button" onclick="loadL3Preset(1, -1, -1, 1)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Matching Pennies</button>
+            <button type="button" onclick="loadL3Preset(0, 1, 1, -1)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Penalty Kick [0,1; 1,−1]</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Left: Editable 2x2 Matrix + Strategy Sliders -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="text-xs font-bold uppercase text-slate-500">Editable $2 \times 2$ Payoff Matrix</div>
+              <div class="grid grid-cols-2 gap-2.5 max-w-[220px] mx-auto font-mono">
+                <input id="l3-a11" type="number" value="-2" oninput="updateLab3(true)" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-center font-bold text-sm" />
+                <input id="l3-a12" type="number" value="2" oninput="updateLab3(true)" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-center font-bold text-sm" />
+                <input id="l3-a21" type="number" value="4" oninput="updateLab3(true)" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-center font-bold text-sm" />
+                <input id="l3-a22" type="number" value="-3" oninput="updateLab3(true)" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-center font-bold text-sm" />
+              </div>
+
+              <div class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                <div>
+                  <div class="flex justify-between font-semibold mb-1"><span>P1 Prob $x_1$ (Row 1)</span><span id="l3-x1-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0.50</span></div>
+                  <input id="l3-x1" type="range" min="0" max="1" step="0.01" value="0.50" oninput="updateLab3(true)" class="w-full accent-indigo-600" />
+                </div>
+                <div>
+                  <div class="flex justify-between font-semibold mb-1"><span>P2 Prob $y_1$ (Col 1)</span><span id="l3-y1-val" class="font-mono font-bold text-rose-600 dark:text-rose-400">0.50</span></div>
+                  <input id="l3-y1" type="range" min="0" max="1" step="0.01" value="0.50" oninput="updateLab3(true)" class="w-full accent-rose-500" />
+                </div>
+              </div>
+
+              <button type="button" onclick="snapL3Optimal()" class="w-full px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition">
+                🎯 Snap to Optimal Equilibrium $(x_1^*, y_1^*)$
+              </button>
+            </div>
+
+            <div id="l3-readout" class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs font-mono"></div>
+          </div>
+
+          <!-- Right: Monte Carlo 100-Round Simulator -->
+          <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="text-xs font-semibold text-slate-500 dark:text-slate-400">Monte Carlo Running Average Payoff (100 Rounds)</div>
+              <div class="flex gap-2">
+                <button type="button" onclick="runMonteCarlo()" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition">🎲 Simulate 100 Rounds</button>
+                <button type="button" onclick="resetMonteCarlo()" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold transition">↺ Reset Sim</button>
+              </div>
+            </div>
+            <svg id="l3-svg" viewBox="0 0 480 245" class="w-full h-auto"></svg>
+            <div id="l3-mc-summary" class="text-xs font-mono text-center text-slate-600 dark:text-slate-400"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 14.5: GRAPHICAL MINIMAX PROCEDURE (2xn & mx2 GAMES)         -->
+      <!-- =================================================================== -->
+      <section id="sec-14-5" data-track-sec="sec-14-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 14.5</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2025 Q8(c) — 4 Marks</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Graphical Minimax Procedure ($2 \times n$ and $m \times 2$ Games)
+            </h3>
+          </div>
+          <span id="badge-sec-14-5" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 text-xs sm:text-sm">
+          <!-- 2 x n Algorithm -->
+          <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/70 space-y-2">
+            <div class="font-mono font-bold text-emerald-800 dark:text-emerald-300 uppercase text-xs">$2 \times n$ Games (Player 1: Lower Envelope Maximin)</div>
+            <ol class="list-decimal pl-5 space-y-1.5 text-slate-700 dark:text-slate-300">
+              <li>Let P1 play Row 1 with prob $x_1 \in [0, 1]$ and Row 2 with $1 - x_1$.</li>
+              <li>For each column $j = 1, \dots, n$, plot the expected payoff line $E_j(x_1) = a_{1j}x_1 + a_{2j}(1 - x_1)$ on $[0, 1]$.</li>
+              <li>Trace the <strong>Lower Envelope</strong> $L(x_1) = \min_j E_j(x_1)$ (P1's worst-case guaranteed payoff).</li>
+              <li>Find the <strong>HIGHEST point</strong> on $L(x_1)$ $\implies$ gives $x_1^*$ and value $v$.</li>
+              <li>Form the $2 \times 2$ subgame from the $2$ intersecting columns at that peak and solve for P2's optimal probabilities $\mathbf{y}^*$ (all other columns get $y_j^* = 0$).</li>
+            </ol>
+          </div>
+
+          <!-- m x 2 Algorithm -->
+          <div class="p-5 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/70 space-y-2">
+            <div class="font-mono font-bold text-rose-800 dark:text-rose-300 uppercase text-xs">$m \times 2$ Games (Player 2: Upper Envelope Minimax)</div>
+            <ol class="list-decimal pl-5 space-y-1.5 text-slate-700 dark:text-slate-300">
+              <li>Let P2 play Col 1 with prob $y_1 \in [0, 1]$ and Col 2 with $1 - y_1$.</li>
+              <li>For each row $i = 1, \dots, m$, plot P2's expected loss line $E_i(y_1) = a_{i1}y_1 + a_{i2}(1 - y_1)$ on $[0, 1]$.</li>
+              <li>Trace the <strong>Upper Envelope</strong> $U(y_1) = \max_i E_i(y_1)$ (P2's worst-case loss).</li>
+              <li>Find the <strong>LOWEST point</strong> on $U(y_1)$ $\implies$ gives $y_1^*$ and value $v$.</li>
+              <li>Form the $2 \times 2$ subgame from the $2$ intersecting rows at that valley and solve for P1's optimal probabilities $\mathbf{x}^*$ (all other rows get $x_i^* = 0$).</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Collapsible Full Derivation of ISRT Final 2025 Q8(c) -->
+        <details class="group rounded-2xl border border-indigo-200 dark:border-indigo-900/70 border-l-4 border-l-indigo-600 overflow-hidden">
+          <summary class="px-5 py-4 bg-indigo-50/60 dark:bg-indigo-950/40 flex items-center justify-between cursor-pointer hover:bg-indigo-100/60 dark:hover:bg-indigo-950/60 transition">
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Worked Exam Derivation · ISRT Final 2025 Q8(c)</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white mt-0.5">
+                Graphical minimax solution of $A = \begin{pmatrix} 0 & -2 & 2 \\ 5 & 4 & -3 \end{pmatrix} \implies v = \dfrac{2}{11}$.
+              </p>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0 group-open:hidden">Show Steps</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 hidden group-open:inline">Hide Steps</span>
+          </summary>
+          <div class="px-5 py-4 bg-white dark:bg-[#111827] border-t border-indigo-100 dark:border-indigo-900/60 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <p><strong>1. Payoff Lines ($x_1 \in [0, 1]$):</strong></p>
+            <ul class="list-disc pl-5 space-y-1 font-mono text-xs sm:text-sm">
+              <li>Col 1: $E_1(x_1) = 0\cdot x_1 + 5(1 - x_1) = 5 - 5x_1$ &nbsp;(endpoints: $(0, 5)$ to $(1, 0)$)</li>
+              <li>Col 2: $E_2(x_1) = -2x_1 + 4(1 - x_1) = 4 - 6x_1$ &nbsp;(endpoints: $(0, 4)$ to $(1, -2)$)</li>
+              <li>Col 3: $E_3(x_1) = 2x_1 - 3(1 - x_1) = 5x_1 - 3$ &nbsp;(endpoints: $(0, -3)$ to $(1, 2)$)</li>
+            </ul>
+            <p><strong>2. Lower Envelope &amp; Peak:</strong> Notice $E_1(x_1) > E_2(x_1)$ everywhere on $[0, 1]$ (Col 1 is strictly dominated by Col 2). The lower envelope is formed by $E_3$ (rising) and $E_2$ (falling), peaking at their intersection:
+            $$4 - 6x_1 = 5x_1 - 3 \implies 11x_1 = 7 \implies x_1^* = \frac{7}{11}, \qquad x_2^* = \frac{4}{11}, \qquad v = 4 - 6\left(\frac{7}{11}\right) = \frac{2}{11}$$</p>
+            <p><strong>3. Player 2's Optimal Strategy (from active Cols 2 &amp; 3):</strong> Subgame $\begin{pmatrix} -2 & 2 \\ 4 & -3 \end{pmatrix}$ has $D = (-2-3) - (2+4) = -11$, giving $y_2^* = \dfrac{-3 - 2}{-11} = \dfrac{5}{11}$, $y_3^* = \dfrac{6}{11}$, and $y_1^* = 0$.</p>
+            <p class="font-bold text-emerald-700 dark:text-emerald-400">Final Answer: $\mathbf{x}^* = \left(\dfrac{7}{11}, \dfrac{4}{11}\right)$, $\mathbf{y}^* = \left(0, \dfrac{5}{11}, \dfrac{6}{11}\right)$, Game Value $v = \dfrac{2}{11}$. $\blacksquare$</p>
+          </div>
+        </details>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 2: LIVE 2D GRAPHICAL MINIMAX PLOTTER (2x3 & 3x2)                -->
+      <!-- =================================================================== -->
+      <section id="lab-2" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Live 2D Graphical Minimax Plotter ($2 \times 3$ &amp; $3 \times 2$)</h3>
+          </div>
+
+          <div class="inline-flex p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800 text-xs">
+            <button type="button" id="l2-mode-2x3" onclick="setL2Mode('2x3')" class="px-3 py-1.5 rounded-lg font-bold transition bg-white dark:bg-[#111827] text-indigo-600 dark:text-indigo-400 shadow-xs">2 × 3 (Lower Envelope)</button>
+            <button type="button" id="l2-mode-3x2" onclick="setL2Mode('3x2')" class="px-3 py-1.5 rounded-lg font-bold transition text-slate-600 dark:text-slate-400">3 × 2 (Upper Envelope)</button>
+          </div>
+        </div>
+
+        <!-- Presets -->
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="loadL2Preset('isrt25')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-indigo-600 text-white font-semibold transition">ISRT Final 2025 Q8(c) [[0,−2,2],[5,4,−3]]</button>
+          <button type="button" onclick="loadL2Preset('lower3')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">2×3 Envelope [[1,4,−1],[5,0,4]]</button>
+          <button type="button" onclick="loadL2Preset('upper3')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">3×2 Upper Envelope [[4,−1],[1,3],[−2,5]]</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Left: Editable Matrix + Probe Slider + Exact Fractions -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="text-xs font-bold uppercase text-slate-500">Editable Payoff Matrix</div>
+              <div id="l2-matrix-inputs"></div>
+
+              <div class="pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                <div class="flex justify-between font-semibold mb-1">
+                  <label for="l2-probe">Probability Probe $p \in [0, 1]$</label>
+                  <span id="l2-probe-val" class="font-mono font-bold text-amber-600 dark:text-amber-400">p = 0.64</span>
+                </div>
+                <input id="l2-probe" type="range" min="0" max="1" step="0.01" value="0.64" oninput="updateLab2(true)" class="w-full accent-amber-500" />
+              </div>
+            </div>
+
+            <div id="l2-solution-card" class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2 text-xs sm:text-sm overflow-x-auto"></div>
+          </div>
+
+          <!-- Right: Live 2D SVG Minimax Plot -->
+          <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <span id="l2-svg-title" class="font-semibold">Expected Payoff Lines &amp; Lower Envelope</span>
+              <span class="font-mono"><span class="text-emerald-600 dark:text-emerald-400 font-bold">● Optimal (p*, v*)</span></span>
+            </div>
+            <svg id="l2-svg" viewBox="0 0 480 320" class="w-full h-auto"></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 14.6: STRATEGY SELECTION FLOWCHART & COURSE WRAP-UP         -->
+      <!-- =================================================================== -->
+      <section id="sec-14-6" data-track-sec="sec-14-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 14.6 · Exam Decision Guide</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Strategy Selection Flowchart &amp; Course Synthesis
+            </h3>
+          </div>
+          <span id="badge-sec-14-6" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <!-- 5-Step Decision Guide -->
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-xs">
+          <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">1. Saddle Point</div>
+            <p class="text-slate-700 dark:text-slate-300">Check $\underline{v} = \overline{v}$. If equal, STOP! Pure strategy solved.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">2. Dominance</div>
+            <p class="text-slate-700 dark:text-slate-300">Delete smaller rows &amp; larger columns (including convex mixes).</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-900">
+            <div class="font-mono font-bold text-emerald-700 dark:text-emerald-400 mb-1">3. $2 \times 2$ Formula</div>
+            <p class="text-slate-700 dark:text-slate-300">If reduced to $2 \times 2$, apply the analytical formula or oddments.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/35 border border-amber-200 dark:border-amber-900">
+            <div class="font-mono font-bold text-amber-700 dark:text-amber-400 mb-1">4. Graphical</div>
+            <p class="text-slate-700 dark:text-slate-300">If $2 \times n$ (lower env. max) or $m \times 2$ (upper env. min), plot!</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-slate-600 dark:text-slate-300 mb-1">5. Linear Prog.</div>
+            <p class="text-slate-600 dark:text-slate-400">For irreducible $3 \times 3$ or larger games, convert to an LP (Simplex).</p>
+          </div>
+        </div>
+
+        <!-- Course Wrap-Up Celebration Card -->
+        <div class="p-6 rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-indigo-700 text-white shadow-md space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/20 border border-white/25">🎓 MATH 103 COMPLETE · 14 / 14 LESSONS</span>
+            <span class="text-xs font-semibold text-emerald-100">ISRT, University of Dhaka</span>
+          </div>
+          <h4 class="text-xl font-serif font-bold">Congratulations on Completing Foundations of Mathematics!</h4>
+          <p class="text-xs sm:text-sm text-emerald-50 leading-relaxed">
+            You have journeyed through all three exam groups of MATH 103: <strong>Group A — Basic Algebra &amp; Special Functions</strong> (Lessons 1–6: Number Theory, Congruences, Inequalities, Complex Numbers, Theory of Equations, Gamma &amp; Beta), <strong>Group B — Differential Equations</strong> (Lessons 7–10: Formation, First-Order Separable/Homogeneous/Exact/Bernoulli, and Higher-Order Linear ODEs), and <strong>Group C — Discrete Mathematics &amp; Game Theory</strong> (Lessons 11–14: Logic, Counting, Recurrences/OGFs, Graph Theory/Dijkstra, and Game Theory). Best of luck on your ISRT exams!
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT (6 WORKED PROBLEMS)                            -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Final 2025 Paper &amp; Classic Practice</span>
+          <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 14)</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Attempt each question first, then reveal the Hint or Full Step-by-Step Solution independently.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Vault 1 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2025 · Q8(a)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. Define Game Theory, Two-Person Zero-Sum Game, and Payoff Table with suitable examples.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> State clear, formal definitions for all three terms and include Matching Pennies ($[[1,-1],[-1,1]]$) as a concrete payoff table.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p><strong>Game Theory:</strong> The mathematical study of strategic decision-making where the payoff to each rational player depends on the choices of all players.</p>
+              <p><strong>Two-Person Zero-Sum Game:</strong> A competitive situation between two players where the algebraic sum of gains is always zero ($\text{Gain}_1 + \text{Gain}_2 = 0$), e.g., Matching Pennies or Rock–Paper–Scissors.</p>
+              <p><strong>Payoff Table (Matrix):</strong> An $m \times n$ matrix $A = [a_{ij}]$ displaying Player 1's payoff $a_{ij}$ (and Player 2's loss) for each strategy pair $(i, j)$, e.g., Matching Pennies: $A = \begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix}$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2025 · Q8(b)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. Solve the following game using the principle of dominated strategies: $A = \begin{pmatrix} -3 & 1 & 2 \\ 1 & 2 & 1 \\ 1 & 0 & -2 \end{pmatrix}$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Eliminate in order: Row 3 (by Row 2) → Col 2 (by Col 1) → Col 3 (by Col 1) → Row 1 (by Row 2).
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p>1. Row 3 $[1, 0, -2] \le$ Row 2 $[1, 2, 1] \implies$ delete Row 3.</p>
+              <p>2. Col 2 $[1, 2]^T \ge$ Col 1 $[-3, 1]^T \implies$ delete Col 2.</p>
+              <p>3. Col 3 $[2, 1]^T \ge$ Col 1 $[-3, 1]^T \implies$ delete Col 3.</p>
+              <p>4. Row 1 $[-3] \le$ Row 2 $[1] \implies$ delete Row 1.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Optimal Solution: Player 1 plays Strategy 2, Player 2 plays Strategy 1, Game Value $v = 1$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2025 · Q8(c)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. Solve the $2 \times 3$ game $A = \begin{pmatrix} 0 & -2 & 2 \\ 5 & 4 & -3 \end{pmatrix}$ using the graphical minimax procedure.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Plot $E_1 = 5 - 5x_1$, $E_2 = 4 - 6x_1$, $E_3 = 5x_1 - 3$. The highest point on the lower envelope is where $E_2$ meets $E_3$.
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Lines: $E_1(x_1) = 5 - 5x_1$, $E_2(x_1) = 4 - 6x_1$, $E_3(x_1) = 5x_1 - 3$. Since $E_1 > E_2$ on $[0, 1]$, the lower envelope peaks at $E_2 = E_3$:
+              $$4 - 6x_1 = 5x_1 - 3 \implies x_1^* = \frac{7}{11},\quad x_2^* = \frac{4}{11},\quad v = \frac{2}{11}$$</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">From the active $2 \times 2$ subgame (Cols 2 &amp; 3): $\mathbf{y}^* = \left(0, \dfrac{5}{11}, \dfrac{6}{11}\right)$, $\mathbf{x}^* = \left(\dfrac{7}{11}, \dfrac{4}{11}\right)$, $v = \dfrac{2}{11}$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT-Style $3 \times 2$ Graphical Game</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. Solve the $3 \times 2$ game $A = \begin{pmatrix} 4 & -1 \\ 1 & 3 \\ -2 & 5 \end{pmatrix}$ using the upper envelope minimax procedure.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Plot P2's expected losses $E_1 = 5y_1 - 1$, $E_2 = 3 - 2y_1$, $E_3 = 5 - 7y_1$. Find the <em>lowest</em> point of $\max(E_1, E_2, E_3)$ (where $E_1$ meets $E_2$!).
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Row loss lines: $E_1(y_1) = 5y_1 - 1$, $E_2(y_1) = 3 - 2y_1$, $E_3(y_1) = 5 - 7y_1$. Tracing the upper envelope $U(y_1) = \max_i E_i(y_1)$, its minimum occurs at $E_1 = E_2$:
+              $$5y_1 - 1 = 3 - 2y_1 \implies 7y_1 = 4 \implies y_1^* = \frac{4}{7},\quad y_2^* = \frac{3}{7},\quad v = \frac{13}{7}$$</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Active $2 \times 2$ subgame (Rows 1 &amp; 2): $\begin{pmatrix} 4 & -1 \\ 1 & 3 \end{pmatrix}$ gives $D = 7 \implies \mathbf{x}^* = \left(\dfrac{2}{7}, \dfrac{5}{7}, 0\right)$, $\mathbf{y}^* = \left(\dfrac{4}{7}, \dfrac{3}{7}\right)$, $v = \dfrac{13}{7}$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT-Style $2 \times 2$ Mixed Strategy &amp; Oddments</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. Solve $A = \begin{pmatrix} 6 & 2 \\ 1 & 5 \end{pmatrix}$ analytically using the $2 \times 2$ formula (or oddments) and verify the indifference condition.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Compute $D = (6 + 5) - (2 + 1) = 8$, then apply $x_1^* = (5-1)/8$, $y_1^* = (5-2)/8$, $v = (30-2)/8$.
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>No saddle point ($\underline{v} = 2 < 5 = \overline{v}$). Here $D = (6 + 5) - (2 + 1) = 8$:</p>
+              <p>$x_1^* = \dfrac{5 - 1}{8} = \dfrac{1}{2},\; x_2^* = \dfrac{1}{2}$; &nbsp; $y_1^* = \dfrac{5 - 2}{8} = \dfrac{3}{8},\; y_2^* = \dfrac{5}{8}$; &nbsp; $v = \dfrac{30 - 2}{8} = \dfrac{7}{2} = 3.5$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Indifference Check: Against Col 1, $6(\frac{1}{2}) + 1(\frac{1}{2}) = 3.5$; against Col 2, $2(\frac{1}{2}) + 5(\frac{1}{2}) = 3.5$ ✓. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT-Style Convex-Combination Dominance</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. Reduce and solve the game $A = \begin{pmatrix} 4 & 0 & 3 \\ 0 & 4 & 3 \end{pmatrix}$ using convex-combination dominance.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Compare Col 3 $[3, 3]^T$ with the 50–50 average of Col 1 and Col 2: $0.5\begin{pmatrix}4\\0\end{pmatrix} + 0.5\begin{pmatrix}0\\4\end{pmatrix} = \begin{pmatrix}2\\2\end{pmatrix}$.
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>No single column dominates Col 3. However, the 50–50 convex combination $\frac{1}{2}(\text{Col }1) + \frac{1}{2}(\text{Col }2) = \begin{pmatrix} 2 \\ 2 \end{pmatrix}$ is strictly smaller than Col 3 $\begin{pmatrix} 3 \\ 3 \end{pmatrix}$ in every row! Since Player 2 minimizes, <strong>Col 3 is strictly dominated and eliminated</strong>.</p>
+              <p>The reduced $2 \times 2$ game is $\begin{pmatrix} 4 & 0 \\ 0 & 4 \end{pmatrix}$ ($D = 8$).</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Optimal Solution: $\mathbf{x}^* = \left(\dfrac{1}{2}, \dfrac{1}{2}\right)$, $\mathbf{y}^* = \left(\dfrac{1}{2}, \dfrac{1}{2}, 0\right)$, Game Value $v = 2$. $\blacksquare$</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- QUICK-CHECK INTERACTIVE QUIZ (5 AUTO-GRADED MCQS)                   -->
+      <!-- =================================================================== -->
+      <section id="quiz-section" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Final Self-Assessment</span>
+            <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+        <a href="math103_lesson13.html" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 hover:border-indigo-500 text-slate-700 dark:text-slate-200 font-semibold transition flex items-center justify-center gap-2">
+          <span>←</span> Lesson 13: Graph Theory &amp; Shortest-Path Algorithms
+        </a>
+        <a href="math103_lesson1.html" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs transition flex items-center justify-center gap-2">
+          <span>🎓</span> Course Complete! Return to Lesson 1 <span>→</span>
+        </a>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX RENDERING & EXACT FRACTION UTILITIES
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function gcdInt(a, b) {
+      a = Math.abs(Math.round(a));
+      b = Math.abs(Math.round(b));
+      while (b) { const t = a % b; a = b; b = t; }
+      return a || 1;
+    }
+
+    // Format a rational number (or close decimal) as a clean LaTeX fraction
+    function toFracTeX(val) {
+      if (!Number.isFinite(val)) return '0';
+      if (Math.abs(val) < 1e-9) return '0';
+      if (Math.abs(val - Math.round(val)) < 1e-7) return String(Math.round(val));
+      // Search small denominators up to 200 for exact rational representation
+      let bestNum = Math.round(val), bestDen = 1, bestErr = Math.abs(val - bestNum);
+      for (let d = 2; d <= 200; d++) {
+        const n = Math.round(val * d);
+        const err = Math.abs(val - n / d);
+        if (err < 1e-7) {
+          const g = gcdInt(n, d);
+          const rn = n / g, rd = d / g;
+          if (rd === 1) return String(rn);
+          return rn < 0 ? `-\\frac{${Math.abs(rn)}}{${rd}}` : `\\frac{${rn}}{${rd}}`;
+        }
+        if (err < bestErr) { bestErr = err; bestNum = n; bestDen = d; }
+      }
+      return val.toFixed(3);
+    }
+
+    /* =========================================================================
+       2. THEME, SIDEBAR, VAULT & PROGRESS TRACKING (14 MILESTONES)
+       ========================================================================= */
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('math103_theme', isDark ? 'dark' : 'light');
+      updateLab2(false);
+      drawMonteCarloSVG();
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', openSidebar);
+    document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      document.getElementById('roadmap-list').classList.toggle('hidden');
+      document.getElementById('roadmap-chevron').classList.toggle('rotate-180');
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    const viewedSections = new Set();
+    const exploredLabs = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function markLabExplored(labId) {
+      if (!exploredLabs.has(labId)) {
+        exploredLabs.add(labId);
+        updateOverallProgress();
+      }
+    }
+
+    function updateOverallProgress() {
+      const total = 14; // 6 sections + 3 labs + 5 quiz questions
+      const done = viewedSections.size + exploredLabs.size + quizAnsweredCount;
+      const pct = Math.round((done / total) * 100);
+      const label = `${done} / ${total} (${pct}%)`;
+      document.getElementById('header-progress-text').textContent = label;
+      document.getElementById('sidebar-progress-pct').textContent = label;
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${viewedSections.size}/6 sections · ${exploredLabs.size}/3 labs · ${quizAnsweredCount}/5 quiz`;
+    }
+
+    function initObservers() {
+      const spyTargets = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link[data-spy]');
+      const spyObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              tocLinks.forEach((link) => {
+                if (link.dataset.spy === id) {
+                  link.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                } else {
+                  link.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
+      );
+      spyTargets.forEach((sec) => spyObs.observe(sec));
+
+      const secObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const secId = entry.target.dataset.trackSec;
+              if (secId && !viewedSections.has(secId)) {
+                viewedSections.add(secId);
+                const badge = document.getElementById('badge-' + secId);
+                if (badge) {
+                  badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300';
+                  badge.textContent = '✓ Viewed';
+                }
+                updateOverallProgress();
+              }
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      document.querySelectorAll('section[data-track-sec]').forEach((s) => secObs.observe(s));
+    }
+
+    /* =========================================================================
+       3. LAB 1: PAYOFF MATRIX, SADDLE POINT & DOMINANCE ELIMINATOR
+       ========================================================================= */
+    const l1State = {
+      rows: 3, cols: 3,
+      mat: [[-3, 1, 2], [1, 2, 1], [1, 0, -2]],
+      elimRows: new Set(),
+      elimCols: new Set(),
+      log: []
+    };
+
+    function loadL1Preset(key, userTriggered = true) {
+      if (key === 'isrt8b') {
+        l1State.rows = 3; l1State.cols = 3;
+        l1State.mat = [[-3, 1, 2], [1, 2, 1], [1, 0, -2]];
+      } else if (key === 'isrt8c') {
+        l1State.rows = 2; l1State.cols = 3;
+        l1State.mat = [[0, -2, 2], [5, 4, -3]];
+      } else if (key === 'dom22') {
+        l1State.rows = 3; l1State.cols = 3;
+        l1State.mat = [[6, 2, 7], [1, 5, 6], [0, 1, 2]];
+      } else {
+        l1State.rows = 2; l1State.cols = 2;
+        l1State.mat = [[1, -1], [-1, 1]];
+      }
+      document.getElementById('l1-size').value = `${l1State.rows}x${l1State.cols}`;
+      l1State.elimRows.clear();
+      l1State.elimCols.clear();
+      l1State.log = [];
+      renderLab1(userTriggered);
+    }
+
+    function resizeL1Matrix() {
+      const [r, c] = document.getElementById('l1-size').value.split('x').map(Number);
+      const newMat = [];
+      for (let i = 0; i < r; i++) {
+        const row = [];
+        for (let j = 0; j < c; j++) {
+          row.push(l1State.mat[i] && l1State.mat[i][j] !== undefined ? l1State.mat[i][j] : 0);
+        }
+        newMat.push(row);
+      }
+      l1State.rows = r; l1State.cols = c;
+      l1State.mat = newMat;
+      l1State.elimRows.clear();
+      l1State.elimCols.clear();
+      l1State.log = [];
+      renderLab1(true);
+    }
+
+    function onL1CellInput(i, j, val) {
+      l1State.mat[i][j] = parseFloat(val) || 0;
+      l1State.elimRows.clear();
+      l1State.elimCols.clear();
+      l1State.log = [];
+      renderLab1(true);
+    }
+
+    function resetDominance() {
+      l1State.elimRows.clear();
+      l1State.elimCols.clear();
+      l1State.log = [];
+      renderLab1(true);
+    }
+
+    function findOneDominated() {
+      const actR = [];
+      for (let i = 0; i < l1State.rows; i++) if (!l1State.elimRows.has(i)) actR.push(i);
+      const actC = [];
+      for (let j = 0; j < l1State.cols; j++) if (!l1State.elimCols.has(j)) actC.push(j);
+
+      // Check rows (P1 deletes smaller row: prefer highest index first for clean ISRT Q8b trace)
+      if (actR.length > 1) {
+        for (let ii = actR.length - 1; ii >= 0; ii--) {
+          const i = actR[ii];
+          for (const k of actR) {
+            if (i === k) continue;
+            if (actC.every((j) => l1State.mat[i][j] <= l1State.mat[k][j])) {
+              const rI = actC.map((j) => l1State.mat[i][j]).join(', ');
+              const rK = actC.map((j) => l1State.mat[k][j]).join(', ');
+              return { type: 'row', idx: i, by: k, msg: `Row ${i + 1} [${rI}] ≤ Row ${k + 1} [${rK}] → Eliminate Row ${i + 1}` };
+            }
+          }
+        }
+      }
+      // Check columns (P2 deletes LARGER column)
+      if (actC.length > 1) {
+        for (const j of actC) {
+          for (const l of actC) {
+            if (j === l) continue;
+            if (actR.every((i) => l1State.mat[i][j] >= l1State.mat[i][l])) {
+              const cJ = actR.map((i) => l1State.mat[i][j]).join(', ');
+              const cL = actR.map((i) => l1State.mat[i][l]).join(', ');
+              return { type: 'col', idx: j, by: l, msg: `Col ${j + 1} [${cJ}]ᵀ ≥ Col ${l + 1} [${cL}]ᵀ → Eliminate Col ${j + 1}` };
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function stepDominance() {
+      markLabExplored('lab-1');
+      const found = findOneDominated();
+      if (found) {
+        if (found.type === 'row') l1State.elimRows.add(found.idx);
+        else l1State.elimCols.add(found.idx);
+        l1State.log.push({ ok: true, msg: found.msg });
+      } else {
+        if (l1State.log.length === 0 || l1State.log[l1State.log.length - 1].ok) {
+          l1State.log.push({ ok: false, msg: 'No further pure row/column dominance exists.' });
+        }
+      }
+      renderLab1(true);
+    }
+
+    function autoReduceDominance() {
+      markLabExplored('lab-1');
+      let guard = 0;
+      while (guard++ < 10) {
+        const found = findOneDominated();
+        if (!found) break;
+        if (found.type === 'row') l1State.elimRows.add(found.idx);
+        else l1State.elimCols.add(found.idx);
+        l1State.log.push({ ok: true, msg: found.msg });
+      }
+      if (l1State.log.length === 0) {
+        l1State.log.push({ ok: false, msg: 'No dominated rows or columns found.' });
+      }
+      renderLab1(true);
+    }
+
+    function renderLab1(userTriggered) {
+      if (userTriggered) markLabExplored('lab-1');
+      const { rows, cols, mat, elimRows, elimCols } = l1State;
+
+      // Compute Row Minima & Col Maxima on full matrix
+      const rowMins = mat.map((r) => Math.min(...r));
+      const colMaxs = Array.from({ length: cols }, (_, j) => Math.max(...mat.map((r) => r[j])));
+      const maximin = Math.max(...rowMins);
+      const minimax = Math.min(...colMaxs);
+      const hasSaddle = maximin === minimax;
+
+      // Saddle Badge
+      const sBadge = document.getElementById('l1-saddle-badge');
+      if (hasSaddle) {
+        sBadge.className = 'px-3 py-1 rounded-full text-xs font-mono font-extrabold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700';
+        sBadge.textContent = `✓ SADDLE POINT EXISTS (v = ${maximin})`;
+      } else {
+        sBadge.className = 'px-3 py-1 rounded-full text-xs font-mono font-extrabold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700';
+        sBadge.textContent = `No Saddle Point (${maximin} < v < ${minimax}) → Use Mixed Strategy`;
+      }
+
+      // Bounds Cards
+      document.getElementById('l1-bounds').innerHTML = `
+        <div class="p-3 rounded-xl bg-white dark:bg-[#111827] border border-emerald-200 dark:border-emerald-900">
+          <div class="font-sans text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400">Maximin (Lower v)</div>
+          <div class="text-xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-0.5">${maximin}</div>
+        </div>
+        <div class="p-3 rounded-xl bg-white dark:bg-[#111827] border border-rose-200 dark:border-rose-900">
+          <div class="font-sans text-[11px] font-bold uppercase text-rose-600 dark:text-rose-400">Minimax (Upper v)</div>
+          <div class="text-xl font-extrabold text-rose-700 dark:text-rose-300 mt-0.5">${minimax}</div>
+        </div>
+      `;
+
+      // Render Editable Payoff Matrix Table
+      let tableHTML = `
+        <table class="w-full text-center font-mono text-xs sm:text-sm">
+          <thead>
+            <tr class="text-slate-500 dark:text-slate-400 font-sans">
+              <th class="p-2 text-left text-xs">P1 \\ P2</th>
+              ${Array.from({ length: cols }, (_, j) => `<th class="p-2 ${elimCols.has(j) ? 'line-through text-rose-400 opacity-60' : ''}">Col ${j + 1}</th>`).join('')}
+              <th class="p-2 text-emerald-600 dark:text-emerald-400 text-xs">Row Min</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+      `;
+
+      for (let i = 0; i < rows; i++) {
+        const rDel = elimRows.has(i);
+        tableHTML += `<tr class="${rDel ? 'bg-rose-50/60 dark:bg-rose-950/25 opacity-60' : ''}">
+          <td class="p-2 text-left font-sans font-bold text-xs ${rDel ? 'line-through text-rose-500' : 'text-slate-700 dark:text-slate-200'}">Row ${i + 1}</td>`;
+        for (let j = 0; j < cols; j++) {
+          const cDel = elimCols.has(j);
+          const isSaddleCell = hasSaddle && mat[i][j] === rowMins[i] && mat[i][j] === colMaxs[j];
+          const cellCls = (rDel || cDel)
+            ? 'bg-rose-100/70 dark:bg-rose-950/50 text-rose-500 line-through border-rose-300 dark:border-rose-800'
+            : (isSaddleCell
+                ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-100 border-emerald-500 ring-2 ring-emerald-400/50 font-extrabold'
+                : 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700');
+          tableHTML += `
+            <td class="p-1.5">
+              <input type="number" value="${mat[i][j]}" onchange="onL1CellInput(${i}, ${j}, this.value)"
+                class="w-16 px-2 py-1.5 rounded-xl border text-center font-mono text-sm font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none ${cellCls}" />
+            </td>`;
+        }
+        tableHTML += `<td class="p-2 font-bold ${rowMins[i] === maximin ? 'text-emerald-600 dark:text-emerald-400 underline' : 'text-slate-500'}">${rowMins[i]}</td></tr>`;
+      }
+
+      tableHTML += `
+            <tr class="border-t-2 border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/60">
+              <td class="p-2 text-left font-sans font-bold text-xs text-rose-600 dark:text-rose-400">Col Max</td>
+              ${colMaxs.map((cm, j) => `<td class="p-2 font-bold ${cm === minimax ? 'text-rose-600 dark:text-rose-400 underline' : 'text-slate-500'}">${cm}</td>`).join('')}
+              <td class="p-2 text-xs text-slate-400">—</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+      document.getElementById('l1-matrix-wrap').innerHTML = tableHTML;
+
+      // Render Dominance Log
+      const logEl = document.getElementById('l1-dom-log');
+      if (l1State.log.length === 0) {
+        logEl.innerHTML = '<div class="text-slate-400 font-sans italic">Click "Step Dominance →" to eliminate one dominated row or column at a time.</div>';
+      } else {
+        logEl.innerHTML = l1State.log.map((entry, idx) => `
+          <div class="p-2 rounded-lg ${entry.ok ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}">
+            ${entry.ok ? `<strong>#${idx + 1}:</strong> ` : ''}${entry.msg}
+          </div>
+        `).join('');
+      }
+    }
+
+    /* =========================================================================
+       4. LAB 2: LIVE 2D GRAPHICAL MINIMAX PLOTTER (2x3 & 3x2)
+       ========================================================================= */
+    const l2State = {
+      mode: '2x3',
+      mat2x3: [[0, -2, 2], [5, 4, -3]],
+      mat3x2: [[4, -1], [1, 3], [-2, 5]]
+    };
+
+    function setL2Mode(m, userTriggered = true) {
+      l2State.mode = m;
+      const b23 = document.getElementById('l2-mode-2x3');
+      const b32 = document.getElementById('l2-mode-3x2');
+      if (m === '2x3') {
+        b23.className = 'px-3 py-1.5 rounded-lg font-bold transition bg-white dark:bg-[#111827] text-indigo-600 dark:text-indigo-400 shadow-xs';
+        b32.className = 'px-3 py-1.5 rounded-lg font-bold transition text-slate-600 dark:text-slate-400';
+      } else {
+        b32.className = 'px-3 py-1.5 rounded-lg font-bold transition bg-white dark:bg-[#111827] text-indigo-600 dark:text-indigo-400 shadow-xs';
+        b23.className = 'px-3 py-1.5 rounded-lg font-bold transition text-slate-600 dark:text-slate-400';
+      }
+      renderL2MatrixInputs();
+      updateLab2(userTriggered);
+    }
+
+    function loadL2Preset(key) {
+      if (key === 'isrt25') {
+        l2State.mat2x3 = [[0, -2, 2], [5, 4, -3]];
+        document.getElementById('l2-probe').value = '0.64';
+        setL2Mode('2x3', true);
+      } else if (key === 'lower3') {
+        l2State.mat2x3 = [[1, 4, -1], [5, 0, 4]];
+        document.getElementById('l2-probe').value = '0.44';
+        setL2Mode('2x3', true);
+      } else {
+        l2State.mat3x2 = [[4, -1], [1, 3], [-2, 5]];
+        document.getElementById('l2-probe').value = '0.57';
+        setL2Mode('3x2', true);
+      }
+    }
+
+    function renderL2MatrixInputs() {
+      const box = document.getElementById('l2-matrix-inputs');
+      const mat = l2State.mode === '2x3' ? l2State.mat2x3 : l2State.mat3x2;
+      const r = mat.length, c = mat[0].length;
+      let html = `<div class="grid gap-2 font-mono text-xs" style="grid-template-columns: repeat(${c}, minmax(0, 1fr));">`;
+      for (let i = 0; i < r; i++) {
+        for (let j = 0; j < c; j++) {
+          html += `<input type="number" value="${mat[i][j]}" onchange="onL2Input(${i},${j},this.value)" class="px-2 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-center font-bold text-sm" />`;
+        }
+      }
+      html += '</div>';
+      box.innerHTML = html;
+    }
+
+    function onL2Input(i, j, val) {
+      const mat = l2State.mode === '2x3' ? l2State.mat2x3 : l2State.mat3x2;
+      mat[i][j] = parseFloat(val) || 0;
+      updateLab2(true);
+    }
+
+    function updateLab2(userTriggered) {
+      if (userTriggered) markLabExplored('lab-2');
+      const is2x3 = l2State.mode === '2x3';
+      const mat = is2x3 ? l2State.mat2x3 : l2State.mat3x2;
+      const pProbe = parseFloat(document.getElementById('l2-probe').value);
+      document.getElementById('l2-probe-val').textContent = `${is2x3 ? 'x₁' : 'y₁'} = ${pProbe.toFixed(2)}`;
+      document.getElementById('l2-svg-title').textContent = is2x3
+        ? '2 × 3 Game: Expected Payoff Lines & Lower Envelope (Maximin)'
+        : '3 × 2 Game: Expected Loss Lines & Upper Envelope (Minimax)';
+
+      // Build 3 lines: E_k(p) = m_k * p + c_k
+      // For 2x3: Col j gives a_1j * p + a_2j * (1 - p) = (a_1j - a_2j)*p + a_2j
+      // For 3x2: Row i gives a_i1 * p + a_i2 * (1 - p) = (a_i1 - a_i2)*p + a_i2
+      const lines = [];
+      for (let k = 0; k < 3; k++) {
+        const at1 = is2x3 ? mat[0][k] : mat[k][0];
+        const at0 = is2x3 ? mat[1][k] : mat[k][1];
+        lines.push({
+          idx: k,
+          label: is2x3 ? `Col ${k + 1}` : `Row ${k + 1}`,
+          m: at1 - at0,
+          c: at0,
+          val: (p) => (at1 - at0) * p + at0
+        });
+      }
+
+      // Collect all critical x-coordinates in [0, 1]: 0, 1, and all pairwise intersections
+      const critPts = [0, 1];
+      for (let i = 0; i < 3; i++) {
+        for (let j = i + 1; j < 3; j++) {
+          const dm = lines[i].m - lines[j].m;
+          if (Math.abs(dm) > 1e-9) {
+            const px = (lines[j].c - lines[i].c) / dm;
+            if (px > 1e-6 && px < 1 - 1e-6) critPts.push(px);
+          }
+        }
+      }
+      critPts.sort((a, b) => a - b);
+
+      // Evaluate envelope at each critical point
+      const envVal = (p) => is2x3
+        ? Math.min(lines[0].val(p), lines[1].val(p), lines[2].val(p))
+        : Math.max(lines[0].val(p), lines[1].val(p), lines[2].val(p));
+
+      const envPts = critPts.map((p) => ({ p, v: envVal(p) }));
+
+      // Optimal vertex (max of lower envelope for 2x3, min of upper envelope for 3x2)
+      let opt = envPts[0];
+      envPts.forEach((pt) => {
+        if (is2x3 ? pt.v > opt.v + 1e-9 : pt.v < opt.v - 1e-9) opt = pt;
+      });
+
+      // Find which 2 lines are active at opt.p
+      const activeLines = lines.filter((ln) => Math.abs(ln.val(opt.p) - opt.v) < 1e-5);
+
+      // Compute opponent's optimal probabilities from active 2x2 subgame (if 2 lines intersect strictly inside (0,1))
+      let oppProbs = [0, 0, 0];
+      if (opt.p > 1e-5 && opt.p < 1 - 1e-5 && activeLines.length >= 2) {
+        const k1 = activeLines[0].idx, k2 = activeLines[1].idx;
+        let a11, a12, a21, a22;
+        if (is2x3) {
+          a11 = mat[0][k1]; a12 = mat[0][k2]; a21 = mat[1][k1]; a22 = mat[1][k2];
+          const D = (a11 + a22) - (a12 + a21);
+          if (Math.abs(D) > 1e-9) {
+            const q1 = (a22 - a12) / D;
+            oppProbs[k1] = q1;
+            oppProbs[k2] = 1 - q1;
+          }
+        } else {
+          a11 = mat[k1][0]; a12 = mat[k1][1]; a21 = mat[k2][0]; a22 = mat[k2][1];
+          const D = (a11 + a22) - (a12 + a21);
+          if (Math.abs(D) > 1e-9) {
+            const q1 = (a22 - a21) / D;
+            oppProbs[k1] = q1;
+            oppProbs[k2] = 1 - q1;
+          }
+        }
+      } else if (activeLines.length >= 1) {
+        oppProbs[activeLines[0].idx] = 1;
+      }
+
+      // Render Solution Card
+      const probeEnv = envVal(pProbe);
+      const solBox = document.getElementById('l2-solution-card');
+      const p1Tex = is2x3
+        ? `\\mathbf{x}^* = \\left(${toFracTeX(opt.p)},\\; ${toFracTeX(1 - opt.p)}\\right)`
+        : `\\mathbf{x}^* = \\left(${toFracTeX(oppProbs[0])},\\; ${toFracTeX(oppProbs[1])},\\; ${toFracTeX(oppProbs[2])}\\right)`;
+      const p2Tex = is2x3
+        ? `\\mathbf{y}^* = \\left(${toFracTeX(oppProbs[0])},\\; ${toFracTeX(oppProbs[1])},\\; ${toFracTeX(oppProbs[2])}\\right)`
+        : `\\mathbf{y}^* = \\left(${toFracTeX(opt.p)},\\; ${toFracTeX(1 - opt.p)}\\right)`;
+
+      solBox.innerHTML = `
+        <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Exact Graphical Solution</div>
+        <div class="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800 space-y-1.5">
+          <div>$${p1Tex}$</div>
+          <div>$${p2Tex}$</div>
+          <div class="font-bold text-emerald-700 dark:text-emerald-300">Game Value: $v = ${toFracTeX(opt.v)} \\approx ${opt.v.toFixed(4)}$</div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 font-mono text-xs text-amber-900 dark:text-amber-200">
+          At probe p = ${pProbe.toFixed(2)}: Guaranteed ${is2x3 ? 'Min' : 'Max'} = <strong>${probeEnv.toFixed(3)}</strong> (vs Optimal v* = ${opt.v.toFixed(3)})
+        </div>
+      `;
+      renderMath(solBox);
+
+      // Draw SVG Plot
+      drawLab2SVG(lines, envPts, opt, pProbe, probeEnv, is2x3);
+    }
+
+    function drawLab2SVG(lines, envPts, opt, pProbe, probeEnv, is2x3) {
+      const svg = document.getElementById('l2-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+      const gridCol = isDark ? '#1e293b' : '#f1f5f9';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 480, H = 320, padL = 48, padR = 48, padT = 24, padB = 34;
+      const allY = [];
+      lines.forEach((ln) => { allY.push(ln.val(0), ln.val(1)); });
+      allY.push(0);
+      let yMin = Math.min(...allY) - 1;
+      let yMax = Math.max(...allY) + 1;
+
+      const sx = (p) => padL + p * (W - padL - padR);
+      const sy = (y) => padT + ((yMax - y) / (yMax - yMin)) * (H - padT - padB);
+
+      let html = '';
+      // Horizontal grid lines
+      const yStep = Math.max(1, Math.ceil((yMax - yMin) / 7));
+      for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += yStep) {
+        html += `<line x1="${padL}" y1="${sy(y)}" x2="${W - padR}" y2="${sy(y)}" stroke="${y === 0 ? axisCol : gridCol}" stroke-width="${y === 0 ? 1.5 : 1}" />`;
+        html += `<text x="${padL - 8}" y="${sy(y) + 3}" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="${txtCol}">${y}</text>`;
+      }
+
+      // Left (p=0) and Right (p=1) vertical axes
+      html += `
+        <line x1="${sx(0)}" y1="${padT}" x2="${sx(0)}" y2="${H - padB}" stroke="${axisCol}" stroke-width="1.8" />
+        <line x1="${sx(1)}" y1="${padT}" x2="${sx(1)}" y2="${H - padB}" stroke="${axisCol}" stroke-width="1.8" />
+        <text x="${sx(0)}" y="${H - 12}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="${txtCol}">p = 0</text>
+        <text x="${sx(0.5)}" y="${H - 12}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="${txtCol}">p = 0.5</text>
+        <text x="${sx(1)}" y="${H - 12}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="${txtCol}">p = 1</text>
+      `;
+
+      // Shaded envelope region
+      const envCol = is2x3 ? '#059669' : '#e11d48';
+      const baseLineY = is2x3 ? (H - padB) : padT;
+      const polyPts = envPts.map((pt) => `${sx(pt.p).toFixed(1)},${sy(pt.v).toFixed(1)}`).join(' ');
+      const shadePts = `${sx(0)},${baseLineY} ${polyPts} ${sx(1)},${baseLineY}`;
+      html += `<polygon points="${shadePts}" fill="${envCol}" fill-opacity="0.13" />`;
+
+      // Draw all 3 payoff lines
+      const lineColors = ['#4f46e5', '#0ea5e9', '#8b5cf6'];
+      lines.forEach((ln, idx) => {
+        const y0 = ln.val(0), y1 = ln.val(1);
+        html += `
+          <line x1="${sx(0)}" y1="${sy(y0)}" x2="${sx(1)}" y2="${sy(y1)}" stroke="${lineColors[idx]}" stroke-width="2" opacity="0.85" />
+          <text x="${sx(1) + 6}" y="${sy(y1) + 4}" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="${lineColors[idx]}">${ln.label}</text>
+        `;
+      });
+
+      // Thick envelope polyline
+      html += `<polyline points="${polyPts}" fill="none" stroke="${envCol}" stroke-width="3.8" stroke-linejoin="round" />`;
+
+      // Probe vertical line
+      html += `
+        <line x1="${sx(pProbe)}" y1="${padT}" x2="${sx(pProbe)}" y2="${H - padB}" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="4 3" />
+        <circle cx="${sx(pProbe)}" cy="${sy(probeEnv)}" r="5" fill="#f59e0b" stroke="${isDark ? '#111827' : '#ffffff'}" stroke-width="1.8" />
+      `;
+
+      // Optimal minimax vertex (p*, v*)
+      html += `
+        <line x1="${sx(opt.p)}" y1="${sy(opt.v)}" x2="${sx(opt.p)}" y2="${H - padB}" stroke="${envCol}" stroke-width="1.5" stroke-dasharray="3 3" />
+        <line x1="${padL}" y1="${sy(opt.v)}" x2="${sx(opt.p)}" y2="${sy(opt.v)}" stroke="${envCol}" stroke-width="1.5" stroke-dasharray="3 3" />
+        <circle cx="${sx(opt.p)}" cy="${sy(opt.v)}" r="7" fill="${envCol}" stroke="${isDark ? '#111827' : '#ffffff'}" stroke-width="2.2" />
+      `;
+
+      svg.innerHTML = html;
+    }
+
+    /* =========================================================================
+       5. LAB 3: 2x2 MIXED STRATEGY & MONTE CARLO SIMULATOR
+       ========================================================================= */
+    let mcHistory = [];
+
+    function loadL3Preset(a11, a12, a21, a22) {
+      document.getElementById('l3-a11').value = a11;
+      document.getElementById('l3-a12').value = a12;
+      document.getElementById('l3-a21').value = a21;
+      document.getElementById('l3-a22').value = a22;
+      mcHistory = [];
+      updateLab3(true);
+    }
+
+    function getL3Params() {
+      const a11 = parseFloat(document.getElementById('l3-a11').value) || 0;
+      const a12 = parseFloat(document.getElementById('l3-a12').value) || 0;
+      const a21 = parseFloat(document.getElementById('l3-a21').value) || 0;
+      const a22 = parseFloat(document.getElementById('l3-a22').value) || 0;
+      const x1 = parseFloat(document.getElementById('l3-x1').value);
+      const y1 = parseFloat(document.getElementById('l3-y1').value);
+
+      // Check saddle point first
+      const rMins = [Math.min(a11, a12), Math.min(a21, a22)];
+      const cMaxs = [Math.max(a11, a21), Math.max(a12, a22)];
+      const maximin = Math.max(...rMins), minimax = Math.min(...cMaxs);
+      let x1Opt, y1Opt, vOpt;
+
+      if (maximin === minimax) {
+        vOpt = maximin;
+        x1Opt = rMins[0] === maximin ? 1 : 0;
+        y1Opt = cMaxs[0] === minimax ? 1 : 0;
+      } else {
+        const D = (a11 + a22) - (a12 + a21);
+        x1Opt = (a22 - a21) / D;
+        y1Opt = (a22 - a12) / D;
+        vOpt = (a11 * a22 - a12 * a21) / D;
+      }
+
+      const expPayoff = x1 * y1 * a11 + x1 * (1 - y1) * a12 + (1 - x1) * y1 * a21 + (1 - x1) * (1 - y1) * a22;
+      return { a11, a12, a21, a22, x1, y1, x1Opt, y1Opt, vOpt, expPayoff };
+    }
+
+    function snapL3Optimal() {
+      const p = getL3Params();
+      document.getElementById('l3-x1').value = p.x1Opt.toFixed(2);
+      document.getElementById('l3-y1').value = p.y1Opt.toFixed(2);
+      updateLab3(true);
+    }
+
+    function updateLab3(userTriggered) {
+      if (userTriggered) markLabExplored('lab-3');
+      const p = getL3Params();
+      document.getElementById('l3-x1-val').textContent = p.x1.toFixed(2);
+      document.getElementById('l3-y1-val').textContent = p.y1.toFixed(2);
+
+      document.getElementById('l3-readout').innerHTML = `
+        <div class="flex justify-between"><span>Current E(x₁, y₁):</span><strong class="text-indigo-600 dark:text-indigo-400">${p.expPayoff.toFixed(4)}</strong></div>
+        <div class="flex justify-between"><span>Optimal Value v*:</span><strong class="text-emerald-600 dark:text-emerald-400">${p.vOpt.toFixed(4)}</strong></div>
+        <div class="flex justify-between text-slate-500"><span>Optimal (x₁*, y₁*):</span><span>(${p.x1Opt.toFixed(3)}, ${p.y1Opt.toFixed(3)})</span></div>
+      `;
+      drawMonteCarloSVG();
+    }
+
+    function runMonteCarlo() {
+      markLabExplored('lab-3');
+      const p = getL3Params();
+      mcHistory = [];
+      let sum = 0;
+      for (let r = 1; r <= 100; r++) {
+        const i = Math.random() < p.x1 ? 0 : 1;
+        const j = Math.random() < p.y1 ? 0 : 1;
+        const payoff = i === 0 ? (j === 0 ? p.a11 : p.a12) : (j === 0 ? p.a21 : p.a22);
+        sum += payoff;
+        mcHistory.push(sum / r);
+      }
+      drawMonteCarloSVG();
+    }
+
+    function resetMonteCarlo() {
+      mcHistory = [];
+      drawMonteCarloSVG();
+    }
+
+    function drawMonteCarloSVG() {
+      const svg = document.getElementById('l3-svg');
+      const sumEl = document.getElementById('l3-mc-summary');
+      const p = getL3Params();
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 480, H = 245, padL = 44, padR = 18, padT = 18, padB = 28;
+      const minA = Math.min(p.a11, p.a12, p.a21, p.a22, p.expPayoff, p.vOpt);
+      const maxA = Math.max(p.a11, p.a12, p.a21, p.a22, p.expPayoff, p.vOpt);
+      const yMin = minA - 0.6, yMax = maxA + 0.6;
+
+      const sx = (round) => padL + ((round - 1) / 99) * (W - padL - padR);
+      const sy = (v) => padT + ((yMax - v) / (yMax - yMin)) * (H - padT - padB);
+
+      let html = `
+        <line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" stroke="${axisCol}" stroke-width="1.4" />
+        <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="${axisCol}" stroke-width="1.4" />
+        <!-- Optimal v* dashed green -->
+        <line x1="${padL}" y1="${sy(p.vOpt)}" x2="${W - padR}" y2="${sy(p.vOpt)}" stroke="#059669" stroke-width="1.6" stroke-dasharray="6 4" />
+        <text x="${W - padR - 4}" y="${sy(p.vOpt) - 5}" text-anchor="end" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#059669">v* = ${p.vOpt.toFixed(2)}</text>
+        <!-- Current theoretical E(x1, y1) dashed amber -->
+        <line x1="${padL}" y1="${sy(p.expPayoff)}" x2="${W - padR}" y2="${sy(p.expPayoff)}" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="3 3" />
+        <text x="${padL + 6}" y="${sy(p.expPayoff) - 5}" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#d97706">E = ${p.expPayoff.toFixed(2)}</text>
+      `;
+
+      [1, 25, 50, 75, 100].forEach((r) => {
+        html += `<text x="${sx(r)}" y="${H - 8}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">${r}</text>`;
+      });
+
+      if (mcHistory.length > 0) {
+        const pts = mcHistory.map((v, idx) => `${idx === 0 ? 'M' : 'L'} ${sx(idx + 1).toFixed(1)} ${sy(v).toFixed(1)}`).join(' ');
+        html += `<path d="${pts}" fill="none" stroke="#4f46e5" stroke-width="2.5" />`;
+        const finalAvg = mcHistory[mcHistory.length - 1];
+        sumEl.textContent = `After 100 rounds: Empirical Average = ${finalAvg.toFixed(3)} vs. Theoretical E(x₁, y₁) = ${p.expPayoff.toFixed(3)}`;
+      } else {
+        html += `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" font-family="Inter" font-size="12" fill="${txtCol}">Click "🎲 Simulate 100 Rounds" to watch the running average converge to E(x₁, y₁)!</text>`;
+        sumEl.textContent = 'Ready to simulate 100 stochastic rounds.';
+      }
+
+      svg.innerHTML = html;
+    }
+
+    /* =========================================================================
+       6. QUICK-CHECK INTERACTIVE QUIZ (5 EXAM-STYLE MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. A two-person zero-sum game has a <strong>saddle point</strong> (optimal pure strategy pair) if and only if:',
+        options: [
+          '$\\underline{v} < \\overline{v}$',
+          '$\\underline{v} = \\overline{v}$ (Maximin equals Minimax)',
+          'All entries of the payoff matrix are positive',
+          'The payoff matrix is a square $n \\times n$ matrix'
+        ],
+        answer: 1,
+        explanation: 'A saddle point exists iff the lower value (Maximin $\\underline{v} = \\max_i \\min_j a_{ij}$) equals the upper value (Minimax $\\overline{v} = \\min_j \\max_i a_{ij}$).'
+      },
+      {
+        q: '2. In the Principle of Dominance for Player 2 (the minimizing column player), if every entry of Column $j$ is <strong>greater than or equal to</strong> the corresponding entry of Column $\\ell$ ($a_{ij} \\ge a_{i\\ell}$ for all $i$), which column should be eliminated?',
+        options: [
+          'Eliminate Column $\\ell$ (the smaller column)',
+          'Eliminate Column $j$ (the larger column)',
+          'Eliminate both columns',
+          'Neither column can be eliminated'
+        ],
+        answer: 1,
+        explanation: 'Matrix entries represent Player 2\'s LOSSES! Therefore, Column $j$ (larger entries = worse losses for P2) is dominated by Column $\\ell$ and must be eliminated.'
+      },
+      {
+        q: '3. What is the exact value $v$ of the ISRT Final 2025 Q8(c) game $A = \\begin{pmatrix} 0 & -2 & 2 \\\\ 5 & 4 & -3 \\end{pmatrix}$?',
+        options: [
+          '$v = \\dfrac{2}{11}$',
+          '$v = \\dfrac{7}{11}$',
+          '$v = 1$',
+          '$v = -\\dfrac{2}{11}$'
+        ],
+        answer: 0,
+        explanation: 'Intersecting the two active lower-envelope lines $4 - 6x_1 = 5x_1 - 3$ gives $x_1^* = 7/11$ and $v = 4 - 6(7/11) = 2/11$.'
+      },
+      {
+        q: '4. In the 2D Graphical Minimax procedure, what is the key distinction between a $2 \\times n$ game and an $m \\times 2$ game?',
+        options: [
+          'Both use the highest point of the lower envelope',
+          'A $2 \\times n$ game finds the HIGHEST point of the lower envelope; an $m \\times 2$ game finds the LOWEST point of the upper envelope',
+          'A $2 \\times n$ game finds the lowest point of the upper envelope; an $m \\times 2$ game finds the highest point of the lower envelope',
+          'Graphical minimax only applies to $2 \\times 2$ games'
+        ],
+        answer: 1,
+        explanation: 'In $2 \\times n$, we optimize for Player 1 (Maximizer) by maximizing the lower envelope. In $m \\times 2$, we optimize for Player 2 (Minimizer) by minimizing the upper envelope!'
+      },
+      {
+        q: '5. Using the $2 \\times 2$ analytical formula (or oddments), what is the optimal probability $x_1^*$ for Player 1 in $A = \\begin{pmatrix} 6 & 2 \\\\ 1 & 5 \\end{pmatrix}$?',
+        options: [
+          '$\\dfrac{3}{8}$',
+          '$\\dfrac{1}{2}$',
+          '$\\dfrac{5}{8}$',
+          '$\\dfrac{7}{2}$'
+        ],
+        answer: 1,
+        explanation: 'Here $D = (6 + 5) - (2 + 1) = 8$, so $x_1^* = \\frac{a_{22} - a_{21}}{D} = \\frac{5 - 1}{8} = \\frac{4}{8} = \\frac{1}{2}$ (and oddments $|6-2|=4, |1-5|=4$ also give $4/(4+4) = 1/2$).'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#111827] hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       7. INITIALIZATION ON DOMCONTENTLOADED
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadL1Preset('isrt8b', false);
+      setL2Mode('2x3', false);
+      updateLab3(false);
+      renderQuiz();
+      updateOverallProgress();
+      initObservers();
+
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

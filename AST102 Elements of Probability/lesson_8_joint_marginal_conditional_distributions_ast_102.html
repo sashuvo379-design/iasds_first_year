@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 8: Joint, Marginal &amp; Conditional Distributions — AST 102 (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            navy: '#1e3a8a',
+            bluePrimary: '#2563eb',
+            tealAccent: '#0d9488',
+            amberTrap: '#d97706',
+            roseWarn: '#e11d48',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX v0.16.9 via jsDelivr CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Prevent display math overflow on small mobile screens */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #2563eb;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      touch-action: none;
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVIGATION BAR & LIVE READING PROGRESS BAR                 -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Metadata Pills -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+          <span class="inline-flex items-center gap-1.5 font-bold text-[#1e3a8a]">
+            <span class="w-2 h-2 rounded-full bg-[#0d9488]"></span>
+            AST 102 • Module 3: Joint &amp; Generating
+          </span>
+          <span class="text-slate-300">→</span>
+          <span class="text-[#2563eb] font-semibold">Lesson 8 of 14</span>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            ~45 min
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <svg class="w-3.5 h-3.5 text-[#d97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            2nd Incourse + Year Final • High Weight
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Smooth-Scroll Section Jump Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#1e3a8a] hover:bg-blue-50 transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#0d9488] hover:bg-teal-50 transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#2563eb] hover:bg-blue-50 transition-colors">Proofs</a>
+        <a href="#exams" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#d97706] hover:bg-amber-50 transition-colors">Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">Mastery Quiz</a>
+      </nav>
+    </div>
+
+    <!-- Thin Live Reading-Progress Bar Along Bottom Edge -->
+    <div class="w-full h-[3px] bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-[#1e3a8a] via-[#2563eb] to-[#0d9488] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- 1. HERO SECTION                                                       -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#115e59] text-white py-12 sm:py-16 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-7">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-200 text-xs font-semibold tracking-wide uppercase mb-4">
+            ISRT • University of Dhaka • AST 102 • Module 3 Opener
+          </div>
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
+            Lesson 8: Joint, Marginal &amp; Conditional Distributions
+          </h1>
+          <p class="text-blue-100 text-base sm:text-lg leading-relaxed mb-6">
+            Moving from single variables to pairs $(X, Y)$: reading 2D probability surfaces, summing or integrating out variables, slicing conditional distributions, and testing independence.
+          </p>
+
+          <div class="flex flex-wrap gap-3">
+            <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0d9488] hover:bg-teal-500 text-white font-semibold text-sm shadow-lg shadow-teal-950/30 transition-all">
+              Launch 4-Tab Bivariate Lab
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="#exams" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+              ISRT Exam Vault (2018–2025)
+            </a>
+          </div>
+        </div>
+
+        <!-- Learning Objectives Checklist -->
+        <div class="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-5 sm:p-6 space-y-3">
+          <div class="text-xs font-bold uppercase tracking-wider text-teal-200">Learning Objectives</div>
+          <ul class="space-y-2.5 text-xs sm:text-sm text-blue-50 leading-relaxed">
+            <li class="flex items-start gap-2.5">
+              <span class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/25 border border-teal-300/50 text-teal-200 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span>Interpret and validate discrete joint PMF tables $p(x,y)$ and continuous joint PDF surfaces $f(x,y)$ over rectangular and triangular supports.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/25 border border-teal-300/50 text-teal-200 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span>Extract marginal distributions $f_X(x)$ and $f_Y(y)$ with exact variable integration limits on coupled regions like $0 &lt; x &lt; y &lt; 1$.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/25 border border-teal-300/50 text-teal-200 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span>Derive conditional distributions $f_{X|Y}(x|y)$ and conditional means $E[X \mid Y = y]$ by slicing and renormalizing 2D densities.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="mt-0.5 w-5 h-5 rounded-full bg-teal-500/25 border border-teal-300/50 text-teal-200 flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <span>Test statistical independence using both support geometry and the factorization criterion $f_{X,Y}(x,y) = f_X(x)f_Y(y)$.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- 2. SECTION 1: CORE CONCEPTS & INTUITION                             -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#2563eb]">Section 01 • Core Theory</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-slate-500">Ross Ch. 6 · AST 102 Lecture 12+ &amp; Past Papers (2018–2025)</p>
+      </div>
+
+      <!-- CARD 1: JOINT PMF, JOINT PDF & JOINT CDF -->
+      <article class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-blue-50 text-[#1e3a8a] font-mono text-xs font-bold inline-flex items-center justify-center">01</span>
+            Joint PMF, Joint PDF &amp; Joint CDF
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">Year Final 2022 Q8(a) · Ross Ch. 6.1</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Discrete Joint PMF -->
+          <div class="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-[#1e3a8a] text-xs font-bold">Discrete Pair $(X, Y)$</span>
+              <span class="font-mono text-xs font-bold text-[#1e3a8a]">$p(x,y) = P(X=x, Y=y)$</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Assigns probability mass to each lattice pair $(x,y)$ in a 2D table. Must satisfy:
+            </p>
+            <div class="p-3 rounded-xl bg-white border border-slate-200 text-center text-xs sm:text-sm space-y-1">
+              $$p(x,y) \ge 0 \qquad \text{and} \qquad \sum_x \sum_y p(x,y) = 1$$
+              $$P\big((X,Y) \in A\big) = \sum_{(x,y)\in A} p(x,y)$$
+            </div>
+          </div>
+
+          <!-- Continuous Joint PDF -->
+          <div class="p-5 rounded-xl bg-teal-50/50 border border-teal-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-teal-100 text-[#0d9488] text-xs font-bold">Continuous Pair $(X, Y)$</span>
+              <span class="font-mono text-xs font-bold text-[#0d9488]">$f(x,y)$</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              A non-negative 2D density surface whose total volume equals $1$. Event probability is the volume over region $A$:
+            </p>
+            <div class="p-3 rounded-xl bg-white border border-teal-200 text-center text-xs sm:text-sm space-y-1">
+              $$f(x,y) \ge 0 \qquad \text{and} \qquad \int_{-\infty}^{\infty}\!\int_{-\infty}^{\infty} f(x,y)\,dx\,dy = 1$$
+              $$P\big((X,Y) \in A\big) = \iint_A f(x,y)\,dx\,dy$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Joint CDF Strip -->
+        <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="text-xs sm:text-sm text-slate-700 space-y-1">
+            <div class="font-bold text-[#1e3a8a] uppercase tracking-wider text-[11px]">Joint Cumulative Distribution Function (Joint CDF)</div>
+            <p>Accumulates all probability in the lower-left quadrant $(-\infty, x] \times (-\infty, y]$. For continuous $(X, Y)$, $f(x,y) = \dfrac{\partial^2}{\partial x\,\partial y} F(x,y)$.</p>
+          </div>
+          <div class="px-4 py-2.5 rounded-xl bg-white border border-blue-200 text-center shrink-0">
+            $$F(x,y) = P(X \le x,\; Y \le y)$$
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2: MARGINAL DISTRIBUTIONS + AMBER EXAM TRAP -->
+      <article class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-blue-50 text-[#1e3a8a] font-mono text-xs font-bold inline-flex items-center justify-center">02</span>
+            Marginal Distributions ("Summing / Integrating Out")
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">Year Final 2019 Q4(c) · Lecture 12</span>
+        </div>
+
+        <p class="text-sm text-slate-600 leading-relaxed">
+          To recover the individual distribution of $X$ alone (ignoring $Y$), sum or integrate the joint distribution over <strong>all possible values of $Y$</strong> (and vice versa for $Y$):
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <div class="text-xs font-bold uppercase text-[#1e3a8a]">Discrete Marginals (Row / Column Sums)</div>
+            $$p_X(x) = \sum_{\text{all } y} p(x,y), \qquad p_Y(y) = \sum_{\text{all } x} p(x,y)$$
+          </div>
+          <div class="p-4 rounded-xl bg-teal-50/50 border border-teal-200 space-y-1">
+            <div class="text-xs font-bold uppercase text-[#0d9488]">Continuous Marginals (Integrating Out)</div>
+            $$f_X(x) = \int_{-\infty}^{\infty} f(x,y)\,dy, \qquad f_Y(y) = \int_{-\infty}^{\infty} f(x,y)\,dx$$
+          </div>
+        </div>
+
+        <!-- Amber Exam Trap Spotlight: Triangular vs Rectangular Limits -->
+        <div class="rounded-2xl border-2 border-amber-300 bg-amber-50/85 p-5 flex items-start gap-4 shadow-xs">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#d97706] text-white font-extrabold text-sm shrink-0 mt-0.5">!</span>
+          <div class="space-y-2 text-xs sm:text-sm text-amber-950 leading-relaxed">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-800">Exam Trap Spotlight · Triangular vs. Rectangular Support Limits</div>
+            <p>
+              On a <strong>rectangular</strong> support like $0 &lt; x &lt; 1, 0 &lt; y &lt; 1$, the integration bounds are constant ($0$ to $1$). On a <strong>triangular</strong> support such as $0 &lt; x &lt; y &lt; 1$, the bounds depend on the variable you hold fixed:
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div class="bg-white rounded-xl p-3 border border-amber-200">
+                <div class="font-bold text-[#1e3a8a] text-xs mb-1">Finding $f_X(x)$ (Fix $x$, integrate $y$):</div>
+                <p class="text-xs text-slate-700">Since $x &lt; y &lt; 1$, $y$ runs from <strong>$x$ to $1$</strong> (NOT $0$ to $1$):</p>
+                <div class="font-mono text-xs text-slate-900 mt-1">$f_X(x) = \int_{x}^{1} f(x,y)\,dy$</div>
+              </div>
+              <div class="bg-white rounded-xl p-3 border border-amber-200">
+                <div class="font-bold text-[#0d9488] text-xs mb-1">Finding $f_Y(y)$ (Fix $y$, integrate $x$):</div>
+                <p class="text-xs text-slate-700">Since $0 &lt; x &lt; y$, $x$ runs from <strong>$0$ to $y$</strong> (NOT $0$ to $1$):</p>
+                <div class="font-mono text-xs text-slate-900 mt-1">$f_Y(y) = \int_{0}^{y} f(x,y)\,dx$</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3 & CARD 4 SIDE-BY-SIDE -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- CARD 3: INDEPENDENCE OF RANDOM VARIABLES -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between space-y-5">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-blue-50 text-[#1e3a8a] font-mono text-xs font-bold inline-flex items-center justify-center">03</span>
+                Independence of Random Variables
+              </h3>
+              <span class="text-xs text-slate-400 font-medium">Ross Ch. 6.2</span>
+            </div>
+
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Random variables $X$ and $Y$ are <strong>independent</strong> if and only if their joint distribution factors into the product of their marginals for <em>every</em> $(x,y)$:
+            </p>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+              $$f_{X,Y}(x,y) = f_X(x)\,f_Y(y) \qquad \forall\,(x,y) \in \mathbb{R}^2$$
+            </div>
+            <p class="text-xs text-slate-500">
+              (Equivalently, $p(x,y) = p_X(x)p_Y(y)$ for discrete RVs, or $F(x,y) = F_X(x)F_Y(y)$ for all $x,y$.)
+            </p>
+          </div>
+
+          <!-- Rose/Amber Quick Visual Shortcut Callout -->
+          <div class="rounded-xl border-2 border-rose-300 bg-gradient-to-br from-rose-50 to-amber-50/70 p-4 space-y-1.5 text-xs sm:text-sm">
+            <div class="flex items-center gap-2 font-bold text-[#e11d48] text-xs uppercase tracking-wider">
+              <span class="w-5 h-5 rounded-md bg-[#e11d48] text-white inline-flex items-center justify-center text-[11px]">✕</span>
+              Quick Visual Shortcut · Non-Rectangular Support
+            </div>
+            <p class="text-slate-800 leading-relaxed">
+              If the support region where $f(x,y) &gt; 0$ is <strong>NOT a rectangle</strong> (for instance, the triangle $0 &lt; x &lt; y &lt; 1$), then $X$ and $Y$ can <strong>NEVER be independent</strong>!
+            </p>
+            <p class="text-xs text-amber-900 font-medium">
+              <strong>ISRT Exam Tip:</strong> Use this shortcut to know the answer instantly—but still derive both marginals $f_X(x), f_Y(y)$ and show $f_X(x)f_Y(y) \neq f(x,y)$ for full credit.
+            </p>
+          </div>
+        </article>
+
+        <!-- CARD 4: CONDITIONAL DISTRIBUTIONS -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between space-y-5">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-teal-50 text-[#0d9488] font-mono text-xs font-bold inline-flex items-center justify-center">04</span>
+                Conditional Distributions
+              </h3>
+              <span class="text-xs text-slate-400 font-medium">Final 2025 Q5(c)</span>
+            </div>
+
+            <p class="text-sm text-slate-600 leading-relaxed">
+              When we observe $Y = y$ (with $p_Y(y) &gt; 0$ or $f_Y(y) &gt; 0$), the conditional distribution of $X$ given $Y = y$ is:
+            </p>
+            <div class="p-3.5 rounded-xl bg-teal-50/60 border border-teal-200 text-center space-y-1.5">
+              $$p_{X|Y}(x \mid y) = \frac{p(x,y)}{p_Y(y)} \qquad \text{(Discrete)}$$
+              $$f_{X|Y}(x \mid y) = \frac{f(x,y)}{f_Y(y)} \qquad \text{(Continuous, } f_Y(y) &gt; 0\text{)}$$
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-200 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-1">
+            <div class="font-bold text-[#1e3a8a] text-xs uppercase tracking-wider">Geometric Slicing Intuition</div>
+            <p>
+              Imagine cutting the 3D density surface $z = f(x,y)$ with a vertical knife along the fixed line $y = y_0$. That cross-sectional ribbon has area $\int f(x, y_0)\,dx = f_Y(y_0)$. Dividing the ribbon's height by $f_Y(y_0)$ rescales it so the conditional slice integrates to <strong>exactly $1$</strong>.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 3. SECTION 2: 4-TAB INTERACTIVE BIVARIATE LAB                       -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0d9488]">Section 02 • Interactive Workbench</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">4-Tab Interactive Bivariate Lab</h2>
+        </div>
+        <p class="text-sm text-slate-500">Explore joint tables, 2D region integrals, conditional slices &amp; independence tests</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Tab Bar -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-slate-200 bg-slate-50 p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="discrete" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#1e3a8a] text-white shadow-sm">
+            1. Discrete Joint Table Explorer
+          </button>
+          <button type="button" role="tab" data-tab="integrator" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            2. 2D Region Integrator
+          </button>
+          <button type="button" role="tab" data-tab="slice" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            3. Conditional Slice Visualizer
+          </button>
+          <button type="button" role="tab" data-tab="indep" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            4. Independence &amp; Support Diagnostic
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: DISCRETE JOINT TABLE EXPLORER                            -->
+        <!-- =============================================================== -->
+        <div id="tab-discrete" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Discrete Joint PMF Table Explorer</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Click cells to sum custom events, or click any <strong>row header ($Y = y_0$)</strong> / <strong>column header ($X = x_0$)</strong> to slice its conditional PMF.</p>
+            </div>
+            <!-- 4 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-dpreset="fin2024" class="disc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all">Year Final 2024 Q4(c): (2x+y)/48</button>
+              <button type="button" data-dpreset="mid2a" class="disc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">2nd Midterm Q2(a): (x+y)/30</button>
+              <button type="button" data-dpreset="inc2025" class="disc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">2nd Incourse 2025 Q1 Table</button>
+              <button type="button" data-dpreset="indepProd" class="disc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Independent Product Table</button>
+            </div>
+          </div>
+
+          <!-- Event Filter Strip + Independence Verdict Badge -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mr-1">Event Filter:</span>
+              <button type="button" data-efilter="custom" class="disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-white text-slate-700 border-slate-200 hover:border-[#0d9488] transition-all">Custom Click</button>
+              <button type="button" data-efilter="xGtY" class="disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-[#0d9488] text-white border-[#0d9488] shadow-xs transition-all">$X &gt; Y$</button>
+              <button type="button" data-efilter="sumLe2" class="disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-white text-slate-700 border-slate-200 hover:border-[#0d9488] transition-all">$X + Y \le 2$</button>
+              <button type="button" data-efilter="xLe2Y1" class="disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-white text-slate-700 border-slate-200 hover:border-[#0d9488] transition-all">$X \le 2, Y = 1$</button>
+              <button type="button" data-efilter="clear" class="disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 transition-all">Clear</button>
+            </div>
+            <div class="px-3.5 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-xs font-bold text-teal-900">
+              Selected $P(\text{Event})$ = <span id="discEventProb" class="font-mono text-sm text-[#0d9488] ml-1">0</span>
+            </div>
+          </div>
+
+          <!-- Main Grid: Table Left + Conditional Slice & Independence Right -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-7 space-y-4">
+              <div id="discTableWrap" class="overflow-x-auto rounded-2xl border border-slate-200"></div>
+              <div id="discIndepVerdict" class="p-4 rounded-2xl border-2 text-xs sm:text-sm leading-relaxed"></div>
+            </div>
+
+            <div class="lg:col-span-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+              <div class="flex items-center justify-between gap-2">
+                <div>
+                  <div class="text-[11px] font-bold uppercase tracking-wider text-[#2563eb]">Conditional Distribution Slice</div>
+                  <div id="discSliceTitle" class="text-sm font-extrabold text-slate-900 mt-0.5">$p_{X|Y}(x \mid Y = 2)$</div>
+                </div>
+                <div class="px-3 py-1.5 rounded-xl bg-white border border-blue-200 text-right">
+                  <div class="text-[10px] font-bold uppercase text-slate-500">Conditional Mean</div>
+                  <div id="discSliceMean" class="font-mono text-sm font-extrabold text-[#1e3a8a]">2.0000</div>
+                </div>
+              </div>
+              <div id="discSliceBars" class="space-y-2.5"></div>
+              <p class="text-[11px] text-slate-500 border-t border-slate-200 pt-2.5">
+                Tip: Click any blue <strong>$X = x_0$</strong> column header or teal <strong>$Y = y_0$</strong> row header in the table to switch the conditional slice.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: 2D REGION INTEGRATOR                                     -->
+        <!-- =============================================================== -->
+        <div id="tab-integrator" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">2D Region Integrator</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Visualize continuous joint densities over $[0,1]\times[0,1]$, intersect with an event region, and verify the exact double-integral setup.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-ipreset="unifSq" class="int-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all">1. $f(x,y)=1$ on $(0,1)^2$ [Final 2025 Q5b]</button>
+              <button type="button" data-ipreset="sumSq" class="int-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">2. $f(x,y)=x+y$ on $(0,1)^2$ [Final 2022 Q8b]</button>
+              <button type="button" data-ipreset="tri6x" class="int-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">3. $f(x,y)=6x$ on $0&lt;x&lt;y&lt;1$ [Final 2019 Q4c]</button>
+              <button type="button" data-ipreset="tri2" class="int-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">4. $f(x,y)=2$ on $0\le y\le x\le 1$ [Final 2025 Q5c]</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left: 2D Canvas -->
+            <div class="lg:col-span-6 space-y-3">
+              <div class="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-inner">
+                <div class="flex items-center justify-between text-xs mb-2">
+                  <span class="font-bold uppercase tracking-wider text-slate-500">Unit Square $[0,1]\times[0,1]$ &amp; Event Region</span>
+                  <span id="intSupportBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-[#1e3a8a]">Rectangular Support</span>
+                </div>
+                <div id="intCanvasWrap" class="w-full max-w-[380px] mx-auto">
+                  <canvas id="intCanvas" aria-label="2D region integrator heatmap and event region"></canvas>
+                </div>
+              </div>
+              <div class="flex flex-wrap justify-center gap-4 text-[11px] text-slate-500">
+                <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#1e3a8a]/35 border border-[#1e3a8a]"></span>Density Heatmap $f(x,y)$</span>
+                <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#0d9488]/45 border border-[#0d9488]"></span>Queried Region $A \cap \text{Support}$</span>
+              </div>
+            </div>
+
+            <!-- Right: Query Controls & Dynamic KaTeX Integral -->
+            <div class="lg:col-span-6 space-y-4">
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" data-qtype="sumC" class="int-qtype px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0d9488] text-white shadow-xs transition-all">$P(X + Y &lt; c)$</button>
+                  <button type="button" data-qtype="rectAB" class="int-qtype px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-[#0d9488] transition-all">$P(X &lt; a,\; Y &lt; b)$</button>
+                  <button type="button" data-qtype="yGtX" class="int-qtype px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-[#0d9488] transition-all">$P(Y &gt; X)$</button>
+                </div>
+
+                <!-- Slider for c -->
+                <div id="intCtrlSumC" class="space-y-1.5">
+                  <div class="flex justify-between text-xs font-bold">
+                    <span class="text-[#0d9488]">Threshold $c$ in $X + Y &lt; c$</span>
+                    <span id="intValC" class="font-mono text-slate-900">1.00</span>
+                  </div>
+                  <input id="intSliderC" type="range" min="0.20" max="1.80" step="0.05" value="1.00" class="w-full" />
+                </div>
+
+                <!-- Sliders for a, b -->
+                <div id="intCtrlRectAB" class="hidden space-y-3">
+                  <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                      <span class="text-[#1e3a8a]">Upper Limit $a$ ($X &lt; a$)</span>
+                      <span id="intValA" class="font-mono text-slate-900">0.70</span>
+                    </div>
+                    <input id="intSliderA" type="range" min="0.10" max="1.00" step="0.05" value="0.70" class="w-full" />
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                      <span class="text-[#0d9488]">Upper Limit $b$ ($Y &lt; b$)</span>
+                      <span id="intValB" class="font-mono text-slate-900">0.70</span>
+                    </div>
+                    <input id="intSliderB" type="range" min="0.10" max="1.00" step="0.05" value="0.70" class="w-full" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Numeric + Exact Probability Card -->
+              <div class="p-5 rounded-2xl bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div class="text-[11px] uppercase tracking-wider text-teal-300 font-bold">Evaluated Probability</div>
+                  <div id="intProbExact" class="text-xs font-mono text-slate-300 mt-0.5">Exact: 1/2</div>
+                </div>
+                <div id="intProbNum" class="text-3xl font-extrabold font-mono text-white">0.5000</div>
+              </div>
+
+              <!-- Dynamic Double Integral Setup -->
+              <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-1.5">
+                <div class="text-xs font-bold uppercase tracking-wider text-[#1e3a8a]">Double-Integral Setup</div>
+                <div id="intFormulaBox" class="text-xs sm:text-sm text-slate-800 overflow-x-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: CONDITIONAL SLICE VISUALIZER                             -->
+        <!-- =============================================================== -->
+        <div id="tab-slice" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Conditional Slice Visualizer</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Slide the amber knife across a 2D joint PDF to see the normalized 1D conditional density $f_{X|Y}(x|y_0)$ or $f_{Y|X}(y|x_0)$ and its conditional expectation.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-spreset="tri2" class="slice-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all">1. $f=2$ ($0\le y\le x\le 1$) [Final 2025 Q5c]</button>
+              <button type="button" data-spreset="tri6x" class="slice-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">2. $f=6x$ ($0&lt;x&lt;y&lt;1$) [Final 2019 Q4c]</button>
+              <button type="button" data-spreset="mid2018" class="slice-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">3. $f=x^2+\frac{xy}{3}$ [Mid II 2018 Q2a]</button>
+              <button type="button" data-spreset="sumSq" class="slice-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">4. $f=x+y$ [Final 2022 Q8b]</button>
+              <button type="button" data-spreset="unifSq" class="slice-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">5. $f=1$ [Final 2025 Q5b]</button>
+            </div>
+          </div>
+
+          <!-- Direction Toggle & Slice Slider -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <div class="lg:col-span-6 flex flex-wrap gap-2">
+              <button type="button" data-sdir="givenY" class="slice-dir-btn flex-1 px-3 py-2 rounded-xl text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all">Condition on $Y = y_0 \rightarrow f_{X|Y}(x|y_0)$</button>
+              <button type="button" data-sdir="givenX" class="slice-dir-btn flex-1 px-3 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-[#1e3a8a] transition-all">Condition on $X = x_0 \rightarrow f_{Y|X}(y|x_0)$</button>
+            </div>
+            <div class="lg:col-span-6">
+              <div class="flex justify-between text-xs font-bold mb-1">
+                <span id="sliceSliderLabel" class="text-[#d97706]">Conditioning Value $y_0$</span>
+                <span id="sliceSliderVal" class="font-mono text-base text-slate-900">0.40</span>
+              </div>
+              <input id="sliceSlider" type="range" min="0.05" max="0.95" step="0.01" value="0.40" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Synchronized Dual Canvases -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-inner">
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="font-bold uppercase tracking-wider text-slate-500">1. 2D Support Heatmap &amp; Amber Slice Line</span>
+              </div>
+              <div id="slice2DWrap" class="w-full max-w-[360px] mx-auto">
+                <canvas id="slice2DCanvas" aria-label="2D density heatmap with conditional slice line"></canvas>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-inner">
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="font-bold uppercase tracking-wider text-[#0d9488]">2. Normalized 1D Conditional PDF (Area = 1)</span>
+                <span class="text-[11px] font-semibold text-[#d97706]">Dashed = Conditional Mean</span>
+              </div>
+              <div id="slice1DWrap" class="w-full">
+                <canvas id="slice1DCanvas" aria-label="1D normalized conditional PDF plot"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Symbolic KaTeX Formula Card -->
+          <div id="sliceFormulaCard" class="p-5 rounded-2xl bg-slate-900 text-white grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: INDEPENDENCE & SUPPORT DIAGNOSTIC                        -->
+        <!-- =============================================================== -->
+        <div id="tab-indep" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Independence &amp; Support Diagnostic</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Click or drag the test point $(x^*, y^*)$ anywhere on $[0,1]^2$ to compare $f(x^*, y^*)$ against $f_X(x^*) \cdot f_Y(y^*)$.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-indpreset="unif" class="ind-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all">1. $f(x,y)=1$ (Uniform Square — Indep.)</button>
+              <button type="button" data-indpreset="prod" class="ind-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">2. $f(x,y)=4xy$ (Product Square — Indep.)</button>
+              <button type="button" data-indpreset="lin" class="ind-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">3. $f(x,y)=x+y$ (Linear Square — Dep.)</button>
+              <button type="button" data-indpreset="tri" class="ind-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">4. $f(x,y)=6x$ on $0&lt;x&lt;y&lt;1$ (Triangle — Dep.)</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left: Interactive Draggable 2D Canvas -->
+            <div class="lg:col-span-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-inner space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold uppercase tracking-wider text-slate-500">Click or Drag Test Point $(x^*, y^*)$</span>
+                <span id="indCoordPill" class="font-mono font-bold text-[#2563eb] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">(0.70, 0.30)</span>
+              </div>
+              <div id="indCanvasWrap" class="w-full max-w-[360px] mx-auto">
+                <canvas id="indCanvas" class="cursor-crosshair" aria-label="Interactive independence test point canvas"></canvas>
+              </div>
+            </div>
+
+            <!-- Right: Two-Step Diagnostic Checklist & Comparison Bars -->
+            <div class="lg:col-span-6 space-y-4">
+              <div id="indOverallBanner" class="p-4 rounded-2xl border-2 flex items-center justify-between gap-3"></div>
+
+              <!-- 2-Step Diagnostic Checklist -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div id="indCheckRect" class="p-3.5 rounded-xl border text-xs space-y-1"></div>
+                <div id="indCheckFactor" class="p-3.5 rounded-xl border text-xs space-y-1"></div>
+              </div>
+
+              <!-- Side-by-Side Comparison Bars -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Live Point Comparison at $(x^*, y^*)$</div>
+
+                <div class="space-y-2 text-xs">
+                  <div>
+                    <div class="flex justify-between font-mono font-bold mb-1">
+                      <span class="text-[#1e3a8a]">Joint $f(x^*, y^*)$</span>
+                      <span id="indValJoint" class="text-slate-900">1.0000</span>
+                    </div>
+                    <div class="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
+                      <div id="indBarJoint" class="h-full bg-[#1e3a8a] rounded-full transition-all duration-150" style="width: 25%;"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="flex justify-between font-mono font-bold mb-1">
+                      <span class="text-[#0d9488]">Product $f_X(x^*) \cdot f_Y(y^*)$</span>
+                      <span id="indValProd" class="text-slate-900">1.0000</span>
+                    </div>
+                    <div class="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
+                      <div id="indBarProd" class="h-full bg-[#0d9488] rounded-full transition-all duration-150" style="width: 25%;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="indEqBox" class="p-3 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm overflow-x-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 4. SECTION 3: PROOFS & DERIVATIONS DRAWER                           -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#2563eb]">Section 03 • Exam Proofs</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-slate-500">4 core AST 102 bivariate derivations — click any card to expand</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-blue-50 text-[#1e3a8a] text-[11px] font-bold mb-1">Proof 1 · Triangular Support Marginals</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Deriving Marginals on a Triangular Domain: $f(x,y) = 6x$ for $0 &lt; x &lt; y &lt; 1$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong>Step 1 — Verify Valid Joint PDF:</strong> $f(x,y) = 6x \ge 0$ on $0 &lt; x &lt; y &lt; 1$, and:
+              $$\int_0^1 \int_x^1 6x\,dy\,dx = \int_0^1 6x(1 - x)\,dx = \left[3x^2 - 2x^3\right]_0^1 = 3 - 2 = 1 \;\checkmark$$
+            </p>
+            <p><strong>Step 2 — Marginal PDF of $X$:</strong> Hold $x \in (0,1)$ fixed; $y$ ranges from $x$ to $1$:
+              $$f_X(x) = \int_x^1 6x\,dy = 6x\,[y]_x^1 = \mathbf{6x(1 - x)}, \quad 0 &lt; x &lt; 1$$
+            </p>
+            <p><strong>Step 3 — Marginal PDF of $Y$:</strong> Hold $y \in (0,1)$ fixed; $x$ ranges from $0$ to $y$:
+              $$f_Y(y) = \int_0^y 6x\,dx = \left[3x^2\right]_0^y = \mathbf{3y^2}, \quad 0 &lt; y &lt; 1$$
+            </p>
+            <p><strong>Step 4 — Independence Check:</strong>
+              $$f_X(x)f_Y(y) = 6x(1-x)\cdot 3y^2 = 18x(1-x)y^2 \neq 6x = f(x,y)$$
+              Hence $X$ and $Y$ are <strong>not independent (dependent)</strong>. $\blacksquare$
+            </p>
+          </div>
+        </div>
+
+        <!-- Proof 2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-rose-50 text-[#e11d48] text-[11px] font-bold mb-1">Proof 2 · Contradiction Proof</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Why a Non-Rectangular Support Always Implies Dependence</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Suppose for contradiction that $X$ and $Y$ are independent, so $f_{X,Y}(x,y) = f_X(x)f_Y(y)$ for all $(x,y) \in \mathbb{R}^2$.</p>
+            <p>Let $S_X = \{x : f_X(x) &gt; 0\}$ and $S_Y = \{y : f_Y(y) &gt; 0\}$ be the marginal supports. Under independence, $f_{X,Y}(x,y) &gt; 0$ if and only if $f_X(x) &gt; 0$ AND $f_Y(y) &gt; 0$—meaning the joint support must be the exact Cartesian product (rectangle) $S_X \times S_Y$.</p>
+            <p>Now suppose the support is <em>not</em> a rectangle (e.g., $0 &lt; x &lt; y &lt; 1$). Then there exists a "missing corner" point $(x_0, y_0)$ outside the support (such as $x_0 = 0.7, y_0 = 0.3$) where $x_0 \in S_X$ ($f_X(x_0) &gt; 0$) and $y_0 \in S_Y$ ($f_Y(y_0) &gt; 0$), yet $(x_0, y_0)$ lies outside the joint support so $f_{X,Y}(x_0, y_0) = 0$.</p>
+            <div class="bg-rose-50 p-3 rounded-xl border border-rose-200 text-center text-rose-950 font-semibold">
+              $$f_{X,Y}(x_0, y_0) = 0 \;\neq\; f_X(x_0)\,f_Y(y_0) &gt; 0 \quad (\text{Contradiction!}) \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 3 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-teal-50 text-[#0d9488] text-[11px] font-bold mb-1">Proof 3 · Year Final 2022 Q8(b)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Evaluating $P(X + Y &lt; 1)$ for $f(x,y) = x + y$ on $(0,1)^2$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>The event $X + Y &lt; 1$ intersected with the unit square $(0,1) \times (0,1)$ is the lower-left triangle where $0 &lt; x &lt; 1$ and $0 &lt; y &lt; 1 - x$:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center space-y-1.5">
+              $$P(X + Y &lt; 1) = \int_0^1 \int_0^{1-x} (x + y)\,dy\,dx = \int_0^1 \left[xy + \frac{y^2}{2}\right]_0^{1-x} dx$$
+              $$= \int_0^1 \left(x(1-x) + \frac{(1-x)^2}{2}\right) dx = \int_0^1 \frac{1 - x^2}{2}\,dx$$
+            </div>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950 font-semibold">
+              $$= \frac{1}{2}\left[x - \frac{x^3}{3}\right]_0^1 = \frac{1}{2}\left(1 - \frac{1}{3}\right) = \mathbf{\frac{1}{3}} \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 4 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-blue-50 text-[#2563eb] text-[11px] font-bold mb-1">Proof 4 · Conditional Density Normalization</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Proof that a Conditional PDF Always Integrates to $1$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Fix any real number $y$ such that the marginal density satisfies $f_Y(y) &gt; 0$. By definition, $f_{X|Y}(x \mid y) = \dfrac{f(x,y)}{f_Y(y)} \ge 0$.</p>
+            <p>Integrating over $x \in (-\infty, \infty)$ while treating $f_Y(y)$ as a positive constant with respect to $x$:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950 font-semibold">
+              $$\int_{-\infty}^{\infty} f_{X|Y}(x \mid y)\,dx = \int_{-\infty}^{\infty} \frac{f(x,y)}{f_Y(y)}\,dx = \frac{1}{f_Y(y)} \underbrace{\int_{-\infty}^{\infty} f(x,y)\,dx}_{=\,f_Y(y)} = \frac{f_Y(y)}{f_Y(y)} = 1 \quad \blacksquare$$
+            </div>
+            <p class="text-xs text-slate-500">Thus $f_{X|Y}(x \mid y)$ is a bona fide univariate PDF in $x$ for every fixed $y$ with $f_Y(y) &gt; 0$.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 5. SECTION 4: PAST ISRT EXAM VAULT                                  -->
+    <!-- =================================================================== -->
+    <section id="exams" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#d97706]">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Past ISRT Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-slate-500">5 authentic exam sets (2018–2025) with verified step-by-step solutions</p>
+      </div>
+
+      <div class="space-y-5">
+
+        <!-- Vault 1: Year Final 2025 Q5(b),(c) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2025 • Q5(b),(c) • 9 Marks</span>
+              <span class="text-xs text-slate-400 font-medium">AST 102 · ISRT, University of Dhaka</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>(b)</strong> Let $f(x,y) = 1$ for $0 &lt; x &lt; 1, 0 &lt; y &lt; 1$ ($0$ otherwise). (i) Are $X$ and $Y$ independent? (ii) Find $P(X + Y &lt; 1)$.</p>
+              <p><strong>(c)</strong> Given $f_{X,Y}(x,y) = 2$ for $0 \le y \le x \le 1$ ($0$ elsewhere), find the conditional PDF $f_{X|Y}(x \mid y)$.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <div>
+              <p class="font-bold text-slate-900">Solution to (b):</p>
+              <p>(i) $f_X(x) = \int_0^1 1\,dy = 1$ ($0 &lt; x &lt; 1$) and $f_Y(y) = \int_0^1 1\,dx = 1$ ($0 &lt; y &lt; 1$). Since $f_X(x)f_Y(y) = 1\cdot 1 = 1 = f(x,y)$ on $(0,1)^2$, $X$ and $Y$ are <strong>independent</strong>.</p>
+              <p>(ii) $P(X + Y &lt; 1) = \int_0^1 \int_0^{1-x} 1\,dy\,dx = \int_0^1 (1 - x)\,dx = \left[x - \frac{x^2}{2}\right]_0^1 = \mathbf{\frac{1}{2}}$.</p>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <p class="font-bold text-slate-900">Solution to (c):</p>
+              <p>First find the marginal $f_Y(y)$ for $0 \le y \le 1$ (since $y \le x \le 1$, integrate $x$ from $y$ to $1$):</p>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 text-center my-1.5">
+                $$f_Y(y) = \int_y^1 2\,dx = 2(1 - y), \quad 0 \le y &lt; 1$$
+                $$f_{X|Y}(x \mid y) = \frac{f_{X,Y}(x,y)}{f_Y(y)} = \frac{2}{2(1 - y)} = \mathbf{\frac{1}{1 - y}}, \quad y \le x \le 1$$
+              </div>
+              <p class="text-xs text-slate-500">Thus $X \mid (Y = y) \sim \text{Uniform}(y, 1)$.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vault 2: Year Final 2024 Q4(c) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2024 • Q4(c) • 6 Marks</span>
+              <span class="text-xs text-slate-400 font-medium">Discrete Joint PMF · ISRT, DU</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              The joint PMF of discrete random variables $X$ and $Y$ is $f(x,y) = \dfrac{2x + y}{48}$ for $x = 0, 1, 2, 3$ and $y = 0, 1, 2$. (i) Show that $E(X + Y) = E(X) + E(Y)$. (ii) Are $X$ and $Y$ independent? (iii) Find the conditional PMF of $X$ given $Y$. (iv) Find $E(X \mid Y = 2)$.
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>Marginals:</strong>
+              $p_X(x) = \sum_{y=0}^2 \frac{2x+y}{48} = \frac{6x+3}{48} = \mathbf{\frac{2x+1}{16}}$ ($x=0,1,2,3$); &nbsp;
+              $p_Y(y) = \sum_{x=0}^3 \frac{2x+y}{48} = \frac{12+4y}{48} = \mathbf{\frac{3+y}{12}}$ ($y=0,1,2$).
+            </p>
+            <p><strong>(i) Verify $E(X+Y) = E(X) + E(Y)$:</strong>
+              $E(X) = \frac{0(1)+1(3)+2(5)+3(7)}{16} = \frac{34}{16} = \mathbf{\frac{17}{8} = 2.125}$; &nbsp;
+              $E(Y) = \frac{0(3)+1(4)+2(5)}{12} = \frac{14}{12} = \mathbf{\frac{7}{6}}$.
+              Sum: $E(X) + E(Y) = \frac{17}{8} + \frac{7}{6} = \frac{51 + 28}{24} = \mathbf{\frac{79}{24}}$.
+              Directly: $E(X+Y) = \sum_x \sum_y (x+y)\frac{2x+y}{48} = \frac{158}{48} = \mathbf{\frac{79}{24}}$. Verified!
+            </p>
+            <p><strong>(ii) Independence:</strong> At $(0,0)$, $f(0,0) = 0 \neq p_X(0)p_Y(0) = \frac{1}{16}\cdot\frac{3}{12} = \frac{1}{64}$. Hence <strong>not independent</strong>.</p>
+            <p><strong>(iii) Conditional PMF:</strong> $p_{X|Y}(x \mid y) = \dfrac{(2x+y)/48}{(3+y)/12} = \mathbf{\dfrac{2x + y}{4(3 + y)}}$ for $x = 0, 1, 2, 3$.</p>
+            <p><strong>(iv) Conditional Mean at $Y = 2$:</strong> $p_{X|Y}(x \mid 2) = \frac{2x+2}{20} = \frac{x+1}{10}$. Thus:
+              $$E(X \mid Y = 2) = 0\left(\frac{1}{10}\right) + 1\left(\frac{2}{10}\right) + 2\left(\frac{3}{10}\right) + 3\left(\frac{4}{10}\right) = \frac{0 + 2 + 6 + 12}{10} = \mathbf{2}$$
+            </p>
+          </div>
+        </div>
+
+        <!-- Vault 3: Year Final 2022 Q8(b) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2022 • Q8(b) • 5 Marks</span>
+              <span class="text-xs text-slate-400 font-medium">AST 102 · ISRT, University of Dhaka</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              The joint density function of $X$ and $Y$ is $f(x,y) = x + y$ for $0 &lt; x &lt; 1, 0 &lt; y &lt; 1$ ($0$ otherwise). (i) Are $X$ and $Y$ independent? (ii) Find $P(X + Y &lt; 1)$.
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>(i) Marginals &amp; Independence:</strong>
+              $f_X(x) = \int_0^1 (x + y)\,dy = \left[xy + \frac{y^2}{2}\right]_0^1 = x + \frac{1}{2}$ ($0 &lt; x &lt; 1$). By symmetry, $f_Y(y) = y + \frac{1}{2}$ ($0 &lt; y &lt; 1$).
+              Since $f_X(x)f_Y(y) = (x + \frac{1}{2})(y + \frac{1}{2}) = xy + \frac{1}{2}(x+y) + \frac{1}{4} \neq x + y$, $X$ and $Y$ are <strong>not independent</strong>.
+            </p>
+            <p><strong>(ii) $P(X + Y &lt; 1)$:</strong>
+              $$P(X + Y &lt; 1) = \int_0^1 \int_0^{1-x} (x + y)\,dy\,dx = \int_0^1 \frac{1 - x^2}{2}\,dx = \mathbf{\frac{1}{3}}$$
+            </p>
+          </div>
+        </div>
+
+        <!-- Vault 4: Year Final 2019 Q4(c) & 2nd Midterm Q2(b) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-blue-100 text-[#1e3a8a] text-xs font-bold">Year Final 2019 Q4(c) &amp; 2nd Midterm Q2(b) • 3 Marks</span>
+              <span class="text-xs text-slate-400 font-medium">Triangular Support · ISRT, DU</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              The joint density of $X$ and $Y$ is $f(x,y) = 6x$ for $0 &lt; x &lt; y &lt; 1$ ($0$ elsewhere). Find the marginal PDFs of $X$ and $Y$. Are $X$ and $Y$ independent?
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2 leading-relaxed">
+            <p><strong>Marginal of $X$:</strong> $f_X(x) = \int_x^1 6x\,dy = \mathbf{6x(1 - x)}$, for $0 &lt; x &lt; 1$.</p>
+            <p><strong>Marginal of $Y$:</strong> $f_Y(y) = \int_0^y 6x\,dx = \mathbf{3y^2}$, for $0 &lt; y &lt; 1$.</p>
+            <p><strong>Independence:</strong> $f_X(x)f_Y(y) = 18x(1-x)y^2 \neq 6x$, and the support is triangular ($0 &lt; x &lt; y &lt; 1$), so $X$ and $Y$ are <strong>dependent</strong>.</p>
+          </div>
+        </div>
+
+        <!-- Vault 5: Mid-term II 2018 Q2(a) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-blue-100 text-[#1e3a8a] text-xs font-bold">Mid-term II 2018 • Q2(a) • 4 Marks</span>
+              <span class="text-xs text-slate-400 font-medium">Conditional Densities &amp; Mean · ISRT, DU</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              Given the joint PDF $f(x,y) = x^2 + \dfrac{xy}{3}$ for $0 &lt; x &lt; 1, 0 &lt; y &lt; 2$ ($0$ otherwise), find the conditional densities of $X$ and $Y$, and then find $E\left(Y \mid X = \dfrac{1}{2}\right)$.
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 hover:text-[#1e3a8a] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>Marginals:</strong>
+              $f_X(x) = \int_0^2 \left(x^2 + \frac{xy}{3}\right)dy = 2x^2 + \frac{2x}{3} = \frac{2x(3x+1)}{3}$ ($0 &lt; x &lt; 1$); &nbsp;
+              $f_Y(y) = \int_0^1 \left(x^2 + \frac{xy}{3}\right)dx = \frac{1}{3} + \frac{y}{6} = \frac{2 + y}{6}$ ($0 &lt; y &lt; 2$).
+            </p>
+            <p><strong>Conditional Densities:</strong>
+              $$f_{Y|X}(y \mid x) = \frac{x^2 + xy/3}{2x(3x+1)/3} = \mathbf{\frac{3x + y}{2(3x + 1)}} \;\;(0 &lt; y &lt; 2), \qquad f_{X|Y}(x \mid y) = \mathbf{\frac{6x^2 + 2xy}{2 + y}} \;\;(0 &lt; x &lt; 1)$$
+            </p>
+            <p><strong>Evaluating $E(Y \mid X = 1/2)$:</strong> Plugging $x = \frac{1}{2}$ gives $f_{Y|X}(y \mid 1/2) = \dfrac{3/2 + y}{2(5/2)} = \dfrac{3 + 2y}{10}$ ($0 &lt; y &lt; 2$). Hence:
+              $$E\!\left(Y \mid X = \frac{1}{2}\right) = \int_0^2 y\left(\frac{3 + 2y}{10}\right)dy = \frac{1}{10}\left[\frac{3y^2}{2} + \frac{2y^3}{3}\right]_0^2 = \frac{1}{10}\left(6 + \frac{16}{3}\right) = \frac{34}{30} = \mathbf{\frac{17}{15} \approx 1.1333}$$
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 6. SECTION 5: QUICK MASTERY CHECK (5-QUESTION QUIZ)                 -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Section 05 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Quick Mastery Check</h2>
+            <p class="text-sm text-slate-500 mt-1">Verify your mastery of joint, marginal, and conditional distributions before moving to Lesson 9.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-[#1e3a8a] text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-teal-300">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-slate-200 bg-white mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+        ← Previous: Lesson 7 (Expectation, Variance &amp; Transformations)
+      </div>
+      <div class="text-slate-500 text-center">
+        <strong class="text-slate-800">AST 102: Elements of Probability</strong> · ISRT, University of Dhaka
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-blue-50 text-[#1e3a8a] font-semibold border border-blue-200">
+        Next: Lesson 9 (Covariance, Conditional Expectation &amp; Variance) →
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         UTILITIES: SAFE KATEX RENDERING & HIGH-DPI CANVAS SETUP
+      ------------------------------------------------------------------- */
+      function safeRenderMath(rootEl) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(rootEl || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX auto-render skipped:', err);
+        }
+      }
+
+      function setupHiDPI(canvas, wrapEl, aspect, minH, maxH) {
+        const w = Math.max(240, wrapEl.clientWidth);
+        const h = Math.max(minH, Math.min(maxH, Math.round(w * aspect)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function gcd(a, b) {
+        a = Math.abs(Math.round(a));
+        b = Math.abs(Math.round(b));
+        while (b !== 0) { const t = a % b; a = b; b = t; }
+        return a || 1;
+      }
+
+      function fmtCellVal(val, denom) {
+        if (denom) {
+          const num = Math.round(val * denom);
+          if (num === 0) return '0';
+          return `${num}/${denom}`;
+        }
+        return val.toFixed(2);
+      }
+
+      /* -------------------------------------------------------------------
+         1. LIVE READING PROGRESS BAR
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      /* -------------------------------------------------------------------
+         2. COLLAPSIBLE ACCORDIONS (PROOFS & EXAM VAULT)
+      ------------------------------------------------------------------- */
+      document.querySelectorAll('.accordion-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.rounded-2xl');
+          const panel = card ? card.querySelector('.accordion-panel') : null;
+          const icon = btn.querySelector('.accordion-icon');
+          const labelSpan = btn.querySelector('span');
+          if (!panel) return;
+
+          const isOpen = !panel.classList.contains('hidden');
+          if (isOpen) {
+            panel.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            if (labelSpan && labelSpan.textContent === 'Hide Model Solution') {
+              labelSpan.textContent = 'Show Model Solution';
+            }
+          } else {
+            panel.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+            if (labelSpan && labelSpan.textContent === 'Show Model Solution') {
+              labelSpan.textContent = 'Hide Model Solution';
+            }
+            safeRenderMath(panel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         3. WORKBENCH TAB SWITCHER
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      function redrawActiveCanvases() {
+        if (!document.getElementById('tab-integrator').classList.contains('hidden')) renderIntegratorLab();
+        if (!document.getElementById('tab-slice').classList.contains('hidden')) renderSliceLab();
+        if (!document.getElementById('tab-indep').classList.contains('hidden')) renderIndepLab();
+      }
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#1e3a8a]', 'text-white', 'shadow-sm');
+            t.classList.add('text-slate-600', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-[#1e3a8a]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-slate-600', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const activePanel = document.getElementById('tab-' + target);
+          if (activePanel) {
+            activePanel.classList.remove('hidden');
+            redrawActiveCanvases();
+            safeRenderMath(activePanel);
+          }
+        });
+      });
+
+      window.addEventListener('resize', redrawActiveCanvases);
+
+      /* -------------------------------------------------------------------
+         4. TAB 1: DISCRETE JOINT TABLE EXPLORER
+      ------------------------------------------------------------------- */
+      const DISC_PRESETS = {
+        fin2024: {
+          xs: [0, 1, 2, 3], ys: [0, 1, 2], denom: 48,
+          // matrix[yi][xi]
+          grid: [
+            [0/48, 2/48, 4/48, 6/48],
+            [1/48, 3/48, 5/48, 7/48],
+            [2/48, 4/48, 6/48, 8/48]
+          ]
+        },
+        mid2a: {
+          xs: [0, 1, 2, 3], ys: [0, 1, 2], denom: 30,
+          grid: [
+            [0/30, 1/30, 2/30, 3/30],
+            [1/30, 2/30, 3/30, 4/30],
+            [2/30, 3/30, 4/30, 5/30]
+          ]
+        },
+        inc2025: {
+          xs: [0, 1], ys: [0, 1, 2], denom: null,
+          grid: [
+            [0.10, 0.20],
+            [0.40, 0.10],
+            [0.00, 0.20]
+          ]
+        },
+        indepProd: {
+          xs: [0, 1, 2], ys: [0, 1], denom: null,
+          grid: [
+            [0.08, 0.20, 0.12],
+            [0.12, 0.30, 0.18]
+          ]
+        }
+      };
+
+      let discKey = 'fin2024';
+      let discFilter = 'xGtY';
+      let discSelected = new Set(); // "yi,xi"
+      let discSlice = { axis: 'Y', idx: 2 }; // axis 'Y' => given Y=y_idx; axis 'X' => given X=x_idx
+
+      function applyDiscFilter(filterName) {
+        discFilter = filterName;
+        const p = DISC_PRESETS[discKey];
+        if (filterName === 'clear') {
+          discSelected.clear();
+        } else if (filterName !== 'custom') {
+          discSelected.clear();
+          p.ys.forEach((y, yi) => {
+            p.xs.forEach((x, xi) => {
+              let hit = false;
+              if (filterName === 'xGtY') hit = (x > y);
+              else if (filterName === 'sumLe2') hit = (x + y <= 2);
+              else if (filterName === 'xLe2Y1') hit = (x <= 2 && y === 1);
+              if (hit) discSelected.add(`${yi},${xi}`);
+            });
+          });
+        }
+        document.querySelectorAll('.disc-efilter').forEach(b => {
+          const active = b.getAttribute('data-efilter') === discFilter && discFilter !== 'clear';
+          if (b.getAttribute('data-efilter') === 'clear') {
+            b.className = 'disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 transition-all';
+          } else {
+            b.className = active
+              ? 'disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-[#0d9488] text-white border-[#0d9488] shadow-xs transition-all'
+              : 'disc-efilter px-3 py-1.5 rounded-lg text-xs font-bold border bg-white text-slate-700 border-slate-200 hover:border-[#0d9488] transition-all';
+          }
+        });
+        renderDiscreteLab();
+      }
+
+      function renderDiscreteLab() {
+        const p = DISC_PRESETS[discKey];
+        const rowSums = p.ys.map((_, yi) => p.grid[yi].reduce((a, b) => a + b, 0));
+        const colSums = p.xs.map((_, xi) => p.ys.reduce((a, _, yi) => a + p.grid[yi][xi], 0));
+
+        // Ensure active slice index is in bounds
+        if (discSlice.axis === 'Y' && discSlice.idx >= p.ys.length) discSlice.idx = p.ys.length - 1;
+        if (discSlice.axis === 'X' && discSlice.idx >= p.xs.length) discSlice.idx = p.xs.length - 1;
+
+        // Build HTML table
+        let html = `<table class="w-full text-center border-collapse text-xs sm:text-sm"><thead><tr class="bg-slate-100 text-slate-700">`;
+        html += `<th class="p-2.5 border border-slate-200 font-bold text-slate-500">$Y \\backslash X$</th>`;
+        p.xs.forEach((x, xi) => {
+          const isSliced = (discSlice.axis === 'X' && discSlice.idx === xi);
+          html += `<th class="p-2 border border-slate-200">
+            <button type="button" data-saxis="X" data-sidx="${xi}" class="disc-hdr-btn w-full px-2 py-1 rounded-lg font-mono font-bold transition-all ${
+              isSliced ? 'bg-[#1e3a8a] text-white shadow-xs' : 'bg-blue-50 text-[#1e3a8a] hover:bg-blue-100'
+            }">X=${x}</button>
+          </th>`;
+        });
+        html += `<th class="p-2.5 border border-slate-200 bg-teal-50 text-[#0d9488] font-bold">$p_Y(y)$</th></tr></thead><tbody>`;
+
+        p.ys.forEach((y, yi) => {
+          const isRowSliced = (discSlice.axis === 'Y' && discSlice.idx === yi);
+          html += `<tr>`;
+          html += `<td class="p-2 border border-slate-200 bg-slate-50">
+            <button type="button" data-saxis="Y" data-sidx="${yi}" class="disc-hdr-btn w-full px-2 py-1 rounded-lg font-mono font-bold transition-all ${
+              isRowSliced ? 'bg-[#0d9488] text-white shadow-xs' : 'bg-teal-50 text-[#0d9488] hover:bg-teal-100'
+            }">Y=${y}</button>
+          </td>`;
+          p.xs.forEach((x, xi) => {
+            const key = `${yi},${xi}`;
+            const isSel = discSelected.has(key);
+            const val = p.grid[yi][xi];
+            const isInSlice = (discSlice.axis === 'Y' && discSlice.idx === yi) || (discSlice.axis === 'X' && discSlice.idx === xi);
+            html += `<td class="p-1.5 border border-slate-200 ${isInSlice ? 'bg-amber-50/60' : 'bg-white'}">
+              <button type="button" data-cell="${key}" class="disc-cell-btn w-full py-2 px-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
+                isSel
+                  ? 'bg-[#0d9488] text-white shadow-xs ring-2 ring-teal-300'
+                  : 'text-slate-800 hover:bg-slate-100'
+              }">${fmtCellVal(val, p.denom)}</button>
+            </td>`;
+          });
+          html += `<td class="p-2.5 border border-slate-200 bg-teal-50/50 font-mono font-bold text-[#0d9488]">${fmtCellVal(rowSums[yi], p.denom)}</td></tr>`;
+        });
+
+        // Bottom marginal row p_X(x)
+        html += `<tr class="bg-blue-50/50 font-mono font-bold text-[#1e3a8a]"><td class="p-2.5 border border-slate-200 font-sans text-xs font-bold">$p_X(x)$</td>`;
+        colSums.forEach(cs => {
+          html += `<td class="p-2.5 border border-slate-200">${fmtCellVal(cs, p.denom)}</td>`;
+        });
+        html += `<td class="p-2.5 border border-slate-200 bg-slate-900 text-white">1</td></tr></tbody></table>`;
+
+        const wrap = document.getElementById('discTableWrap');
+        wrap.innerHTML = html;
+
+        // Bind cell clicks & header slice clicks
+        wrap.querySelectorAll('.disc-cell-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-cell');
+            if (discSelected.has(key)) discSelected.delete(key);
+            else discSelected.add(key);
+            applyDiscFilter('custom');
+          });
+        });
+
+        wrap.querySelectorAll('.disc-hdr-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            discSlice = { axis: btn.getAttribute('data-saxis'), idx: parseInt(btn.getAttribute('data-sidx'), 10) };
+            renderDiscreteLab();
+          });
+        });
+
+        // Compute Event Probability
+        let eventProb = 0;
+        discSelected.forEach(key => {
+          const [yi, xi] = key.split(',').map(Number);
+          if (p.grid[yi] && p.grid[yi][xi] !== undefined) eventProb += p.grid[yi][xi];
+        });
+        const probEl = document.getElementById('discEventProb');
+        if (p.denom) {
+          const num = Math.round(eventProb * p.denom);
+          const g = gcd(num, p.denom);
+          probEl.textContent = num === 0 ? '0' : `${num}/${p.denom} = ${num/g}/${p.denom/g} (${eventProb.toFixed(4)})`;
+        } else {
+          probEl.textContent = eventProb.toFixed(4);
+        }
+
+        // Independence Verdict Check
+        let counterEx = null;
+        for (let yi = 0; yi < p.ys.length && !counterEx; yi++) {
+          for (let xi = 0; xi < p.xs.length; xi++) {
+            const joint = p.grid[yi][xi];
+            const prod = colSums[xi] * rowSums[yi];
+            if (Math.abs(joint - prod) > 1e-6) {
+              counterEx = { x: p.xs[xi], y: p.ys[yi], joint, px: colSums[xi], py: rowSums[yi], prod };
+              break;
+            }
+          }
+        }
+        const verdictEl = document.getElementById('discIndepVerdict');
+        if (!counterEx) {
+          verdictEl.className = 'p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-xs sm:text-sm text-emerald-950';
+          verdictEl.innerHTML = `<strong class="text-emerald-700 uppercase tracking-wide text-xs">Independence Verdict: INDEPENDENT ✓</strong><br/>Every cell satisfies $p(x,y) = p_X(x) \\cdot p_Y(y)$ identically across the entire table.`;
+        } else {
+          verdictEl.className = 'p-4 rounded-2xl border-2 border-rose-300 bg-rose-50 text-xs sm:text-sm text-rose-950';
+          verdictEl.innerHTML = `<strong class="text-[#e11d48] uppercase tracking-wide text-xs">Independence Verdict: DEPENDENT ✕</strong><br/>Counterexample at $(x,y)=(${counterEx.x},${counterEx.y})$: $p(${counterEx.x},${counterEx.y}) = ${counterEx.joint.toFixed(4)} \\neq p_X(${counterEx.x})p_Y(${counterEx.y}) = (${counterEx.px.toFixed(4)})(${counterEx.py.toFixed(4)}) = ${counterEx.prod.toFixed(4)}$.`;
+        }
+
+        // Conditional Slice Bar Chart
+        const titleEl = document.getElementById('discSliceTitle');
+        const meanEl = document.getElementById('discSliceMean');
+        const barsEl = document.getElementById('discSliceBars');
+
+        let labels = [], vals = [], condMean = 0;
+        if (discSlice.axis === 'Y') {
+          const yVal = p.ys[discSlice.idx];
+          const marg = rowSums[discSlice.idx];
+          titleEl.innerHTML = `$p_{X|Y}(x \\mid Y = ${yVal})$`;
+          labels = p.xs.map(x => `X = ${x}`);
+          vals = p.xs.map((x, xi) => marg > 0 ? p.grid[discSlice.idx][xi] / marg : 0);
+          condMean = p.xs.reduce((acc, x, xi) => acc + x * vals[xi], 0);
+        } else {
+          const xVal = p.xs[discSlice.idx];
+          const marg = colSums[discSlice.idx];
+          titleEl.innerHTML = `$p_{Y|X}(y \\mid X = ${xVal})$`;
+          labels = p.ys.map(y => `Y = ${y}`);
+          vals = p.ys.map((y, yi) => marg > 0 ? p.grid[yi][discSlice.idx] / marg : 0);
+          condMean = p.ys.reduce((acc, y, yi) => acc + y * vals[yi], 0);
+        }
+
+        meanEl.textContent = condMean.toFixed(4);
+        barsEl.innerHTML = labels.map((lbl, i) => {
+          const pct = (vals[i] * 100).toFixed(1);
+          return `
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-mono font-bold">
+                <span class="text-slate-700">${lbl}</span>
+                <span class="text-[#1e3a8a]">${vals[i].toFixed(4)} (${pct}%)</span>
+              </div>
+              <div class="h-3.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-[#1e3a8a] to-[#0d9488] rounded-full transition-all duration-200" style="width:${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        safeRenderMath(document.getElementById('tab-discrete'));
+      }
+
+      document.querySelectorAll('.disc-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          discKey = btn.getAttribute('data-dpreset');
+          document.querySelectorAll('.disc-preset').forEach(b => {
+            b.className = b === btn
+              ? 'disc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all'
+              : 'disc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          discSlice = { axis: 'Y', idx: DISC_PRESETS[discKey].ys.length - 1 };
+          applyDiscFilter('xGtY');
+        });
+      });
+
+      document.querySelectorAll('.disc-efilter').forEach(btn => {
+        btn.addEventListener('click', () => applyDiscFilter(btn.getAttribute('data-efilter')));
+      });
+
+      /* -------------------------------------------------------------------
+         5. TAB 2: 2D REGION INTEGRATOR
+      ------------------------------------------------------------------- */
+      const INT_PDFS = {
+        unifSq: {
+          name: '1', maxF: 1.0, supportType: 'Rectangular Support',
+          inSupport: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 1,
+          pdf: (x, y) => (x >= 0 && x <= 1 && y >= 0 && y <= 1) ? 1 : 0,
+          latexF: '1'
+        },
+        sumSq: {
+          name: 'x + y', maxF: 2.0, supportType: 'Rectangular Support',
+          inSupport: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 1,
+          pdf: (x, y) => (x >= 0 && x <= 1 && y >= 0 && y <= 1) ? (x + y) : 0,
+          latexF: '(x + y)'
+        },
+        tri6x: {
+          name: '6x', maxF: 6.0, supportType: 'Triangular Support (0 < x < y < 1)',
+          inSupport: (x, y) => x > 0 && y < 1 && x < y,
+          pdf: (x, y) => (x > 0 && y < 1 && x < y) ? 6 * x : 0,
+          latexF: '6x'
+        },
+        tri2: {
+          name: '2', maxF: 2.0, supportType: 'Triangular Support (0 ≤ y ≤ x ≤ 1)',
+          inSupport: (x, y) => y >= 0 && x <= 1 && y <= x,
+          pdf: (x, y) => (y >= 0 && x <= 1 && y <= x) ? 2 : 0,
+          latexF: '2'
+        }
+      };
+
+      let intKey = 'unifSq';
+      let intQuery = 'sumC';
+
+      function getIntEventCheck(qType, c, a, b) {
+        if (qType === 'sumC') return (x, y) => (x + y < c);
+        if (qType === 'rectAB') return (x, y) => (x < a && y < b);
+        return (x, y) => (y > x);
+      }
+
+      function compute2DQuadrature(pdfObj, eventFn) {
+        // High-accuracy 160x160 2D composite midpoint rule over [0,1]^2
+        const N = 160;
+        const h = 1 / N;
+        const cellArea = h * h;
+        let sum = 0;
+        for (let i = 0; i < N; i++) {
+          const x = (i + 0.5) * h;
+          for (let j = 0; j < N; j++) {
+            const y = (j + 0.5) * h;
+            if (pdfObj.inSupport(x, y) && eventFn(x, y)) {
+              sum += pdfObj.pdf(x, y);
+            }
+          }
+        }
+        return Math.min(1, Math.max(0, sum * cellArea));
+      }
+
+      function renderIntegratorLab() {
+        const pdfObj = INT_PDFS[intKey];
+        const c = parseFloat(document.getElementById('intSliderC').value);
+        const a = parseFloat(document.getElementById('intSliderA').value);
+        const b = parseFloat(document.getElementById('intSliderB').value);
+
+        document.getElementById('intValC').textContent = c.toFixed(2);
+        document.getElementById('intValA').textContent = a.toFixed(2);
+        document.getElementById('intValB').textContent = b.toFixed(2);
+        document.getElementById('intSupportBadge').textContent = pdfObj.supportType;
+
+        const eventFn = getIntEventCheck(intQuery, c, a, b);
+        const prob = compute2DQuadrature(pdfObj, eventFn);
+        document.getElementById('intProbNum').textContent = prob.toFixed(4);
+
+        // Exact notable fractions
+        let exactNote = 'Numeric 2D Quadrature';
+        if (intQuery === 'sumC' && Math.abs(c - 1) < 1e-6) {
+          if (intKey === 'unifSq') exactNote = 'Exact: 1/2 = 0.5000';
+          else if (intKey === 'sumSq') exactNote = 'Exact: 1/3 ≈ 0.3333';
+          else if (intKey === 'tri6x') exactNote = 'Exact: 1/4 = 0.2500';
+          else if (intKey === 'tri2') exactNote = 'Exact: 1/2 = 0.5000';
+        } else if (intQuery === 'yGtX') {
+          if (intKey === 'unifSq' || intKey === 'sumSq') exactNote = 'Exact: 1/2 = 0.5000';
+          else if (intKey === 'tri6x') exactNote = 'Exact: 1 (Entire Support)';
+          else if (intKey === 'tri2') exactNote = 'Exact: 0 (Disjoint from Support)';
+        }
+        document.getElementById('intProbExact').textContent = exactNote;
+
+        // Dynamic KaTeX Double-Integral Setup
+        let formula = '';
+        if (intQuery === 'sumC') {
+          if (intKey === 'unifSq' || intKey === 'sumSq') {
+            if (c <= 1) {
+              formula = `$$P(X + Y < ${c.toFixed(2)}) = \\int_{0}^{${c.toFixed(2)}} \\int_{0}^{${c.toFixed(2)} - x} ${pdfObj.latexF}\\,dy\\,dx$$`;
+            } else {
+              formula = `$$P(X + Y < ${c.toFixed(2)}) = 1 - \\int_{${(c-1).toFixed(2)}}^{1} \\int_{${c.toFixed(2)} - x}^{1} ${pdfObj.latexF}\\,dy\\,dx$$`;
+            }
+          } else if (intKey === 'tri6x') {
+            const xHi = Math.min(1, c / 2);
+            formula = `$$P(X + Y < ${c.toFixed(2)}) = \\int_{0}^{${xHi.toFixed(2)}} \\int_{x}^{\\min(1,\\,${c.toFixed(2)}-x)} 6x\\,dy\\,dx$$`;
+          } else {
+            const yHi = Math.min(1, c / 2);
+            formula = `$$P(X + Y < ${c.toFixed(2)}) = \\int_{0}^{${yHi.toFixed(2)}} \\int_{y}^{\\min(1,\\,${c.toFixed(2)}-y)} 2\\,dx\\,dy$$`;
+          }
+        } else if (intQuery === 'rectAB') {
+          if (intKey === 'unifSq' || intKey === 'sumSq') {
+            formula = `$$P(X < ${a.toFixed(2)},\\; Y < ${b.toFixed(2)}) = \\int_{0}^{${a.toFixed(2)}} \\int_{0}^{${b.toFixed(2)}} ${pdfObj.latexF}\\,dy\\,dx$$`;
+          } else if (intKey === 'tri6x') {
+            const xTop = Math.min(a, b);
+            formula = `$$P(X < ${a.toFixed(2)},\\; Y < ${b.toFixed(2)}) = \\int_{0}^{${xTop.toFixed(2)}} \\int_{x}^{${b.toFixed(2)}} 6x\\,dy\\,dx$$`;
+          } else {
+            const yTop = Math.min(a, b);
+            formula = `$$P(X < ${a.toFixed(2)},\\; Y < ${b.toFixed(2)}) = \\int_{0}^{${yTop.toFixed(2)}} \\int_{y}^{${a.toFixed(2)}} 2\\,dx\\,dy$$`;
+          }
+        } else {
+          if (intKey === 'tri6x') formula = `$$P(Y > X) = \\int_{0}^{1} \\int_{x}^{1} 6x\\,dy\\,dx = 1$$`;
+          else if (intKey === 'tri2') formula = `$$P(Y > X) = 0 \\quad (\\text{Support has } y \\le x)$$`;
+          else formula = `$$P(Y > X) = \\int_{0}^{1} \\int_{x}^{1} ${pdfObj.latexF}\\,dy\\,dx = \\frac{1}{2}$$`;
+        }
+        const fBox = document.getElementById('intFormulaBox');
+        fBox.innerHTML = formula;
+        safeRenderMath(fBox);
+
+        // Draw High-DPI 2D Heatmap & Event Region Canvas
+        const { ctx, w, h } = setupHiDPI(
+          document.getElementById('intCanvas'),
+          document.getElementById('intCanvasWrap'),
+          1.0, 260, 360
+        );
+        const padL = 38, padR = 16, padT = 16, padB = 34;
+        const sq = Math.min(w - padL - padR, h - padT - padB);
+        const toX = x => padL + x * sq;
+        const toY = y => padT + (1 - y) * sq;
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid heatmap (64x64)
+        const G = 64;
+        const step = 1 / G;
+        const cellPx = sq / G + 0.5;
+        for (let i = 0; i < G; i++) {
+          const x = (i + 0.5) * step;
+          for (let j = 0; j < G; j++) {
+            const y = (j + 0.5) * step;
+            const inSup = pdfObj.inSupport(x, y);
+            const inEv = eventFn(x, y);
+            if (inSup) {
+              const norm = Math.min(1, pdfObj.pdf(x, y) / pdfObj.maxF);
+              if (inEv) {
+                ctx.fillStyle = `rgba(13, 148, 136, ${(0.28 + 0.58 * norm).toFixed(2)})`;
+              } else {
+                ctx.fillStyle = `rgba(30, 58, 138, ${(0.08 + 0.34 * norm).toFixed(2)})`;
+              }
+              ctx.fillRect(toX(i * step), toY((j + 1) * step), cellPx, cellPx);
+            } else {
+              ctx.fillStyle = '#f8fafc';
+              ctx.fillRect(toX(i * step), toY((j + 1) * step), cellPx, cellPx);
+            }
+          }
+        }
+
+        // Crisp support diagonal border if triangular
+        if (intKey === 'tri6x' || intKey === 'tri2') {
+          ctx.strokeStyle = '#1e3a8a';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(toX(0), toY(0));
+          ctx.lineTo(toX(1), toY(1));
+          ctx.stroke();
+        }
+
+        // Event boundary curve (bright teal dashed line)
+        ctx.save();
+        ctx.strokeStyle = '#0d9488';
+        ctx.lineWidth = 2.4;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        if (intQuery === 'sumC') {
+          const x1 = Math.max(0, c - 1), y1 = Math.min(1, c);
+          const x2 = Math.min(1, c), y2 = Math.max(0, c - 1);
+          ctx.moveTo(toX(x1), toY(y1));
+          ctx.lineTo(toX(x2), toY(y2));
+        } else if (intQuery === 'rectAB') {
+          ctx.moveTo(toX(a), toY(0)); ctx.lineTo(toX(a), toY(b)); ctx.lineTo(toX(0), toY(b));
+        } else {
+          ctx.moveTo(toX(0), toY(0)); ctx.lineTo(toX(1), toY(1));
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Outer unit square border & ticks
+        ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.8;
+        ctx.strokeRect(padL, padT, sq, sq);
+
+        ctx.fillStyle = '#475569';
+        ctx.font = '600 10px JetBrains Mono, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        [0, 0.25, 0.5, 0.75, 1].forEach(v => ctx.fillText(v.toFixed(2), toX(v), padT + sq + 6));
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        [0, 0.25, 0.5, 0.75, 1].forEach(v => ctx.fillText(v.toFixed(2), padL - 6, toY(v)));
+      }
+
+      document.querySelectorAll('.int-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          intKey = btn.getAttribute('data-ipreset');
+          document.querySelectorAll('.int-preset').forEach(b => {
+            b.className = b === btn
+              ? 'int-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all'
+              : 'int-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          renderIntegratorLab();
+        });
+      });
+
+      document.querySelectorAll('.int-qtype').forEach(btn => {
+        btn.addEventListener('click', () => {
+          intQuery = btn.getAttribute('data-qtype');
+          document.querySelectorAll('.int-qtype').forEach(b => {
+            b.className = b === btn
+              ? 'int-qtype px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0d9488] text-white shadow-xs transition-all'
+              : 'int-qtype px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-[#0d9488] transition-all';
+          });
+          document.getElementById('intCtrlSumC').classList.toggle('hidden', intQuery !== 'sumC');
+          document.getElementById('intCtrlRectAB').classList.toggle('hidden', intQuery !== 'rectAB');
+          renderIntegratorLab();
+        });
+      });
+
+      ['intSliderC', 'intSliderA', 'intSliderB'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderIntegratorLab);
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 3: CONDITIONAL SLICE VISUALIZER
+      ------------------------------------------------------------------- */
+      const SLICE_DISTS = {
+        tri2: {
+          xMax: 1, yMax: 1, maxF: 2,
+          inSup: (x, y) => y >= 0 && x <= 1 && y <= x,
+          pdf: (x, y) => (y >= 0 && x <= 1 && y <= x) ? 2 : 0,
+          givenY: y0 => ({
+            lo: y0, hi: 1,
+            condPdf: x => (x >= y0 && x <= 1) ? 1 / (1 - y0) : 0,
+            mean: (1 + y0) / 2,
+            margLatex: `f_Y(y) = 2(1 - y)`,
+            condLatex: `f_{X|Y}(x \\mid y_0) = \\dfrac{1}{1 - y_0},\\; x \\in [${y0.toFixed(2)}, 1]`,
+            meanLatex: `E[X \\mid Y = ${y0.toFixed(2)}] = \\dfrac{1 + y_0}{2} = ${((1 + y0)/2).toFixed(4)}`
+          }),
+          givenX: x0 => ({
+            lo: 0, hi: x0,
+            condPdf: y => (y >= 0 && y <= x0) ? 1 / x0 : 0,
+            mean: x0 / 2,
+            margLatex: `f_X(x) = 2x`,
+            condLatex: `f_{Y|X}(y \\mid x_0) = \\dfrac{1}{x_0},\\; y \\in [0, ${x0.toFixed(2)}]`,
+            meanLatex: `E[Y \\mid X = ${x0.toFixed(2)}] = \\dfrac{x_0}{2} = ${(x0/2).toFixed(4)}`
+          })
+        },
+        tri6x: {
+          xMax: 1, yMax: 1, maxF: 6,
+          inSup: (x, y) => x > 0 && y < 1 && x < y,
+          pdf: (x, y) => (x > 0 && y < 1 && x < y) ? 6 * x : 0,
+          givenY: y0 => ({
+            lo: 0, hi: y0,
+            condPdf: x => (x >= 0 && x <= y0) ? (2 * x) / (y0 * y0) : 0,
+            mean: (2 * y0) / 3,
+            margLatex: `f_Y(y) = 3y^2`,
+            condLatex: `f_{X|Y}(x \\mid y_0) = \\dfrac{2x}{y_0^2},\\; x \\in (0, ${y0.toFixed(2)})`,
+            meanLatex: `E[X \\mid Y = ${y0.toFixed(2)}] = \\dfrac{2}{3}y_0 = ${((2*y0)/3).toFixed(4)}`
+          }),
+          givenX: x0 => ({
+            lo: x0, hi: 1,
+            condPdf: y => (y >= x0 && y <= 1) ? 1 / (1 - x0) : 0,
+            mean: (1 + x0) / 2,
+            margLatex: `f_X(x) = 6x(1 - x)`,
+            condLatex: `f_{Y|X}(y \\mid x_0) = \\dfrac{1}{1 - x_0},\\; y \\in (${x0.toFixed(2)}, 1)`,
+            meanLatex: `E[Y \\mid X = ${x0.toFixed(2)}] = \\dfrac{1 + x_0}{2} = ${((1 + x0)/2).toFixed(4)}`
+          })
+        },
+        mid2018: {
+          xMax: 1, yMax: 2, maxF: 1.7,
+          inSup: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 2,
+          pdf: (x, y) => (x >= 0 && x <= 1 && y >= 0 && y <= 2) ? (x * x + (x * y) / 3) : 0,
+          givenY: y0 => ({
+            lo: 0, hi: 1,
+            condPdf: x => (x >= 0 && x <= 1) ? (6 * x * x + 2 * x * y0) / (2 + y0) : 0,
+            mean: (9 + 4 * y0) / (6 * (2 + y0)),
+            margLatex: `f_Y(y) = \\dfrac{2 + y}{6}`,
+            condLatex: `f_{X|Y}(x \\mid y_0) = \\dfrac{6x^2 + 2xy_0}{2 + y_0},\\; x \\in (0, 1)`,
+            meanLatex: `E[X \\mid Y = ${y0.toFixed(2)}] = \\dfrac{9 + 4y_0}{6(2 + y_0)} = ${((9 + 4*y0)/(6*(2+y0))).toFixed(4)}`
+          }),
+          givenX: x0 => ({
+            lo: 0, hi: 2,
+            condPdf: y => (y >= 0 && y <= 2) ? (3 * x0 + y) / (2 * (3 * x0 + 1)) : 0,
+            mean: (9 * x0 + 4) / (3 * (3 * x0 + 1)),
+            margLatex: `f_X(x) = 2x^2 + \\dfrac{2x}{3}`,
+            condLatex: `f_{Y|X}(y \\mid x_0) = \\dfrac{3x_0 + y}{2(3x_0 + 1)},\\; y \\in (0, 2)`,
+            meanLatex: `E[Y \\mid X = ${x0.toFixed(2)}] = \\dfrac{9x_0 + 4}{3(3x_0 + 1)} = ${((9*x0 + 4)/(3*(3*x0 + 1))).toFixed(4)}`
+          })
+        },
+        sumSq: {
+          xMax: 1, yMax: 1, maxF: 2,
+          inSup: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 1,
+          pdf: (x, y) => (x >= 0 && x <= 1 && y >= 0 && y <= 1) ? (x + y) : 0,
+          givenY: y0 => ({
+            lo: 0, hi: 1,
+            condPdf: x => (x >= 0 && x <= 1) ? (x + y0) / (y0 + 0.5) : 0,
+            mean: (2 + 3 * y0) / (6 * y0 + 3),
+            margLatex: `f_Y(y) = y + \\frac{1}{2}`,
+            condLatex: `f_{X|Y}(x \\mid y_0) = \\dfrac{x + y_0}{y_0 + 1/2},\\; x \\in (0, 1)`,
+            meanLatex: `E[X \\mid Y = ${y0.toFixed(2)}] = \\dfrac{2 + 3y_0}{6y_0 + 3} = ${((2 + 3*y0)/(6*y0 + 3)).toFixed(4)}`
+          }),
+          givenX: x0 => ({
+            lo: 0, hi: 1,
+            condPdf: y => (y >= 0 && y <= 1) ? (x0 + y) / (x0 + 0.5) : 0,
+            mean: (2 + 3 * x0) / (6 * x0 + 3),
+            margLatex: `f_X(x) = x + \\frac{1}{2}`,
+            condLatex: `f_{Y|X}(y \\mid x_0) = \\dfrac{x_0 + y}{x_0 + 1/2},\\; y \\in (0, 1)`,
+            meanLatex: `E[Y \\mid X = ${x0.toFixed(2)}] = \\dfrac{2 + 3x_0}{6x_0 + 3} = ${((2 + 3*x0)/(6*x0 + 3)).toFixed(4)}`
+          })
+        },
+        unifSq: {
+          xMax: 1, yMax: 1, maxF: 1,
+          inSup: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 1,
+          pdf: (x, y) => (x >= 0 && x <= 1 && y >= 0 && y <= 1) ? 1 : 0,
+          givenY: y0 => ({
+            lo: 0, hi: 1, condPdf: () => 1, mean: 0.5,
+            margLatex: `f_Y(y) = 1`,
+            condLatex: `f_{X|Y}(x \\mid y_0) = 1,\\; x \\in (0, 1)`,
+            meanLatex: `E[X \\mid Y = ${y0.toFixed(2)}] = 0.5000`
+          }),
+          givenX: x0 => ({
+            lo: 0, hi: 1, condPdf: () => 1, mean: 0.5,
+            margLatex: `f_X(x) = 1`,
+            condLatex: `f_{Y|X}(y \\mid x_0) = 1,\\; y \\in (0, 1)`,
+            meanLatex: `E[Y \\mid X = ${x0.toFixed(2)}] = 0.5000`
+          })
+        }
+      };
+
+      let sliceKey = 'tri2';
+      let sliceDir = 'givenY';
+      const sliceSlider = document.getElementById('sliceSlider');
+
+      function updateSliceSliderBounds() {
+        const d = SLICE_DISTS[sliceKey];
+        const hi = sliceDir === 'givenY' ? d.yMax : d.xMax;
+        sliceSlider.min = '0.05';
+        sliceSlider.max = (hi - 0.05).toFixed(2);
+        let v = parseFloat(sliceSlider.value);
+        if (v < 0.05 || v > hi - 0.05) {
+          v = hi / 2;
+          sliceSlider.value = v.toFixed(2);
+        }
+        document.getElementById('sliceSliderLabel').innerHTML = sliceDir === 'givenY'
+          ? 'Conditioning Value $y_0$'
+          : 'Conditioning Value $x_0$';
+        safeRenderMath(document.getElementById('sliceSliderLabel'));
+      }
+
+      function renderSliceLab() {
+        const d = SLICE_DISTS[sliceKey];
+        const v0 = parseFloat(sliceSlider.value);
+        document.getElementById('sliceSliderVal').textContent = v0.toFixed(2);
+
+        const info = sliceDir === 'givenY' ? d.givenY(v0) : d.givenX(v0);
+
+        // Formula Card
+        const fCard = document.getElementById('sliceFormulaCard');
+        fCard.innerHTML = `
+          <div class="p-3 rounded-xl bg-white/5 border border-slate-700">
+            <div class="text-[11px] uppercase tracking-wider text-blue-300 font-bold mb-1">Marginal Density</div>
+            <div>$${info.margLatex}$</div>
+          </div>
+          <div class="p-3 rounded-xl bg-white/5 border border-slate-700">
+            <div class="text-[11px] uppercase tracking-wider text-teal-300 font-bold mb-1">Conditional PDF</div>
+            <div>$${info.condLatex}$</div>
+          </div>
+          <div class="p-3 rounded-xl bg-amber-500/15 border border-amber-400/40">
+            <div class="text-[11px] uppercase tracking-wider text-amber-300 font-bold mb-1">Conditional Expectation</div>
+            <div>$${info.meanLatex}$</div>
+          </div>
+        `;
+        safeRenderMath(fCard);
+
+        // --- Left Canvas: 2D Heatmap + Amber Slice Line ---
+        const { ctx: c2, w: w2, h: h2 } = setupHiDPI(
+          document.getElementById('slice2DCanvas'),
+          document.getElementById('slice2DWrap'),
+          0.95, 230, 310
+        );
+        const padL = 36, padR = 16, padT = 16, padB = 30;
+        const pW = w2 - padL - padR, pH = h2 - padT - padB;
+        const toX2 = x => padL + (x / d.xMax) * pW;
+        const toY2 = y => padT + (1 - y / d.yMax) * pH;
+
+        c2.clearRect(0, 0, w2, h2);
+        const G = 56;
+        for (let i = 0; i < G; i++) {
+          const x = ((i + 0.5) / G) * d.xMax;
+          for (let j = 0; j < G; j++) {
+            const y = ((j + 0.5) / G) * d.yMax;
+            if (d.inSup(x, y)) {
+              const norm = Math.min(1, d.pdf(x, y) / d.maxF);
+              c2.fillStyle = `rgba(30, 58, 138, ${(0.12 + 0.48 * norm).toFixed(2)})`;
+            } else {
+              c2.fillStyle = '#f8fafc';
+            }
+            c2.fillRect(padL + (i / G) * pW, padT + (1 - (j + 1) / G) * pH, pW / G + 0.5, pH / G + 0.5);
+          }
+        }
+
+        // Amber slice line + active segment
+        c2.save();
+        c2.strokeStyle = 'rgba(217, 119, 6, 0.35)';
+        c2.lineWidth = 1.6;
+        c2.setLineDash([4, 3]);
+        c2.beginPath();
+        if (sliceDir === 'givenY') {
+          c2.moveTo(toX2(0), toY2(v0)); c2.lineTo(toX2(d.xMax), toY2(v0));
+        } else {
+          c2.moveTo(toX2(v0), toY2(0)); c2.lineTo(toX2(v0), toY2(d.yMax));
+        }
+        c2.stroke();
+        c2.restore();
+
+        // Thick bright amber active segment inside support
+        c2.strokeStyle = '#d97706';
+        c2.lineWidth = 4;
+        c2.beginPath();
+        if (sliceDir === 'givenY') {
+          c2.moveTo(toX2(info.lo), toY2(v0)); c2.lineTo(toX2(info.hi), toY2(v0));
+        } else {
+          c2.moveTo(toX2(v0), toY2(info.lo)); c2.lineTo(toX2(v0), toY2(info.hi));
+        }
+        c2.stroke();
+
+        // Box border & labels
+        c2.strokeStyle = '#334155'; c2.lineWidth = 1.6;
+        c2.strokeRect(padL, padT, pW, pH);
+        c2.fillStyle = '#475569'; c2.font = '600 10px JetBrains Mono, monospace';
+        c2.textAlign = 'center'; c2.textBaseline = 'top';
+        [0, 0.5 * d.xMax, d.xMax].forEach(v => c2.fillText(v.toFixed(1), toX2(v), padT + pH + 6));
+        c2.textAlign = 'right'; c2.textBaseline = 'middle';
+        [0, 0.5 * d.yMax, d.yMax].forEach(v => c2.fillText(v.toFixed(1), padL - 6, toY2(v)));
+
+        // --- Right Canvas: 1D Conditional PDF ---
+        const { ctx: c1, w: w1, h: h1 } = setupHiDPI(
+          document.getElementById('slice1DCanvas'),
+          document.getElementById('slice1DWrap'),
+          0.62, 230, 310
+        );
+        const padL1 = 44, padR1 = 18, padT1 = 22, padB1 = 34;
+        const pW1 = w1 - padL1 - padR1, pH1 = h1 - padT1 - padB1;
+        const domMax = sliceDir === 'givenY' ? d.xMax : d.yMax;
+
+        // Compute max height of conditional PDF
+        let maxC = 1.2;
+        for (let i = 0; i <= 100; i++) {
+          const t = info.lo + (info.hi - info.lo) * (i / 100);
+          maxC = Math.max(maxC, info.condPdf(t));
+        }
+        maxC = Math.min(maxC * 1.18, 22);
+
+        const toX1 = t => padL1 + (t / domMax) * pW1;
+        const toY1 = f => padT1 + pH1 * (1 - Math.min(f, maxC) / maxC);
+
+        c1.clearRect(0, 0, w1, h1);
+        // Grid
+        c1.strokeStyle = '#e2e8f0'; c1.lineWidth = 1;
+        c1.font = '600 10px JetBrains Mono, monospace'; c1.fillStyle = '#64748b'; c1.textAlign = 'right'; c1.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxC * i) / 4;
+          const py = toY1(yv);
+          c1.beginPath(); c1.moveTo(padL1, py); c1.lineTo(padL1 + pW1, py); c1.stroke();
+          c1.fillText(yv.toFixed(2), padL1 - 6, py);
+        }
+
+        // Shaded Teal Area = 1 on [info.lo, info.hi]
+        c1.fillStyle = 'rgba(13, 148, 136, 0.28)';
+        c1.strokeStyle = '#0d9488'; c1.lineWidth = 2.6;
+        c1.beginPath();
+        c1.moveTo(toX1(info.lo), toY1(0));
+        for (let i = 0; i <= 120; i++) {
+          const t = info.lo + (info.hi - info.lo) * (i / 120);
+          c1.lineTo(toX1(t), toY1(info.condPdf(t)));
+        }
+        c1.lineTo(toX1(info.hi), toY1(0));
+        c1.closePath();
+        c1.fill();
+        c1.stroke();
+
+        // Vertical dashed amber line at conditional mean
+        const mx = toX1(info.mean);
+        c1.save();
+        c1.setLineDash([5, 3]);
+        c1.strokeStyle = '#d97706'; c1.lineWidth = 2.2;
+        c1.beginPath(); c1.moveTo(mx, padT1); c1.lineTo(mx, padT1 + pH1); c1.stroke();
+        c1.restore();
+        c1.fillStyle = '#d97706'; c1.font = '700 10px JetBrains Mono, monospace'; c1.textAlign = 'center';
+        c1.fillText(`Mean = ${info.mean.toFixed(3)}`, mx, padT1 - 10);
+
+        // Axes & ticks
+        c1.strokeStyle = '#475569'; c1.lineWidth = 1.4;
+        c1.beginPath(); c1.moveTo(padL1, padT1); c1.lineTo(padL1, padT1 + pH1); c1.lineTo(padL1 + pW1, padT1 + pH1); c1.stroke();
+        c1.fillStyle = '#475569'; c1.textAlign = 'center'; c1.textBaseline = 'top';
+        [0, 0.25 * domMax, 0.5 * domMax, 0.75 * domMax, domMax].forEach(v => c1.fillText(v.toFixed(2), toX1(v), padT1 + pH1 + 6));
+      }
+
+      sliceSlider.addEventListener('input', renderSliceLab);
+
+      document.querySelectorAll('.slice-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sliceKey = btn.getAttribute('data-spreset');
+          document.querySelectorAll('.slice-preset').forEach(b => {
+            b.className = b === btn
+              ? 'slice-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all'
+              : 'slice-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          updateSliceSliderBounds();
+          renderSliceLab();
+        });
+      });
+
+      document.querySelectorAll('.slice-dir-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sliceDir = btn.getAttribute('data-sdir');
+          document.querySelectorAll('.slice-dir-btn').forEach(b => {
+            b.className = b === btn
+              ? 'slice-dir-btn flex-1 px-3 py-2 rounded-xl text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all'
+              : 'slice-dir-btn flex-1 px-3 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-[#1e3a8a] transition-all';
+          });
+          updateSliceSliderBounds();
+          renderSliceLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. TAB 4: INDEPENDENCE & SUPPORT DIAGNOSTIC (DRAGGABLE POINT)
+      ------------------------------------------------------------------- */
+      const IND_DISTS = {
+        unif: {
+          isRect: true, isIndep: true, maxF: 1.5,
+          inSup: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 1,
+          pdf: () => 1, fx: () => 1, fy: () => 1,
+          eqLatex: (x, y) => `f(${x},${y}) = 1 \\;=\\; f_X(${x})f_Y(${y}) = 1 \\cdot 1 = 1`
+        },
+        prod: {
+          isRect: true, isIndep: true, maxF: 4.0,
+          inSup: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 1,
+          pdf: (x, y) => 4 * x * y, fx: x => 2 * x, fy: y => 2 * y,
+          eqLatex: (x, y, j, fx, fy) => `f(${x},${y}) = 4(${x})(${y}) = ${j} \\;=\\; (${fx})(${fy}) = ${(fx*fy).toFixed(4)}`
+        },
+        lin: {
+          isRect: true, isIndep: false, maxF: 2.25,
+          inSup: (x, y) => x >= 0 && x <= 1 && y >= 0 && y <= 1,
+          pdf: (x, y) => x + y, fx: x => x + 0.5, fy: y => y + 0.5,
+          eqLatex: (x, y, j, fx, fy) => `f(${x},${y}) = ${j} \\;\\text{vs.}\\; f_X(${x})f_Y(${y}) = (${fx})(${fy}) = ${(fx*fy).toFixed(4)}`
+        },
+        tri: {
+          isRect: false, isIndep: false, maxF: 6.0,
+          inSup: (x, y) => x > 0 && y < 1 && x < y,
+          pdf: (x, y) => (x < y) ? 6 * x : 0,
+          fx: x => 6 * x * (1 - x), fy: y => 3 * y * y,
+          eqLatex: (x, y, j, fx, fy) => `f(${x},${y}) = ${j} \\;\\text{vs.}\\; f_X(${x})f_Y(${y}) = (${fx})(${fy}) = ${(fx*fy).toFixed(4)}`
+        }
+      };
+
+      let indKey = 'unif';
+      let indPt = { x: 0.70, y: 0.30 };
+      let indDragging = false;
+      const indCanvas = document.getElementById('indCanvas');
+
+      function renderIndepLab() {
+        const d = IND_DISTS[indKey];
+        const x = indPt.x, y = indPt.y;
+        const jVal = d.pdf(x, y);
+        const fxVal = d.fx(x);
+        const fyVal = d.fy(y);
+        const prodVal = fxVal * fyVal;
+        const matchesHere = Math.abs(jVal - prodVal) < 1e-4;
+
+        document.getElementById('indCoordPill').textContent = `(${x.toFixed(2)}, ${y.toFixed(2)})`;
+        document.getElementById('indValJoint').textContent = jVal.toFixed(4);
+        document.getElementById('indValProd').textContent = prodVal.toFixed(4);
+
+        const barMax = Math.max(d.maxF, jVal, prodVal, 1);
+        document.getElementById('indBarJoint').style.width = Math.min(100, (jVal / barMax) * 100).toFixed(1) + '%';
+        document.getElementById('indBarProd').style.width = Math.min(100, (prodVal / barMax) * 100).toFixed(1) + '%';
+
+        const banner = document.getElementById('indOverallBanner');
+        if (d.isIndep) {
+          banner.className = 'p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 flex items-center justify-between gap-3';
+          banner.innerHTML = `<div><div class="text-xs font-bold uppercase text-emerald-700">Global Verdict</div><div class="text-lg font-extrabold text-emerald-950">INDEPENDENT RANDOM VARIABLES ✓</div></div><span class="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-bold">PASS</span>`;
+        } else {
+          banner.className = 'p-4 rounded-2xl border-2 border-rose-300 bg-rose-50 flex items-center justify-between gap-3';
+          banner.innerHTML = `<div><div class="text-xs font-bold uppercase text-[#e11d48]">Global Verdict</div><div class="text-lg font-extrabold text-rose-950">DEPENDENT RANDOM VARIABLES ✕</div></div><span class="px-3 py-1 rounded-full bg-[#e11d48] text-white text-xs font-bold">FAIL</span>`;
+        }
+
+        const cRect = document.getElementById('indCheckRect');
+        cRect.className = d.isRect ? 'p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/50 text-xs space-y-1' : 'p-3.5 rounded-xl border border-rose-200 bg-rose-50/60 text-xs space-y-1';
+        cRect.innerHTML = `<div class="flex justify-between font-bold"><span>1. Rectangular Support?</span><span class="${d.isRect ? 'text-emerald-700' : 'text-[#e11d48]'}">${d.isRect ? 'YES ✓' : 'NO ✕'}</span></div><p class="text-slate-600">${d.isRect ? 'Support is $(0,1)\\times(0,1)$.' : 'Triangular $0<x<y<1$ fails immediately!'}</p>`;
+
+        const cFac = document.getElementById('indCheckFactor');
+        cFac.className = d.isIndep ? 'p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/50 text-xs space-y-1' : 'p-3.5 rounded-xl border border-rose-200 bg-rose-50/60 text-xs space-y-1';
+        cFac.innerHTML = `<div class="flex justify-between font-bold"><span>2. Factors $f = f_X f_Y$?</span><span class="${d.isIndep ? 'text-emerald-700' : 'text-[#e11d48]'}">${d.isIndep ? 'YES ✓' : 'NO ✕'}</span></div><p class="text-slate-600">${d.isIndep ? 'Holds identically for all $(x,y)$.' : (matchesHere ? 'Matches on this curve, but fails elsewhere!' : 'Discrepancy detected at $(x^*, y^*)$!')}</p>`;
+
+        const eqBox = document.getElementById('indEqBox');
+        eqBox.innerHTML = `$${d.eqLatex(x.toFixed(2), y.toFixed(2), jVal.toFixed(4), fxVal.toFixed(3), fyVal.toFixed(3))}$`;
+        safeRenderMath(document.getElementById('tab-indep'));
+
+        // Draw Canvas
+        const { ctx, w, h } = setupHiDPI(indCanvas, document.getElementById('indCanvasWrap'), 1.0, 250, 340);
+        const padL = 36, padR = 16, padT = 16, padB = 30;
+        const sq = Math.min(w - padL - padR, h - padT - padB);
+        const toX = vx => padL + vx * sq;
+        const toY = vy => padT + (1 - vy) * sq;
+
+        ctx.clearRect(0, 0, w, h);
+        const G = 48;
+        for (let i = 0; i < G; i++) {
+          const gx = (i + 0.5) / G;
+          for (let j = 0; j < G; j++) {
+            const gy = (j + 0.5) / G;
+            if (d.inSup(gx, gy)) {
+              const norm = Math.min(1, d.pdf(gx, gy) / d.maxF);
+              ctx.fillStyle = `rgba(30, 58, 138, ${(0.10 + 0.45 * norm).toFixed(2)})`;
+            } else {
+              ctx.fillStyle = '#fff1f2'; // faint rose outside triangular support
+            }
+            ctx.fillRect(padL + (i / G) * sq, padT + (1 - (j + 1) / G) * sq, sq / G + 0.5, sq / G + 0.5);
+          }
+        }
+
+        if (!d.isRect) {
+          ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(toX(0), toY(0)); ctx.lineTo(toX(1), toY(1)); ctx.stroke();
+        }
+
+        // Crosshair to point (x*, y*)
+        const px = toX(x), py = toY(y);
+        ctx.save();
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = '#d97706'; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(px, padT); ctx.lineTo(px, padT + sq); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + sq, py); ctx.stroke();
+        ctx.restore();
+
+        // Point marker
+        ctx.fillStyle = matchesHere ? '#0d9488' : '#e11d48';
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(px, py, 7.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        // Border & Ticks
+        ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.6;
+        ctx.strokeRect(padL, padT, sq, sq);
+        ctx.fillStyle = '#475569'; ctx.font = '600 10px JetBrains Mono, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        [0, 0.5, 1].forEach(v => ctx.fillText(v.toFixed(1), toX(v), padT + sq + 6));
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        [0, 0.5, 1].forEach(v => ctx.fillText(v.toFixed(1), padL - 6, toY(v)));
+      }
+
+      function updateIndPointFromEvent(evt) {
+        const rect = indCanvas.getBoundingClientRect();
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+        const padL = 36, padR = 16, padT = 16, padB = 30;
+        const sq = Math.min(rect.width - padL - padR, rect.height - padT - padB);
+        const nx = (clientX - rect.left - padL) / sq;
+        const ny = 1 - (clientY - rect.top - padT) / sq;
+        indPt.x = Math.min(0.98, Math.max(0.02, nx));
+        indPt.y = Math.min(0.98, Math.max(0.02, ny));
+        renderIndepLab();
+      }
+
+      indCanvas.addEventListener('mousedown', e => { indDragging = true; updateIndPointFromEvent(e); });
+      window.addEventListener('mousemove', e => { if (indDragging) updateIndPointFromEvent(e); });
+      window.addEventListener('mouseup', () => { indDragging = false; });
+      indCanvas.addEventListener('touchstart', e => { indDragging = true; updateIndPointFromEvent(e); }, { passive: false });
+      indCanvas.addEventListener('touchmove', e => { if (indDragging) { e.preventDefault(); updateIndPointFromEvent(e); } }, { passive: false });
+      window.addEventListener('touchend', () => { indDragging = false; });
+
+      document.querySelectorAll('.ind-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          indKey = btn.getAttribute('data-indpreset');
+          document.querySelectorAll('.ind-preset').forEach(b => {
+            b.className = b === btn
+              ? 'ind-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e3a8a] text-white shadow-xs transition-all'
+              : 'ind-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          if (indKey === 'tri') indPt = { x: 0.70, y: 0.30 };
+          renderIndepLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         8. SECTION 5: QUICK MASTERY CHECK (5-QUESTION QUIZ)
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. Given $f(x,y) = 2$ on the triangular domain $0 \\le y \\le x \\le 1$, what is the correct integral for the marginal PDF $f_Y(y)$?',
+          options: [
+            '$\\int_{0}^{1} 2\\,dx = 2$',
+            '$\\int_{0}^{y} 2\\,dx = 2y$',
+            '$\\int_{y}^{1} 2\\,dx = 2(1 - y)$',
+            '$\\int_{0}^{x} 2\\,dy = 2x$'
+          ],
+          correct: 2,
+          explanation: 'Holding $y$ fixed in $0 \\le y \\le x \\le 1$, the variable $x$ runs from $y$ to $1$. Hence $f_Y(y) = \\int_y^1 2\\,dx = 2(1-y)$ for $0 \\le y \\le 1$.'
+        },
+        {
+          q: '2. If $f(x,y) = k$ (a positive constant) on the triangular region $0 < x < y < 1$ and $0$ elsewhere, can $X$ and $Y$ be independent?',
+          options: [
+            'Yes, because $f(x,y) = k$ is a constant function.',
+            'No, because the support is triangular rather than rectangular, so $f(x,y) = 0 \\neq f_X(x)f_Y(y) > 0$ on the lower-right triangle.',
+            'Yes, provided $k = 2$.',
+            'Only if $E[X] = E[Y]$.'
+          ],
+          correct: 1,
+          explanation: 'A non-rectangular support guarantees dependence! Even though $f(x,y)=2$ is constant inside the triangle, $f_X(x)f_Y(y) = 4(1-x)y \\neq 2$.'
+        },
+        {
+          q: '3. For the discrete joint PMF $p(x,y) = \\dfrac{x+y}{30}$ ($x = 0,1,2,3$ and $y = 0,1,2$), what is $P(X \\le 2,\\; Y = 1)$?',
+          options: [
+            '$3/30 = 1/10$',
+            '$6/30 = 1/5$',
+            '$10/30 = 1/3$',
+            '$12/30 = 2/5$'
+          ],
+          correct: 1,
+          explanation: '$P(X \\le 2, Y = 1) = p(0,1) + p(1,1) + p(2,1) = \\frac{1}{30} + \\frac{2}{30} + \\frac{3}{30} = \\frac{6}{30} = \\frac{1}{5}$.'
+        },
+        {
+          q: '4. If $f(x,y) = 4xy$ on the unit square $0 < x < 1, 0 < y < 1$ ($0$ otherwise), are $X$ and $Y$ independent?',
+          options: [
+            'No, because $x$ and $y$ are multiplied together.',
+            'Yes — the support is rectangular and $f_X(x) = 2x$, $f_Y(y) = 2y$, giving $f_X(x)f_Y(y) = (2x)(2y) = 4xy = f(x,y)$.',
+            'No, because $f(1,1) = 4 > 1$.',
+            'Cannot be determined without the joint CDF.'
+          ],
+          correct: 1,
+          explanation: 'On the rectangular support $(0,1)^2$, $f_X(x) = \\int_0^1 4xy\\,dy = 2x$ and $f_Y(y) = \\int_0^1 4xy\\,dx = 2y$, so $f_X(x)f_Y(y) = 4xy = f(x,y)$ everywhere.'
+        },
+        {
+          q: '5. What is the conditional distribution of $X$ given $Y = y$ when $f(x,y) = 2$ on $0 \\le y \\le x \\le 1$? (Year Final 2025 Q5c)',
+          options: [
+            '$\\text{Uniform}(0, 1)$ with density $1$',
+            '$\\text{Uniform}(0, y)$ with density $1/y$',
+            '$\\text{Uniform}(y, 1)$ with density $1/(1 - y)$',
+            'Triangular with density $2x$'
+          ],
+          correct: 2,
+          explanation: 'Dividing $f(x,y)=2$ by $f_Y(y)=2(1-y)$ gives $f_{X|Y}(x|y) = \\frac{1}{1-y}$ for $y \\le x \\le 1$, which is $\\text{Uniform}(y, 1)$.'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-white border-slate-200 text-slate-700 hover:border-[#2563eb] hover:bg-blue-50/40';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-rose-50 border-rose-400 text-rose-900 font-semibold';
+              else cls = 'bg-slate-50 border-slate-200 text-slate-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-slate-900 text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        safeRenderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         9. INITIALIZATION ON WINDOW LOAD
+      ------------------------------------------------------------------- */
+      window.addEventListener('load', () => {
+        applyDiscFilter('xGtY');
+        renderIntegratorLab();
+        updateSliceSliderBounds();
+        renderSliceLab();
+        renderIndepLab();
+        renderQuiz();
+        updateScrollProgress();
+        safeRenderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

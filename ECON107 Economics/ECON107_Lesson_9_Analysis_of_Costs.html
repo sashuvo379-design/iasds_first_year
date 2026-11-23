@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON107 • Lesson 9: Analysis of Costs &amp; Least-Cost Input Choice</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f4c81;
+      --primary-light: #e0f2fe;
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+      --warn: #d97706;
+      --warn-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-elevated: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-light: rgba(56, 189, 248, 0.14);
+      --accent: #2dd4bf;
+      --accent-light: rgba(45, 212, 191, 0.14);
+      --warn: #fbbf24;
+      --warn-light: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.14);
+      --success: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.14);
+      --purple: #a78bfa;
+      --purple-light: rgba(167, 139, 250, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1rem; }
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .brand-badge { color: #0b1120; }
+    .top-controls { display: flex; align-items: center; gap: 0.75rem; }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .progress-bar-wrap { width: 72px; height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+    .btn-icon {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+    .scroll-track { height: 3px; background: transparent; width: 100%; }
+    .scroll-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.1s linear; }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 4.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 9px;
+      transition: all 0.18s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-link.active .nav-num { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .nav-link.active .nav-num { color: #0b1120; }
+    .sidebar-meta {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sidebar-meta strong { color: var(--text); }
+
+    /* Main */
+    .main { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #9a3412 48%, #0f4c81 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+    }
+    .pill-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-accent { background: var(--accent-light); color: var(--accent); }
+    .pill-warn { background: var(--warn-light); color: var(--warn); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+
+    .hero h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.65rem; }
+    .hero p { color: rgba(255, 255, 255, 0.92); max-width: 72ch; font-size: 1rem; }
+    .hero-stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+    }
+    .hero-stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+    .hero-stat-val { font-size: 1rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.85rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .section-card h2 { font-size: 1.45rem; line-height: 1.25; }
+    .section-card h3 { font-size: 1.1rem; margin: 1.15rem 0 0.5rem; }
+    .section-card p { margin-bottom: 0.85rem; color: var(--text); }
+    .muted { color: var(--text-muted); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.2rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-light); }
+    .callout.danger { border-left-color: var(--danger); background: var(--danger-light); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.95rem; }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .mini-card h4 { font-size: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem; }
+    .mini-card ul { padding-left: 1.15rem; font-size: 0.91rem; color: var(--text-muted); }
+    .mini-card li { margin-bottom: 0.35rem; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 0.65rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-subtle); font-weight: 700; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr.active-row { background: var(--primary-light); font-weight: 700; }
+
+    /* Interactive Labs */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+    .canvas-wrap {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+    }
+    .control-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .readout-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-size: 0.87rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .chip-btn {
+      padding: 0.42rem 0.75rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .chip-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .chip-btn.active { color: #0b1120; }
+
+    /* Tabs & Buttons */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .tab-btn.active { color: #0b1120; }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .slider-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; }
+
+    /* Math Box */
+    .math-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 0.9rem 1.05rem;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      line-height: 1.72;
+    }
+
+    /* Accordion */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .acc-item { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated); }
+    .acc-btn {
+      width: 100%;
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: none;
+      padding: 0.95rem 1.15rem;
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .acc-btn:hover { filter: brightness(0.97); }
+    .acc-chevron { transition: transform 0.2s; font-size: 0.85rem; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 1.1rem 1.2rem; border-top: 1px solid var(--border); font-size: 0.92rem; }
+    .acc-item.open .acc-body { display: block; }
+
+    /* Quiz */
+    .quiz-q {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--bg-subtle);
+    }
+    .quiz-q-title { font-weight: 700; margin-bottom: 0.7rem; }
+    .quiz-opts { display: grid; gap: 0.45rem; }
+    .quiz-opt {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .quiz-opt.is-correct { background: var(--success-light); border-color: var(--success); font-weight: 600; }
+    .quiz-opt.is-wrong { background: var(--danger-light); border-color: var(--danger); }
+    .quiz-exp { margin-top: 0.65rem; font-size: 0.86rem; color: var(--text-muted); display: none; }
+    .quiz-exp.show { display: block; }
+
+    /* Done Button */
+    .done-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .done-btn.completed { background: var(--success-light); color: var(--success); border-color: var(--success); }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-2, .grid-3, .lab-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge">ECON107</span>
+        <span>Lesson 9: Analysis of Costs &amp; Least-Cost Input Choice</span>
+      </div>
+      <div class="top-controls">
+        <div class="progress-pill">
+          <span id="progressText">0/6 Done</span>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="scroll-track"><div class="scroll-fill" id="scrollFill"></div></div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lesson 9 Roadmap</div>
+      <ul class="nav-list">
+        <li><a class="nav-link active" href="#sec-costs"><span class="nav-num">1</span> Cost Concepts &amp; Table 7-3</a></li>
+        <li><a class="nav-link" href="#sec-costlab"><span class="nav-num">2</span> Cost Curve &amp; Calculus Lab</a></li>
+        <li><a class="nav-link" href="#sec-link"><span class="nav-num">3</span> U-Shape Link &amp; Fallacies</a></li>
+        <li><a class="nav-link" href="#sec-leastcost"><span class="nav-num">4</span> Least-Cost &amp; Isoquant Lab</a></li>
+        <li><a class="nav-link" href="#sec-oppcost"><span class="nav-num">5</span> Economic vs. Accounting Cost</a></li>
+        <li><a class="nav-link" href="#sec-pyq"><span class="nav-num">6</span> ISRT PYQ Vault</a></li>
+        <li><a class="nav-link" href="#sec-quiz"><span class="nav-num">7</span> Mastery Check</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <div><strong>Course:</strong> ECON107 (4 Credits)</div>
+        <div><strong>Module 2 Finale:</strong> 2nd In-Course Scope</div>
+        <div><strong>Sources:</strong> ECON107_L9.pdf, Ch. 7 &amp; App. 7</div>
+        <div><strong>Exam Focus:</strong> High-Weight Math &amp; Graphs</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-badges">
+          <span class="pill pill-glass">Module 2 Finale • 2nd In-Course Scope</span>
+          <span class="pill pill-glass">Lecture 9 • ECON107</span>
+          <span class="pill pill-glass">Guaranteed Final &amp; 2nd Inc Q</span>
+        </div>
+        <h1>Analysis of Costs &amp; Least-Cost Input Decisions</h1>
+        <p>
+          "Everywhere that production goes, costs follow close behind like a shadow." Master all seven short-run cost
+          measures (TC, FC, VC, MC, AC, AFC, AVC), prove why MC always cuts AC and AVC at their U-shaped minimums,
+          solve cubic cost functions with calculus, and find optimal input bundles via the Least-Cost Rule and Isoquant/Isocost tangency.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Core Identities</div>
+            <div class="hero-stat-val">TC = FC+VC • AC = AFC+AVC</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Key Geometry</div>
+            <div class="hero-stat-val">MC Cuts AC at Min AC</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Least-Cost Rule</div>
+            <div class="hero-stat-val">MP_L/P_L = MP_K/P_K</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Past Questions</div>
+            <div class="hero-stat-val">5 High-Weight ISRT PYQs</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Economic Analysis of Costs -->
+      <section class="section-card" id="sec-costs">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 01 • The 7 Cost Measures</div>
+            <h2>Total, Fixed, Variable, Marginal &amp; Average Costs</h2>
+          </div>
+          <button class="done-btn" data-section="s1">✓ Mark Done</button>
+        </div>
+
+        <div class="grid-3">
+          <div class="mini-card" style="border-top:4px solid var(--primary);">
+            <h4>🏢 Fixed Cost (FC)</h4>
+            <p class="muted" style="font-size:0.87rem; margin:0;">
+              Total dollar expense paid out <strong>even when output q = 0</strong> (e.g., factory lease, interest on bank debt,
+              property insurance). Unaffected by output changes—also called <em>overhead</em> or <em>sunk costs</em>.
+            </p>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--accent);">
+            <h4>⚙️ Variable Cost (VC)</h4>
+            <p class="muted" style="font-size:0.87rem; margin:0;">
+              Costs that <strong>vary directly with output</strong> (raw materials, assembly-line workers, factory power).
+              By definition, <code>VC = 0</code> when <code>q = 0</code>, and <code>TC = FC + VC</code>.
+            </p>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--danger);">
+            <h4>📈 Marginal Cost (MC)</h4>
+            <p class="muted" style="font-size:0.87rem; margin:0;">
+              Additional cost incurred in producing <strong>1 extra unit</strong> of output:
+              <code>MC = ΔTC / Δq = ΔVC / Δq = d(TC)/dq</code>. Independent of fixed cost!
+            </p>
+          </div>
+        </div>
+
+        <div class="callout accent">
+          <div class="callout-title">Why MC Always Pierces AC and AVC at Their Minimums (Batting Average Rule)</div>
+          1. When <strong>MC &lt; AC</strong>, the extra unit costs less than the existing average, pulling <strong>AC DOWN</strong>.<br>
+          2. When <strong>MC &gt; AC</strong>, the extra unit costs more than the existing average, pulling <strong>AC UP</strong>.<br>
+          3. When <strong>MC = AC</strong>, AC is momentarily flat—so a rising MC curve <strong>always cuts AC (and AVC) at its exact minimum point!</strong>
+        </div>
+
+        <h3>Table 7-3: Complete Short-Run Cost Schedule (FC = $55)</h3>
+        <div class="table-wrap">
+          <table id="costTable">
+            <thead>
+              <tr>
+                <th>q</th><th>FC ($)</th><th>VC ($)</th><th>TC ($)</th><th>MC ($)</th><th>AC ($)</th><th>AFC ($)</th><th>AVC ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-q="0"><td>0</td><td>55</td><td>0</td><td>55</td><td>—</td><td>∞</td><td>∞</td><td>—</td></tr>
+              <tr data-q="1"><td>1</td><td>55</td><td>30</td><td>85</td><td>30</td><td>85.00</td><td>55.00</td><td>30.00</td></tr>
+              <tr data-q="2"><td>2</td><td>55</td><td>55</td><td>110</td><td>25</td><td>55.00</td><td>27.50</td><td>27.50</td></tr>
+              <tr data-q="3"><td>3</td><td>55</td><td>75</td><td>130</td><td>20</td><td>43.33</td><td>18.33</td><td>25.00</td></tr>
+              <tr data-q="4" class="active-row"><td><strong>4*</strong></td><td>55</td><td>105</td><td>160</td><td><strong>30 (40*)</strong></td><td><strong>40.00*</strong></td><td>13.75</td><td>26.25</td></tr>
+              <tr data-q="5"><td>5</td><td>55</td><td>155</td><td>210</td><td>50</td><td>42.00</td><td>11.00</td><td>31.00</td></tr>
+              <tr data-q="6"><td>6</td><td>55</td><td>225</td><td>280</td><td>70</td><td>46.67</td><td>9.17</td><td>37.50</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 2: Interactive Cost Curve & Cubic Calculus Lab -->
+      <section class="section-card" id="sec-costlab">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 02 • Interactive Visualizer &amp; PYQ Calculus Solver</div>
+            <h2>Cost Curve Lab: MC, AC, AVC, AFC &amp; Cubic Cost Functions</h2>
+          </div>
+          <button class="done-btn" data-section="s2">✓ Mark Done</button>
+        </div>
+
+        <p class="muted" style="font-size:0.92rem;">
+          Switch between <strong>Samuelson Table 7-3</strong> (with a Fixed Cost slider to test Ch. 7 Q2: notice MC &amp; AVC never move when FC rises!)
+          and the recurring <strong>ISRT Cubic Cost Function</strong> (<code>TC = Q³ − 21Q² + 500Q</code> from Final 2025, Final 2023 &amp; 2nd Inc 2023)!
+        </p>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="cmTab73" onclick="setCostMode('tab73')">📊 Samuelson Table 7-3 (4 Curves + FC Slider)</button>
+          <button class="tab-btn" id="cmCubic" onclick="setCostMode('cubic')">🧮 ISRT PYQ Cubic: TC = Q³ − 21Q² + 500Q</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="costCanvas" width="540" height="390"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label">
+                <span>Inspect Output Level (Q)</span>
+                <span id="cQVal" style="color:var(--primary);">Q = 4</span>
+              </div>
+              <input type="range" id="cQSlider" min="1" max="6" step="1" value="4" />
+            </div>
+
+            <div id="fcSliderWrap">
+              <div class="slider-label">
+                <span>Fixed Cost (FC) — Test Ch. 7 Q2!</span>
+                <span id="cFCVal" style="color:var(--purple);">$55</span>
+              </div>
+              <input type="range" id="cFCSlider" min="25" max="145" step="15" value="55" />
+            </div>
+
+            <div class="readout-card" id="costReadout"></div>
+            <div class="math-box" id="costMathBox" style="display:none;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Link Between Production & Costs + Cost Fallacies -->
+      <section class="section-card" id="sec-link">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 03 • Mirror Image of Production</div>
+            <h2>Why Cost Curves Are U-Shaped &amp; 4 Classic Cost Fallacies</h2>
+          </div>
+          <button class="done-btn" data-section="s3">✓ Mark Done</button>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Mirror-Image Link: Production Determines Costs (Figure 7-3 &amp; Mihad's Notes)</div>
+          Cost curves depend on two things: <strong>(1) Factor prices</strong> and <strong>(2) The firm's production function</strong>.
+          When labor (at wage $W$) is the variable input: <strong><code>MC = W / MP_L</code></strong>.<br>
+          • Initial phase of <strong>increasing marginal product</strong> ($MP_L \uparrow$) ⇒ <strong>falling marginal cost</strong> ($MC \downarrow$).<br>
+          • Once the <strong>law of diminishing returns</strong> sets in ($MP_L \downarrow$) ⇒ <strong>rising marginal cost</strong> ($MC \uparrow$), producing <strong>U-shaped MC, AVC, and AC curves</strong>!
+        </div>
+
+        <h3>Spot the Fallacy! (Samuelson Ch. 7 Q6 — Exam Favorites)</h3>
+        <div class="grid-2">
+          <div class="mini-card" style="border-left:4px solid var(--danger);">
+            <h4>❌ Fallacy 1: "AC is minimized when MC is at its lowest point."</h4>
+            <p class="muted" style="font-size:0.86rem; margin:0;">
+              <strong>False!</strong> When MC hits its minimum and starts rising, MC is still <em>below</em> AC, so AC continues
+              to fall until the rising MC curve finally catches up and crosses AC at <strong>minimum AC</strong>.
+            </p>
+          </div>
+          <div class="mini-card" style="border-left:4px solid var(--danger);">
+            <h4>❌ Fallacy 2: "Because FC never changes, AFC is constant."</h4>
+            <p class="muted" style="font-size:0.86rem; margin:0;">
+              <strong>False!</strong> Since $AFC = FC / q$, dividing a constant numerator ($FC$) by larger output ($q$) causes
+              <strong>AFC to fall continuously</strong> as a rectangular hyperbola ("spreading the overhead").
+            </p>
+          </div>
+          <div class="mini-card" style="border-left:4px solid var(--danger);">
+            <h4>❌ Fallacy 3: "AC is rising whenever MC is rising."</h4>
+            <p class="muted" style="font-size:0.86rem; margin:0;">
+              <strong>False!</strong> Between minimum MC (e.g., $Q=7$ in the cubic PYQ) and minimum AC ($Q=10.5$), MC is
+              <em>rising</em> while AC is still <em>falling</em> because $MC &lt; AC$!
+            </p>
+          </div>
+          <div class="mini-card" style="border-left:4px solid var(--danger);">
+            <h4>❌ Fallacy 4: "A firm minimizes costs by spending the same amount on each input."</h4>
+            <p class="muted" style="font-size:0.86rem; margin:0;">
+              <strong>False!</strong> Cost minimization requires equalizing <strong>marginal product per dollar</strong>
+              ($MP_L/P_L = MP_K/P_K$), not equal total spending on each input!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Least-Cost Rule & Interactive Isoquant/Isocost Lab -->
+      <section class="section-card" id="sec-leastcost">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 04 • Optimal Input Choice (Appendix 7 &amp; Final 2024/2025 PYQs)</div>
+            <h2>Least-Cost Rule, Substitution Rule &amp; Isoquant/Isocost Lab</h2>
+          </div>
+          <button class="done-btn" data-section="s4">✓ Mark Done</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="callout accent" style="margin:0;">
+            <div class="callout-title">The Least-Cost Rule</div>
+            To produce a given output at minimum cost (or maximize output for a given budget), equalize the
+            <strong>marginal product per dollar spent</strong> on every input:
+            <div style="font-family:monospace; font-weight:700; margin-top:0.35rem;">MP_L / P_L = MP_K / P_K = … &nbsp;⇔&nbsp; MP_L / MP_K = P_L / P_K</div>
+          </div>
+          <div class="callout warn" style="margin:0;">
+            <div class="callout-title">The Substitution Rule (Corollary)</div>
+            If the price of one factor (e.g., glue or land) <strong>falls</strong> while other factor prices stay fixed,
+            $MP_{\text{glue}} / P_{\text{glue}}$ jumps above other inputs. The firm profits by <strong>substituting more of the
+            cheaper factor</strong> until marginal products per dollar are equalized again!
+          </div>
+        </div>
+
+        <h3>Interactive Isoquant &amp; Isocost Tangency Explorer</h3>
+        <p class="muted" style="font-size:0.9rem;">
+          Use the presets below to explore <strong>Samuelson Fig 7A-3</strong> ($q = 100\sqrt{2LA}$), the <strong>Substitution Rule</strong>
+          (land price drops from $3 to $1), <strong>Final 2024 Q5(c)</strong> ($P_L=2, P_K=3, B=24$), and a <strong>Budget Cut</strong> (Final 2025 Q5c):
+        </p>
+
+        <div class="preset-chips" style="margin-bottom:0.85rem;">
+          <button class="chip-btn active" onclick="setIsoPreset(2, 3, 12, 'Samuelson Fig 7A-3 (P_L=$2, P_A=$3, B=$12 → C: 3L, 2A)', this)">📘 Samuelson Fig 7A-3 (C)</button>
+          <button class="chip-btn" onclick="setIsoPreset(2, 1, 7, 'Substitution Rule: Land Falls to $1 (B: 2L, 3A, TC=$7)', this)">🔄 Land Price → $1 (Shift to B)</button>
+          <button class="chip-btn" onclick="setIsoPreset(2, 3, 24, 'Final 2024 Q5(c): P_L=2, P_K=3, Budget=24', this)">📄 Final 2024 Q5(c) (B=24)</button>
+          <button class="chip-btn" onclick="setIsoPreset(2, 3, 16, 'Final 2025 Q5(c): Budget Decreases (24 → 16)', this)">📉 Budget Decreases (Shift In)</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="isoCanvas" width="520" height="370"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label"><span>Price of Labor (P<sub>L</sub>)</span><span id="isoPLVal" style="color:var(--primary);">$2.00</span></div>
+              <input type="range" id="isoPLSlider" min="1" max="5" step="0.5" value="2" />
+            </div>
+            <div>
+              <div class="slider-label"><span>Price of Land/Capital (P<sub>K</sub>)</span><span id="isoPKVal" style="color:var(--accent);">$3.00</span></div>
+              <input type="range" id="isoPKSlider" min="1" max="5" step="0.5" value="3" />
+            </div>
+            <div>
+              <div class="slider-label"><span>Production Budget / Total Cost (B)</span><span id="isoBVal" style="color:var(--purple);">$12.00</span></div>
+              <input type="range" id="isoBSlider" min="6" max="30" step="1" value="12" />
+            </div>
+            <div class="readout-card" id="isoReadout"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Accounting vs Economic Cost & Opportunity Cost -->
+      <section class="section-card" id="sec-oppcost">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 05 • Broader Economic Perspective</div>
+            <h2>Economic Costs, Accounting Costs &amp; Opportunity Cost</h2>
+          </div>
+          <button class="done-btn" data-section="s5">✓ Mark Done</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="mini-card" style="border-left:4px solid var(--primary);">
+            <h4>📒 Accounting Cost (Explicit Outlays)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Measures actual out-of-pocket monetary transactions recorded on the <strong>Income Statement</strong>
+              (wages paid, raw materials, rent, depreciation of capital).
+            </p>
+          </div>
+          <div class="mini-card" style="border-left:4px solid var(--purple);">
+            <h4>💡 Economic Cost (Explicit + Implicit Opportunity Cost)</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Includes both explicit outlays <strong>AND implicit opportunity costs</strong>—such as the salary a small-business
+              owner could have earned working elsewhere, or interest forgone on their own invested capital.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: ISRT PYQ Vault -->
+      <section class="section-card" id="sec-pyq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 06 • Exam Preparation</div>
+            <h2>ISRT Past Exam Question (PYQ) Vault (2019–2025)</h2>
+          </div>
+          <button class="done-btn" data-section="s6">✓ Mark Done</button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">Final 2025 • Q5(a–d) [12 Marks]</span> FC/VC/OC + 4 cost curves; Toy firm least-cost rule (glue price falls); Budget cut effect; TC = Q³ − 21Q² + 500Q (show MC=AC minimizes AC).</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) Definitions &amp; Graph:</strong> Define FC (rent/lease at q=0), VC (materials/labor), and Opportunity Cost (best forgone alternative). Plot U-shaped MC cutting U-shaped AVC and AC at their minimums, with AFC declining hyperbolically.</p>
+              <p><strong>(b) Toy Firm (Paper, Glue, Craftsmen):</strong> Least-cost rule: $MP_{\text{paper}}/P_{\text{paper}} = MP_{\text{glue}}/P_{\text{glue}} = MP_{\text{craft}}/P_{\text{craft}}$. If $P_{\text{glue}}$ <em>falls</em>, $MP_{\text{glue}}/P_{\text{glue}}$ rises above the others → by the <strong>Substitution Rule</strong>, the firm uses <em>more glue</em> (lowering $MP_{\text{glue}}$ via diminishing returns) and less paper/craftsmen until equality is restored.</p>
+              <p><strong>(c) Optimal Combination &amp; Budget Decrease:</strong> Firm reaches tangency where its isocost line touches the highest attainable isoquant ($MP_1/MP_2 = P_1/P_2$). If budget decreases (prices fixed), the isocost line makes a <strong>parallel shift inward</strong> toward the origin, moving tangency to a lower isoquant (lower output and fewer inputs).</p>
+              <p style="margin:0;"><strong>(d) Calculus Proof for $TC = Q^3 - 21Q^2 + 500Q$:</strong> $MC = 3Q^2 - 42Q + 500$; $AC = Q^2 - 21Q + 500$. Setting $MC = AC \Rightarrow 2Q^2 - 21Q = 0 \Rightarrow \mathbf{Q = 10.5}$ (for $Q &gt; 0$). To verify minimum AC: $d(AC)/dQ = 2Q - 21 = 0 \Rightarrow Q = 10.5$, and $d^2(AC)/dQ^2 = +2 &gt; 0$ (strict minimum, $\text{min } AC = \mathbf{389.75}$).</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-accent">Final 2024 • Q5(a–d) [12 Marks]</span> Why cost curves are U-shaped; AC vs MC graph; Isoquant/Isocost for q=100 (P_K=3, P_L=2, B=24); TC = 1500+80Q &amp; TR = 1400Q−6Q² (show MC=MR at max profit).</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a–b) U-Shape &amp; AC/MC:</strong> Initial increasing returns ($MP \uparrow$) pull MC down; subsequent diminishing returns ($MP \downarrow$) push MC up. Rising MC pulls AC down while $MC &lt; AC$, cuts AC at minimum AC, then pulls AC up.</p>
+              <p><strong>(c) Isoquant/Isocost ($P_K=3, P_L=2, B=24$):</strong> Isocost equation: $2L + 3K = 24$, with intercepts $L = 12$ and $K = 8$, slope $= -P_L/P_K = -2/3$. The optimal combination is the tangency point with the $q = 100$ isoquant (e.g., $L=6, K=4$ for symmetric tech) because any other point on $q=100$ lies on a higher cost line ($TC &gt; 24$).</p>
+              <p style="margin:0;"><strong>(d) Profit Maximization:</strong> $\pi = TR - TC = (1400Q - 6Q^2) - (1500 + 80Q) = -6Q^2 + 1320Q - 1500$. Set $d\pi/dQ = -12Q + 1320 = 0 \Rightarrow \mathbf{Q^* = 110}$ ($d^2\pi/dQ^2 = -12 &lt; 0$, maximum). At $Q = 110$: $MR = 1400 - 12(110) = \mathbf{80}$ and $MC = \mathbf{80}$, confirming $MC = MR$!</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-warn">Final 2023 Q5(c) &amp; 2nd In-course 2023 Q6 [5 Marks]</span> For TC = Q³ − 21Q² + 500Q, find MC, AC, where MC crosses AC, and minimum AC &amp; minimum MC.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Functions:</strong> $MC = 3Q^2 - 42Q + 500$, $AC = Q^2 - 21Q + 500$.</p>
+              <p><strong>Intersection ($MC = AC$) &amp; Min AC:</strong> Occurs at <strong>$Q = 10.5$</strong>, where <strong>$\text{min } AC = 389.75$</strong>.</p>
+              <p style="margin:0;"><strong>Minimum MC:</strong> Set $d(MC)/dQ = 6Q - 42 = 0 \Rightarrow \mathbf{Q = 7}$ ($d^2MC/dQ^2 = 6 &gt; 0$). Minimum $MC = 3(49) - 42(7) + 500 = \mathbf{353}$. <em>(Verify both peaks live in the Section 2 Cubic Cost Lab!)</em></p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-purple">2nd In-course 2024 • Q4(1,2)</span> Cake production (flour, butter, egg, sugar): Least-cost rule + MC/AC relationship graph.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p style="margin:0;"><strong>Least-Cost Rule:</strong> $MP_{\text{flour}}/P_{\text{flour}} = MP_{\text{butter}}/P_{\text{butter}} = MP_{\text{egg}}/P_{\text{egg}} = MP_{\text{sugar}}/P_{\text{sugar}}$. Pair with the standard U-shaped AC curve pierced at its bottom by the rising MC curve.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Quick Mastery Check -->
+      <section class="section-card" id="sec-quiz">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 07 • Self-Assessment</div>
+            <h2>Lesson 9 Quick Mastery Check</h2>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="resetQuiz()">↻ Reset Quiz</button>
+        </div>
+        <div id="quizContainer"></div>
+        <div class="callout accent" id="quizSummary" style="display:none;"></div>
+      </section>
+
+      <footer>
+        ECON107 Interactive Course Series • Lesson 9: Analysis of Costs &amp; Least-Cost Input Choice • Module 2 Complete • ISRT, University of Dhaka
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme Toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('econ107_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('econ107_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      drawCostLab(); drawIsoLab();
+    });
+
+    // ---------- Scroll Progress & Active Nav ----------
+    const scrollFill = document.getElementById('scrollFill');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section-card');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      scrollFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      let currentId = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) currentId = sec.id; });
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + currentId));
+    });
+
+    // ---------- Completion Tracker ----------
+    const doneBtns = document.querySelectorAll('.done-btn');
+    let completedSet = new Set(JSON.parse(localStorage.getItem('econ107_l9_done') || '[]'));
+    function updateProgressUI() {
+      document.getElementById('progressText').textContent = `${completedSet.size}/${doneBtns.length} Done`;
+      document.getElementById('progressBar').style.width = `${(completedSet.size / doneBtns.length) * 100}%`;
+      doneBtns.forEach(btn => {
+        const isDone = completedSet.has(btn.dataset.section);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : '✓ Mark Done';
+      });
+    }
+    doneBtns.forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.section;
+      completedSet.has(k) ? completedSet.delete(k) : completedSet.add(k);
+      localStorage.setItem('econ107_l9_done', JSON.stringify([...completedSet]));
+      updateProgressUI();
+    }));
+    updateProgressUI();
+
+    // ---------- Accordion ----------
+    document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+
+    // ---------- Lab 1: Cost Curve & Cubic Calculus Lab ----------
+    const costCanvas = document.getElementById('costCanvas');
+    const cCtx = costCanvas.getContext('2d');
+    const cQSlider = document.getElementById('cQSlider');
+    const cFCSlider = document.getElementById('cFCSlider');
+    let costMode = 'tab73';
+
+    const vcTab73 = [0, 30, 55, 75, 105, 155, 225];
+    const mcTab73 = [null, 30, 25, 20, 30, 50, 70];
+
+    function setCostMode(mode) {
+      costMode = mode;
+      document.getElementById('cmTab73').classList.toggle('active', mode === 'tab73');
+      document.getElementById('cmCubic').classList.toggle('active', mode === 'cubic');
+      document.getElementById('fcSliderWrap').style.display = mode === 'tab73' ? 'block' : 'none';
+      document.getElementById('costMathBox').style.display = mode === 'cubic' ? 'block' : 'none';
+      if (mode === 'tab73') {
+        cQSlider.min = 1; cQSlider.max = 6; cQSlider.step = 1; cQSlider.value = 4;
+      } else {
+        cQSlider.min = 1; cQSlider.max = 16; cQSlider.step = 0.5; cQSlider.value = 10.5;
+      }
+      drawCostLab();
+    }
+
+    function drawCostLab() {
+      const Q = parseFloat(cQSlider.value);
+      const FC = parseFloat(cFCSlider.value);
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const W = costCanvas.width, H = costCanvas.height;
+      const pad = { l: 58, r: 24, t: 24, b: 46 };
+      cCtx.clearRect(0, 0, W, H);
+
+      // Axes
+      cCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      cCtx.lineWidth = 2;
+      cCtx.beginPath(); cCtx.moveTo(pad.l, pad.t); cCtx.lineTo(pad.l, H - pad.b); cCtx.lineTo(W - pad.r, H - pad.b); cCtx.stroke();
+
+      cCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      cCtx.font = 'bold 12px system-ui, sans-serif';
+      cCtx.textAlign = 'center';
+      cCtx.fillText('Output (Q)', (pad.l + W - pad.r) / 2, H - 12);
+      cCtx.save(); cCtx.translate(16, (pad.t + H - pad.b) / 2); cCtx.rotate(-Math.PI / 2);
+      cCtx.fillText('Unit Cost ($)', 0, 0); cCtx.restore();
+
+      if (costMode === 'tab73') {
+        const maxQ = 6.5, maxY = Math.max(110, FC + 45);
+        const sx = q => pad.l + (q / maxQ) * (W - pad.l - pad.r);
+        const sy = y => H - pad.b - (y / maxY) * (H - pad.t - pad.b);
+
+        // Plot helper
+        function plotPts(vals, color, dashed) {
+          cCtx.save();
+          if (dashed) cCtx.setLineDash([5, 4]);
+          cCtx.strokeStyle = color; cCtx.lineWidth = dashed ? 2.2 : 3;
+          cCtx.beginPath();
+          for (let q = 1; q <= 6; q++) {
+            const v = Math.min(maxY, vals[q]);
+            if (q === 1) cCtx.moveTo(sx(q), sy(v));
+            else cCtx.lineTo(sx(q), sy(v));
+          }
+          cCtx.stroke(); cCtx.restore();
+        }
+
+        const acArr = [null], afcArr = [null], avcArr = [null];
+        for (let q = 1; q <= 6; q++) {
+          acArr.push((FC + vcTab73[q]) / q);
+          afcArr.push(FC / q);
+          avcArr.push(vcTab73[q] / q);
+        }
+
+        plotPts(afcArr, '#94a3b8', true);
+        plotPts(avcArr, '#7c3aed', false);
+        plotPts(acArr, isDark ? '#38bdf8' : '#0f4c81', false);
+        plotPts(mcTab73, isDark ? '#2dd4bf' : '#0d9488', false);
+
+        // Legend
+        cCtx.font = 'bold 11px system-ui, sans-serif';
+        cCtx.textAlign = 'right';
+        cCtx.fillStyle = isDark ? '#2dd4bf' : '#0d9488'; cCtx.fillText('— MC', W - pad.r - 4, pad.t + 12);
+        cCtx.fillStyle = isDark ? '#38bdf8' : '#0f4c81'; cCtx.fillText('— AC', W - pad.r - 46, pad.t + 12);
+        cCtx.fillStyle = '#7c3aed'; cCtx.fillText('— AVC', W - pad.r - 86, pad.t + 12);
+        cCtx.fillStyle = '#94a3b8'; cCtx.fillText('-- AFC', W - pad.r - 134, pad.t + 12);
+
+        // X ticks
+        cCtx.fillStyle = isDark ? '#94a3b8' : '#475569';
+        cCtx.textAlign = 'center';
+        for (let q = 1; q <= 6; q++) cCtx.fillText(q, sx(q), H - pad.b + 16);
+
+        // Active marker
+        const iq = Math.round(Q);
+        cCtx.save(); cCtx.setLineDash([4, 4]); cCtx.strokeStyle = '#d97706';
+        cCtx.beginPath(); cCtx.moveTo(sx(iq), pad.t); cCtx.lineTo(sx(iq), H - pad.b); cCtx.stroke(); cCtx.restore();
+        cCtx.fillStyle = '#d97706';
+        cCtx.beginPath(); cCtx.arc(sx(iq), sy(Math.min(maxY, acArr[iq])), 6.5, 0, Math.PI * 2); cCtx.fill();
+
+        // Highlight table row if FC == 55
+        document.querySelectorAll('#costTable tbody tr').forEach(tr => tr.classList.toggle('active-row', parseInt(tr.dataset.q, 10) === iq));
+
+        document.getElementById('cQVal').textContent = `Q = ${iq}`;
+        document.getElementById('cFCVal').textContent = `$${FC}`;
+        const tc = FC + vcTab73[iq];
+        document.getElementById('costReadout').innerHTML = `
+          <span class="status-badge pill-primary">Table 7-3 • FC = $${FC}</span>
+          <div><strong>TC:</strong> $${tc} (FC $${FC} + VC $${vcTab73[iq]})</div>
+          <div><strong>AC:</strong> $${acArr[iq].toFixed(2)} = AFC ($${afcArr[iq].toFixed(2)}) + AVC ($${avcArr[iq].toFixed(2)})</div>
+          <div><strong>MC:</strong> $${mcTab73[iq]}</div>
+          <div class="muted" style="font-size:0.81rem; margin-top:0.25rem;">
+            ${FC === 145 ? 'Ch. 7 Q2 verified! With FC=$145, min AC shifts right to Q=5 ($60), while MC &amp; AVC stayed completely unchanged!' : 'Try dragging FC to $145: AC and AFC shift upward, while MC and AVC never budge!'}
+          </div>
+        `;
+      } else {
+        // Cubic: TC = Q^3 - 21Q^2 + 500Q => AC = Q^2 - 21Q + 500, MC = 3Q^2 - 42Q + 500
+        const acFn = q => q * q - 21 * q + 500;
+        const mcFn = q => 3 * q * q - 42 * q + 500;
+        const minY = 320, maxY = 620, maxQ = 16.5;
+        const sx = q => pad.l + (q / maxQ) * (W - pad.l - pad.r);
+        const sy = y => H - pad.b - ((y - minY) / (maxY - minY)) * (H - pad.t - pad.b);
+
+        // Plot AC
+        cCtx.strokeStyle = isDark ? '#38bdf8' : '#0f4c81';
+        cCtx.lineWidth = 3.2;
+        cCtx.beginPath();
+        for (let q = 0.5; q <= 16; q += 0.2) {
+          const y = acFn(q);
+          if (y <= maxY) {
+            if (q === 0.5) cCtx.moveTo(sx(q), sy(y)); else cCtx.lineTo(sx(q), sy(y));
+          }
+        }
+        cCtx.stroke();
+
+        // Plot MC
+        cCtx.strokeStyle = isDark ? '#2dd4bf' : '#0d9488';
+        cCtx.lineWidth = 3.2;
+        cCtx.beginPath();
+        let mStart = false;
+        for (let q = 0.5; q <= 16; q += 0.2) {
+          const y = mcFn(q);
+          if (y <= maxY && y >= minY) {
+            if (!mStart) { cCtx.moveTo(sx(q), sy(y)); mStart = true; } else cCtx.lineTo(sx(q), sy(y));
+          }
+        }
+        cCtx.stroke();
+
+        // Mark Min MC (7, 353) and Min AC (10.5, 389.75)
+        cCtx.fillStyle = '#0d9488'; cCtx.beginPath(); cCtx.arc(sx(7), sy(353), 5, 0, Math.PI * 2); cCtx.fill();
+        cCtx.fillStyle = '#7c3aed'; cCtx.beginPath(); cCtx.arc(sx(10.5), sy(389.75), 6, 0, Math.PI * 2); cCtx.fill();
+        cCtx.font = 'bold 11px system-ui, sans-serif';
+        cCtx.textAlign = 'left';
+        cCtx.fillText('Min AC = MC (10.5, 389.75)', sx(10.5) - 65, sy(389.75) - 12);
+
+        // X ticks
+        cCtx.fillStyle = isDark ? '#94a3b8' : '#475569';
+        cCtx.textAlign = 'center';
+        for (let q = 2; q <= 16; q += 2) cCtx.fillText(q, sx(q), H - pad.b + 16);
+
+        // Active Q point
+        const acV = acFn(Q), mcV = mcFn(Q);
+        cCtx.save(); cCtx.setLineDash([4, 4]); cCtx.strokeStyle = '#d97706';
+        cCtx.beginPath(); cCtx.moveTo(sx(Q), pad.t); cCtx.lineTo(sx(Q), H - pad.b); cCtx.stroke(); cCtx.restore();
+        if (acV <= maxY) { cCtx.fillStyle = '#0f4c81'; cCtx.beginPath(); cCtx.arc(sx(Q), sy(acV), 6, 0, Math.PI * 2); cCtx.fill(); }
+        if (mcV <= maxY) { cCtx.fillStyle = '#0d9488'; cCtx.beginPath(); cCtx.arc(sx(Q), sy(mcV), 6, 0, Math.PI * 2); cCtx.fill(); }
+
+        document.getElementById('cQVal').textContent = `Q = ${Q.toFixed(1)}`;
+        const rel = Math.abs(mcV - acV) < 0.1 ? 'MC = AC ⇒ EXACT MINIMUM AC!' : mcV < acV ? 'MC < AC ⇒ AC is FALLING' : 'MC > AC ⇒ AC is RISING';
+        const badge = Math.abs(mcV - acV) < 0.1 ? 'pill-success' : mcV < acV ? 'pill-primary' : 'pill-warn';
+        document.getElementById('costReadout').innerHTML = `
+          <span class="status-badge ${badge}">${rel}</span>
+          <div><strong>At Q = ${Q.toFixed(1)}:</strong> AC = <strong>${acV.toFixed(2)}</strong> &nbsp;|&nbsp; MC = <strong>${mcV.toFixed(2)}</strong></div>
+          <div class="muted" style="font-size:0.81rem; margin-top:0.2rem;">
+            Notice between Q=7 and Q=10.5: MC is rising, yet AC is still falling because MC &lt; AC!
+          </div>
+        `;
+        document.getElementById('costMathBox').innerHTML = `
+          TC = Q³ − 21Q² + 500Q<br>
+          MC = d(TC)/dQ = 3Q² − 42Q + 500 &nbsp;(Min MC = <strong>353</strong> at Q = <strong>7</strong>)<br>
+          AC = TC/Q = Q² − 21Q + 500 &nbsp;(Min AC = <strong>389.75</strong> at Q = <strong>10.5</strong>)
+        `;
+      }
+    }
+    cQSlider.addEventListener('input', drawCostLab);
+    cFCSlider.addEventListener('input', drawCostLab);
+    drawCostLab();
+
+    // ---------- Lab 2: Isoquant & Isocost Tangency Lab ----------
+    const isoCanvas = document.getElementById('isoCanvas');
+    const iCtx = isoCanvas.getContext('2d');
+    const isoPL = document.getElementById('isoPLSlider');
+    const isoPK = document.getElementById('isoPKSlider');
+    const isoB = document.getElementById('isoBSlider');
+    let isoLabel = 'Samuelson Fig 7A-3 (P_L=$2, P_A=$3, B=$12 → C: 3L, 2A)';
+
+    function setIsoPreset(pl, pk, b, label, btn) {
+      isoPL.value = pl; isoPK.value = pk; isoB.value = b;
+      isoLabel = label;
+      if (btn) {
+        btn.parentElement.querySelectorAll('.chip-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      drawIsoLab();
+    }
+
+    function drawIsoLab() {
+      const PL = parseFloat(isoPL.value);
+      const PK = parseFloat(isoPK.value);
+      const B = parseFloat(isoB.value);
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+      // Production function Q = 100 * sqrt(2 * L * K) => symmetric Cobb-Douglas (L^0.5 * K^0.5)
+      // Optimal tangency: L* = B / (2*PL), K* = B / (2*PK), Q* = 100 * sqrt(2 * L* * K*)
+      const lStar = B / (2 * PL);
+      const kStar = B / (2 * PK);
+      const qStar = 100 * Math.sqrt(2 * lStar * kStar);
+      const lMax = B / PL, kMax = B / PK;
+
+      document.getElementById('isoPLVal').textContent = `$${PL.toFixed(2)}`;
+      document.getElementById('isoPKVal').textContent = `$${PK.toFixed(2)}`;
+      document.getElementById('isoBVal').textContent = `$${B.toFixed(2)}`;
+
+      const W = isoCanvas.width, H = isoCanvas.height;
+      const pad = { l: 54, r: 24, t: 24, b: 46 };
+      const axisMax = Math.max(10, Math.ceil(Math.max(lMax, kMax) + 1));
+      const sx = l => pad.l + (l / axisMax) * (W - pad.l - pad.r);
+      const sy = k => H - pad.b - (k / axisMax) * (H - pad.t - pad.b);
+
+      iCtx.clearRect(0, 0, W, H);
+
+      // Grid
+      iCtx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0';
+      iCtx.lineWidth = 1;
+      for (let i = 2; i <= axisMax; i += 2) {
+        iCtx.beginPath(); iCtx.moveTo(sx(i), pad.t); iCtx.lineTo(sx(i), H - pad.b); iCtx.stroke();
+        iCtx.beginPath(); iCtx.moveTo(pad.l, sy(i)); iCtx.lineTo(W - pad.r, sy(i)); iCtx.stroke();
+      }
+
+      // Axes
+      iCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      iCtx.lineWidth = 2;
+      iCtx.beginPath(); iCtx.moveTo(pad.l, pad.t); iCtx.lineTo(pad.l, H - pad.b); iCtx.lineTo(W - pad.r, H - pad.b); iCtx.stroke();
+
+      iCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      iCtx.font = 'bold 12px system-ui, sans-serif';
+      iCtx.textAlign = 'center';
+      iCtx.fillText('Labor (L)', (pad.l + W - pad.r) / 2, H - 12);
+      iCtx.save(); iCtx.translate(16, (pad.t + H - pad.b) / 2); iCtx.rotate(-Math.PI / 2);
+      iCtx.fillText('Land / Capital (K)', 0, 0); iCtx.restore();
+
+      // Parallel Isocost Lines (0.65*B, 1.0*B, 1.35*B)
+      [0.65, 1.0, 1.35].forEach(mult => {
+        const bm = B * mult;
+        iCtx.save();
+        if (mult !== 1.0) iCtx.setLineDash([5, 5]);
+        iCtx.strokeStyle = mult === 1.0 ? (isDark ? '#38bdf8' : '#0f4c81') : '#94a3b8';
+        iCtx.lineWidth = mult === 1.0 ? 3 : 1.6;
+        iCtx.beginPath();
+        iCtx.moveTo(sx(0), sy(Math.min(axisMax, bm / PK)));
+        // exact clipped line
+        const y0 = bm / PK, x0 = bm / PL;
+        let p1x = 0, p1y = y0;
+        if (p1y > axisMax) { p1y = axisMax; p1x = (bm - PK * axisMax) / PL; }
+        let p2x = x0, p2y = 0;
+        if (p2x > axisMax) { p2x = axisMax; p2y = (bm - PL * axisMax) / PK; }
+        iCtx.moveTo(sx(p1x), sy(p1y)); iCtx.lineTo(sx(p2x), sy(p2y));
+        iCtx.stroke();
+        iCtx.restore();
+      });
+
+      // Optimal Isoquant: L * K = lStar * kStar
+      const prodConst = lStar * kStar;
+      iCtx.strokeStyle = isDark ? '#2dd4bf' : '#0d9488';
+      iCtx.lineWidth = 3.2;
+      iCtx.beginPath();
+      let started = false;
+      for (let l = 0.25; l <= axisMax; l += 0.1) {
+        const k = prodConst / l;
+        if (k <= axisMax && k >= 0.1) {
+          if (!started) { iCtx.moveTo(sx(l), sy(k)); started = true; }
+          else iCtx.lineTo(sx(l), sy(k));
+        }
+      }
+      iCtx.stroke();
+
+      // Tangency Point
+      iCtx.save();
+      iCtx.setLineDash([4, 4]);
+      iCtx.strokeStyle = '#7c3aed';
+      iCtx.lineWidth = 1.5;
+      iCtx.beginPath(); iCtx.moveTo(pad.l, sy(kStar)); iCtx.lineTo(sx(lStar), sy(kStar)); iCtx.lineTo(sx(lStar), H - pad.b); iCtx.stroke();
+      iCtx.restore();
+
+      iCtx.fillStyle = '#7c3aed';
+      iCtx.beginPath(); iCtx.arc(sx(lStar), sy(kStar), 7, 0, Math.PI * 2); iCtx.fill();
+      iCtx.strokeStyle = '#fff'; iCtx.lineWidth = 2; iCtx.stroke();
+      iCtx.font = 'bold 12px system-ui, sans-serif';
+      iCtx.textAlign = 'left';
+      iCtx.fillText(`Optimal (L=${lStar.toFixed(1)}, K=${kStar.toFixed(1)})`, sx(lStar) + 10, sy(kStar) - 8);
+
+      document.getElementById('isoReadout').innerHTML = `
+        <span class="status-badge pill-accent">${isoLabel}</span>
+        <div><strong>Isocost Line:</strong> ${PL}L + ${PK}K = ${B} &nbsp;|&nbsp; <strong>Slope:</strong> −P<sub>L</sub>/P<sub>K</sub> = −${(PL / PK).toFixed(2)}</div>
+        <div style="margin-top:0.25rem;"><strong>Optimal Mix:</strong> <strong>L* = ${lStar.toFixed(2)}</strong>, <strong>K* = ${kStar.toFixed(2)}</strong> &nbsp;|&nbsp; <strong>Output q* ≈ ${Math.round(qStar)}</strong></div>
+        <div class="muted" style="font-size:0.8rem; margin-top:0.2rem;">At tangency, MRTS (MP<sub>L</sub>/MP<sub>K</sub>) = P<sub>L</sub>/P<sub>K</sub> = ${(PL / PK).toFixed(2)} ⇒ MP<sub>L</sub>/P<sub>L</sub> = MP<sub>K</sub>/P<sub>K</sub>.</div>
+      `;
+    }
+    [isoPL, isoPK, isoB].forEach(s => s.addEventListener('input', () => { isoLabel = 'Custom Input Prices / Budget'; drawIsoLab(); }));
+    drawIsoLab();
+
+    // ---------- Quick Mastery Check Quiz ----------
+    const quizData = [
+      {
+        q: "1. If a firm's Fixed Cost (FC) increases from $55 to $145 (while Variable Cost stays unchanged), which curves do NOT shift at all?",
+        opts: [
+          "AC and AFC",
+          "TC and AC",
+          "MC and AVC",
+          "All cost curves shift upward."
+        ],
+        ans: 2,
+        exp: "Because fixed cost does not vary with output, adding to FC raises TC, AC, and AFC, but leaves Variable Cost (VC), AVC, and Marginal Cost (MC = dVC/dq) completely unchanged!"
+      },
+      {
+        q: "2. Why does the rising Marginal Cost (MC) curve always intersect the Average Cost (AC) curve at the bottom of AC's U-shape?",
+        opts: [
+          "Because MC equals fixed cost at that output.",
+          "Because when MC < AC it pulls AC down, and when MC > AC it pulls AC up—so AC is flat (minimized) precisely where MC = AC.",
+          "Because AFC reaches its maximum there.",
+          "Because diminishing returns stop at that output."
+        ],
+        ans: 1,
+        exp: "Just like a batting average or GPA: any marginal value below the average pulls the average down; any marginal value above pulls it up; equality marks the exact minimum."
+      },
+      {
+        q: "3. Given TC = Q³ − 21Q² + 500Q (Final 2023 & 2025 PYQ), at what output level Q does MC equal AC (minimizing AC)?",
+        opts: ["Q = 7", "Q = 10.5", "Q = 21", "Q = 15"],
+        ans: 1,
+        exp: "MC = 3Q² − 42Q + 500 and AC = Q² − 21Q + 500. Setting MC = AC gives 2Q² = 21Q ⇒ Q = 10.5 (where min AC = 389.75)."
+      },
+      {
+        q: "4. A toy firm uses paper, glue, and craftsmen. If the price of glue FALLS, what does the Substitution Rule predict?",
+        opts: [
+          "The firm will use less glue and more paper.",
+          "The firm will substitute more glue for other inputs until MP_glue / P_glue equals MP/P of paper and craftsmen again.",
+          "The firm will shut down.",
+          "Nothing changes because glue is a variable input."
+        ],
+        ans: 1,
+        exp: "A lower P_glue raises MP_glue / P_glue above other inputs, making it profitable to use more glue until diminishing MP_glue restores equality."
+      },
+      {
+        q: "5. What happens to a firm's isocost line and optimal input bundle if its production budget DECREASES while input prices remain unchanged?",
+        opts: [
+          "The isocost line rotates steeper.",
+          "The isocost line makes a parallel shift inward, reaching tangency on a lower isoquant.",
+          "The isocost line shifts outward.",
+          "The slope of the isocost line becomes positive."
+        ],
+        ans: 1,
+        exp: "Unchanged input prices keep the slope (−P_L/P_K) constant while a smaller budget shrinks both intercepts—shifting the isocost line inward in parallel."
+      },
+      {
+        q: "6. True or False: Average Cost (AC) is always rising whenever Marginal Cost (MC) is rising.",
+        opts: ["True", "False"],
+        ans: 1,
+        exp: "False! Between minimum MC and minimum AC, MC is already rising but is still BELOW AC—so AC continues to fall until MC crosses it."
+      }
+    ];
+
+    let quizAnswers = {};
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        div.innerHTML = `
+          <div class="quiz-q-title">${item.q}</div>
+          <div class="quiz-opts">
+            ${item.opts.map((opt, oIdx) => `<button class="quiz-opt" type="button" onclick="answerQuiz(${idx}, ${oIdx}, this)">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${idx}">${item.exp}</div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('quizSummary').style.display = 'none';
+    }
+
+    function answerQuiz(qIdx, oIdx, btn) {
+      if (quizAnswers[qIdx] !== undefined) return;
+      quizAnswers[qIdx] = oIdx;
+      const allBtns = btn.closest('.quiz-q').querySelectorAll('.quiz-opt');
+      const correctIdx = quizData[qIdx].ans;
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === correctIdx) b.classList.add('is-correct');
+        else if (i === oIdx) b.classList.add('is-wrong');
+      });
+      document.getElementById(`qexp-${qIdx}`).classList.add('show');
+
+      if (Object.keys(quizAnswers).length === quizData.length) {
+        let score = 0;
+        quizData.forEach((q, i) => { if (quizAnswers[i] === q.ans) score++; });
+        const summary = document.getElementById('quizSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `
+          <div class="callout-title">Mastery Check Complete: ${score} / ${quizData.length} (${Math.round(score / quizData.length * 100)}%)</div>
+          ${score === quizData.length
+            ? "Module 2 Complete! You've mastered all 2nd In-Course topics (Lessons 6–9) and are ready to launch Module 3 with Lesson 10 (Mathematical Production Functions & Optimization)!"
+            : "Strong progress! Review the highlighted explanations above and reset the quiz to hit 100% before starting Module 3."}
+        `;
+      }
+    }
+
+    function resetQuiz() { quizAnswers = {}; renderQuiz(); }
+    renderQuiz();
+  </script>
+</body>
+</html>

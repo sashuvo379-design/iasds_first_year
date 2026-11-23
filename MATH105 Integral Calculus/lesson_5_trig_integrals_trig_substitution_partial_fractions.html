@@ -1,0 +1,3287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5: Trig Integrals, Trig Substitution &amp; Partial Fractions — MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — MODERN DARK ACADEMIC UI (MATH 105 COHESIVE THEME)
+       ========================================================================== */
+    :root {
+      --bg-page: #0b1120;
+      --bg-nav: #111827;
+      --bg-surface: #1e293b;
+      --bg-subtle: #151f32;
+      --bg-elevated: #273549;
+      --border: #334155;
+      --border-strong: #475569;
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --indigo: #6366f1;
+      --indigo-light: #818cf8;
+      --indigo-dark: #4f46e5;
+      --indigo-soft: rgba(99, 102, 241, 0.16);
+      --indigo-border: rgba(129, 140, 248, 0.36);
+
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --emerald-border: rgba(52, 211, 153, 0.34);
+
+      --amber: #f59e0b;
+      --amber-light: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.34);
+
+      --rose: #f43f5e;
+      --rose-light: #fb7185;
+      --rose-soft: rgba(244, 63, 94, 0.14);
+      --rose-border: rgba(251, 113, 133, 0.36);
+
+      --cyan: #06b6d4;
+      --cyan-light: #22d3ee;
+      --cyan-soft: rgba(6, 182, 212, 0.15);
+      --cyan-border: rgba(34, 211, 238, 0.35);
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.38);
+      --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.5);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-w: 292px;
+      --header-h: 64px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    code, .mono {
+      font-family: var(--font-mono);
+    }
+
+    button, select, input {
+      font-family: inherit;
+    }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+    /* ==========================================================================
+       TOP HEADER
+       ========================================================================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--header-h);
+      background: rgba(17, 24, 39, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      color: var(--indigo-light);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .header-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan-light);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       APP SHELL & STICKY LEFT SIDEBAR
+       ========================================================================== */
+    .app-shell {
+      display: flex;
+      max-width: 1460px;
+      margin: 0 auto;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .sidebar {
+      position: sticky;
+      top: var(--header-h);
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 30;
+      transition: transform 0.28s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 4px;
+    }
+
+    .sidebar-course {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-sub {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .module-jump-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan-light);
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .module-jump-badge:hover {
+      background: rgba(6, 182, 212, 0.25);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.72);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    .progress-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-pct {
+      font-family: var(--font-mono);
+      color: var(--emerald-light);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--indigo), var(--cyan), var(--emerald));
+      transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .nav-label {
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 10px;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+    }
+
+    .nav-link.active {
+      background: var(--indigo-soft);
+      color: var(--indigo-light);
+      border-color: var(--indigo-border);
+      font-weight: 600;
+    }
+
+    .nav-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-link.active .nav-num {
+      background: var(--indigo);
+      color: #ffffff;
+      border-color: var(--indigo);
+    }
+
+    .nav-check {
+      margin-left: auto;
+      color: var(--emerald-light);
+      font-weight: 800;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link.done .nav-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .lesson-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 0.79rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .lesson-nav-btn:hover {
+      border-color: var(--indigo-light);
+      color: var(--text-primary);
+      background: var(--indigo-soft);
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 28px 32px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .lesson-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #0e7490 100%);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34, 211, 238, 0.25) 0%, rgba(99, 102, 241, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(11, 17, 32, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .lesson-hero h1 {
+      font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .lesson-hero p {
+      max-width: 820px;
+      color: rgba(241, 245, 249, 0.92);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background: rgba(11, 17, 32, 0.42);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       SECTION STRUCTURE & CARDS
+       ========================================================================== */
+    .section-block {
+      scroll-margin-top: calc(var(--header-h) + 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan-light);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+
+    .section-desc {
+      font-size: 0.91rem;
+      color: var(--text-secondary);
+      max-width: 760px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ==========================================================================
+       BUTTONS, TABS & CONTROLS
+       ========================================================================== */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--indigo-light);
+      color: var(--indigo-light);
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--indigo-dark);
+      border-color: var(--indigo-dark);
+      color: #ffffff;
+    }
+
+    .btn-cyan {
+      background: var(--cyan-soft);
+      border-color: var(--cyan-border);
+      color: var(--cyan-light);
+    }
+
+    .btn-cyan:hover:not(:disabled) {
+      background: rgba(6, 182, 212, 0.25);
+    }
+
+    .btn-sm {
+      padding: 6px 11px;
+      font-size: 0.78rem;
+    }
+
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mode-tab {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .mode-tab:hover {
+      border-color: var(--indigo-light);
+      color: var(--text-primary);
+    }
+
+    .mode-tab.active {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #ffffff;
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.35);
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--cyan-light);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      padding: 2px 9px;
+      border-radius: var(--radius-sm);
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    /* ==========================================================================
+       SECTION 1: DECISION TREE FLOWCHART & SELF-DIAGNOSER
+       ========================================================================== */
+    .preset-pills {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .preset-pill {
+      text-align: left;
+      padding: 11px 13px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .preset-pill:hover {
+      border-color: var(--indigo-light);
+      transform: translateY(-1px);
+    }
+
+    .preset-pill.active {
+      background: var(--indigo-soft);
+      border-color: var(--indigo-light);
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.25);
+    }
+
+    .pill-tag {
+      font-family: var(--font-mono);
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--cyan-light);
+    }
+
+    .pill-math {
+      font-size: 0.92rem;
+      overflow-x: auto;
+    }
+
+    /* 3-Stage Visual Flowchart */
+    .flowchart-row {
+      display: grid;
+      grid-template-columns: 1fr 28px 1fr 28px 1fr;
+      gap: 8px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .flow-node {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--indigo);
+      border-radius: var(--radius-md);
+      padding: 15px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      animation: fadeSlide 0.25s ease;
+    }
+
+    .flow-node.stage-1 { border-top-color: var(--cyan); }
+    .flow-node.stage-2 { border-top-color: var(--indigo); }
+    .flow-node.stage-3 { border-top-color: var(--emerald); }
+
+    .flow-stage-label {
+      font-family: var(--font-mono);
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stage-1 .flow-stage-label { color: var(--cyan-light); }
+    .stage-2 .flow-stage-label { color: var(--indigo-light); }
+    .stage-3 .flow-stage-label { color: var(--emerald-light); }
+
+    .flow-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .flow-body {
+      font-size: 0.87rem;
+      color: var(--text-secondary);
+      overflow-x: auto;
+    }
+
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--amber-light);
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    /* 4-Step Stepper */
+    .stepper-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .stepper-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .step-card {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--indigo);
+      border-radius: var(--radius-sm);
+      padding: 13px 15px;
+      font-size: 0.92rem;
+      overflow-x: auto;
+    }
+
+    .step-card.visible {
+      display: block;
+      animation: fadeSlide 0.24s ease;
+    }
+
+    .step-card.final-step {
+      border-left-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .step-label {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--indigo-light);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .step-card.final-step .step-label { color: var(--emerald-light); }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tab B: Self-Diagnoser Wizard */
+    .wizard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .wizard-card {
+      text-align: left;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .wizard-card:hover {
+      border-color: var(--cyan-light);
+      background: var(--cyan-soft);
+      transform: translateY(-2px);
+    }
+
+    .wizard-card.selected {
+      border-color: var(--indigo-light);
+      background: var(--indigo-soft);
+    }
+
+    .wizard-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--amber-light);
+      text-transform: uppercase;
+    }
+
+    .wizard-result-box {
+      margin-top: 16px;
+      background: var(--bg-page);
+      border: 1px solid var(--emerald-border);
+      border-left: 4px solid var(--emerald);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeSlide 0.24s ease;
+    }
+
+    /* ==========================================================================
+       SECTION 2: REFERENCE TRIANGLE LAB & PARTIAL FRACTIONS PIPELINE
+       ========================================================================== */
+    .tri-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .radical-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .rad-btn {
+      padding: 11px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: center;
+    }
+
+    .rad-btn:hover {
+      border-color: var(--cyan-light);
+      color: var(--text-primary);
+    }
+
+    .rad-btn.active {
+      background: var(--cyan-soft);
+      border-color: var(--cyan-light);
+      color: var(--text-primary);
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.22);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10.5;
+      min-height: 290px;
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch-opp { background: var(--rose-light); }
+    .swatch-adj { background: var(--emerald-light); }
+    .swatch-hyp { background: var(--cyan-light); }
+    .swatch-ang { background: var(--amber-light); }
+
+    .ratio-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .ratio-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .ratio-card.highlight {
+      background: var(--indigo-soft);
+      border-color: var(--indigo-border);
+    }
+
+    .ratio-name {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .ratio-val {
+      font-size: 0.92rem;
+      color: var(--text-primary);
+    }
+
+    /* Partial Fractions 4-Stage Pipeline */
+    .pf-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .pf-btn {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .pf-btn:hover { border-color: var(--indigo-light); }
+    .pf-btn.active {
+      background: var(--indigo-soft);
+      border-color: var(--indigo-light);
+    }
+
+    .pipeline-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .pipe-step {
+      padding: 11px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-page);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .pipe-step.reached {
+      border-color: var(--emerald-border);
+      color: var(--emerald-light);
+      background: var(--emerald-soft);
+    }
+
+    .pipe-step.current {
+      border-color: var(--indigo-light);
+      background: var(--indigo);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+    }
+
+    .pf-stage-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--indigo);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      min-height: 155px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-x: auto;
+      animation: fadeSlide 0.24s ease;
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY TABLES & ROSE EXAM TRAPS
+       ========================================================================== */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .theory-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theory-card h3 {
+      font-size: 1.06rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .formula-banner {
+      background: var(--bg-subtle);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+
+    .ref-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    table.ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+      background: var(--bg-surface);
+    }
+
+    table.ref-table th, table.ref-table td {
+      padding: 11px 13px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    table.ref-table th {
+      background: var(--bg-subtle);
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    table.ref-table tr:last-child td { border-bottom: none; }
+
+    .traps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 14px;
+    }
+
+    .trap-card {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .trap-card-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--rose-light);
+    }
+
+    /* ==========================================================================
+       SECTION 4: ISRT PAST-EXAM VAULT
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 15px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--indigo-light);
+      color: var(--text-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #ffffff;
+    }
+
+    .vault-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .exam-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .exam-card.hidden { display: none; }
+
+    .exam-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exam-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      color: var(--indigo-light);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .mark-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-light);
+    }
+
+    .exam-prompt {
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+    }
+
+    .hint-box.open { display: block; }
+
+    .solution-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .solution-box.open { display: flex; }
+
+    .sol-step {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--emerald);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.91rem;
+      overflow-x: auto;
+    }
+
+    .sol-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--emerald-light);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       SECTION 5: QUICK MASTERY CHECK (QUIZ)
+       ========================================================================== */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--emerald-light);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-qnum {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--cyan-light);
+      text-transform: uppercase;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--indigo-light);
+      background: var(--indigo-soft);
+    }
+
+    .quiz-opt.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .quiz-opt.wrong {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: var(--emerald-soft); border: 1px solid var(--emerald-border); }
+    .quiz-feedback.err { background: var(--rose-soft); border: 1px solid var(--rose-border); }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 60;
+      background: var(--bg-elevated);
+      border: 1px solid var(--cyan-border);
+      color: var(--text-primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1080px) {
+      .tri-grid { grid-template-columns: 1fr; }
+      .flowchart-row {
+        grid-template-columns: 1fr;
+      }
+      .flow-arrow { transform: rotate(90deg); height: 22px; }
+      .main-content { padding: 22px 20px 56px; }
+    }
+
+    @media (max-width: 860px) {
+      .menu-btn { display: inline-flex; }
+      .header-subtitle, .header-chip { display: none; }
+      .sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        height: calc(100vh - var(--header-h));
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .pipeline-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 540px) {
+      .top-header { padding: 0 12px; }
+      .main-content { padding: 16px 14px 48px; }
+      .card, .exam-card, .theory-card, .quiz-card { padding: 16px; }
+      .lesson-hero { padding: 20px 18px; }
+      .radical-selector { grid-template-columns: 1fr; }
+      .ratio-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP HEADER
+       ======================================================================== -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="brand-badge">MATH 105 &middot; Lesson 5</span>
+      <span class="header-subtitle">ISRT, University of Dhaka &mdash; Trig Integrals, Trig Substitution &amp; Partial Fractions</span>
+    </div>
+
+    <span class="header-chip">Module 2 &bull; Integration Techniques</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ========================================================================
+       APP SHELL
+       ======================================================================== -->
+  <div class="app-shell">
+
+    <!-- STICKY LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Lesson 5 navigation">
+      <div class="sidebar-brand">
+        <div class="sidebar-course">MATH 105 &middot; Lesson 5</div>
+        <div class="sidebar-sub">ISRT, University of Dhaka</div>
+        <button type="button" class="module-jump-badge" id="moduleJumpBtn">
+          &#9889; Module 2 &bull; Techniques (L4&ndash;L7)
+        </button>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Mastery Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-caption" id="progressCaption">Explore the labs, past-exam vault &amp; mastery quiz.</p>
+      </div>
+
+      <nav>
+        <div class="nav-label">Lesson 5 Sections</div>
+        <ul class="nav-list" id="sidebarNav">
+          <li>
+            <a class="nav-link active" href="#section-lab1" data-section="section-lab1">
+              <span class="nav-num">1</span>
+              <span>Technique Decision Tree</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-lab2" data-section="section-lab2">
+              <span class="nav-num">2</span>
+              <span>Triangle &amp; Partial Fractions</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-theory" data-section="section-theory">
+              <span class="nav-num">3</span>
+              <span>Core Theory &amp; Traps</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-vault" data-section="section-vault">
+              <span class="nav-num">4</span>
+              <span>ISRT Past-Exam Vault</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-quiz" data-section="section-quiz">
+              <span class="nav-num">5</span>
+              <span>Quick Mastery Check</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button type="button" class="lesson-nav-btn" id="prevLessonBtn">
+          <span>&larr; Previous Lesson</span>
+          <span class="mono" style="color:var(--text-muted);">Lesson 4</span>
+        </button>
+        <button type="button" class="lesson-nav-btn" id="nextLessonBtn">
+          <span>Next Lesson &rarr;</span>
+          <span class="mono" style="color:var(--cyan-light);">Lesson 6</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="lesson-hero">
+        <div class="hero-eyebrow">Module 2: Integration Techniques &amp; Special Functions &bull; Lesson 5 of 17</div>
+        <h1>Trig Integrals, Trig Substitution &amp; Partial Fractions</h1>
+        <p>
+          Diagnose any "Integrate any two" exam problem in seconds: master trig parity rules, visualize reference-triangle back-substitution on a live canvas, apply Weierstrass $t = \tan(x/2)$ substitutions, and execute polynomial long division + partial fraction decompositions cleanly.
+        </p>
+        <div class="hero-pills">
+          <span class="hero-pill">Trig Powers ($\sin/\cos, \tan/\sec$)</span>
+          <span class="hero-pill">Trig Sub &amp; Reference Triangles</span>
+          <span class="hero-pill">Weierstrass $t=\tan(x/2)$</span>
+          <span class="hero-pill">Partial Fractions &amp; Long Division</span>
+          <span class="hero-pill">8 Authentic ISRT Problems</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 1: INTERACTIVE TECHNIQUE DECISION TREE & DIAGNOSTIC LAB
+           ==================================================================== -->
+      <section class="section-block" id="section-lab1">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 1 &bull; Interactive Lab 1</span>
+            <h2>1. Technique Decision Tree &amp; Diagnostic Lab</h2>
+          </div>
+          <p class="section-desc">
+            Pick an actual ISRT exam integral to watch the 3-stage diagnostic flowchart light up, or use the Self-Diagnoser wizard to classify any new problem.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="mode-tabs" role="tablist" aria-label="Diagnostic Lab Modes">
+            <button type="button" class="mode-tab active" data-group="lab1" data-tab="lab1-tabA">Tab A: Diagnose an ISRT Exam Integral</button>
+            <button type="button" class="mode-tab" data-group="lab1" data-tab="lab1-tabB">Tab B: Interactive Self-Diagnoser</button>
+          </div>
+
+          <!-- TAB A: 8 ISRT PRESETS + 3-STAGE FLOWCHART + 4-STEP STEPPER -->
+          <div class="tab-pane active" id="lab1-tabA">
+            <div class="control-label" style="margin-bottom:10px;">
+              <span>Select an ISRT MATH 105 Exam Integral (8 Presets)</span>
+              <span class="mono" style="color:var(--amber-light);font-size:0.74rem;" id="diagSourceBadge">2nd Incourse 2018 Q3(ii)</span>
+            </div>
+
+            <div class="preset-pills" id="diagPresetPills">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- 3-Stage Visual Flowchart -->
+            <div class="flowchart-row" id="diagFlowchart">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- 4-Step Interactive Solution Stepper -->
+            <div class="stepper-panel">
+              <div class="stepper-top">
+                <div>
+                  <span class="section-tag" style="margin-bottom:2px;">Step-by-Step Solution Stepper</span>
+                  <span class="mono" style="font-size:0.82rem;color:var(--text-muted);" id="diagStepCounter">Step 1 of 4</span>
+                </div>
+                <div class="btn-row">
+                  <button type="button" class="btn btn-sm" id="diagPrevBtn">&larr; Prev</button>
+                  <button type="button" class="btn btn-sm btn-primary" id="diagNextBtn">Next &rarr;</button>
+                  <button type="button" class="btn btn-sm" id="diagResetBtn">Reset</button>
+                </div>
+              </div>
+              <div id="diagStepsContainer" style="display:flex;flex-direction:column;gap:10px;">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB B: INTERACTIVE SELF-DIAGNOSER WIZARD -->
+          <div class="tab-pane" id="lab1-tabB">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
+              <div>
+                <span class="section-tag" style="margin-bottom:2px;">Step 1 of Wizard</span>
+                <h3 style="font-size:1.05rem;font-weight:700;">Does your integrand contain...?</h3>
+              </div>
+              <button type="button" class="btn btn-sm" id="wizardResetBtn">&#8634; Restart Wizard</button>
+            </div>
+
+            <div class="wizard-grid" id="wizardLevel1">
+              <button type="button" class="wizard-card" data-wcat="trig">
+                <span class="wizard-badge">Category 1</span>
+                <strong>Powers of Trig Functions</strong>
+                <span style="font-size:0.84rem;color:var(--text-secondary);">$\sin^m x\cos^n x$ or $\tan^m x\sec^n x$</span>
+              </button>
+              <button type="button" class="wizard-card" data-wcat="radical">
+                <span class="wizard-badge">Category 2</span>
+                <strong>Quadratic Radicals</strong>
+                <span style="font-size:0.84rem;color:var(--text-secondary);">$\sqrt{a^2 - x^2},\; \sqrt{a^2 + x^2},\; \sqrt{x^2 - a^2}$</span>
+              </button>
+              <button type="button" class="wizard-card" data-wcat="rational">
+                <span class="wizard-badge">Category 3</span>
+                <strong>Rational Function</strong>
+                <span style="font-size:0.84rem;color:var(--text-secondary);">$\dfrac{P(x)}{Q(x)}$ (ratio of polynomials)</span>
+              </button>
+              <button type="button" class="wizard-card" data-wcat="weierstrass">
+                <span class="wizard-badge">Category 4</span>
+                <strong>Linear Trig in Denominator</strong>
+                <span style="font-size:0.84rem;color:var(--text-secondary);">$\dfrac{1}{a + b\sin x + c\cos x}$</span>
+              </button>
+            </div>
+
+            <div id="wizardLevel2" style="margin-top:18px;"></div>
+            <div id="wizardResult"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 2: REFERENCE TRIANGLE VISUALIZER & PARTIAL FRACTIONS BUILDER
+           ==================================================================== -->
+      <section class="section-block" id="section-lab2">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 2 &bull; Interactive Lab 2</span>
+            <h2>2. Reference Triangle Visualizer &amp; Partial Fractions Builder</h2>
+          </div>
+          <p class="section-desc">
+            Manipulate right triangles to master back-substitution ($\theta \to x$), then step through the 4-stage Partial Fractions &amp; Long Division pipeline.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="mode-tabs" role="tablist" aria-label="Lab 2 Modes">
+            <button type="button" class="mode-tab active" data-group="lab2" data-tab="lab2-tabA">Tab A: Right-Triangle Back-Substitution Lab</button>
+            <button type="button" class="mode-tab" data-group="lab2" data-tab="lab2-tabB">Tab B: Partial Fractions &amp; Long Division Stepper</button>
+          </div>
+
+          <!-- TAB A: RIGHT-TRIANGLE BACK-SUBSTITUTION LAB -->
+          <div class="tab-pane active" id="lab2-tabA">
+            <div class="radical-selector" id="radicalSelector">
+              <button type="button" class="rad-btn active" data-rad="sin">1) $\sqrt{a^2 - x^2}$ &rarr; $x = a\sin\theta$</button>
+              <button type="button" class="rad-btn" data-rad="tan">2) $\sqrt{a^2 + x^2}$ &rarr; $x = a\tan\theta$</button>
+              <button type="button" class="rad-btn" data-rad="sec">3) $\sqrt{x^2 - a^2}$ &rarr; $x = a\sec\theta$</button>
+            </div>
+
+            <div class="tri-grid">
+              <!-- Canvas Column -->
+              <div>
+                <div class="canvas-wrapper" id="triCanvasWrap">
+                  <canvas id="triCanvas" aria-label="Reference right triangle canvas"></canvas>
+                </div>
+                <div class="canvas-legend">
+                  <span class="legend-item"><span class="swatch swatch-opp"></span> Opposite</span>
+                  <span class="legend-item"><span class="swatch swatch-adj"></span> Adjacent</span>
+                  <span class="legend-item"><span class="swatch swatch-hyp"></span> Hypotenuse</span>
+                  <span class="legend-item"><span class="swatch swatch-ang"></span> Angle $\theta$</span>
+                </div>
+              </div>
+
+              <!-- Controls & Live 6-Ratio Readout Column -->
+              <div style="display:flex;flex-direction:column;gap:14px;">
+                <div class="control-group">
+                  <label class="control-label" for="triASlider">
+                    <span>Parameter ($a$)</span>
+                    <span class="control-value" id="triADisplay">a = 3</span>
+                  </label>
+                  <input type="range" id="triASlider" min="1" max="6" step="1" value="3" />
+                </div>
+
+                <div class="control-group">
+                  <label class="control-label" for="triThetaSlider">
+                    <span>Angle ($\theta$)</span>
+                    <span class="control-value" id="triThetaDisplay">&theta; = 37&deg;</span>
+                  </label>
+                  <input type="range" id="triThetaSlider" min="15" max="75" step="1" value="37" />
+                </div>
+
+                <div class="formula-banner" id="triSubSummary">
+                  <!-- Dynamic sub summary -->
+                </div>
+
+                <div class="ratio-grid" id="triRatioGrid">
+                  <!-- Dynamic 6 trig ratios -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB B: PARTIAL FRACTIONS & LONG DIVISION STEPPER -->
+          <div class="tab-pane" id="lab2-tabB">
+            <div class="pf-selector" id="pfSelector">
+              <!-- Populated by JS -->
+            </div>
+
+            <div class="pipeline-bar" id="pfPipelineBar">
+              <button type="button" class="pipe-step current" data-stage="0">1. Degree Check</button>
+              <button type="button" class="pipe-step" data-stage="1">2. Decomposition Template</button>
+              <button type="button" class="pipe-step" data-stage="2">3. Solve Constants $A,B,C$</button>
+              <button type="button" class="pipe-step" data-stage="3">4. Final Integral</button>
+            </div>
+
+            <div class="pf-stage-box" id="pfStageBox">
+              <!-- Populated by JS -->
+            </div>
+
+            <div class="btn-row" style="margin-top:14px;justify-content:space-between;">
+              <span class="mono" style="font-size:0.8rem;color:var(--text-muted);" id="pfStageCounter">Stage 1 of 4</span>
+              <div class="btn-row">
+                <button type="button" class="btn btn-sm" id="pfPrevBtn">&larr; Prev Stage</button>
+                <button type="button" class="btn btn-sm btn-primary" id="pfNextBtn">Next Stage &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 3: CORE THEORY, MASTER TABLES & ISRT EXAM TRAPS
+           ==================================================================== -->
+      <section class="section-block" id="section-theory">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 3 &bull; Exam-Ready Reference</span>
+            <h2>3. Core Theory, Reference Tables &amp; Exam Traps</h2>
+          </div>
+          <p class="section-desc">
+            Keep these parity rules, Weierstrass identities, partial fraction templates, and ISRT exam traps at your fingertips.
+          </p>
+        </div>
+
+        <!-- Card 1: Trig Integrals Parity Rules Table -->
+        <div class="card">
+          <h3 style="margin-bottom:12px;font-size:1.06rem;">1. Trig Integrals Parity Rules Table</h3>
+          <div class="ref-table-wrap">
+            <table class="ref-table">
+              <thead>
+                <tr>
+                  <th>Form</th>
+                  <th>Parity Condition</th>
+                  <th>Factor to Peel Off</th>
+                  <th>Identity &amp; Substitution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowspan="3">$\displaystyle \int \sin^m x\cos^n x\,dx$</td>
+                  <td><strong>$n$ odd</strong> ($\cos$ odd)</td>
+                  <td>Peel $\cos x\,dx$</td>
+                  <td>$\cos^2 x = 1 - \sin^2 x$, let $u = \sin x$</td>
+                </tr>
+                <tr>
+                  <td><strong>$m$ odd</strong> ($\sin$ odd)</td>
+                  <td>Peel $\sin x\,dx$</td>
+                  <td>$\sin^2 x = 1 - \cos^2 x$, let $u = \cos x$</td>
+                </tr>
+                <tr>
+                  <td><strong>Both $m, n$ even</strong></td>
+                  <td>None (power reduction)</td>
+                  <td>$\sin^2 x = \frac{1-\cos 2x}{2}$, $\cos^2 x = \frac{1+\cos 2x}{2}$</td>
+                </tr>
+                <tr>
+                  <td rowspan="2">$\displaystyle \int \tan^m x\sec^n x\,dx$</td>
+                  <td><strong>$n$ even</strong> ($\sec$ even, $n \ge 2$)</td>
+                  <td>Peel $\sec^2 x\,dx$</td>
+                  <td>$\sec^2 x = 1 + \tan^2 x$, let $u = \tan x$</td>
+                </tr>
+                <tr>
+                  <td><strong>$m$ odd</strong> ($\tan$ odd, $n \ge 1$)</td>
+                  <td>Peel $\sec x\tan x\,dx$</td>
+                  <td>$\tan^2 x = \sec^2 x - 1$, let $u = \sec x$</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="theory-grid">
+          <!-- Card 2: Weierstrass Half-Angle Substitution -->
+          <article class="theory-card">
+            <h3>2. Weierstrass Half-Angle Substitution</h3>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
+              Converts any rational function of $\sin x$ and $\cos x$ (e.g., $\int \frac{dx}{2+\cos x}$ or $\int \frac{dx}{2+3\sin x}$) into a pure rational integral in $t$:
+            </p>
+            <div class="formula-banner">
+              $$t = \tan\!\left(\frac{x}{2}\right) \quad \Longleftrightarrow \quad x = 2\tan^{-1}t$$
+              $$\sin x = \frac{2t}{1 + t^2}, \qquad \cos x = \frac{1 - t^2}{1 + t^2}, \qquad dx = \frac{2\,dt}{1 + t^2}$$
+            </div>
+            <p style="font-size:0.84rem;color:var(--amber-light);">
+              <strong>Exam Tip:</strong> Always multiply numerator &amp; denominator by $(1+t^2)$ immediately&mdash;it clears all inner fractions in one line!
+            </p>
+          </article>
+
+          <!-- Card 3: Partial Fractions 4-Case Template Table -->
+          <article class="theory-card">
+            <h3>3. Partial Fractions 4-Case Template</h3>
+            <div class="ref-table-wrap">
+              <table class="ref-table">
+                <thead>
+                  <tr>
+                    <th>Denominator / Case</th>
+                    <th>Required Action / Template</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Improper</strong> ($\deg P \ge \deg Q$)</td>
+                    <td><strong>Long Division first:</strong> $\frac{P}{Q} = S(x) + \frac{R(x)}{Q(x)}$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Distinct Linear</strong> $(x - r)$</td>
+                    <td>$\dfrac{A}{x - r}$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Repeated Linear</strong> $(x - r)^k$</td>
+                    <td>$\dfrac{A_1}{x-r} + \dfrac{A_2}{(x-r)^2} + \dots + \dfrac{A_k}{(x-r)^k}$</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Irreducible Quad</strong> $ax^2+bx+c$</td>
+                    <td>$\dfrac{Ax + B}{ax^2 + bx + c}$ (linear numerator!)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <!-- Card 4: Four Rose-Accented ISRT Exam Traps -->
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:12px;color:var(--rose-light);">&#9888; 4 High-Yield ISRT Exam Traps</h3>
+          <div class="traps-grid">
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 1: Skipping Polynomial Long Division</div>
+              <p>
+                Whenever $\deg(P) \ge \deg(Q)$ (like $\frac{3x^3+2x^2-3x+8}{x+2}$ in 2nd Incourse 2022), you <strong>must</strong> divide first. Applying partial fractions directly to an improper fraction gives wrong constants!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 2: Missing "$x$" on Quadratic Numerator</div>
+              <p>
+                For an irreducible quadratic factor like $(x^2+1)$, writing $\frac{A}{x^2+1}$ instead of $\frac{Ax+B}{x^2+1}$ causes an inconsistent system. Always use a <strong>linear</strong> numerator $Ax + B$.
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 3: Forgetting $\theta \to x$ or Limit Updates</div>
+              <p>
+                In indefinite Trig Sub, draw the reference triangle to convert $\theta$ back to $x$. In definite Trig Sub (like $\int_{\sqrt{2}}^2$), convert $x$-limits to $\theta$-limits immediately so you never have to back-substitute!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 4: Dropping $\frac{1}{a}$ or $\frac{1}{2a}$ Constants</div>
+              <p>
+                Never drop the leading factor in standard formulas:
+                $\int \frac{dx}{x^2+a^2} = \mathbf{\frac{1}{a}}\tan^{-1}\!\left(\frac{x}{a}\right)+C$ and $\int \frac{dx}{x^2-a^2} = \mathbf{\frac{1}{2a}}\ln\!\left|\frac{x-a}{x+a}\right|+C$.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 4: ISRT PAST-EXAM VAULT (2017–2024)
+           ==================================================================== -->
+      <section class="section-block" id="section-vault">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 4 &bull; ISRT Past-Exam Vault</span>
+            <h2>4. ISRT Past-Exam Vault (2017&ndash;2024)</h2>
+          </div>
+          <p class="section-desc">
+            8 authentic "Integrate / Evaluate" problems directly from ISRT MATH 105 past papers with progressive hints and full derivations.
+          </p>
+        </div>
+
+        <div class="filter-tabs" id="vaultFilters" role="tablist" aria-label="Filter exam problems">
+          <button type="button" class="filter-tab active" data-filter="all">All (8)</button>
+          <button type="button" class="filter-tab" data-filter="trig-int">Trig Integrals (2)</button>
+          <button type="button" class="filter-tab" data-filter="trig-sub">Trig Sub (3)</button>
+          <button type="button" class="filter-tab" data-filter="weierstrass">Weierstrass (1)</button>
+          <button type="button" class="filter-tab" data-filter="pf">Partial Fractions (2)</button>
+        </div>
+
+        <div class="vault-list" id="vaultList">
+
+          <!-- Problem 1 -->
+          <article class="exam-card" data-category="pf">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q2b(i) &amp; 1st Incourse 2023 Q5(b)</span>
+              <span class="mark-badge">Partial Fractions &bull; 3&ndash;3.5 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int \frac{2x}{(x + 1)(x^2 + 1)}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Decompose as $\frac{A}{x+1} + \frac{Bx+C}{x^2+1}$. Plug $x = -1$ to find $A = -1$ immediately, then compare coefficients of $x^2$ and constants.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Set up the partial fraction decomposition</div>
+                $$\frac{2x}{(x+1)(x^2+1)} = \frac{A}{x+1} + \frac{Bx+C}{x^2+1} \implies 2x = A(x^2+1) + (Bx+C)(x+1).$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Solve for $A, B, C$</div>
+                &bull; Set $x = -1$: $-2 = 2A \implies A = -1$.<br />
+                &bull; Compare $x^2$ terms: $0 = A + B \implies B = 1$.<br />
+                &bull; Compare constants ($x=0$): $0 = A + C \implies C = 1$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Integrate term-by-term</div>
+                $$\int \left(\frac{-1}{x+1} + \frac{x}{x^2+1} + \frac{1}{x^2+1}\right)dx = -\ln|x+1| + \frac{1}{2}\ln(x^2+1) + \tan^{-1}x + C.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 2 -->
+          <article class="exam-card" data-category="weierstrass">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q2b(ii)</span>
+              <span class="mark-badge">Weierstrass &bull; 3 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int \frac{1}{2 + \cos x}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Use $t = \tan(x/2)$ with $\cos x = \frac{1-t^2}{1+t^2}$ and $dx = \frac{2\,dt}{1+t^2}$. Clear $(1+t^2)$ to get $\int \frac{2\,dt}{3+t^2}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Apply Weierstrass substitution $t = \tan(x/2)$</div>
+                $$\int \frac{1}{2 + \frac{1-t^2}{1+t^2}}\cdot\frac{2\,dt}{1+t^2} = \int \frac{2\,dt}{2(1+t^2) + (1-t^2)} = \int \frac{2\,dt}{t^2 + 3}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply $\int \frac{dt}{t^2+a^2} = \frac{1}{a}\tan^{-1}(t/a)$ with $a = \sqrt{3}$</div>
+                $$= \frac{2}{\sqrt{3}}\tan^{-1}\!\left(\frac{t}{\sqrt{3}}\right) + C = \frac{2}{\sqrt{3}}\tan^{-1}\!\left(\frac{\tan(x/2)}{\sqrt{3}}\right) + C.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 3 -->
+          <article class="exam-card" data-category="pf">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2022 Q1(b)</span>
+              <span class="mark-badge">Partial Fractions &bull; 3 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int \frac{3x^3 + 2x^2 - 3x + 8}{x + 2}\,dx$ (using partial fractions / division).
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Since $\deg(P)=3 \ge \deg(Q)=1$, perform polynomial (or synthetic) division by $(x+2)$ first!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Polynomial Long Division</div>
+                Dividing $3x^3 + 2x^2 - 3x + 8$ by $x + 2$:
+                $$\frac{3x^3 + 2x^2 - 3x + 8}{x + 2} = 3x^2 - 4x + 5 - \frac{2}{x + 2}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Integrate term-by-term</div>
+                $$\int \left(3x^2 - 4x + 5 - \frac{2}{x+2}\right)dx = x^3 - 2x^2 + 5x - 2\ln|x+2| + C.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 4 -->
+          <article class="exam-card" data-category="trig-int">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2018 Q3(ii)</span>
+              <span class="mark-badge">Trig Integrals &bull; 2 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int \tan^5 x \sec^4 x\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Since $\sec x$ has an even power ($4$), peel off $\sec^2 x\,dx$, rewrite the remaining $\sec^2 x = 1 + \tan^2 x$, and set $u = \tan x$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Peel $\sec^2 x\,dx$ and convert remaining $\sec^2 x$</div>
+                $$\int \tan^5 x \sec^4 x\,dx = \int \tan^5 x(1 + \tan^2 x)\sec^2 x\,dx.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Substitute $u = \tan x$, $du = \sec^2 x\,dx$</div>
+                $$= \int (u^5 + u^7)\,du = \frac{u^6}{6} + \frac{u^8}{8} + C = \frac{1}{6}\tan^6 x + \frac{1}{8}\tan^8 x + C.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 5 -->
+          <article class="exam-card" data-category="trig-sub">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2018 Q3(iii)</span>
+              <span class="mark-badge">Trig Sub &bull; 2 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int_{\sqrt{2}}^{2} \frac{dx}{x^2\sqrt{x^2 - 1}}$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For $\sqrt{x^2-1}$, set $x = \sec\theta$. Update limits: $x = \sqrt{2} \to \theta = \frac{\pi}{4}$ and $x = 2 \to \theta = \frac{\pi}{3}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Trig Substitution $x = \sec\theta$ &amp; Limit Conversion</div>
+                Let $x = \sec\theta \implies dx = \sec\theta\tan\theta\,d\theta$ and $\sqrt{x^2-1} = \tan\theta$ (positive on $[\frac{\pi}{4}, \frac{\pi}{3}]$).<br />
+                Limits: $x = \sqrt{2} \implies \theta = \frac{\pi}{4}$; $x = 2 \implies \theta = \frac{\pi}{3}$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Simplify and integrate</div>
+                $$\int_{\pi/4}^{\pi/3} \frac{\sec\theta\tan\theta\,d\theta}{\sec^2\theta\tan\theta} = \int_{\pi/4}^{\pi/3} \cos\theta\,d\theta = \big[\sin\theta\big]_{\pi/4}^{\pi/3} = \frac{\sqrt{3} - \sqrt{2}}{2}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 6 -->
+          <article class="exam-card" data-category="trig-int">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2023 Q3a(iv)</span>
+              <span class="mark-badge">Trig Integrals &bull; 3 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int \frac{\sqrt{\sin x}}{\sqrt{\cos^9 x}}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Split $\cos^{9/2}x = \cos^{1/2}x \cdot \cos^4 x$ to reveal $\int \tan^{1/2}x \sec^4 x\,dx$, then substitute $u = \tan x$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Rewrite in terms of $\tan x$ and $\sec x$</div>
+                $$\int \frac{\sin^{1/2}x}{\cos^{1/2}x \cdot \cos^4 x}\,dx = \int \tan^{1/2}x \sec^4 x\,dx = \int \tan^{1/2}x (1 + \tan^2 x)\sec^2 x\,dx.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Substitute $u = \tan x$, $du = \sec^2 x\,dx$</div>
+                $$= \int \left(u^{1/2} + u^{5/2}\right)du = \frac{2}{3}u^{3/2} + \frac{2}{7}u^{7/2} + C = \frac{2}{3}\tan^{3/2}x + \frac{2}{7}\tan^{7/2}x + C.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 7 -->
+          <article class="exam-card" data-category="trig-sub">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2023 Q3b(ii)</span>
+              <span class="mark-badge">Trig Sub &bull; 3 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int_{e^{-6}}^{e^6} \frac{\sqrt{36 - (\ln x)^2}}{x}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> First let $u = \ln x$ ($du = \frac{dx}{x}$). The limits become $[-6, 6]$, giving the area of a semicircle of radius $6$!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: $u$-Substitution $u = \ln x$</div>
+                Let $u = \ln x \implies du = \frac{dx}{x}$. Limits: $x = e^{-6} \implies u = -6$ and $x = e^6 \implies u = 6$:
+                $$\int_{-6}^{6} \sqrt{36 - u^2}\,du.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Geometric Semicircle (or Trig Sub $u = 6\sin\theta$)</div>
+                &bull; <strong>Geometry:</strong> $y = \sqrt{36 - u^2}$ on $[-6, 6]$ is the upper semicircle of radius $r = 6$, so $\text{Area} = \frac{1}{2}\pi(6)^2 = 18\pi$.<br />
+                &bull; <strong>Trig Sub check:</strong> $u = 6\sin\theta \implies 36\int_{-\pi/2}^{\pi/2} \cos^2\theta\,d\theta = 18\big[\theta + \frac{1}{2}\sin 2\theta\big]_{-\pi/2}^{\pi/2} = 18\pi$.
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 8 -->
+          <article class="exam-card" data-category="trig-sub">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2017 Q6b(ii)</span>
+              <span class="mark-badge">Trig Sub &bull; 3 Marks</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int_1^2 \frac{dx}{\sqrt{4x - x^2}}$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Complete the square: $4x - x^2 = 4 - (x - 2)^2$, then set $x - 2 = 2\sin\theta$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Complete the square under the radical</div>
+                $$4x - x^2 = -(x^2 - 4x + 4) + 4 = 4 - (x - 2)^2.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Substitute $x - 2 = 2\sin\theta$ and update limits</div>
+                $dx = 2\cos\theta\,d\theta$ and $\sqrt{4 - (x-2)^2} = 2\cos\theta$.<br />
+                Limits: $x = 1 \implies \sin\theta = -\frac{1}{2} \implies \theta = -\frac{\pi}{6}$; $x = 2 \implies \sin\theta = 0 \implies \theta = 0$.
+                $$\int_{-\pi/6}^{0} \frac{2\cos\theta\,d\theta}{2\cos\theta} = \big[\theta\big]_{-\pi/6}^{0} = 0 - \left(-\frac{\pi}{6}\right) = \frac{\pi}{6}.$$
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 5: QUICK MASTERY CHECK (5 INTERACTIVE MCQS)
+           ==================================================================== -->
+      <section class="section-block" id="section-quiz">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 5 &bull; Self-Assessment</span>
+            <h2>5. Quick Mastery Check</h2>
+          </div>
+          <p class="section-desc">
+            5 targeted questions on Trig Integrals, Partial Fractions, Long Division, Weierstrass substitution, and Reference Triangles.
+          </p>
+        </div>
+
+        <div class="quiz-topbar">
+          <div class="score-pill">
+            <span>Score:</span>
+            <span id="quizScore">0 / 5</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="resetQuizBtn">&#8634; Reset Quiz</button>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+
+          <!-- Q1 -->
+          <div class="quiz-card" data-qid="q1" data-answer="b">
+            <div class="quiz-qnum">Question 1 &bull; Trig Integral Parity Strategy</div>
+            <div>What is the best substitution for evaluating $\displaystyle \int \tan^5 x \sec^4 x\,dx$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$u = \sin x$, converting everything to $\sin$ and $\cos$</button>
+              <button type="button" class="quiz-opt" data-val="b">$u = \tan x$, peeling off $\sec^2 x\,dx$ because $\sec x$ has an even power</button>
+              <button type="button" class="quiz-opt" data-val="c">$u = \sec^2 x$, using $\tan^2 x = \sec^2 x - 1$</button>
+              <button type="button" class="quiz-opt" data-val="d">Weierstrass substitution $t = \tan(x/2)$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-card" data-qid="q2" data-answer="c">
+            <div class="quiz-qnum">Question 2 &bull; Partial Fractions Decomposition Form</div>
+            <div>Which is the correct partial fraction decomposition template for $\displaystyle \frac{2x}{(x + 1)(x^2 + 1)}$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\dfrac{A}{x+1} + \dfrac{B}{x^2+1}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\dfrac{A}{x+1} + \dfrac{B}{x+1} + \dfrac{C}{x-1}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\dfrac{A}{x+1} + \dfrac{Bx + C}{x^2+1}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\dfrac{Ax + B}{x+1} + \dfrac{C}{x^2+1}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-card" data-qid="q3" data-answer="a">
+            <div class="quiz-qnum">Question 3 &bull; Improper Rational Function Check</div>
+            <div>What is the mandatory <strong>first step</strong> before partial fractions when evaluating $\displaystyle \int \frac{3x^3 + 2x^2 - 3x + 8}{x + 2}\,dx$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">Polynomial long division, because $\deg(\text{numerator}) = 3 \ge \deg(\text{denominator}) = 1$</button>
+              <button type="button" class="quiz-opt" data-val="b">Set $\frac{3x^3+2x^2-3x+8}{x+2} = \frac{A}{x+2}$ immediately</button>
+              <button type="button" class="quiz-opt" data-val="c">Use Trig Substitution $x = 2\tan\theta$</button>
+              <button type="button" class="quiz-opt" data-val="d">Factor the numerator using the quadratic formula</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-card" data-qid="q4" data-answer="d">
+            <div class="quiz-qnum">Question 4 &bull; Weierstrass Half-Angle Substitution</div>
+            <div>In the Weierstrass substitution $t = \tan(x/2)$, what are the exact expressions for $\cos x$ and $dx$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\cos x = \dfrac{2t}{1+t^2},\quad dx = \dfrac{dt}{1+t^2}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\cos x = \dfrac{1+t^2}{1-t^2},\quad dx = \dfrac{2\,dt}{1+t^2}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\cos x = \dfrac{1-t^2}{1+t^2},\quad dx = \dfrac{dt}{1+t^2}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\cos x = \dfrac{1-t^2}{1+t^2},\quad dx = \dfrac{2\,dt}{1+t^2}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-card" data-qid="q5" data-answer="b">
+            <div class="quiz-qnum">Question 5 &bull; Reference Triangle Back-Substitution</div>
+            <div>After setting $x = 3\sec\theta$ to simplify $\sqrt{x^2 - 9}$ (with $x &gt; 3$), what is $\tan\theta$ from the reference right triangle?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\dfrac{3}{\sqrt{x^2 - 9}}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\dfrac{\sqrt{x^2 - 9}}{3}$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\dfrac{\sqrt{x^2 - 9}}{x}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\dfrac{x}{\sqrt{x^2 - 9}}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Non-blocking Toast -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX AUTO-RENDER HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2800);
+      }
+
+      document.getElementById('moduleJumpBtn').addEventListener('click', () => {
+        showToast('Module 2: L4 (IBP & Wallis) • L5 (Trig & PF) • L6 (Improper) • L7 (Gamma & Beta)');
+      });
+      document.getElementById('prevLessonBtn').addEventListener('click', () => {
+        showToast('Previous: Lesson 4 — IBP, Reduction Formulas & Wallis\'s Formula');
+      });
+      document.getElementById('nextLessonBtn').addEventListener('click', () => {
+        showToast('Next Up: Lesson 6 — Improper Integrals (Type I & Type II)');
+      });
+
+      /* ----------------------------------------------------------------------
+         2. SIDEBAR, SCROLLSPY & MASTERY PROGRESS TRACKING
+         ---------------------------------------------------------------------- */
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      function setSidebar(open) {
+        sidebar.classList.toggle('open', open);
+        sidebarOverlay.classList.toggle('active', open);
+        menuToggle.setAttribute('aria-expanded', String(open));
+      }
+
+      menuToggle.addEventListener('click', () => setSidebar(!sidebar.classList.contains('open')));
+      sidebarOverlay.addEventListener('click', () => setSidebar(false));
+      document.querySelectorAll('.nav-link').forEach((l) => l.addEventListener('click', () => setSidebar(false)));
+
+      const progressState = {
+        lab1: false,
+        lab2: false,
+        theory: false,
+        vault: false,
+        q1: false,
+        q2: false,
+        q3: false,
+        q4: false,
+        q5: false
+      };
+
+      function updateProgressUI() {
+        const keys = Object.keys(progressState);
+        const done = keys.filter((k) => progressState[k]).length;
+        const pct = Math.round((done / keys.length) * 100);
+        document.getElementById('progressPct').textContent = pct + '%';
+        document.getElementById('progressFill').style.width = pct + '%';
+
+        const msgs = [
+          'Explore the labs, past-exam vault & mastery quiz.',
+          'Great start! Try the Self-Diagnoser or Triangle Lab.',
+          'Halfway there! Step through Partial Fractions & Exam Vault.',
+          'Almost complete! Finish the remaining quiz items.',
+          'Lesson 5 Mastered! Ready for Lesson 6 (Improper Integrals).'
+        ];
+        const idx = pct === 100 ? 4 : pct >= 70 ? 3 : pct >= 40 ? 2 : pct > 0 ? 1 : 0;
+        document.getElementById('progressCaption').textContent = msgs[idx];
+
+        document.querySelector('[data-section="section-lab1"]').classList.toggle('done', progressState.lab1);
+        document.querySelector('[data-section="section-lab2"]').classList.toggle('done', progressState.lab2);
+        document.querySelector('[data-section="section-theory"]').classList.toggle('done', progressState.theory);
+        document.querySelector('[data-section="section-vault"]').classList.toggle('done', progressState.vault);
+        const allQuiz = ['q1', 'q2', 'q3', 'q4', 'q5'].every((q) => progressState[q]);
+        document.querySelector('[data-section="section-quiz"]').classList.toggle('done', allQuiz);
+      }
+
+      function markDone(key) {
+        if (!progressState[key]) {
+          progressState[key] = true;
+          updateProgressUI();
+        }
+      }
+
+      const sections = document.querySelectorAll('.section-block');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            navLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === id));
+            if (id === 'section-theory') markDone('theory');
+          }
+        });
+      }, { rootMargin: '-20% 0px -65% 0px' });
+      sections.forEach((s) => spy.observe(s));
+
+      /* ----------------------------------------------------------------------
+         3. GENERIC TAB SWITCHING (LAB 1 & LAB 2)
+         ---------------------------------------------------------------------- */
+      document.querySelectorAll('.mode-tab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const grp = btn.dataset.group;
+          document.querySelectorAll(`.mode-tab[data-group="${grp}"]`).forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const parentCard = btn.closest('.card');
+          parentCard.querySelectorAll(':scope > .tab-pane').forEach((p) => p.classList.remove('active'));
+          document.getElementById(btn.dataset.tab).classList.add('active');
+
+          if (grp === 'lab1') markDone('lab1');
+          if (grp === 'lab2') {
+            markDone('lab2');
+            if (btn.dataset.tab === 'lab2-tabA') requestAnimationFrame(drawTriangleCanvas);
+          }
+        });
+      });
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 1A: 8 ISRT PRESETS + FLOWCHART + 4-STEP STEPPER
+         ---------------------------------------------------------------------- */
+      const diagPresets = [
+        {
+          tag: 'Trig Powers',
+          source: '2nd Incourse 2018 Q3(ii)',
+          tex: '\\int \\tan^5 x \\sec^4 x\\,dx',
+          s1Title: 'Tan-Sec Power Product',
+          s1Body: 'Power of $\\sec x$ is <strong>even</strong> ($n = 4 \\ge 2$).',
+          s2Title: 'Substitution $u = \\tan x$',
+          s2Body: 'Peel off $\\sec^2 x\\,dx$ to form $du = \\sec^2 x\\,dx$.',
+          s3Title: 'Identity & First Step',
+          s3Body: 'Use $\\sec^2 x = 1 + \\tan^2 x$: $\\int \\tan^5 x(1+\\tan^2 x)\\sec^2 x\\,dx$.',
+          steps: [
+            { label: 'Step 1: Peel off sec²(x) dx', body: '$$\\int \\tan^5 x \\sec^4 x\\,dx = \\int \\tan^5 x \\sec^2 x \\cdot \\sec^2 x\\,dx.$$' },
+            { label: 'Step 2: Apply Pythagorean identity', body: 'Replace the remaining $\\sec^2 x = 1 + \\tan^2 x$: $$\\int \\tan^5 x(1 + \\tan^2 x)\\sec^2 x\\,dx.$$' },
+            { label: 'Step 3: Substitute u = tan(x)', body: 'With $u = \\tan x$ and $du = \\sec^2 x\\,dx$: $$\\int (u^5 + u^7)\\,du = \\frac{u^6}{6} + \\frac{u^8}{8} + C.$$' },
+            { label: 'Step 4: Back-substitute x', final: true, body: '$$\\int \\tan^5 x \\sec^4 x\\,dx = \\frac{1}{6}\\tan^6 x + \\frac{1}{8}\\tan^8 x + C.$$' }
+          ]
+        },
+        {
+          tag: 'Trig Powers',
+          source: 'Final 2017 Q6b(i)',
+          tex: '\\int_0^{\\pi/3} \\sin^4(3x)\\cos^3(3x)\\,dx',
+          s1Title: 'Sin-Cos Power Product',
+          s1Body: 'Power of $\\cos(3x)$ is <strong>odd</strong> ($n = 3$).',
+          s2Title: 'Substitution $u = \\sin(3x)$',
+          s2Body: 'Peel off $\\cos(3x)\\,dx = \\frac{1}{3}du$.',
+          s3Title: 'Identity & New Limits',
+          s3Body: 'Use $\\cos^2(3x) = 1 - \\sin^2(3x)$. At $x=0, u=0$; at $x=\\frac{\\pi}{3}, u=\\sin\\pi = 0$!',
+          steps: [
+            { label: 'Step 1: Peel off cos(3x) dx', body: '$$\\int_0^{\\pi/3} \\sin^4(3x)\\cos^2(3x)\\cdot\\cos(3x)\\,dx.$$' },
+            { label: 'Step 2: Convert cos²(3x) = 1 - sin²(3x)', body: '$$\\int_0^{\\pi/3} \\sin^4(3x)\\big(1 - \\sin^2(3x)\\big)\\cos(3x)\\,dx.$$' },
+            { label: 'Step 3: Substitute u = sin(3x) & update limits', body: 'Let $u = \\sin(3x)$, $du = 3\\cos(3x)\\,dx$. When $x = 0$, $u = \\sin 0 = 0$; when $x = \\frac{\\pi}{3}$, $u = \\sin \\pi = 0$!' },
+            { label: 'Step 4: Evaluate definite integral', final: true, body: '$$\\frac{1}{3}\\int_0^0 (u^4 - u^6)\\,du = 0 \\quad (\\text{positive and negative lobes cancel!}).$$' }
+          ]
+        },
+        {
+          tag: 'Hidden Trig Power',
+          source: 'Final 2023 Q3a(iv)',
+          tex: '\\int \\frac{\\sqrt{\\sin x}}{\\sqrt{\\cos^9 x}}\\,dx',
+          s1Title: 'Hidden Tan-Sec Product',
+          s1Body: 'Ratio of fractional powers: $\\sin^{1/2}x \\cdot \\cos^{-9/2}x$.',
+          s2Title: 'Rewrite as $\\tan^{1/2}x\\sec^4 x$',
+          s2Body: 'Split $\\cos^{9/2}x = \\cos^{1/2}x \\cdot \\cos^4 x$, then set $u = \\tan x$.',
+          s3Title: 'Identity & First Step',
+          s3Body: 'Peel $\\sec^2 x\\,dx$ and replace $\\sec^2 x = 1 + \\tan^2 x$.',
+          steps: [
+            { label: 'Step 1: Expose tan(x) and sec(x)', body: '$$\\int \\frac{\\sin^{1/2}x}{\\cos^{1/2}x \\cdot \\cos^4 x}\\,dx = \\int \\tan^{1/2}x \\sec^4 x\\,dx.$$' },
+            { label: 'Step 2: Peel sec²(x) dx and convert', body: '$$\\int \\tan^{1/2}x(1 + \\tan^2 x)\\sec^2 x\\,dx.$$' },
+            { label: 'Step 3: Substitute u = tan(x)', body: '$$\\int \\left(u^{1/2} + u^{5/2}\\right)du = \\frac{2}{3}u^{3/2} + \\frac{2}{7}u^{7/2} + C.$$' },
+            { label: 'Step 4: Back-substitute u = tan(x)', final: true, body: '$$\\int \\frac{\\sqrt{\\sin x}}{\\sqrt{\\cos^9 x}}\\,dx = \\frac{2}{3}\\tan^{3/2}x + \\frac{2}{7}\\tan^{7/2}x + C.$$' }
+          ]
+        },
+        {
+          tag: 'Trig Sub: sec',
+          source: '2nd Incourse 2018 Q3(iii)',
+          tex: '\\int_{\\sqrt{2}}^2 \\frac{dx}{x^2\\sqrt{x^2-1}}',
+          s1Title: 'Radical $\\sqrt{x^2 - a^2}$ ($a=1$)',
+          s1Body: 'Variable squared minus constant squared.',
+          s2Title: 'Trig Sub $x = \\sec\\theta$',
+          s2Body: '$dx = \\sec\\theta\\tan\\theta\\,d\\theta$, limits $\\theta \\in [\\frac{\\pi}{4}, \\frac{\\pi}{3}]$.',
+          s3Title: 'Identity & Cancellation',
+          s3Body: '$\\sqrt{\\sec^2\\theta - 1} = \\tan\\theta$, leaving $\\int \\cos\\theta\\,d\\theta$.',
+          steps: [
+            { label: 'Step 1: Set x = sec(θ) and update limits', body: '$x = \\sec\\theta$, $dx = \\sec\\theta\\tan\\theta\\,d\\theta$. At $x=\\sqrt{2}$, $\\theta = \\frac{\\pi}{4}$; at $x=2$, $\\theta = \\frac{\\pi}{3}$.' },
+            { label: 'Step 2: Substitute into the integral', body: '$$\\int_{\\pi/4}^{\\pi/3} \\frac{\\sec\\theta\\tan\\theta\\,d\\theta}{\\sec^2\\theta\\cdot\\tan\\theta}.$$' },
+            { label: 'Step 3: Cancel factors to get cos(θ)', body: '$$= \\int_{\\pi/4}^{\\pi/3} \\frac{1}{\\sec\\theta}\\,d\\theta = \\int_{\\pi/4}^{\\pi/3} \\cos\\theta\\,d\\theta.$$' },
+            { label: 'Step 4: Evaluate at θ-limits', final: true, body: '$$= \\big[\\sin\\theta\\big]_{\\pi/4}^{\\pi/3} = \\frac{\\sqrt{3}}{2} - \\frac{\\sqrt{2}}{2} = \\frac{\\sqrt{3}-\\sqrt{2}}{2}.$$' }
+          ]
+        },
+        {
+          tag: 'Complete Square + Sub',
+          source: 'Final 2017 Q6b(ii)',
+          tex: '\\int_1^2 \\frac{dx}{\\sqrt{4x-x^2}}',
+          s1Title: 'Quadratic Under Radical',
+          s1Body: 'Missing constant term in $4x - x^2$; complete the square first!',
+          s2Title: 'Complete Square & Sine Sub',
+          s2Body: '$4x - x^2 = 4 - (x-2)^2 \\implies x - 2 = 2\\sin\\theta$.',
+          s3Title: 'Identity & Limit Update',
+          s3Body: '$\\sqrt{4-4\\sin^2\\theta} = 2\\cos\\theta$, limits $\\theta \\in [-\\frac{\\pi}{6}, 0]$.',
+          steps: [
+            { label: 'Step 1: Complete the square', body: '$$4x - x^2 = -(x^2 - 4x + 4) + 4 = 4 - (x - 2)^2.$$' },
+            { label: 'Step 2: Substitute x - 2 = 2 sin(θ)', body: '$dx = 2\\cos\\theta\\,d\\theta$, $\\sqrt{4-(x-2)^2} = 2\\cos\\theta$. Limits: $x=1 \\Rightarrow \\theta=-\\frac{\\pi}{6}$, $x=2 \\Rightarrow \\theta=0$.' },
+            { label: 'Step 3: Simplify integrand', body: '$$\\int_{-\\pi/6}^0 \\frac{2\\cos\\theta\\,d\\theta}{2\\cos\\theta} = \\int_{-\\pi/6}^0 1\\,d\\theta.$$' },
+            { label: 'Step 4: Evaluate final value', final: true, body: '$$= \\big[\\theta\\big]_{-\\pi/6}^0 = 0 - \\left(-\\frac{\\pi}{6}\\right) = \\frac{\\pi}{6}.$$' }
+          ]
+        },
+        {
+          tag: 'Weierstrass Sub',
+          source: 'Final 2024 Q2b(ii)',
+          tex: '\\int \\frac{1}{2+\\cos x}\\,dx',
+          s1Title: 'Rational Linear Trig',
+          s1Body: 'Form $\\frac{1}{a + b\\cos x}$ with no extra $\\sin x$ in numerator.',
+          s2Title: 'Weierstrass $t = \\tan(x/2)$',
+          s2Body: '$\\cos x = \\frac{1-t^2}{1+t^2}$ and $dx = \\frac{2\\,dt}{1+t^2}$.',
+          s3Title: 'Clear $(1+t^2)$ & Arctan',
+          s3Body: 'Reduces directly to $\\int \\frac{2\\,dt}{t^2 + 3}$ with $a = \\sqrt{3}$.',
+          steps: [
+            { label: 'Step 1: Apply Weierstrass formulas', body: 'Let $t = \\tan(x/2)$, $\\cos x = \\frac{1-t^2}{1+t^2}$, $dx = \\frac{2\\,dt}{1+t^2}$.' },
+            { label: 'Step 2: Clear inner fraction (1 + t²)', body: '$$\\int \\frac{2\\,dt}{2(1+t^2) + (1-t^2)} = \\int \\frac{2\\,dt}{t^2 + 3}.$$' },
+            { label: 'Step 3: Integrate using arctan formula', body: '$$= \\frac{2}{\\sqrt{3}}\\tan^{-1}\\!\\left(\\frac{t}{\\sqrt{3}}\\right) + C.$$' },
+            { label: 'Step 4: Back-substitute t = tan(x/2)', final: true, body: '$$\\int \\frac{1}{2+\\cos x}\\,dx = \\frac{2}{\\sqrt{3}}\\tan^{-1}\\!\\left(\\frac{\\tan(x/2)}{\\sqrt{3}}\\right) + C.$$' }
+          ]
+        },
+        {
+          tag: 'Partial Fractions',
+          source: 'Final 2024 Q2b(i) & 1st Incourse 2023',
+          tex: '\\int \\frac{2x}{(x+1)(x^2+1)}\\,dx',
+          s1Title: 'Proper Rational Function',
+          s1Body: '$\\deg(P)=1 &lt; \\deg(Q)=3$: linear $(x+1)$ + irreducible quad $(x^2+1)$.',
+          s2Title: 'Partial Fractions Template',
+          s2Body: '$\\frac{A}{x+1} + \\frac{Bx+C}{x^2+1}$ (linear numerator on quadratic!).',
+          s3Title: 'Solve Constants & Split',
+          s3Body: '$A=-1, B=1, C=1 \\implies$ $\\ln|x+1|$, $\\frac{1}{2}\\ln(x^2+1)$, and $\\tan^{-1}x$.',
+          steps: [
+            { label: 'Step 1: Verify proper degree & set template', body: '$$\\frac{2x}{(x+1)(x^2+1)} = \\frac{A}{x+1} + \\frac{Bx+C}{x^2+1}.$$' },
+            { label: 'Step 2: Clear denominator & solve A, B, C', body: '$2x = A(x^2+1) + (Bx+C)(x+1)$. Setting $x=-1$ gives $A=-1$; matching $x^2$ and constants gives $B=1, C=1$.' },
+            { label: 'Step 3: Split quadratic fraction into two integrals', body: '$$\\int \\left(\\frac{-1}{x+1} + \\frac{x}{x^2+1} + \\frac{1}{x^2+1}\\right)dx.$$' },
+            { label: 'Step 4: Integrate term-by-term', final: true, body: '$$= -\\ln|x+1| + \\frac{1}{2}\\ln(x^2+1) + \\tan^{-1}x + C.$$' }
+          ]
+        },
+        {
+          tag: 'Long Division + PF',
+          source: '2nd Incourse 2022 Q1(b)',
+          tex: '\\int \\frac{3x^3+2x^2-3x+8}{x+2}\\,dx',
+          s1Title: 'Improper Rational Function',
+          s1Body: '$\\deg(P)=3 \\ge \\deg(Q)=1$: <strong>Long Division Mandatory!</strong>',
+          s2Title: 'Polynomial Long Division',
+          s2Body: 'Divide $3x^3+2x^2-3x+8$ by $(x+2)$ to extract quotient + remainder.',
+          s3Title: 'Quotient + Simple Log',
+          s3Body: 'Yields $3x^2 - 4x + 5 - \\frac{2}{x+2}$, integrable immediately.',
+          steps: [
+            { label: 'Step 1: Check degrees (Improper!)', body: 'Since $\\deg(3x^3+2x^2-3x+8) = 3 \\ge \\deg(x+2) = 1$, divide before integrating.' },
+            { label: 'Step 2: Perform polynomial long division', body: '$$3x^3+2x^2-3x+8 = (x+2)(3x^2 - 4x + 5) - 2.$$' },
+            { label: 'Step 3: Rewrite integrand', body: '$$\\int \\left(3x^2 - 4x + 5 - \\frac{2}{x+2}\\right)dx.$$' },
+            { label: 'Step 4: Integrate term-by-term', final: true, body: '$$= x^3 - 2x^2 + 5x - 2\\ln|x+2| + C.$$' }
+          ]
+        }
+      ];
+
+      const diagState = { idx: 0, step: 1 };
+      const diagPresetPills = document.getElementById('diagPresetPills');
+      const diagFlowchart = document.getElementById('diagFlowchart');
+      const diagStepsContainer = document.getElementById('diagStepsContainer');
+      const diagStepCounter = document.getElementById('diagStepCounter');
+
+      function buildDiagPills() {
+        diagPresetPills.innerHTML = diagPresets.map((p, i) => `
+          <button type="button" class="preset-pill ${i === diagState.idx ? 'active' : ''}" data-pidx="${i}">
+            <span class="pill-tag">${i + 1}. ${p.tag}</span>
+            <span class="pill-math">$${p.tex}$</span>
+          </button>
+        `).join('');
+
+        diagPresetPills.querySelectorAll('.preset-pill').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            diagState.idx = parseInt(btn.dataset.pidx, 10);
+            diagState.step = 1;
+            markDone('lab1');
+            renderDiagLab();
+          });
+        });
+        renderMath(diagPresetPills);
+      }
+
+      function renderDiagLab() {
+        const p = diagPresets[diagState.idx];
+        document.getElementById('diagSourceBadge').textContent = p.source;
+        diagPresetPills.querySelectorAll('.preset-pill').forEach((b, i) => {
+          b.classList.toggle('active', i === diagState.idx);
+        });
+
+        diagFlowchart.innerHTML = `
+          <div class="flow-node stage-1">
+            <span class="flow-stage-label">Stage 1 &bull; Structure</span>
+            <div class="flow-title">${p.s1Title}</div>
+            <div class="flow-body">${p.s1Body}</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-node stage-2">
+            <span class="flow-stage-label">Stage 2 &bull; Exact Sub / Rule</span>
+            <div class="flow-title">${p.s2Title}</div>
+            <div class="flow-body">${p.s2Body}</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-node stage-3">
+            <span class="flow-stage-label">Stage 3 &bull; Key Identity &amp; First Step</span>
+            <div class="flow-title">${p.s3Title}</div>
+            <div class="flow-body">${p.s3Body}</div>
+          </div>
+        `;
+
+        diagStepsContainer.innerHTML = p.steps.map((s, i) => `
+          <div class="step-card ${i < diagState.step ? 'visible' : ''} ${s.final ? 'final-step' : ''}">
+            <div class="step-label">${s.label}</div>
+            <div>${s.body}</div>
+          </div>
+        `).join('');
+
+        diagStepCounter.textContent = `Step ${diagState.step} of ${p.steps.length}`;
+        document.getElementById('diagPrevBtn').disabled = diagState.step <= 1;
+        document.getElementById('diagNextBtn').disabled = diagState.step >= p.steps.length;
+
+        renderMath(diagFlowchart);
+        renderMath(diagStepsContainer);
+      }
+
+      document.getElementById('diagNextBtn').addEventListener('click', () => {
+        const max = diagPresets[diagState.idx].steps.length;
+        if (diagState.step < max) diagState.step++;
+        markDone('lab1');
+        renderDiagLab();
+      });
+
+      document.getElementById('diagPrevBtn').addEventListener('click', () => {
+        if (diagState.step > 1) diagState.step--;
+        renderDiagLab();
+      });
+
+      document.getElementById('diagResetBtn').addEventListener('click', () => {
+        diagState.step = 1;
+        renderDiagLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 1B: INTERACTIVE SELF-DIAGNOSER WIZARD
+         ---------------------------------------------------------------------- */
+      const wizardData = {
+        trig: {
+          question: 'Step 2: Which trig power pattern do you see?',
+          options: [
+            {
+              title: 'Odd power of $\\cos x$ (in $\\sin^m x\\cos^n x$)',
+              formula: 'Peel $\\cos x\\,dx$, use $\\cos^2 x = 1 - \\sin^2 x$, substitute $u = \\sin x$.',
+              strategy: 'Works even when $m$ is fractional or negative! Don\'t forget to update limits on definite integrals.'
+            },
+            {
+              title: 'Odd power of $\\sin x$ (in $\\sin^m x\\cos^n x$)',
+              formula: 'Peel $\\sin x\\,dx$, use $\\sin^2 x = 1 - \\cos^2 x$, substitute $u = \\cos x$ ($du = -\\sin x\\,dx$).',
+              strategy: 'Watch the minus sign from $du = -\\sin x\\,dx$!'
+            },
+            {
+              title: 'Both $\\sin$ and $\\cos$ have even powers',
+              formula: 'Use half-angle identities: $\\sin^2 x = \\frac{1-\\cos 2x}{2}$, $\\cos^2 x = \\frac{1+\\cos 2x}{2}$.',
+              strategy: 'If limits are $[0, \\pi/2]$, consider Wallis\'s Formula (Lesson 4) or Beta function (Lesson 7)!'
+            },
+            {
+              title: 'Even power of $\\sec x$ (in $\\tan^m x\\sec^n x$)',
+              formula: 'Peel $\\sec^2 x\\,dx$, use $\\sec^2 x = 1 + \\tan^2 x$, substitute $u = \\tan x$.',
+              strategy: 'Also catches hidden exam problems like $\\int \\frac{\\sqrt{\\sin x}}{\\sqrt{\\cos^9 x}}\\,dx = \\int \\tan^{1/2}x\\sec^4 x\\,dx$!'
+            },
+            {
+              title: 'Odd power of $\\tan x$ & at least one $\\sec x$',
+              formula: 'Peel $\\sec x\\tan x\\,dx$, use $\\tan^2 x = \\sec^2 x - 1$, substitute $u = \\sec x$.',
+              strategy: 'If $n = 0$ (pure $\\tan^m x$), use the reduction formula $\\int \\tan^n x\\,dx = \\frac{1}{n-1}\\tan^{n-1}x - I_{n-2}$.'
+            }
+          ]
+        },
+        radical: {
+          question: 'Step 2: Which radical form appears (after completing the square if needed)?',
+          options: [
+            {
+              title: '$\\sqrt{a^2 - x^2}$ (constant minus variable²)',
+              formula: 'Set $x = a\\sin\\theta$, $dx = a\\cos\\theta\\,d\\theta$, $\\sqrt{a^2-x^2} = a\\cos\\theta$.',
+              strategy: 'If there is a linear term like $\\sqrt{4x - x^2}$, first complete the square: $4 - (x-2)^2$, then set $x-2 = 2\\sin\\theta$.'
+            },
+            {
+              title: '$\\sqrt{a^2 + x^2}$ (sum of squares)',
+              formula: 'Set $x = a\\tan\\theta$, $dx = a\\sec^2\\theta\\,d\\theta$, $\\sqrt{a^2+x^2} = a\\sec\\theta$.',
+              strategy: 'Often simplifies to powers of $\\sec\\theta$ — remember $\\int \\sec\\theta\\,d\\theta = \\ln|\\sec\\theta + \\tan\\theta| + C$.'
+            },
+            {
+              title: '$\\sqrt{x^2 - a^2}$ (variable² minus constant)',
+              formula: 'Set $x = a\\sec\\theta$, $dx = a\\sec\\theta\\tan\\theta\\,d\\theta$, $\\sqrt{x^2-a^2} = a\\tan\\theta$.',
+              strategy: 'For definite integrals like $\\int_{\\sqrt{2}}^2$, update limits to $\\theta \\in [\\pi/4, \\pi/3]$ to skip drawing a triangle.'
+            }
+          ]
+        },
+        rational: {
+          question: 'Step 2: Compare $\\deg(P)$ and $\\deg(Q)$ in $\\frac{P(x)}{Q(x)}$:',
+          options: [
+            {
+              title: 'Improper: $\\deg(P) \\ge \\deg(Q)$',
+              formula: 'Perform Polynomial Long Division first: $\\frac{P(x)}{Q(x)} = S(x) + \\frac{R(x)}{Q(x)}$.',
+              strategy: 'ISRT Exam Trap #1! Never apply partial fractions before long division.'
+            },
+            {
+              title: 'Proper with Distinct Linear Factors $(x-r_1)(x-r_2)$',
+              formula: '$\\frac{A}{x-r_1} + \\frac{B}{x-r_2}$ &rarr; use the Heaviside cover-up shortcut at $x=r_1, r_2$.',
+              strategy: 'Each term integrates cleanly to $A\\ln|x - r_1|$.'
+            },
+            {
+              title: 'Proper with Repeated Linear Factor $(x-r)^k$',
+              formula: '$\\frac{A_1}{x-r} + \\frac{A_2}{(x-r)^2} + \\dots + \\frac{A_k}{(x-r)^k}$.',
+              strategy: 'Include EVERY power from $1$ up to $k$, not just $(x-r)^k$!'
+            },
+            {
+              title: 'Proper with Irreducible Quadratic $(ax^2+bx+c)$',
+              formula: '$\\frac{Ax+B}{ax^2+bx+c}$ &rarr; split into $\\frac{1}{2}\\ln(x^2+c)$ + $\\tan^{-1}$ terms.',
+              strategy: 'Tested repeatedly in ISRT Final 2024 & 1st Incourse 2023: $\\frac{2x}{(x+1)(x^2+1)}$.'
+            }
+          ]
+        },
+        weierstrass: {
+          question: 'Step 2: Confirm linear $\\sin x$ and/or $\\cos x$ in the denominator:',
+          options: [
+            {
+              title: 'Form $\\int \\frac{dx}{a + b\\sin x + c\\cos x}$',
+              formula: 'Let $t = \\tan(x/2) \\implies \\sin x = \\frac{2t}{1+t^2},\\; \\cos x = \\frac{1-t^2}{1+t^2},\\; dx = \\frac{2\\,dt}{1+t^2}$.',
+              strategy: 'Multiply top & bottom by $(1+t^2)$ immediately. You will get a quadratic denominator in $t$ — complete the square for $\\tan^{-1}$ or $\\ln$!'
+            }
+          ]
+        }
+      };
+
+      const wizardLevel1 = document.getElementById('wizardLevel1');
+      const wizardLevel2 = document.getElementById('wizardLevel2');
+      const wizardResult = document.getElementById('wizardResult');
+
+      wizardLevel1.querySelectorAll('.wizard-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const cat = card.dataset.wcat;
+          wizardLevel1.querySelectorAll('.wizard-card').forEach((c) => c.classList.remove('selected'));
+          card.classList.add('selected');
+          markDone('lab1');
+
+          const data = wizardData[cat];
+          wizardResult.innerHTML = '';
+          wizardLevel2.innerHTML = `
+            <span class="section-tag" style="margin-bottom:4px;">${data.question}</span>
+            <div class="wizard-grid">
+              ${data.options.map((opt, idx) => `
+                <button type="button" class="wizard-card" data-optidx="${idx}">
+                  <span class="wizard-badge">Option ${idx + 1}</span>
+                  <strong>${opt.title}</strong>
+                </button>
+              `).join('')}
+            </div>
+          `;
+          renderMath(wizardLevel2);
+
+          wizardLevel2.querySelectorAll('.wizard-card').forEach((optCard) => {
+            optCard.addEventListener('click', () => {
+              wizardLevel2.querySelectorAll('.wizard-card').forEach((c) => c.classList.remove('selected'));
+              optCard.classList.add('selected');
+              const chosen = data.options[parseInt(optCard.dataset.optidx, 10)];
+              wizardResult.innerHTML = `
+                <div class="wizard-result-box">
+                  <span class="section-tag" style="color:var(--emerald-light);margin-bottom:0;">Recommended Exam Prescription</span>
+                  <div style="font-size:0.95rem;"><strong>Rule / Formula:</strong> ${chosen.formula}</div>
+                  <div style="font-size:0.88rem;color:var(--text-secondary);"><strong>ISRT Exam Strategy:</strong> ${chosen.strategy}</div>
+                </div>
+              `;
+              renderMath(wizardResult);
+            });
+          });
+        });
+      });
+
+      document.getElementById('wizardResetBtn').addEventListener('click', () => {
+        wizardLevel1.querySelectorAll('.wizard-card').forEach((c) => c.classList.remove('selected'));
+        wizardLevel2.innerHTML = '';
+        wizardResult.innerHTML = '';
+      });
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 2A: RIGHT-TRIANGLE BACK-SUBSTITUTION LAB (HIDPI CANVAS)
+         ---------------------------------------------------------------------- */
+      const triState = { mode: 'sin', a: 3, thetaDeg: 37 };
+      const triCanvas = document.getElementById('triCanvas');
+      const triASlider = document.getElementById('triASlider');
+      const triThetaSlider = document.getElementById('triThetaSlider');
+
+      function drawTriangleCanvas() {
+        const { mode, a, thetaDeg } = triState;
+        const rad = (thetaDeg * Math.PI) / 180;
+
+        // Compute numeric sides & symbolic labels
+        let oppVal, adjVal, hypVal, xVal, radVal;
+        let oppSym, adjSym, hypSym, subTex, dxTex, radSimpTex;
+        let ratios = [];
+
+        if (mode === 'sin') {
+          hypVal = a;
+          oppVal = a * Math.sin(rad);
+          adjVal = a * Math.cos(rad);
+          xVal = oppVal;
+          radVal = adjVal;
+          oppSym = 'x';
+          adjSym = `\\sqrt{${a * a}-x^2}`;
+          hypSym = `${a}`;
+          subTex = `x = ${a}\\sin\\theta,\\; dx = ${a}\\cos\\theta\\,d\\theta`;
+          radSimpTex = `\\sqrt{${a * a} - x^2} = ${a}\\cos\\theta`;
+          ratios = [
+            { name: 'sin θ', sym: `\\frac{x}{${a}}`, val: oppVal / hypVal, hl: true },
+            { name: 'cos θ', sym: `\\frac{\\sqrt{${a * a}-x^2}}{${a}}`, val: adjVal / hypVal },
+            { name: 'tan θ', sym: `\\frac{x}{\\sqrt{${a * a}-x^2}}`, val: oppVal / adjVal },
+            { name: 'sec θ', sym: `\\frac{${a}}{\\sqrt{${a * a}-x^2}}`, val: hypVal / adjVal },
+            { name: 'csc θ', sym: `\\frac{${a}}{x}`, val: hypVal / oppVal },
+            { name: 'cot θ', sym: `\\frac{\\sqrt{${a * a}-x^2}}{x}`, val: adjVal / oppVal }
+          ];
+        } else if (mode === 'tan') {
+          adjVal = a;
+          oppVal = a * Math.tan(rad);
+          hypVal = a / Math.cos(rad);
+          xVal = oppVal;
+          radVal = hypVal;
+          oppSym = 'x';
+          adjSym = `${a}`;
+          hypSym = `\\sqrt{${a * a}+x^2}`;
+          subTex = `x = ${a}\\tan\\theta,\\; dx = ${a}\\sec^2\\theta\\,d\\theta`;
+          radSimpTex = `\\sqrt{${a * a} + x^2} = ${a}\\sec\\theta`;
+          ratios = [
+            { name: 'sin θ', sym: `\\frac{x}{\\sqrt{${a * a}+x^2}}`, val: oppVal / hypVal },
+            { name: 'cos θ', sym: `\\frac{${a}}{\\sqrt{${a * a}+x^2}}`, val: adjVal / hypVal },
+            { name: 'tan θ', sym: `\\frac{x}{${a}}`, val: oppVal / adjVal, hl: true },
+            { name: 'sec θ', sym: `\\frac{\\sqrt{${a * a}+x^2}}{${a}}`, val: hypVal / adjVal },
+            { name: 'csc θ', sym: `\\frac{\\sqrt{${a * a}+x^2}}{x}`, val: hypVal / oppVal },
+            { name: 'cot θ', sym: `\\frac{${a}}{x}`, val: adjVal / oppVal }
+          ];
+        } else {
+          adjVal = a;
+          hypVal = a / Math.cos(rad);
+          oppVal = a * Math.tan(rad);
+          xVal = hypVal;
+          radVal = oppVal;
+          oppSym = `\\sqrt{x^2-${a * a}}`;
+          adjSym = `${a}`;
+          hypSym = 'x';
+          subTex = `x = ${a}\\sec\\theta,\\; dx = ${a}\\sec\\theta\\tan\\theta\\,d\\theta`;
+          radSimpTex = `\\sqrt{x^2 - ${a * a}} = ${a}\\tan\\theta`;
+          ratios = [
+            { name: 'sin θ', sym: `\\frac{\\sqrt{x^2-${a * a}}}{x}`, val: oppVal / hypVal },
+            { name: 'cos θ', sym: `\\frac{${a}}{x}`, val: adjVal / hypVal },
+            { name: 'tan θ', sym: `\\frac{\\sqrt{x^2-${a * a}}}{${a}}`, val: oppVal / adjVal },
+            { name: 'sec θ', sym: `\\frac{x}{${a}}`, val: hypVal / adjVal, hl: true },
+            { name: 'csc θ', sym: `\\frac{x}{\\sqrt{x^2-${a * a}}}`, val: hypVal / oppVal },
+            { name: 'cot θ', sym: `\\frac{${a}}{\\sqrt{x^2-${a * a}}}`, val: adjVal / oppVal }
+          ];
+        }
+
+        // Update UI labels & KaTeX readouts
+        document.getElementById('triADisplay').textContent = `a = ${a}`;
+        document.getElementById('triThetaDisplay').innerHTML = `&theta; = ${thetaDeg}&deg; (x &approx; ${xVal.toFixed(2)})`;
+
+        const sumEl = document.getElementById('triSubSummary');
+        sumEl.innerHTML = `
+          <div style="font-size:0.74rem;font-weight:700;color:var(--cyan-light);text-transform:uppercase;margin-bottom:4px;">Active Substitution &amp; Simplified Radical</div>
+          <div>$${subTex}$</div>
+          <div style="margin-top:4px;color:var(--emerald-light);">$${radSimpTex} \\approx ${radVal.toFixed(3)}$</div>
+        `;
+
+        const ratioEl = document.getElementById('triRatioGrid');
+        ratioEl.innerHTML = ratios.map((r) => `
+          <div class="ratio-card ${r.hl ? 'highlight' : ''}">
+            <span class="ratio-name">${r.name}</span>
+            <span class="ratio-val">$${r.sym} \\approx ${r.val.toFixed(3)}$</span>
+          </div>
+        `).join('');
+
+        renderMath(sumEl);
+        renderMath(ratioEl);
+
+        // HiDPI Canvas Draw
+        const rect = triCanvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(260, Math.floor(rect.width));
+        const h = Math.max(210, Math.floor(rect.height));
+        if (triCanvas.width !== Math.floor(w * dpr) || triCanvas.height !== Math.floor(h * dpr)) {
+          triCanvas.width = Math.floor(w * dpr);
+          triCanvas.height = Math.floor(h * dpr);
+        }
+        const ctx = triCanvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        ctx.fillStyle = '#0b1120';
+        ctx.fillRect(0, 0, w, h);
+
+        // Subtle background grid
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
+        ctx.lineWidth = 1;
+        for (let gx = 24; gx < w; gx += 28) {
+          ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+        }
+        for (let gy = 24; gy < h; gy += 28) {
+          ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+        }
+
+        // Fit triangle cleanly inside padded box while preserving true angle θ
+        const maxTriW = w * 0.56;
+        const maxTriH = h * 0.58;
+        const scale = Math.min(maxTriW / adjVal, maxTriH / oppVal);
+        const drawW = adjVal * scale;
+        const drawH = oppVal * scale;
+
+        const baseLeftX = (w - drawW) * 0.44;
+        const baseY = (h + drawH) * 0.54;
+        const rightX = baseLeftX + drawW;
+        const topY = baseY - drawH;
+
+        // Translucent triangle fill
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.12)';
+        ctx.beginPath();
+        ctx.moveTo(baseLeftX, baseY);
+        ctx.lineTo(rightX, baseY);
+        ctx.lineTo(rightX, topY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Right-angle square marker
+        const sq = Math.min(18, drawW * 0.22, drawH * 0.22);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.6;
+        ctx.strokeRect(rightX - sq, baseY - sq, sq, sq);
+
+        // Angle θ arc at bottom-left vertex
+        const arcR = Math.min(40, drawW * 0.35, drawH * 0.55);
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+        ctx.beginPath();
+        ctx.moveTo(baseLeftX, baseY);
+        ctx.arc(baseLeftX, baseY, arcR, -rad, 0, false);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.arc(baseLeftX, baseY, arcR, -rad, 0, false);
+        ctx.stroke();
+
+        // Label θ
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '700 13px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`θ=${thetaDeg}°`, baseLeftX + arcR + 7, baseY - Math.min(18, drawH * 0.16));
+
+        // Color-coded sides
+        // Adjacent (bottom) — Emerald
+        ctx.strokeStyle = '#34d399';
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.moveTo(baseLeftX, baseY);
+        ctx.lineTo(rightX, baseY);
+        ctx.stroke();
+
+        // Opposite (right) — Rose
+        ctx.strokeStyle = '#fb7185';
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.moveTo(rightX, baseY);
+        ctx.lineTo(rightX, topY);
+        ctx.stroke();
+
+        // Hypotenuse — Cyan
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.moveTo(baseLeftX, baseY);
+        ctx.lineTo(rightX, topY);
+        ctx.stroke();
+
+        // Vertex dots
+        [[baseLeftX, baseY], [rightX, baseY], [rightX, topY]].forEach(([vx, vy]) => {
+          ctx.fillStyle = '#f1f5f9';
+          ctx.beginPath();
+          ctx.arc(vx, vy, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        // Helper for clean canvas side labels
+        const plainSym = (s) => s.replace(/\\sqrt\{([^}]+)\}/g, '√($1)');
+
+        ctx.font = '700 12.5px "JetBrains Mono", monospace';
+
+        // Adjacent Label (below bottom side)
+        ctx.fillStyle = '#34d399';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(`Adj = ${plainSym(adjSym)} = ${adjVal.toFixed(2)}`, (baseLeftX + rightX) / 2, baseY + 12);
+
+        // Opposite Label (right of vertical side)
+        ctx.fillStyle = '#fb7185';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`Opp = ${plainSym(oppSym)}`, rightX + 12, (baseY + topY) / 2 - 8);
+        ctx.font = '600 11.5px "JetBrains Mono", monospace';
+        ctx.fillText(`= ${oppVal.toFixed(2)}`, rightX + 12, (baseY + topY) / 2 + 10);
+
+        // Hypotenuse Label (above midpoint of hypotenuse)
+        ctx.font = '700 12.5px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#22d3ee';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(`Hyp = ${plainSym(hypSym)} = ${hypVal.toFixed(2)}`, (baseLeftX + rightX) / 2 - 10, (baseY + topY) / 2 - 10);
+      }
+
+      document.querySelectorAll('.rad-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.rad-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          triState.mode = btn.dataset.rad;
+          markDone('lab2');
+          drawTriangleCanvas();
+        });
+      });
+
+      triASlider.addEventListener('input', () => {
+        triState.a = parseInt(triASlider.value, 10);
+        markDone('lab2');
+        drawTriangleCanvas();
+      });
+
+      triThetaSlider.addEventListener('input', () => {
+        triState.thetaDeg = parseInt(triThetaSlider.value, 10);
+        markDone('lab2');
+        drawTriangleCanvas();
+      });
+
+      /* ----------------------------------------------------------------------
+         7. SECTION 2B: PARTIAL FRACTIONS & LONG DIVISION 4-STAGE PIPELINE
+         ---------------------------------------------------------------------- */
+      const pfPresets = [
+        {
+          tag: '1. Distinct Linear',
+          tex: '\\frac{x}{(x-3)(x+4)}',
+          stages: [
+            { title: 'Stage 1: Degree Check', body: 'Numerator degree is $1$, denominator degree is $2$. Since $1 &lt; 2$, the fraction is <strong>proper</strong> — no long division needed.' },
+            { title: 'Stage 2: Decomposition Template', body: 'Two distinct linear factors $(x-3)$ and $(x+4)$ yield: $$\\frac{x}{(x-3)(x+4)} = \\frac{A}{x-3} + \\frac{B}{x+4}.$$' },
+            { title: 'Stage 3: Solve Constants A, B', body: 'Clear denominators: $x = A(x+4) + B(x-3)$.<br />&bull; Set $x = 3$: $3 = 7A \\implies A = \\frac{3}{7}$.<br />&bull; Set $x = -4$: $-4 = -7B \\implies B = \\frac{4}{7}$.' },
+            { title: 'Stage 4: Final Integral', body: '$$\\int \\frac{x}{(x-3)(x+4)}\\,dx = \\frac{3}{7}\\ln|x-3| + \\frac{4}{7}\\ln|x+4| + C.$$' }
+          ]
+        },
+        {
+          tag: '2. Repeated Linear',
+          tex: '\\frac{3x^2-x+1}{x^2(x-1)}',
+          stages: [
+            { title: 'Stage 1: Degree Check', body: 'Numerator degree is $2$, denominator degree is $3$. Since $2 &lt; 3$, the fraction is <strong>proper</strong>.' },
+            { title: 'Stage 2: Decomposition Template', body: 'Repeated linear factor $x^2$ needs BOTH $\\frac{A}{x}$ and $\\frac{B}{x^2}$: $$\\frac{3x^2-x+1}{x^2(x-1)} = \\frac{A}{x} + \\frac{B}{x^2} + \\frac{C}{x-1}.$$' },
+            { title: 'Stage 3: Solve Constants A, B, C', body: 'Clear denominators: $3x^2-x+1 = Ax(x-1) + B(x-1) + Cx^2$.<br />&bull; Set $x = 0$: $1 = -B \\implies B = -1$.<br />&bull; Set $x = 1$: $3 = C \\implies C = 3$.<br />&bull; Compare $x^2$: $3 = A + C \\implies A = 0$.' },
+            { title: 'Stage 4: Final Integral', body: '$$\\int \\left(-\\frac{1}{x^2} + \\frac{3}{x-1}\\right)dx = \\frac{1}{x} + 3\\ln|x-1| + C.$$' }
+          ]
+        },
+        {
+          tag: '3. Linear + Irreducible Quad (ISRT 2024)',
+          tex: '\\frac{2x}{(x+1)(x^2+1)}',
+          stages: [
+            { title: 'Stage 1: Degree Check', body: 'Numerator degree is $1$, denominator degree is $3$ ($1 &lt; 3$ &rarr; <strong>proper</strong>). Note $x^2+1$ cannot be factored over $\\mathbb{R}$.' },
+            { title: 'Stage 2: Decomposition Template', body: 'Use a constant over $(x+1)$ and a <strong>linear numerator</strong> $Bx+C$ over $(x^2+1)$: $$\\frac{2x}{(x+1)(x^2+1)} = \\frac{A}{x+1} + \\frac{Bx+C}{x^2+1}.$$' },
+            { title: 'Stage 3: Solve Constants A, B, C', body: '$2x = A(x^2+1) + (Bx+C)(x+1)$.<br />&bull; $x = -1 \\implies -2 = 2A \\implies A = -1$.<br />&bull; $x^2$ terms: $0 = A + B \\implies B = 1$.<br />&bull; Constants: $0 = A + C \\implies C = 1$.' },
+            { title: 'Stage 4: Final Integral', body: '$$\\int \\left(\\frac{-1}{x+1} + \\frac{x}{x^2+1} + \\frac{1}{x^2+1}\\right)dx = -\\ln|x+1| + \\frac{1}{2}\\ln(x^2+1) + \\tan^{-1}x + C.$$' }
+          ]
+        },
+        {
+          tag: '4. Improper / Long Division (ISRT 2022)',
+          tex: '\\frac{3x^3+2x^2-3x+8}{x+2}',
+          stages: [
+            { title: 'Stage 1: Degree Check (IMPROPER!)', body: 'Numerator degree is $3 \\ge$ denominator degree $1$. <strong>Polynomial Long Division is mandatory</strong> before integrating!' },
+            { title: 'Stage 2: Long Division Quotient + Remainder', body: 'Dividing $3x^3+2x^2-3x+8$ by $(x+2)$ gives quotient $3x^2 - 4x + 5$ and remainder $-2$: $$\\frac{3x^3+2x^2-3x+8}{x+2} = 3x^2 - 4x + 5 - \\frac{2}{x+2}.$$' },
+            { title: 'Stage 3: Constants Already Resolved', body: 'The remainder fraction $-\\frac{2}{x+2}$ is already a single simple partial fraction ($A = -2$). No further system to solve!' },
+            { title: 'Stage 4: Final Integral', body: '$$\\int \\left(3x^2 - 4x + 5 - \\frac{2}{x+2}\\right)dx = x^3 - 2x^2 + 5x - 2\\ln|x+2| + C.$$' }
+          ]
+        }
+      ];
+
+      const pfState = { idx: 2, stage: 0 };
+      const pfSelector = document.getElementById('pfSelector');
+      const pfStageBox = document.getElementById('pfStageBox');
+      const pfPipelineBar = document.getElementById('pfPipelineBar');
+
+      function buildPFButtons() {
+        pfSelector.innerHTML = pfPresets.map((p, i) => `
+          <button type="button" class="pf-btn ${i === pfState.idx ? 'active' : ''}" data-pfidx="${i}">
+            <span class="pill-tag">${p.tag}</span>
+            <span class="pill-math">$${p.tex}$</span>
+          </button>
+        `).join('');
+
+        pfSelector.querySelectorAll('.pf-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            pfState.idx = parseInt(btn.dataset.pfidx, 10);
+            pfState.stage = 0;
+            markDone('lab2');
+            renderPFLab();
+          });
+        });
+        renderMath(pfSelector);
+      }
+
+      function renderPFLab() {
+        const p = pfPresets[pfState.idx];
+        const st = p.stages[pfState.stage];
+
+        pfSelector.querySelectorAll('.pf-btn').forEach((b, i) => b.classList.toggle('active', i === pfState.idx));
+        pfPipelineBar.querySelectorAll('.pipe-step').forEach((btn, i) => {
+          btn.classList.toggle('current', i === pfState.stage);
+          btn.classList.toggle('reached', i < pfState.stage);
+        });
+
+        pfStageBox.innerHTML = `
+          <span class="section-tag" style="margin-bottom:0;">${st.title}</span>
+          <div style="font-size:0.94rem;">${st.body}</div>
+        `;
+        document.getElementById('pfStageCounter').textContent = `Stage ${pfState.stage + 1} of 4`;
+        document.getElementById('pfPrevBtn').disabled = pfState.stage <= 0;
+        document.getElementById('pfNextBtn').disabled = pfState.stage >= 3;
+
+        renderMath(pfStageBox);
+      }
+
+      pfPipelineBar.querySelectorAll('.pipe-step').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          pfState.stage = parseInt(btn.dataset.stage, 10);
+          markDone('lab2');
+          renderPFLab();
+        });
+      });
+
+      document.getElementById('pfPrevBtn').addEventListener('click', () => {
+        if (pfState.stage > 0) pfState.stage--;
+        renderPFLab();
+      });
+
+      document.getElementById('pfNextBtn').addEventListener('click', () => {
+        if (pfState.stage < 3) pfState.stage++;
+        markDone('lab2');
+        renderPFLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         8. SECTION 4: PAST-EXAM VAULT FILTERS & TOGGLES
+         ---------------------------------------------------------------------- */
+      const filterTabs = document.querySelectorAll('.filter-tab');
+      const examCards = document.querySelectorAll('.exam-card');
+
+      filterTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          filterTabs.forEach((t) => t.classList.remove('active'));
+          tab.classList.add('active');
+          const f = tab.dataset.filter;
+          examCards.forEach((card) => {
+            card.classList.toggle('hidden', f !== 'all' && card.dataset.category !== f);
+          });
+        });
+      });
+
+      examCards.forEach((card) => {
+        const hintBtn = card.querySelector('.hint-toggle');
+        const hintBox = card.querySelector('.hint-box');
+        const solBtn = card.querySelector('.sol-toggle');
+        const solBox = card.querySelector('.solution-box');
+
+        hintBtn.addEventListener('click', () => {
+          const open = hintBox.classList.toggle('open');
+          hintBtn.textContent = open ? 'Hide Hint' : 'Show Hint';
+          if (open) renderMath(hintBox);
+        });
+
+        solBtn.addEventListener('click', () => {
+          const open = solBox.classList.toggle('open');
+          solBtn.textContent = open ? 'Hide Solution' : 'Show Full Solution';
+          markDone('vault');
+          if (open) renderMath(solBox);
+        });
+      });
+
+      /* ----------------------------------------------------------------------
+         9. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizExplanations = {
+        q1: 'Because $\\sec x$ has an <strong>even power</strong> ($4 \\ge 2$), peel off $\\sec^2 x\\,dx$ for $du$, convert the remaining $\\sec^2 x = 1 + \\tan^2 x$, and set $u = \\tan x$.',
+        q2: 'An irreducible quadratic factor $(x^2+1)$ always requires a <strong>linear numerator</strong> $Bx + C$, giving $\\frac{A}{x+1} + \\frac{Bx+C}{x^2+1}$.',
+        q3: 'Since $\\deg(P) = 3 \\ge \\deg(Q) = 1$, the rational function is improper and <strong>polynomial long division</strong> must be performed first to get $3x^2 - 4x + 5 - \\frac{2}{x+2}$.',
+        q4: 'With $t = \\tan(x/2)$, we have $\\cos x = \\frac{1-t^2}{1+t^2}$, $\\sin x = \\frac{2t}{1+t^2}$, and $dx = \\frac{2\\,dt}{1+t^2}$.',
+        q5: 'From $x = 3\\sec\\theta$, $\\sec\\theta = \\frac{x}{3} = \\frac{\\text{Hyp}}{\\text{Adj}}$, so $\\text{Opp} = \\sqrt{x^2-9}$ and $\\tan\\theta = \\frac{\\text{Opp}}{\\text{Adj}} = \\frac{\\sqrt{x^2-9}}{3}$.'
+      };
+
+      const quizResults = { q1: null, q2: null, q3: null, q4: null, q5: null };
+
+      function updateQuizScore() {
+        const correct = Object.values(quizResults).filter((v) => v === true).length;
+        document.getElementById('quizScore').textContent = `${correct} / 5`;
+      }
+
+      document.querySelectorAll('.quiz-card').forEach((card) => {
+        const qid = card.dataset.qid;
+        const ans = card.dataset.answer;
+        const opts = card.querySelectorAll('.quiz-opt');
+        const fb = card.querySelector('.quiz-feedback');
+
+        opts.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const ok = btn.dataset.val === ans;
+            opts.forEach((b) => {
+              b.disabled = true;
+              if (b.dataset.val === ans) b.classList.add('correct');
+            });
+            if (!ok) btn.classList.add('wrong');
+
+            quizResults[qid] = ok;
+            if (ok) markDone(qid);
+            updateQuizScore();
+
+            fb.className = `quiz-feedback show ${ok ? 'ok' : 'err'}`;
+            fb.innerHTML = `<strong>${ok ? 'Correct!' : 'Not quite.'}</strong> ${quizExplanations[qid]}`;
+            renderMath(fb);
+          });
+        });
+      });
+
+      document.getElementById('resetQuizBtn').addEventListener('click', () => {
+        Object.keys(quizResults).forEach((k) => {
+          quizResults[k] = null;
+          progressState[k] = false;
+        });
+        document.querySelectorAll('.quiz-opt').forEach((b) => {
+          b.disabled = false;
+          b.classList.remove('correct', 'wrong');
+        });
+        document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+          fb.className = 'quiz-feedback';
+          fb.innerHTML = '';
+        });
+        updateQuizScore();
+        updateProgressUI();
+      });
+
+      /* ----------------------------------------------------------------------
+         10. RESPONSIVE RESIZE OBSERVER & INITIALIZATION
+         ---------------------------------------------------------------------- */
+      const ro = new ResizeObserver(() => {
+        drawTriangleCanvas();
+      });
+      ro.observe(document.getElementById('triCanvasWrap'));
+
+      window.addEventListener('load', () => {
+        buildDiagPills();
+        renderDiagLab();
+        buildPFButtons();
+        renderPFLab();
+        drawTriangleCanvas();
+        updateProgressUI();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

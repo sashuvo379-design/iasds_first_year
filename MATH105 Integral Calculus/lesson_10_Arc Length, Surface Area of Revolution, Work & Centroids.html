@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 10: Arc Length, Surface Area, Work & Centroids | MATH 105 (ISRT, DU)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 270px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 50;
+    }
+    .brand { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .brand .tag {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .brand h1 { font-size: 1.15rem; margin-top: 4px; line-height: 1.3; }
+    .brand p { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+    .progress-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .progress-header { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; }
+    .progress-bar { height: 8px; background: #0f172a; border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      transition: width 0.35s ease;
+    }
+
+    nav { display: flex; flex-direction: column; gap: 6px; }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    nav a:hover, nav a.active { background: var(--surface-2); color: var(--text); }
+    nav a.active { border-left: 3px solid var(--accent); color: var(--accent); font-weight: 600; }
+
+    /* Main */
+    main {
+      margin-left: 270px;
+      flex: 1;
+      padding: 36px 42px 80px;
+      max-width: 1120px;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(129,140,248,0.12));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 32px;
+    }
+    .hero .pill {
+      display: inline-block; font-size: 0.75rem; font-weight: 700;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(56,189,248,0.18); color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .hero h2 { font-size: 1.9rem; margin-bottom: 8px; }
+    .hero p { color: var(--muted); max-width: 780px; }
+
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 1.35rem; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title span.num {
+      background: var(--accent); color: #0f172a;
+      font-weight: 800; font-size: 0.85rem;
+      width: 26px; height: 26px; border-radius: 7px;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* Controls & Tabs */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn, .btn {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.86rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover, .btn:hover { border-color: var(--accent); }
+    .tab-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .control-group label {
+      display: flex; justify-content: space-between;
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 6px;
+    }
+    .control-group select, .control-group input[type="range"] {
+      width: 100%;
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+    }
+    .control-group input[type="range"] { padding: 0; accent-color: var(--accent); }
+
+    .canvas-wrap {
+      background: #070d19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    canvas { display: block; width: 100%; height: 340px; }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .stat .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat .val { font-size: 1.08rem; font-weight: 700; margin-top: 4px; color: var(--accent); }
+
+    /* Theory Grid */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .formula-box {
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent-2);
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .trap-box {
+      background: rgba(251,113,133,0.08);
+      border: 1px solid rgba(251,113,133,0.35);
+      border-left: 4px solid var(--rose);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+    .trap-box strong { color: var(--rose); }
+
+    /* Vault */
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .vault-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .badge {
+      font-size: 0.73rem; font-weight: 700; padding: 3px 9px;
+      border-radius: 999px; background: rgba(129,140,248,0.2); color: var(--accent-2);
+    }
+    .badge.green { background: rgba(52,211,153,0.18); color: var(--green); }
+    .badge.amber { background: rgba(251,191,36,0.18); color: var(--amber); }
+    .vault-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .reveal-box {
+      display: none; margin-top: 12px; padding: 14px;
+      background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border);
+    }
+    .reveal-box.open { display: block; }
+    .check-label {
+      margin-left: auto; font-size: 0.84rem; color: var(--muted);
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+    }
+
+    /* Quiz */
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .options { display: grid; gap: 8px; margin-top: 12px; }
+    .opt-btn {
+      text-align: left; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px;
+      cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--accent); }
+    .opt-btn.correct { background: rgba(52,211,153,0.18); border-color: var(--green); color: var(--green); }
+    .opt-btn.wrong { background: rgba(251,113,133,0.18); border-color: var(--rose); color: var(--rose); }
+    .feedback { margin-top: 10px; font-size: 0.88rem; color: var(--muted); display: none; }
+    .feedback.show { display: block; }
+
+    @media (max-width: 900px) {
+      aside { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      main { margin-left: 0; padding: 24px 18px 60px; }
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <div class="brand">
+      <div class="tag">MATH 105 · ISRT, DU</div>
+      <h1>Lesson 10: Arc Length, Surface Area, Work & Centroids</h1>
+      <p>Module 3 · Geometric & Physical Applications</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Mastery Progress</span>
+        <strong id="progressPct">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;" id="progressDetail">0 / 13 tasks completed</p>
+    </div>
+
+    <nav>
+      <a href="#sec1" class="active">1. Arc Length & Surface Lab</a>
+      <a href="#sec2">2. Centroid & Hooke's Law Lab</a>
+      <a href="#sec3">3. Core Theory & Exam Traps</a>
+      <a href="#sec4">4. ISRT Past-Exam Vault (8)</a>
+      <a href="#sec5">5. Quick Mastery Check (5)</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <span class="pill">Sections 6.4 · 6.5 · 6.6 · 6.8</span>
+      <h2>Arc Length, Surface Area, Work & Centroids</h2>
+      <p>Measure the exact length of Cartesian and parametric curves, revolve them into conical frustums to compute surface area, integrate Hooke's law for spring work, and locate the exact geometric balance point $(\bar{x}, \bar{y})$ of planar regions.</p>
+    </div>
+
+    <!-- SECTION 1 -->
+    <section id="sec1">
+      <h3 class="section-title"><span class="num">1</span> Arc Length & Surface Area Visualizer</h3>
+      <div class="card">
+        <div class="controls-grid">
+          <div class="control-group">
+            <label><span>ISRT Exam Preset</span></label>
+            <select id="arcPreset">
+              <option value="x32">Final 2024 Q5a: y = x^(3/2) on [1, 2]</option>
+              <option value="spiral">2nd Incourse 2025 Q3: x=e^t cos t, y=e^t sin t on [0, π/2]</option>
+              <option value="sqrtX">Final 2018 Q7b: y = √x on [1, 9] (Rev. x-axis)</option>
+              <option value="x2Y">Final 2024 Q5b: y = x² on [1, 2] (Rev. y-axis)</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label><span>Polygonal / Frustum Segments ($n$)</span><strong id="nVal">8</strong></label>
+            <input type="range" id="nSlider" min="2" max="40" value="8" />
+          </div>
+          <div class="control-group">
+            <label><span>Display Mode</span></label>
+            <select id="arcMode">
+              <option value="length">Arc Length (Polygonal Chords)</option>
+              <option value="surface">Surface Area (Conical Frustums)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="arcCanvas"></canvas>
+        </div>
+
+        <div class="telemetry">
+          <div class="stat">
+            <div class="label">Approximation ($n$ segments)</div>
+            <div class="val" id="arcApprox">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">Exact Integral Value</div>
+            <div class="val" id="arcExact" style="color:var(--green)">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">Relative Error</div>
+            <div class="val" id="arcErr" style="color:var(--amber)">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">Setup Formula</div>
+            <div class="val" id="arcFormula" style="font-size:0.86rem;color:var(--text)">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2 -->
+    <section id="sec2">
+      <h3 class="section-title"><span class="num">2</span> Centroid Balance-Point & Hooke's Law Spring Lab</h3>
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchLab2('centroid', this)">Tab A: Centroid Explorer ($y=x^2$ & $y=x+c$)</button>
+          <button class="tab-btn" onclick="switchLab2('spring', this)">Tab B: Hooke's Law Spring Work Simulator</button>
+        </div>
+
+        <!-- Tab A: Centroid -->
+        <div id="lab2-centroid">
+          <div class="controls-grid">
+            <div class="control-group">
+              <label><span>Line Intercept $c$ in $y = x + c$</span><strong id="cVal">2.0</strong></label>
+              <input type="range" id="cSlider" min="1" max="8" step="0.5" value="2" />
+            </div>
+            <div class="control-group">
+              <label><span>Quick Exam Presets</span></label>
+              <div style="display:flex;gap:8px;">
+                <button class="btn" onclick="setC(2)">Final 2025 ($c=2$)</button>
+                <button class="btn" onclick="setC(6)">Final 2024 ($c=6$)</button>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="centroidCanvas"></canvas>
+          </div>
+          <div class="telemetry">
+            <div class="stat"><div class="label">Area $A$</div><div class="val" id="centA">—</div></div>
+            <div class="stat"><div class="label">Moment $M_y$</div><div class="val" id="centMy">—</div></div>
+            <div class="stat"><div class="label">Moment $M_x$</div><div class="val" id="centMx">—</div></div>
+            <div class="stat"><div class="label">Centroid $(\bar{x}, \bar{y})$</div><div class="val" id="centXY" style="color:var(--green)">—</div></div>
+          </div>
+        </div>
+
+        <!-- Tab B: Spring -->
+        <div id="lab2-spring" style="display:none;">
+          <div class="controls-grid">
+            <div class="control-group">
+              <label><span>Spring Constant $k$ (N/m)</span><strong id="kVal">5.0 N/m</strong></label>
+              <input type="range" id="kSlider" min="1" max="20" step="0.5" value="5" />
+            </div>
+            <div class="control-group">
+              <label><span>Stretch Distance $x$ (m)</span><strong id="xVal">1.80 m</strong></label>
+              <input type="range" id="xSlider" min="0.2" max="3.0" step="0.1" value="1.8" />
+            </div>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="springCanvas"></canvas>
+          </div>
+          <div class="telemetry">
+            <div class="stat"><div class="label">Restoring Force $F(x) = kx$</div><div class="val" id="sprF">—</div></div>
+            <div class="stat"><div class="label">Work $W = \int_0^x kt\,dt$</div><div class="val" id="sprW" style="color:var(--green)">—</div></div>
+            <div class="stat"><div class="label">Exam Benchmark</div><div class="val" style="font-size:0.86rem;color:var(--amber)">Final 2024 Q5c: $k=5, x=1.8 \Rightarrow W=8.1\text{ J}$</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3 -->
+    <section id="sec3">
+      <h3 class="section-title"><span class="num">3</span> Core Theory, Master Formulas & Exam Traps</h3>
+      <div class="grid-2">
+        <div class="card">
+          <h4>1. Arc Length (Section 6.4)</h4>
+          <p style="font-size:0.9rem;color:var(--muted);margin-top:4px;">Derived from $\Delta L = \sqrt{(\Delta x)^2 + (\Delta y)^2}$.</p>
+          <div class="formula-box">
+            $$L = \int_a^b \sqrt{1 + [f'(x)]^2}\,dx = \int_c^d \sqrt{1 + [g'(y)]^2}\,dy$$
+            $$L_{\text{param}} = \int_{t_1}^{t_2} \sqrt{\left(\frac{dx}{dt}\right)^2 + \left(\frac{dy}{dt}\right)^2}\,dt$$
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>2. Surface Area of Revolution (Section 6.5)</h4>
+          <p style="font-size:0.9rem;color:var(--muted);margin-top:4px;">Sum of frustum bands $S = 2\pi r^*\,ds$ where $r^*$ is the radius to the axis of rotation.</p>
+          <div class="formula-box">
+            $$\text{About } x\text{-axis: } S = \int_a^b 2\pi f(x)\sqrt{1 + [f'(x)]^2}\,dx$$
+            $$\text{About } y\text{-axis: } S = \int_a^b 2\pi x\sqrt{1 + [f'(x)]^2}\,dx = \int_c^d 2\pi g(y)\sqrt{1 + [g'(y)]^2}\,dy$$
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>3. Work & Hooke's Law (Section 6.6)</h4>
+          <p style="font-size:0.9rem;color:var(--muted);margin-top:4px;">Force required to hold a spring stretched $x$ units beyond natural length is $F(x) = kx$.</p>
+          <div class="formula-box">
+            $$W = \int_a^b F(x)\,dx = \int_a^b kx\,dx = \frac{1}{2}k(b^2 - a^2)$$
+          </div>
+        </div>
+
+        <div class="card">
+          <h4>4. Centroids of Planar Regions (Section 6.8)</h4>
+          <p style="font-size:0.9rem;color:var(--muted);margin-top:4px;">For a uniform lamina bounded by $y_{\text{top}} = f(x)$ and $y_{\text{bot}} = g(x)$ on $[a,b]$:</p>
+          <div class="formula-box">
+            $$A = \int_a^b [f(x)-g(x)]\,dx, \qquad \bar{x} = \frac{1}{A}\int_a^b x[f(x)-g(x)]\,dx$$
+            $$\bar{y} = \frac{1}{A}\int_a^b \frac{1}{2}\left([f(x)]^2 - [g(x)]^2\right)dx$$
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>High-Yield ISRT Exam Traps</h4>
+        <div class="trap-box">
+          <strong>Trap 1 — Vertical Tangents Create Improper Arc-Length Integrals:</strong> In <em>2nd Incourse 2022 Q5</em> ($y = (4-x^{2/3})^{3/2}$ on $[0,2]$), $y' = -x^{-1/3}\sqrt{4-x^{2/3}}$ blows up at $x=0$. You <em>must</em> state that $\sqrt{1+(y')^2}$ is unbounded at $x=0$ and evaluate it as $\lim_{c\to 0^+}\int_c^2 2x^{-1/3}\,dx$.
+        </div>
+        <div class="trap-box">
+          <strong>Trap 2 — Wrong Radius in Surface Area:</strong> Always check which axis you revolve around! Revolving $y=x^2$ about the <strong>$y$-axis</strong> uses radius $r = x$ (not $y = x^2$), giving $S = \int_1^2 2\pi x\sqrt{1+4x^2}\,dx$, which integrates cleanly by $u = 1+4x^2$.
+        </div>
+        <div class="trap-box">
+          <strong>Trap 3 — Squaring Difference vs. Difference of Squares in $\bar{y}$:</strong> The moment $M_x$ uses $\frac{1}{2}\left([f(x)]^2 - [g(x)]^2\right)$, <em>never</em> $\frac{1}{2}[f(x)-g(x)]^2$.
+        </div>
+        <div class="trap-box">
+          <strong>Trap 4 — Natural Length vs. Total Length in Hooke's Law:</strong> $x$ in $F(x)=kx$ is always the displacement <em>beyond natural length</em>, not the total length of the spring.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4 -->
+    <section id="sec4">
+      <h3 class="section-title"><span class="num">4</span> ISRT Past-Exam Vault (2018–2025)</h3>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="filterVault('all', this)">All (8)</button>
+        <button class="tab-btn" onclick="filterVault('arclength', this)">Arc Length</button>
+        <button class="tab-btn" onclick="filterVault('surface', this)">Surface Area</button>
+        <button class="tab-btn" onclick="filterVault('work', this)">Work</button>
+        <button class="tab-btn" onclick="filterVault('centroid', this)">Centroids</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section id="sec5">
+      <h3 class="section-title"><span class="num">5</span> Quick Mastery Check</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="color:var(--muted);font-size:0.9rem;">Score: <strong id="quizScore" style="color:var(--green)">0 / 5</strong></span>
+        <button class="btn" onclick="resetQuiz()">Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    // ---------- SECTION 1: ARC LENGTH & SURFACE AREA ----------
+    const arcPresets = {
+      x32: {
+        name: "y = x^(3/2) on [1, 2]",
+        type: "cartesian", a: 1, b: 2,
+        x: t => t, y: t => Math.pow(t, 1.5),
+        axis: "x",
+        exactL: (Math.pow(22, 1.5) - Math.pow(13, 1.5)) / 27,
+        exactS: 2 * Math.PI * 10.692, // numeric reference
+        formulaL: "L = ∫₁² √(1 + 9x/4) dx = (22√22 - 13√13)/27",
+        formulaS: "S = ∫₁² 2π x^(3/2) √(1 + 9x/4) dx"
+      },
+      spiral: {
+        name: "x = e^t cos t, y = e^t sin t on [0, π/2]",
+        type: "param", a: 0, b: Math.PI / 2,
+        x: t => Math.exp(t) * Math.cos(t), y: t => Math.exp(t) * Math.sin(t),
+        axis: "x",
+        exactL: Math.SQRT2 * (Math.exp(Math.PI / 2) - 1),
+        exactS: 0,
+        formulaL: "L = ∫₀^(π/2) √2 e^t dt = √2(e^(π/2) - 1)",
+        formulaS: "S (about x-axis) = ∫₀^(π/2) 2π (e^t sin t) √2 e^t dt"
+      },
+      sqrtX: {
+        name: "y = √x on [1, 9] about x-axis",
+        type: "cartesian", a: 1, b: 9,
+        x: t => t, y: t => Math.sqrt(t),
+        axis: "x",
+        exactL: 8.3168,
+        exactS: (Math.PI / 6) * (Math.pow(37, 1.5) - Math.pow(5, 1.5)),
+        formulaL: "L = ∫₁⁹ √(1 + 1/(4x)) dx",
+        formulaS: "S = ∫₁⁹ 2π √x √(1 + 1/(4x)) dx = (π/6)(37√37 - 5√5)"
+      },
+      x2Y: {
+        name: "y = x² on [1, 2] about y-axis",
+        type: "cartesian", a: 1, b: 2,
+        x: t => t, y: t => t * t,
+        axis: "y",
+        exactL: 3.1678,
+        exactS: (Math.PI / 6) * (Math.pow(17, 1.5) - Math.pow(5, 1.5)),
+        formulaL: "L = ∫₁² √(1 + 4x²) dx",
+        formulaS: "S = ∫₁² 2π x √(1 + 4x²) dx = (π/6)(17√17 - 5√5)"
+      }
+    };
+
+    function drawArcCanvas() {
+      const canvas = document.getElementById("arcCanvas");
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height;
+
+      const key = document.getElementById("arcPreset").value;
+      const n = parseInt(document.getElementById("nSlider").value, 10);
+      const mode = document.getElementById("arcMode").value;
+      document.getElementById("nVal").textContent = n;
+      const p = arcPresets[key];
+
+      // Sample curve
+      const pts = [];
+      const steps = 200;
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (let i = 0; i <= steps; i++) {
+        const t = p.a + (p.b - p.a) * (i / steps);
+        const xv = p.x(t), yv = p.y(t);
+        pts.push({ x: xv, y: yv });
+        minX = Math.min(minX, xv, 0); maxX = Math.max(maxX, xv);
+        minY = Math.min(minY, yv, 0); maxY = Math.max(maxY, yv);
+      }
+      const padX = (maxX - minX) * 0.15 + 0.3;
+      const padY = (maxY - minY) * 0.18 + 0.3;
+      minX -= padX; maxX += padX; minY -= padY; maxY += padY;
+
+      const toX = x => ((x - minX) / (maxX - minX)) * W;
+      const toY = y => H - ((y - minY) / (maxY - minY)) * H;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Axes
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0));
+      ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), H);
+      ctx.stroke();
+
+      // True curve
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      pts.forEach((pt, i) => i === 0 ? ctx.moveTo(toX(pt.x), toY(pt.y)) : ctx.lineTo(toX(pt.x), toY(pt.y)));
+      ctx.stroke();
+
+      // Polygonal segments & frustums
+      let approxL = 0, approxS = 0;
+      for (let i = 0; i < n; i++) {
+        const t0 = p.a + (p.b - p.a) * (i / n);
+        const t1 = p.a + (p.b - p.a) * ((i + 1) / n);
+        const x0 = p.x(t0), y0 = p.y(t0);
+        const x1 = p.x(t1), y1 = p.y(t1);
+        const ds = Math.hypot(x1 - x0, y1 - y0);
+        approxL += ds;
+        const rMid = p.axis === "y" ? Math.abs((x0 + x1) / 2) : Math.abs((y0 + y1) / 2);
+        approxS += 2 * Math.PI * rMid * ds;
+
+        if (mode === "surface") {
+          ctx.fillStyle = "rgba(129, 140, 248, 0.22)";
+          ctx.strokeStyle = "rgba(129, 140, 248, 0.7)";
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          if (p.axis === "x") {
+            ctx.moveTo(toX(x0), toY(y0)); ctx.lineTo(toX(x1), toY(y1));
+            ctx.lineTo(toX(x1), toY(0)); ctx.lineTo(toX(x0), toY(0));
+          } else {
+            ctx.moveTo(toX(x0), toY(y0)); ctx.lineTo(toX(x1), toY(y1));
+            ctx.lineTo(toX(0), toY(y1)); ctx.lineTo(toX(0), toY(y0));
+          }
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+        }
+
+        // Chord
+        ctx.strokeStyle = "#fbbf24";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toX(x0), toY(y0)); ctx.lineTo(toX(x1), toY(y1));
+        ctx.stroke();
+
+        ctx.fillStyle = "#fbbf24";
+        ctx.beginPath(); ctx.arc(toX(x0), toY(y0), 3.5, 0, Math.PI * 2); ctx.fill();
+      }
+      const xEnd = p.x(p.b), yEnd = p.y(p.b);
+      ctx.fillStyle = "#fbbf24";
+      ctx.beginPath(); ctx.arc(toX(xEnd), toY(yEnd), 3.5, 0, Math.PI * 2); ctx.fill();
+
+      // Exact numeric fallback for spiral surface
+      let exactVal = mode === "length" ? p.exactL : p.exactS;
+      if (mode === "surface" && key === "spiral") {
+        let sum = 0, M = 1000;
+        for (let i = 0; i < M; i++) {
+          const t = p.a + (p.b - p.a) * ((i + 0.5) / M);
+          const dt = (p.b - p.a) / M;
+          sum += 2 * Math.PI * Math.abs(p.y(t)) * Math.SQRT2 * Math.exp(t) * dt;
+        }
+        exactVal = sum;
+      }
+      const approxVal = mode === "length" ? approxL : approxS;
+      const err = Math.abs(approxVal - exactVal) / exactVal * 100;
+
+      document.getElementById("arcApprox").textContent = approxVal.toFixed(4);
+      document.getElementById("arcExact").textContent = exactVal.toFixed(4);
+      document.getElementById("arcErr").textContent = err.toFixed(2) + "%";
+      document.getElementById("arcFormula").textContent = mode === "length" ? p.formulaL : p.formulaS;
+    }
+
+    // ---------- SECTION 2: CENTROID & HOOKE'S LAW ----------
+    function switchLab2(tab, btn) {
+      document.querySelectorAll("#sec2 .tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("lab2-centroid").style.display = tab === "centroid" ? "block" : "none";
+      document.getElementById("lab2-spring").style.display = tab === "spring" ? "block" : "none";
+      if (tab === "centroid") drawCentroid(); else drawSpring();
+    }
+
+    function setC(val) {
+      document.getElementById("cSlider").value = val;
+      drawCentroid();
+    }
+
+    function drawCentroid() {
+      const c = parseFloat(document.getElementById("cSlider").value);
+      document.getElementById("cVal").textContent = c.toFixed(1);
+
+      // Intersections of x^2 = x + c  => x^2 - x - c = 0
+      const disc = Math.sqrt(1 + 4 * c);
+      const a = (1 - disc) / 2;
+      const b = (1 + disc) / 2;
+
+      // Exact formulas for y = x^2 and y = x + c
+      const F_A = x => (x * x) / 2 + c * x - Math.pow(x, 3) / 3;
+      const A = F_A(b) - F_A(a);
+
+      const F_My = x => Math.pow(x, 3) / 3 + (c * x * x) / 2 - Math.pow(x, 4) / 4;
+      const My = F_My(b) - F_My(a);
+
+      // Mx = 1/2 int [(x+c)^2 - x^4] dx
+      const F_Mx = x => 0.5 * (Math.pow(x + c, 3) / 3 - Math.pow(x, 5) / 5);
+      const Mx = F_Mx(b) - F_Mx(a);
+
+      const xBar = My / A;
+      const yBar = Mx / A;
+
+      document.getElementById("centA").textContent = A.toFixed(3);
+      document.getElementById("centMy").textContent = My.toFixed(3);
+      document.getElementById("centMx").textContent = Mx.toFixed(3);
+      document.getElementById("centXY").textContent = `(${xBar.toFixed(3)}, ${yBar.toFixed(3)})`;
+
+      const canvas = document.getElementById("centroidCanvas");
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height;
+
+      const minX = a - 1, maxX = b + 1;
+      const minY = -1, maxY = b * b + 1.5;
+      const toX = x => ((x - minX) / (maxX - minX)) * W;
+      const toY = y => H - ((y - minY) / (maxY - minY)) * H;
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = "#334155"; ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, toY(0)); ctx.lineTo(W, toY(0));
+      ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), H);
+      ctx.stroke();
+
+      // Shaded region
+      ctx.fillStyle = "rgba(56, 189, 248, 0.22)";
+      ctx.beginPath();
+      ctx.moveTo(toX(a), toY(a * a));
+      for (let i = 0; i <= 100; i++) {
+        const xv = a + (b - a) * (i / 100);
+        ctx.lineTo(toX(xv), toY(xv * xv));
+      }
+      ctx.lineTo(toX(b), toY(b + c));
+      ctx.lineTo(toX(a), toY(a + c));
+      ctx.closePath(); ctx.fill();
+
+      // Curves
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let i = 0; i <= 120; i++) {
+        const xv = minX + (maxX - minX) * (i / 120);
+        const yv = xv * xv;
+        i === 0 ? ctx.moveTo(toX(xv), toY(yv)) : ctx.lineTo(toX(xv), toY(yv));
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = "#818cf8"; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(toX(minX), toY(minX + c)); ctx.lineTo(toX(maxX), toY(maxX + c));
+      ctx.stroke();
+
+      // Centroid Crosshair
+      const cx = toX(xBar), cy = toY(yBar);
+      ctx.strokeStyle = "#34d399"; ctx.setLineDash([4, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, 0); ctx.lineTo(cx, H);
+      ctx.moveTo(0, cy); ctx.lineTo(W, cy);
+      ctx.stroke(); ctx.setLineDash([]);
+
+      ctx.fillStyle = "#34d399";
+      ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#f1f5f9"; ctx.font = "600 12px Inter, sans-serif";
+      ctx.fillText(`(${xBar.toFixed(2)}, ${yBar.toFixed(2)})`, cx + 10, cy - 8);
+    }
+
+    function drawSpring() {
+      const k = parseFloat(document.getElementById("kSlider").value);
+      const x = parseFloat(document.getElementById("xSlider").value);
+      document.getElementById("kVal").textContent = k.toFixed(1) + " N/m";
+      document.getElementById("xVal").textContent = x.toFixed(2) + " m";
+
+      const F = k * x;
+      const Wwork = 0.5 * k * x * x;
+      document.getElementById("sprF").textContent = F.toFixed(2) + " N";
+      document.getElementById("sprW").textContent = Wwork.toFixed(2) + " J";
+
+      const canvas = document.getElementById("springCanvas");
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Left half: Spring diagram
+      const wallX = 40, baseLen = 90, stretchPx = x * 55;
+      const massX = wallX + baseLen + stretchPx;
+      const midY = H * 0.52;
+
+      ctx.fillStyle = "#334155";
+      ctx.fillRect(wallX - 10, midY - 45, 10, 90);
+
+      // Coils
+      ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(wallX, midY);
+      const coils = 10;
+      const span = massX - wallX - 15;
+      for (let i = 1; i <= coils; i++) {
+        const px = wallX + (span * i) / coils;
+        const py = midY + (i % 2 === 0 ? -16 : 16);
+        ctx.lineTo(px, py);
+      }
+      ctx.lineTo(massX, midY);
+      ctx.stroke();
+
+      // Mass block
+      ctx.fillStyle = "#818cf8";
+      ctx.fillRect(massX, midY - 22, 38, 44);
+      ctx.fillStyle = "#fff"; ctx.font = "700 12px Inter, sans-serif";
+      ctx.fillText("m", massX + 13, midY + 4);
+
+      // Natural length marker
+      ctx.strokeStyle = "#fbbf24"; ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(wallX + baseLen, midY - 50); ctx.lineTo(wallX + baseLen, midY + 55);
+      ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "#fbbf24"; ctx.font = "600 11px Inter, sans-serif";
+      ctx.fillText("x = 0", wallX + baseLen - 14, midY + 70);
+      ctx.fillText(`x = ${x.toFixed(1)}m`, massX - 4, midY + 70);
+
+      // Right half: Force vs Displacement triangle
+      const gx0 = W * 0.56, gy0 = H - 55, gW = W * 0.38, gH = H - 100;
+      ctx.strokeStyle = "#475569"; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(gx0, gy0 - gH); ctx.lineTo(gx0, gy0); ctx.lineTo(gx0 + gW, gy0);
+      ctx.stroke();
+
+      const pxX = gx0 + (x / 3.0) * gW;
+      const pxY = gy0 - Math.min(F / 60, 1) * gH;
+
+      ctx.fillStyle = "rgba(52, 211, 153, 0.25)";
+      ctx.beginPath();
+      ctx.moveTo(gx0, gy0); ctx.lineTo(pxX, gy0); ctx.lineTo(pxX, pxY);
+      ctx.closePath(); ctx.fill();
+
+      ctx.strokeStyle = "#34d399"; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(gx0, gy0); ctx.lineTo(pxX, pxY); ctx.stroke();
+
+      ctx.fillStyle = "#f1f5f9"; ctx.font = "600 12px Inter, sans-serif";
+      ctx.fillText("Force F(x) = kx", gx0 + 6, gy0 - gH + 14);
+      ctx.fillText(`Work = Area = ${Wwork.toFixed(2)} J`, gx0 + 14, gy0 - 14);
+    }
+
+    // ---------- SECTION 4: PAST-EXAM VAULT ----------
+    const vaultData = [
+      {
+        id: "v1", cat: "arclength", tag: "Final 2024 Q5a",
+        q: "Find the arc length of the curve $y = x^{3/2}$ from the point $(1,1)$ to $(2, 2\\sqrt{2})$.",
+        hint: "Compute $y' = \\frac{3}{2}x^{1/2}$, so $1 + (y')^2 = 1 + \\frac{9}{4}x$. Use $u$-substitution.",
+        sol: `$$y' = \\frac{3}{2}x^{1/2} \\implies 1 + (y')^2 = 1 + \\frac{9}{4}x$$
+              $$L = \\int_1^2 \\sqrt{1 + \\frac{9}{4}x}\\,dx$$
+              Let $u = 1 + \\frac{9}{4}x \\implies dx = \\frac{4}{9}du$. Limits: $x=1 \\Rightarrow u=\\frac{13}{4}$, $x=2 \\Rightarrow u=\\frac{22}{4}$.
+              $$L = \\frac{4}{9}\\left[\\frac{2}{3}u^{3/2}\\right]_{13/4}^{22/4} = \\frac{8}{27}\\cdot\\frac{22\\sqrt{22} - 13\\sqrt{13}}{8} = \\frac{22\\sqrt{22} - 13\\sqrt{13}}{27} \\approx 2.0858.$$`
+      },
+      {
+        id: "v2", cat: "arclength", tag: "2nd Incourse 2025 Q3",
+        q: "Find the arc length of the parametric curve $x = e^t \\cos t,\\; y = e^t \\sin t$ for $0 \\le t \\le \\pi/2$.",
+        hint: "Differentiate using the product rule and expand $(dx/dt)^2 + (dy/dt)^2$; the cross terms cancel!",
+        sol: `$$\\frac{dx}{dt} = e^t(\\cos t - \\sin t), \\qquad \\frac{dy}{dt} = e^t(\\sin t + \\cos t)$$
+              $$\\left(\\frac{dx}{dt}\\right)^2 + \\left(\\frac{dy}{dt}\\right)^2 = e^{2t}[(\\cos^2 t - 2\\sin t\\cos t + \\sin^2 t) + (\\sin^2 t + 2\\sin t\\cos t + \\cos^2 t)] = 2e^{2t}$$
+              $$L = \\int_0^{\\pi/2} \\sqrt{2e^{2t}}\\,dt = \\sqrt{2}\\int_0^{\\pi/2} e^t\\,dt = \\sqrt{2}\\left(e^{\\pi/2} - 1\\right).$$`
+      },
+      {
+        id: "v3", cat: "arclength", tag: "2nd Incourse 2022 Q5",
+        q: "Find the length of the curve $y = (4 - x^{2/3})^{3/2}$ over $[0, 2]$. Explain why the improper integral concept is necessary.",
+        hint: "Compute $y'$ and check what happens as $x \\to 0^+$.",
+        sol: `$$y' = \\frac{3}{2}(4 - x^{2/3})^{1/2}\\left(-\\frac{2}{3}x^{-1/3}\\right) = -x^{-1/3}\\sqrt{4 - x^{2/3}}$$
+              $$\\sqrt{1 + (y')^2} = \\sqrt{1 + x^{-2/3}(4 - x^{2/3})} = \\sqrt{4x^{-2/3}} = 2x^{-1/3}$$
+              <strong>Why improper?</strong> The integrand $2x^{-1/3} \\to \\infty$ as $x \\to 0^+$ (infinite discontinuity at $x=0$).
+              $$L = \\lim_{c\\to 0^+} \\int_c^2 2x^{-1/3}\\,dx = \\lim_{c\\to 0^+} \\left[3x^{2/3}\\right]_c^2 = 3(2)^{2/3} = 3\\sqrt[3]{4}.$$`
+      },
+      {
+        id: "v4", cat: "surface", tag: "Final 2024 Q5b",
+        q: "Find the area of the surface generated by revolving the portion of the curve $y = x^2$ between $x=1$ and $x=2$ about the $y$-axis.",
+        hint: "Since it revolves about the $y$-axis, the radius is $r = x$.",
+        sol: `$$y' = 2x \\implies \\sqrt{1 + (y')^2} = \\sqrt{1 + 4x^2}$$
+              $$S = \\int_1^2 2\\pi x\\sqrt{1 + 4x^2}\\,dx$$
+              Let $u = 1 + 4x^2 \\implies du = 8x\\,dx \\implies 2\\pi x\\,dx = \\frac{\\pi}{4}du$. Limits: $u(1)=5, u(2)=17$.
+              $$S = \\frac{\\pi}{4}\\left[\\frac{2}{3}u^{3/2}\\right]_5^{17} = \\frac{\\pi}{6}\\left(17\\sqrt{17} - 5\\sqrt{5}\\right).$$`
+      },
+      {
+        id: "v5", cat: "surface", tag: "2nd Incourse 2018 Q4",
+        q: "Find the area of the surface generated by revolving $x = \\sqrt{9 - y^2}$ between $y = -2$ and $y = 2$ about the $y$-axis.",
+        hint: "Use $S = \\int_{-2}^2 2\\pi x\\sqrt{1 + (dx/dy)^2}\\,dy$. Notice the square roots cancel completely!",
+        sol: `$$\\frac{dx}{dy} = \\frac{-y}{\\sqrt{9-y^2}} \\implies 1 + \\left(\\frac{dx}{dy}\\right)^2 = 1 + \\frac{y^2}{9-y^2} = \\frac{9}{9-y^2}$$
+              $$S = \\int_{-2}^2 2\\pi \\sqrt{9-y^2}\\cdot\\frac{3}{\\sqrt{9-y^2}}\\,dy = \\int_{-2}^2 6\\pi\\,dy = 6\\pi(4) = 24\\pi.$$`
+      },
+      {
+        id: "v6", cat: "work", tag: "Final 2024 Q5c",
+        q: "A spring exerts a force of $5\\text{ N}$ when stretched $1\\text{ m}$ beyond its natural length. (i) Find $k$. (ii) How much work is required to stretch it $1.8\\text{ m}$ beyond its natural length?",
+        hint: "Apply $F(x) = kx$ to get $k$, then integrate $W = \\int_0^{1.8} kx\\,dx$.",
+        sol: `(i) By Hooke's Law, $F(x) = kx$. Given $F(1) = 5 \\implies k(1) = 5 \\implies k = 5\\text{ N/m}$.<br/>
+              (ii) $$W = \\int_0^{1.8} 5x\\,dx = \\left[\\frac{5}{2}x^2\\right]_0^{1.8} = 2.5(3.24) = 8.1\\text{ J}.$$`
+      },
+      {
+        id: "v7", cat: "centroid", tag: "Final 2025 Q2a",
+        q: "Find the centroid of the region $R$ enclosed between the curves $y = x^2$ and $y = x + 2$.",
+        hint: "Intersections are at $x=-1$ and $x=2$. Compute $A$, $M_y$, and $M_x$ separately.",
+        sol: `Intersections: $x^2 = x+2 \\implies (x-2)(x+1)=0 \\implies x = -1, 2$.<br/>
+              $$A = \\int_{-1}^2 (x+2-x^2)\\,dx = \\left[\\frac{x^2}{2}+2x-\\frac{x^3}{3}\\right]_{-1}^2 = \\frac{9}{2}$$
+              $$M_y = \\int_{-1}^2 x(x+2-x^2)\\,dx = \\left[\\frac{x^3}{3}+x^2-\\frac{x^4}{4}\\right]_{-1}^2 = \\frac{9}{4} \\implies \\bar{x} = \\frac{9/4}{9/2} = \\frac{1}{2}$$
+              $$M_x = \\frac{1}{2}\\int_{-1}^2 \\left[(x+2)^2 - x^4\\right]dx = \\frac{1}{2}\\left[\\frac{(x+2)^3}{3} - \\frac{x^5}{5}\\right]_{-1}^2 = \\frac{36}{5} \\implies \\bar{y} = \\frac{36/5}{9/2} = \\frac{8}{5}$$
+              Centroid: $(\\bar{x}, \\bar{y}) = \\left(\\frac{1}{2}, \\frac{8}{5}\\right)$.`
+      },
+      {
+        id: "v8", cat: "centroid", tag: "Final 2024 Q6a",
+        q: "Find the centroid of the region $R$ enclosed between the curves $y = x^2$ and $y = x + 6$.",
+        hint: "Intersections are at $x=-2$ and $x=3$.",
+        sol: `Intersections: $x^2 = x+6 \\implies (x-3)(x+2)=0 \\implies x = -2, 3$.<br/>
+              $$A = \\int_{-2}^3 (x+6-x^2)\\,dx = \\frac{125}{6}, \\qquad M_y = \\int_{-2}^3 x(x+6-x^2)\\,dx = \\frac{125}{12} \\implies \\bar{x} = \\frac{1}{2}$$
+              $$M_x = \\frac{1}{2}\\int_{-2}^3 \\left[(x+6)^2 - x^4\\right]dx = \\frac{1}{2}\\left[\\frac{(x+6)^3}{3}-\\frac{x^5}{5}\\right]_{-2}^3 = \\frac{250}{3} \\implies \\bar{y} = \\frac{250/3}{125/6} = 4$$
+              Centroid: $(\\bar{x}, \\bar{y}) = \\left(\\frac{1}{2}, 4\\right)$.`
+      }
+    ];
+
+    const reviewedSet = new Set();
+    function renderVault(filter = "all") {
+      const container = document.getElementById("vaultList");
+      container.innerHTML = "";
+      vaultData.filter(v => filter === "all" || v.cat === filter).forEach(v => {
+        const div = document.createElement("div");
+        div.className = "vault-item";
+        div.innerHTML = `
+          <div class="vault-head">
+            <span class="badge">${v.tag}</span>
+            <span class="badge green">${v.cat.toUpperCase()}</span>
+          </div>
+          <p>${v.q}</p>
+          <div class="vault-actions">
+            <button class="btn" onclick="toggleBox('${v.id}-hint')">Hint</button>
+            <button class="btn" onclick="toggleBox('${v.id}-sol')">Full Solution</button>
+            <label class="check-label">
+              <input type="checkbox" ${reviewedSet.has(v.id) ? "checked" : ""} onchange="toggleReview('${v.id}', this.checked)" />
+              Mark Reviewed
+            </label>
+          </div>
+          <div class="reveal-box" id="${v.id}-hint"><strong>Hint:</strong> ${v.hint}</div>
+          <div class="reveal-box" id="${v.id}-sol">${v.sol}</div>
+        `;
+        container.appendChild(div);
+      });
+      if (window.renderMathInElement) renderMathInElement(container, { delimiters: [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}] });
+    }
+
+    function filterVault(cat, btn) {
+      document.querySelectorAll("#sec4 .tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderVault(cat);
+    }
+    function toggleBox(id) { document.getElementById(id).classList.toggle("open"); }
+    function toggleReview(id, checked) {
+      if (checked) reviewedSet.add(id); else reviewedSet.delete(id);
+      updateProgress();
+    }
+
+    // ---------- SECTION 5: QUIZ ----------
+    const quizData = [
+      {
+        q: "1. What is the arc length of the parametric curve $x = \\cos 2t,\\; y = \\sin 2t$ for $0 \\le t \\le \\pi/2$?",
+        opts: ["$\\pi/2$", "$\\pi$", "$2\\pi$", "$4\\pi$"],
+        ans: 1,
+        exp: "$\\frac{dx}{dt}=-2\\sin 2t,\\; \\frac{dy}{dt}=2\\cos 2t \\implies ds = 2\\,dt$. Thus $L = \\int_0^{\\pi/2} 2\\,dt = \\pi$."
+      },
+      {
+        q: "2. Which integral gives the surface area when $y = x^2$ on $[1,2]$ is revolved about the <strong>$y$-axis</strong>?",
+        opts: [
+          "$\\int_1^2 2\\pi x^2 \\sqrt{1+4x^2}\\,dx$",
+          "$\\int_1^2 2\\pi x \\sqrt{1+4x^2}\\,dx$",
+          "$\\int_1^2 2\\pi x \\sqrt{1+2x}\\,dx$",
+          "$\\int_1^2 \\pi x^2 \\sqrt{1+4x^2}\\,dx$"
+        ],
+        ans: 1,
+        exp: "Revolving about the $y$-axis uses radius $r = x$ and $ds = \\sqrt{1 + (2x)^2}\\,dx$."
+      },
+      {
+        q: "3. Why is the arc length integral for $y = (4 - x^{2/3})^{3/2}$ on $[0, 2]$ an improper integral?",
+        opts: [
+          "The upper limit is infinite",
+          "$y(x)$ is undefined at $x=2$",
+          "$y'(x)$ has a vertical tangent (unbounded) at $x=0$",
+          "$1 + (y')^2$ becomes negative on $[0,2]$"
+        ],
+        ans: 2,
+        exp: "$y' = -x^{-1/3}\\sqrt{4-x^{2/3}} \\to -\\infty$ as $x \\to 0^+$, making the integrand $2x^{-1/3}$ unbounded at $x=0$."
+      },
+      {
+        q: "4. A spring with $k = 10\\text{ N/m}$ is stretched $2\\text{ m}$ beyond its natural length. How much work is done?",
+        opts: ["$10\\text{ J}$", "$20\\text{ J}$", "$40\\text{ J}$", "$5\\text{ J}$"],
+        ans: 1,
+        exp: "$W = \\int_0^2 10x\\,dx = \\frac{1}{2}(10)(2^2) = 20\\text{ J}$."
+      },
+      {
+        q: "5. For the region bounded by $y = f(x)$ above and $y = g(x)$ below on $[a,b]$, the moment $M_x$ is:",
+        opts: [
+          "$\\int_a^b \\frac{1}{2}[f(x)-g(x)]^2\\,dx$",
+          "$\\int_a^b x[f(x)-g(x)]\\,dx$",
+          "$\\frac{1}{2}\\int_a^b ([f(x)]^2 - [g(x)]^2)\\,dx$",
+          "$\\int_a^b ([f(x)]^2 - [g(x)]^2)\\,dx$"
+        ],
+        ans: 2,
+        exp: "The vertical strip's midpoint is $\\frac{f(x)+g(x)}{2}$ and its height is $f(x)-g(x)$, so their product is $\\frac{1}{2}([f(x)]^2 - [g(x)]^2)$."
+      }
+    ];
+
+    const quizAnswered = new Map();
+    function renderQuiz() {
+      const container = document.getElementById("quizContainer");
+      container.innerHTML = "";
+      quizData.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.className = "quiz-q";
+        div.innerHTML = `<p><strong>${item.q}</strong></p><div class="options" id="q-opts-${idx}"></div><div class="feedback" id="q-fb-${idx}"></div>`;
+        container.appendChild(div);
+        const optsDiv = div.querySelector(`#q-opts-${idx}`);
+        item.opts.forEach((opt, oi) => {
+          const btn = document.createElement("button");
+          btn.className = "opt-btn";
+          btn.innerHTML = opt;
+          btn.onclick = () => selectOpt(idx, oi);
+          optsDiv.appendChild(btn);
+        });
+      });
+      if (window.renderMathInElement) renderMathInElement(container, { delimiters: [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}] });
+    }
+
+    function selectOpt(qIdx, oIdx) {
+      if (quizAnswered.has(qIdx)) return;
+      const item = quizData[qIdx];
+      const isRight = oIdx === item.ans;
+      quizAnswered.set(qIdx, isRight);
+
+      const btns = document.querySelectorAll(`#q-opts-${qIdx} .opt-btn`);
+      btns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add("correct");
+        else if (i === oIdx) b.classList.add("wrong");
+      });
+      const fb = document.getElementById(`q-fb-${qIdx}`);
+      fb.innerHTML = (isRight ? "<strong style='color:var(--green)'>Correct!</strong> " : "<strong style='color:var(--rose)'>Not quite.</strong> ") + item.exp;
+      fb.classList.add("show");
+      if (window.renderMathInElement) renderMathInElement(fb, { delimiters: [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}] });
+
+      const score = [...quizAnswered.values()].filter(Boolean).length;
+      document.getElementById("quizScore").textContent = `${score} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    function resetQuiz() {
+      quizAnswered.clear();
+      document.getElementById("quizScore").textContent = `0 / ${quizData.length}`;
+      renderQuiz();
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = vaultData.length + quizData.length;
+      const done = reviewedSet.size + quizAnswered.size;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById("progressPct").textContent = pct + "%";
+      document.getElementById("progressFill").style.width = pct + "%";
+      document.getElementById("progressDetail").textContent = `${done} / ${total} tasks completed`;
+    }
+
+    // Event listeners & init
+    document.getElementById("arcPreset").addEventListener("change", drawArcCanvas);
+    document.getElementById("nSlider").addEventListener("input", drawArcCanvas);
+    document.getElementById("arcMode").addEventListener("change", drawArcCanvas);
+    document.getElementById("cSlider").addEventListener("input", drawCentroid);
+    document.getElementById("kSlider").addEventListener("input", drawSpring);
+    document.getElementById("xSlider").addEventListener("input", drawSpring);
+    window.addEventListener("resize", () => { drawArcCanvas(); drawCentroid(); drawSpring(); });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderVault();
+      renderQuiz();
+      drawArcCanvas();
+      drawCentroid();
+      setTimeout(() => {
+        if (window.renderMathInElement) {
+          renderMathInElement(document.body, {
+            delimiters: [{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}]
+          });
+        }
+      }, 200);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2964 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 6: Improper Integrals — MATH 105: Integral Calculus (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — MODERN DARK-SLATE ACADEMIC THEME (MATH 105)
+       ========================================================================== */
+    :root {
+      --bg-page: #0f172a;
+      --bg-nav: #0b1120;
+      --bg-surface: #1e293b;
+      --bg-subtle: #162033;
+      --bg-elevated: #263449;
+      --border: #334155;
+      --border-strong: #475569;
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --indigo: #6366f1;
+      --indigo-light: #818cf8;
+      --indigo-dark: #4f46e5;
+      --indigo-soft: rgba(99, 102, 241, 0.16);
+      --indigo-border: rgba(129, 140, 248, 0.36);
+
+      --emerald: #10b981;
+      --emerald-light: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --emerald-border: rgba(52, 211, 153, 0.36);
+
+      --rose: #f43f5e;
+      --rose-light: #fb7185;
+      --rose-soft: rgba(244, 63, 94, 0.14);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --amber: #f59e0b;
+      --amber-light: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.15);
+      --amber-border: rgba(251, 191, 36, 0.36);
+
+      --cyan: #06b6d4;
+      --cyan-light: #22d3ee;
+      --cyan-soft: rgba(6, 182, 212, 0.15);
+      --cyan-border: rgba(34, 211, 238, 0.36);
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.38);
+      --shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.5);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-w: 292px;
+      --header-h: 64px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+    /* ==========================================================================
+       TOP HEADER
+       ========================================================================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--header-h);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      color: var(--indigo-light);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .header-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      color: var(--cyan-light);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================================
+       APP SHELL & FIXED/STICKY SIDEBAR
+       ========================================================================== */
+    .app-shell {
+      display: flex;
+      max-width: 1460px;
+      margin: 0 auto;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .sidebar {
+      position: sticky;
+      top: var(--header-h);
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      background: var(--bg-nav);
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 30;
+      transition: transform 0.28s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .course-pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      color: var(--indigo-light);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .sidebar-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .sidebar-sub {
+      font-size: 0.76rem;
+      color: var(--cyan-light);
+      font-family: var(--font-mono);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.74);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active { display: block; }
+
+    .progress-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-pct {
+      font-family: var(--font-mono);
+      color: var(--emerald-light);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--indigo), var(--cyan), var(--emerald));
+      transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .nav-label {
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 10px;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+    }
+
+    .nav-link.active {
+      background: var(--indigo-soft);
+      color: var(--indigo-light);
+      border-color: var(--indigo-border);
+      font-weight: 600;
+    }
+
+    .nav-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-link.active .nav-num {
+      background: var(--indigo);
+      color: #ffffff;
+      border-color: var(--indigo);
+    }
+
+    .nav-check {
+      margin-left: auto;
+      color: var(--emerald-light);
+      font-weight: 800;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link.done .nav-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .lesson-nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 0.79rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .lesson-nav-btn:hover {
+      border-color: var(--indigo-light);
+      color: var(--text-primary);
+      background: var(--indigo-soft);
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 28px 32px 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .lesson-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 48%, #0f766e 100%);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, rgba(99, 102, 241, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(11, 17, 32, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .lesson-hero h1 {
+      font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .lesson-hero p {
+      max-width: 820px;
+      color: rgba(241, 245, 249, 0.92);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background: rgba(11, 17, 32, 0.42);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* ==========================================================================
+       SECTIONS & CARDS
+       ========================================================================== */
+    .section-block {
+      scroll-margin-top: calc(var(--header-h) + 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cyan-light);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+
+    .section-desc {
+      font-size: 0.91rem;
+      color: var(--text-secondary);
+      max-width: 760px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ==========================================================================
+       BUTTONS, TABS & CONTROLS
+       ========================================================================== */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--indigo-light);
+      color: var(--indigo-light);
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--indigo-dark);
+      border-color: var(--indigo-dark);
+      color: #ffffff;
+    }
+
+    .btn-emerald {
+      background: var(--emerald-soft);
+      border-color: var(--emerald-border);
+      color: var(--emerald-light);
+    }
+
+    .btn-emerald.reviewed {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #06281e;
+    }
+
+    .btn-sm {
+      padding: 6px 11px;
+      font-size: 0.78rem;
+    }
+
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mode-tab {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .mode-tab:hover {
+      border-color: var(--indigo-light);
+      color: var(--text-primary);
+    }
+
+    .mode-tab.active {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #ffffff;
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.35);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--cyan-light);
+      background: var(--cyan-soft);
+      border: 1px solid var(--cyan-border);
+      padding: 2px 9px;
+      border-radius: var(--radius-sm);
+    }
+
+    select.styled-select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    select.styled-select:focus {
+      outline: 2px solid var(--indigo);
+      outline-offset: 1px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    /* ==========================================================================
+       SECTION 1: SANDBOX CANVAS & TELEMETRY BAR
+       ========================================================================== */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      min-height: 295px;
+      background: var(--bg-page);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch-pos { background: var(--emerald-light); }
+    .swatch-neg { background: var(--rose-light); }
+    .swatch-cut { background: var(--amber-light); }
+    .swatch-curve { background: var(--indigo-light); border-radius: 999px; }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .p-slider-box {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .p-slider-box.visible { display: flex; }
+
+    .formula-note-box {
+      background: var(--bg-subtle);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      overflow-x: auto;
+    }
+
+    /* Telemetry Bar */
+    .telemetry-bar {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+    }
+
+    .tele-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 13px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      overflow-x: auto;
+    }
+
+    .tele-card.converges {
+      background: var(--emerald-soft);
+      border-color: var(--emerald-border);
+    }
+
+    .tele-card.diverges {
+      background: var(--rose-soft);
+      border-color: var(--rose-border);
+    }
+
+    .tele-label {
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .tele-val {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge.conv {
+      background: var(--emerald);
+      color: #052e16;
+    }
+
+    .status-badge.div {
+      background: var(--rose);
+      color: #ffffff;
+    }
+
+    /* ==========================================================================
+       SECTION 2: p-INTEGRAL MIRROR & L'HOPITAL STEPPER
+       ========================================================================== */
+    .mirror-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .mirror-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.22s ease;
+    }
+
+    .mirror-card.conv {
+      border-color: var(--emerald-border);
+      border-top: 4px solid var(--emerald);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .mirror-card.div {
+      border-color: var(--rose-border);
+      border-top: 4px solid var(--rose);
+      background: rgba(244, 63, 94, 0.08);
+    }
+
+    .mirror-conclusion {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 5px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.91rem;
+    }
+
+    .stepper-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step-card {
+      display: none;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--cyan);
+      border-radius: var(--radius-sm);
+      padding: 13px 15px;
+      font-size: 0.92rem;
+      overflow-x: auto;
+    }
+
+    .step-card.visible {
+      display: block;
+      animation: fadeSlide 0.24s ease;
+    }
+
+    .step-card.final-step {
+      border-left-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .step-label {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--cyan-light);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .step-card.final-step .step-label { color: var(--emerald-light); }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY CARDS & ROSE EXAM TRAPS
+       ========================================================================== */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .theory-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theory-card h3 {
+      font-size: 1.06rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .formula-banner {
+      background: var(--bg-subtle);
+      border-left: 4px solid var(--indigo);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      overflow-x: auto;
+      font-size: 0.89rem;
+    }
+
+    .traps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .trap-card {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .trap-card-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--rose-light);
+    }
+
+    /* ==========================================================================
+       SECTION 4: ISRT PAST-EXAM VAULT
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 15px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--indigo-light);
+      color: var(--text-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #ffffff;
+    }
+
+    .vault-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .exam-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .exam-card.hidden { display: none; }
+    .exam-card.reviewed-card { border-color: var(--emerald-border); }
+
+    .exam-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exam-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      color: var(--indigo-light);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .topic-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-light);
+    }
+
+    .exam-prompt {
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      overflow-x: auto;
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+    }
+
+    .hint-box.open { display: block; }
+
+    .solution-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .solution-box.open { display: flex; }
+
+    .sol-step {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--emerald);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.91rem;
+      overflow-x: auto;
+    }
+
+    .sol-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--emerald-light);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       SECTION 5: QUICK MASTERY CHECK (QUIZ)
+       ========================================================================== */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--emerald-light);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-qnum {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--cyan-light);
+      text-transform: uppercase;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.89rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--indigo-light);
+      background: var(--indigo-soft);
+    }
+
+    .quiz-opt.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .quiz-opt.wrong {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: var(--emerald-soft); border: 1px solid var(--emerald-border); }
+    .quiz-feedback.err { background: var(--rose-soft); border: 1px solid var(--rose-border); }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      z-index: 60;
+      background: var(--bg-elevated);
+      border: 1px solid var(--cyan-border);
+      color: var(--text-primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.85rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1080px) {
+      .lab-grid { grid-template-columns: 1fr; }
+      .main-content { padding: 22px 20px 56px; }
+    }
+
+    @media (max-width: 860px) {
+      .menu-btn { display: inline-flex; }
+      .header-subtitle, .header-chip { display: none; }
+      .sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        height: calc(100vh - var(--header-h));
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .mirror-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .top-header { padding: 0 12px; }
+      .main-content { padding: 16px 14px 48px; }
+      .card, .exam-card, .theory-card, .quiz-card { padding: 16px; }
+      .lesson-hero { padding: 20px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP HEADER
+       ======================================================================== -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="brand-badge">MATH 105 &middot; ISRT, DU</span>
+      <span class="header-subtitle">Lesson 6: Improper Integrals (Type I, Type II &amp; Mixed)</span>
+    </div>
+
+    <span class="header-chip">Module 2 of 5 &middot; Section 7.8</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ========================================================================
+       APP SHELL
+       ======================================================================== -->
+  <div class="app-shell">
+
+    <!-- FIXED / STICKY LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Lesson 6 navigation">
+      <div class="sidebar-brand">
+        <span class="course-pill">MATH 105 &middot; ISRT, DU</span>
+        <div class="sidebar-title">Lesson 6: Improper Integrals</div>
+        <div class="sidebar-sub">Module 2 of 5 &middot; Section 7.8</div>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Mastery Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-caption" id="progressCaption">Review vault problems &amp; complete the quiz (0/13).</p>
+      </div>
+
+      <nav>
+        <div class="nav-label">Lesson 6 Sections</div>
+        <ul class="nav-list" id="sidebarNav">
+          <li>
+            <a class="nav-link active" href="#section-lab1" data-section="section-lab1">
+              <span class="nav-num">1</span>
+              <span>Limit &amp; Asymptote Lab</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-lab2" data-section="section-lab2">
+              <span class="nav-num">2</span>
+              <span>$p$-Integral Mirror &amp; L'H&ocirc;pital</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-theory" data-section="section-theory">
+              <span class="nav-num">3</span>
+              <span>Core Theory &amp; Exam Traps</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-vault" data-section="section-vault">
+              <span class="nav-num">4</span>
+              <span>ISRT Past-Exam Vault</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-quiz" data-section="section-quiz">
+              <span class="nav-num">5</span>
+              <span>Quick Mastery Check</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button type="button" class="lesson-nav-btn" id="prevLessonBtn">
+          <span>&larr; Previous Lesson</span>
+          <span class="mono" style="color:var(--text-muted);">Lesson 5</span>
+        </button>
+        <button type="button" class="lesson-nav-btn" id="nextLessonBtn">
+          <span>Next Lesson &rarr;</span>
+          <span class="mono" style="color:var(--cyan-light);">Lesson 7</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="lesson-hero">
+        <div class="hero-eyebrow">Module 2: Integration Techniques &amp; Special Functions &bull; Lesson 6 of 17</div>
+        <h1>Lesson 6: Improper Integrals</h1>
+        <p>
+          Explore integrals over infinite intervals (Type I) and unbounded vertical asymptotes (Type II), discover the mirror symmetry of $p$-integrals, resolve L'H&ocirc;pital indeterminate limits, and master the exact improper integral problems tested in ISRT exams.
+        </p>
+        <div class="hero-pills">
+          <span class="hero-pill">Type I: Infinite Limits</span>
+          <span class="hero-pill">Type II: Vertical Asymptotes</span>
+          <span class="hero-pill">$p$-Integral Mirror</span>
+          <span class="hero-pill">L'H&ocirc;pital Indeterminate Limits</span>
+          <span class="hero-pill">8 Solved ISRT Problems</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 1: LIMIT-TO-INFINITY & VERTICAL ASYMPTOTE SANDBOX
+           ==================================================================== -->
+      <section class="section-block" id="section-lab1">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 1 &bull; Interactive Lab 1</span>
+            <h2>1. Limit-to-Infinity &amp; Vertical Asymptote Sandbox</h2>
+          </div>
+          <p class="section-desc">
+            Drag the cutoff limit ($b \to \infty$ or $k \to c^\pm$) or animate it live to see whether the shaded area settles to a finite limit or blows up / oscillates.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="mode-tabs" role="tablist" aria-label="Improper Integral Types">
+            <button type="button" class="mode-tab active" data-imptype="type1">Type I: Infinite Limits</button>
+            <button type="button" class="mode-tab" data-imptype="type2">Type II: Vertical Asymptotes</button>
+          </div>
+
+          <div class="lab-grid">
+            <!-- Canvas Column -->
+            <div>
+              <div class="canvas-wrapper" id="impCanvasWrap">
+                <canvas id="impCanvas" aria-label="Improper integral interactive graph"></canvas>
+              </div>
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-pos"></span> Positive Area</span>
+                <span class="legend-item"><span class="swatch swatch-neg"></span> Negative Area / Asymptote</span>
+                <span class="legend-item"><span class="swatch swatch-cut"></span> Cutoff Line ($b$ or $k$)</span>
+                <span class="legend-item"><span class="swatch swatch-curve"></span> Curve $y = f(x)$</span>
+              </div>
+            </div>
+
+            <!-- Controls Column -->
+            <div class="controls-panel">
+              <div class="control-group">
+                <label class="control-label" for="impPresetSelect">
+                  <span id="presetLabelText">Select Type I Preset</span>
+                </label>
+                <select id="impPresetSelect" class="styled-select">
+                  <!-- Populated dynamically based on active tab -->
+                </select>
+              </div>
+
+              <!-- Dynamic p-slider (shown for Type I #1 and Type II #1) -->
+              <div class="p-slider-box visible" id="pSliderBox">
+                <label class="control-label" for="impPSlider">
+                  <span>Exponent Parameter ($p$)</span>
+                  <span class="control-value" id="impPDisplay">p = 1.50</span>
+                </label>
+                <input type="range" id="impPSlider" min="0.40" max="3.00" step="0.05" value="1.50" />
+                <div style="font-size:0.78rem;color:var(--text-secondary);" id="pThresholdHint">
+                  Threshold at $p = 1$: Converges for $p &gt; 1$, Diverges for $p \le 1$.
+                </div>
+              </div>
+
+              <!-- Cutoff Slider -->
+              <div class="control-group">
+                <label class="control-label" for="cutoffSlider">
+                  <span id="cutoffLabelText">Upper Cutoff ($b$)</span>
+                  <span class="control-value" id="cutoffDisplay">b = 8.00</span>
+                </label>
+                <input type="range" id="cutoffSlider" min="1.2" max="40" step="0.1" value="8" />
+                <div class="btn-row">
+                  <button type="button" class="btn btn-sm btn-primary" id="animateCutoffBtn">&#9654; Animate Limit</button>
+                  <button type="button" class="btn btn-sm" id="resetCutoffBtn">&#8634; Reset</button>
+                </div>
+              </div>
+
+              <!-- Contextual Exam Note -->
+              <div class="formula-note-box" id="impNoteBox">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Telemetry Bar -->
+          <div class="telemetry-bar">
+            <div class="tele-card">
+              <span class="tele-label">Exact Integral</span>
+              <span class="tele-val" id="teleFormula" style="font-size:0.95rem;"></span>
+            </div>
+            <div class="tele-card">
+              <span class="tele-label">Current Cutoff</span>
+              <span class="tele-val" id="teleCutoff">b = 8.00</span>
+            </div>
+            <div class="tele-card">
+              <span class="tele-label">Partial Area</span>
+              <span class="tele-val" id="telePartial">1.2929</span>
+            </div>
+            <div class="tele-card">
+              <span class="tele-label">Limiting Value</span>
+              <span class="tele-val" id="teleLimit">2.0000</span>
+            </div>
+            <div class="tele-card converges" id="teleStatusCard">
+              <span class="tele-label">Convergence Status</span>
+              <span class="status-badge conv" id="teleStatusBadge">CONVERGES</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 2: THE p-INTEGRAL MIRROR & L'HÔPITAL LIMIT LAB
+           ==================================================================== -->
+      <section class="section-block" id="section-lab2">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 2 &bull; Interactive Lab 2</span>
+            <h2>2. The $p$-Integral Mirror &amp; L'H&ocirc;pital Limit Lab</h2>
+          </div>
+          <p class="section-desc">
+            Slide a single $p$-value to see why Type I and Type II $p$-integrals have opposite convergence zones, then step through the 3 classic L'H&ocirc;pital limits used in ISRT exams.
+          </p>
+        </div>
+
+        <!-- Part A: p-Integral Mirror -->
+        <div class="card">
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;">
+            <div>
+              <span class="section-tag" style="margin-bottom:2px;">Part A &bull; Opposite Thresholds</span>
+              <h3 style="font-size:1.12rem;font-weight:800;">The $p$-Integral Mirror: Why $\int_0^\infty x^{-p}\,dx$ Always Diverges</h3>
+            </div>
+            <div class="control-group" style="width:280px;max-width:100%;">
+              <label class="control-label" for="mirrorPSlider">
+                <span>Shared Exponent ($p$)</span>
+                <span class="control-value" id="mirrorPDisplay">p = 1.50</span>
+              </label>
+              <input type="range" id="mirrorPSlider" min="0.20" max="2.50" step="0.05" value="1.50" />
+            </div>
+          </div>
+
+          <div class="mirror-grid">
+            <div class="mirror-card conv" id="mirrorType1Card">
+              <!-- Dynamic Type I card -->
+            </div>
+            <div class="mirror-card div" id="mirrorType2Card">
+              <!-- Dynamic Type II card -->
+            </div>
+          </div>
+
+          <div class="mirror-conclusion" id="mirrorConclusion">
+            <!-- Dynamic conclusion -->
+          </div>
+        </div>
+
+        <!-- Part B: L'Hôpital Limit Stepper -->
+        <div class="card">
+          <div style="margin-bottom:14px;">
+            <span class="section-tag" style="margin-bottom:2px;">Part B &bull; Indeterminate Form Resolver</span>
+            <h3 style="font-size:1.12rem;font-weight:800;">L'H&ocirc;pital's Rule Limit Stepper (ISRT Exam Essentials)</h3>
+          </div>
+
+          <div class="mode-tabs" id="lhopTabs" role="tablist" aria-label="L'Hopital examples">
+            <button type="button" class="mode-tab active" data-lhop="0">1) $\lim_{b\to\infty} b e^{-b}$</button>
+            <button type="button" class="mode-tab" data-lhop="1">2) $\lim_{k\to 0^+} k \ln k$</button>
+            <button type="button" class="mode-tab" data-lhop="2">3) $\lim_{b\to\infty} \frac{\ln b}{b}$</button>
+          </div>
+
+          <div class="stepper-panel">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+              <span class="mono" style="font-size:0.82rem;color:var(--text-muted);" id="lhopCounter">Step 1 of 4</span>
+              <div class="btn-row">
+                <button type="button" class="btn btn-sm btn-primary" id="lhopNextBtn">Next Step &rarr;</button>
+                <button type="button" class="btn btn-sm" id="lhopAllBtn">Show All</button>
+                <button type="button" class="btn btn-sm" id="lhopResetBtn">Reset</button>
+              </div>
+            </div>
+            <div id="lhopStepsWrap" style="display:flex;flex-direction:column;gap:10px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 3: CORE THEORY, DEFINITIONS & ISRT EXAM TRAPS
+           ==================================================================== -->
+      <section class="section-block" id="section-theory">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 3 &bull; Exam-Ready Foundations</span>
+            <h2>3. Core Theory, Definitions &amp; ISRT Exam Traps</h2>
+          </div>
+          <p class="section-desc">
+            Exact formal limit definitions for First Kind (Type I), Second Kind (Type II), and Mixed Improper Integrals, plus the 4 deadliest exam traps.
+          </p>
+        </div>
+
+        <div class="theory-grid">
+          <!-- Type I Definitions -->
+          <article class="theory-card">
+            <h3>1. Type I (First Kind): Infinite Intervals</h3>
+            <p style="font-size:0.89rem;color:var(--text-secondary);">
+              If $f$ is continuous on the respective unbounded interval, we replace $\pm\infty$ with a finite limit parameter:
+            </p>
+            <div class="formula-banner">
+              $$\int_a^\infty f(x)\,dx = \lim_{b\to\infty} \int_a^b f(x)\,dx$$
+              $$\int_{-\infty}^b f(x)\,dx = \lim_{a\to -\infty} \int_a^b f(x)\,dx$$
+              $$\int_{-\infty}^\infty f(x)\,dx = \int_{-\infty}^c f(x)\,dx + \int_c^\infty f(x)\,dx$$
+            </div>
+            <p style="font-size:0.85rem;color:var(--emerald-light);">
+              <strong>Convergence Rule:</strong> $\int_{-\infty}^\infty$ converges <em>if and only if</em> <strong>BOTH</strong> independent splits $\int_{-\infty}^c$ and $\int_c^\infty$ converge to finite numbers!
+            </p>
+          </article>
+
+          <!-- Type II Definitions -->
+          <article class="theory-card">
+            <h3>2. Type II (Second Kind): Vertical Asymptotes</h3>
+            <p style="font-size:0.89rem;color:var(--text-secondary);">
+              If $f$ has an infinite discontinuity (vertical asymptote) on $[a, b]$:
+            </p>
+            <div class="formula-banner">
+              <div><strong>At left endpoint $a$:</strong> $\displaystyle \int_a^b f(x)\,dx = \lim_{k\to a^+} \int_k^b f(x)\,dx$</div>
+              <div style="margin-top:8px;"><strong>At right endpoint $b$:</strong> $\displaystyle \int_a^b f(x)\,dx = \lim_{k\to b^-} \int_a^k f(x)\,dx$</div>
+              <div style="margin-top:8px;"><strong>At interior point $c \in (a,b)$:</strong> $\displaystyle \int_a^b f = \int_a^c f + \int_c^b f$</div>
+            </div>
+            <p style="font-size:0.85rem;color:var(--amber-light);">
+              For an interior singularity $c \in (a, b)$, <strong>both</strong> $\lim_{k\to c^-}\int_a^k f$ and $\lim_{k\to c^+}\int_k^b f$ must converge independently.
+            </p>
+          </article>
+
+          <!-- Mixed Type Strategy -->
+          <article class="theory-card">
+            <h3>3. Mixed Improper Integrals (Type I + Type II)</h3>
+            <p style="font-size:0.89rem;color:var(--text-secondary);">
+              When an integral has <em>both</em> an infinite limit and a vertical asymptote (like Final 2017 Q8b: $\int_0^\infty \frac{dx}{\sqrt{x}(x+1)}$):
+            </p>
+            <div class="formula-banner">
+              $$\int_0^\infty f(x)\,dx = \underbrace{\int_0^1 f(x)\,dx}_{\text{Type II at } 0^+} + \underbrace{\int_1^\infty f(x)\,dx}_{\text{Type I at } +\infty}$$
+            </div>
+            <p style="font-size:0.86rem;color:var(--text-secondary);">
+              Split at any convenient interior point (usually $c = 1$) so each piece has <strong>exactly one</strong> improper point. If a clean substitution (like $u = \sqrt{x}$) removes the Type II singularity, verify limits carefully!
+            </p>
+          </article>
+        </div>
+
+        <!-- 4 Rose-Accented ISRT Exam Traps -->
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:12px;color:var(--rose-light);">&#9888; 4 High-Yield ISRT Exam Traps</h3>
+          <div class="traps-grid">
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 1: Hidden Interior Asymptote</div>
+              <p>
+                Blindly applying FTC to $\int_{-1}^1 x^{-2}\,dx$ gives $\big[-1/x\big]_{-1}^1 = -2$ (a <em>negative</em> answer for a positive integrand!). Because $x^{-2}$ blows up at $x = 0$, splitting at $0$ reveals $+\infty + \infty$ &rarr; <strong>Diverges</strong>!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 2: Symmetric Limit (Cauchy Principal Value)</div>
+              <p>
+                Even though $\lim_{b\to\infty}\int_{-b}^b x\,dx = 0$ and $\lim_{b\to\infty}\int_{-b}^b \sin x\,dx = 0$, neither integral converges! You must split at $c = 0$ and take two <strong>independent</strong> limits ($a \to -\infty$ and $b \to +\infty$).
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 3: $p$-Test Direction Reversal</div>
+              <p>
+                Never confuse the two $p$-tests:
+                <br />&bull; At $\infty$: $\int_1^\infty x^{-p}\,dx$ converges for <strong>$p &gt; 1$</strong> (steep tail).
+                <br />&bull; At $0$: $\int_0^1 x^{-p}\,dx$ converges for <strong>$p &lt; 1$</strong> (mild spike).
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 4: One Divergent Split Kills the Whole</div>
+              <p>
+                In $\int_1^4 \frac{dx}{(x-1)(x-2)(x-3)}$, once the first split $I_1 = \int_1^{1.5} f(x)\,dx$ diverges to $+\infty$, you can <strong>stop immediately</strong> and declare the entire integral divergent!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 4: ISRT PAST-EXAM VAULT
+           ==================================================================== -->
+      <section class="section-block" id="section-vault">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 4 &bull; ISRT Past-Exam Vault</span>
+            <h2>4. ISRT Past-Exam Vault (8 Solved Problems)</h2>
+          </div>
+          <p class="section-desc">
+            Filter by source, test yourself with hints, reveal full derivations, and click "Mark Reviewed" to track your mastery progress.
+          </p>
+        </div>
+
+        <div class="filter-tabs" id="vaultFilters" role="tablist" aria-label="Filter exam problems">
+          <button type="button" class="filter-tab active" data-filter="all">All (8)</button>
+          <button type="button" class="filter-tab" data-filter="final">Final Exam (2)</button>
+          <button type="button" class="filter-tab" data-filter="inc2">2nd Incourse (2)</button>
+          <button type="button" class="filter-tab" data-filter="notes">Class Notes (5)</button>
+        </div>
+
+        <div class="vault-list" id="vaultList">
+
+          <!-- Vault 1 -->
+          <article class="exam-card" data-vid="v1" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2018 Q6(c)</span>
+              <span class="topic-badge">Type I &bull; Doubly Infinite</span>
+            </div>
+            <div class="exam-prompt">
+              Define improper integral of the First Kind. Evaluate $\displaystyle \int_{-\infty}^{\infty} \frac{1}{1 + x^2}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Split at $c = 0$ into two independent limits $\lim_{a\to-\infty}\int_a^0$ and $\lim_{b\to\infty}\int_0^b$, then recall $\lim_{x\to\pm\infty}\tan^{-1}x = \pm\frac{\pi}{2}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Definition of First Kind (Type I) Improper Integral</div>
+                An integral over an unbounded interval $[a,\infty)$, $(-\infty,b]$, or $(-\infty,\infty)$ is an improper integral of the First Kind, defined via limits:
+                $$\int_a^\infty f(x)\,dx = \lim_{b\to\infty}\int_a^b f(x)\,dx, \quad \int_{-\infty}^b f(x)\,dx = \lim_{a\to-\infty}\int_a^b f(x)\,dx,$$
+                and $\int_{-\infty}^\infty f = \int_{-\infty}^c f + \int_c^\infty f$ (convergent iff both parts converge).
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Split at $c = 0$ and evaluate both halves independently</div>
+                $$\int_{-\infty}^{0} \frac{dx}{1+x^2} = \lim_{a\to-\infty}\big[\tan^{-1}x\big]_a^0 = 0 - \left(-\frac{\pi}{2}\right) = \frac{\pi}{2}.$$
+                $$\int_{0}^{\infty} \frac{dx}{1+x^2} = \lim_{b\to\infty}\big[\tan^{-1}x\big]_0^b = \frac{\pi}{2} - 0 = \frac{\pi}{2}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Combine</div>
+                Since both halves converge independently, $\displaystyle \int_{-\infty}^{\infty} \frac{dx}{1+x^2} = \frac{\pi}{2} + \frac{\pi}{2} = \pi$.
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="exam-card" data-vid="v2" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2017 Q8(b)</span>
+              <span class="topic-badge">Mixed Type I + Type II</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate the mixed improper integral $\displaystyle \int_0^\infty \frac{1}{\sqrt{x}(x + 1)}\,dx$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Notice it is improper at both $x = 0^+$ (Type II) and $x = \infty$ (Type I). Split at $x = 1$, then substitute $u = \sqrt{x} \implies dx = 2\sqrt{x}\,du$!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Split into Type II + Type I at $x = 1$</div>
+                $$\int_0^\infty \frac{dx}{\sqrt{x}(x+1)} = \lim_{k\to 0^+}\int_k^1 \frac{dx}{\sqrt{x}(x+1)} + \lim_{b\to\infty}\int_1^b \frac{dx}{\sqrt{x}(x+1)}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Antiderivative via $u = \sqrt{x}$</div>
+                Let $u = \sqrt{x} \implies x = u^2$ and $\frac{dx}{\sqrt{x}} = 2\,du$:
+                $$\int \frac{dx}{\sqrt{x}(x+1)} = \int \frac{2\,du}{u^2 + 1} = 2\tan^{-1}(\sqrt{x}) + C.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Evaluate both limits</div>
+                $$I_1 = \lim_{k\to 0^+}\big[2\tan^{-1}\sqrt{x}\big]_k^1 = 2\left(\frac{\pi}{4} - 0\right) = \frac{\pi}{2}.$$
+                $$I_2 = \lim_{b\to\infty}\big[2\tan^{-1}\sqrt{x}\big]_1^b = 2\left(\frac{\pi}{2} - \frac{\pi}{4}\right) = \frac{\pi}{2}.$$
+                $$\therefore\; \int_0^\infty \frac{dx}{\sqrt{x}(x+1)} = \frac{\pi}{2} + \frac{\pi}{2} = \pi.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="exam-card" data-vid="v3" data-category="inc2">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2022 Q5</span>
+              <span class="topic-badge">Type II &bull; Arc Length Singularity</span>
+            </div>
+            <div class="exam-prompt">
+              Find the arc length of the curve $y = (4 - x^{2/3})^{3/2}$ over the interval $[0, 2]$, and explain why the improper integral concept is necessary to solve this problem.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Compute $y' = -\frac{\sqrt{4 - x^{2/3}}}{x^{1/3}}$. Note that $y'$ has a vertical tangent (infinite discontinuity) at $x = 0$, and $1 + (y')^2$ simplifies miraculously to $4x^{-2/3}$!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Compute $y'$ and explain why an improper integral is needed</div>
+                $$y' = \frac{3}{2}(4 - x^{2/3})^{1/2}\cdot\left(-\frac{2}{3}x^{-1/3}\right) = -\frac{\sqrt{4 - x^{2/3}}}{x^{1/3}}.$$
+                Since $\lim_{x\to 0^+} y' = -\infty$, the curve has a <strong>vertical tangent</strong> at $x = 0$, making the arc-length integrand $\sqrt{1+(y')^2}$ unbounded at $x = 0$. Therefore, a <strong>Type II improper integral</strong> is required.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Simplify the arc-length integrand</div>
+                $$1 + (y')^2 = 1 + \frac{4 - x^{2/3}}{x^{2/3}} = \frac{4}{x^{2/3}} \implies \sqrt{1 + (y')^2} = 2x^{-1/3}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Evaluate as $k \to 0^+$</div>
+                $$L = \lim_{k\to 0^+}\int_k^2 2x^{-1/3}\,dx = \lim_{k\to 0^+}\left[3x^{2/3}\right]_k^2 = 3\cdot 2^{2/3} - 0 = 3\cdot 2^{2/3} \approx 4.7622.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="exam-card" data-vid="v4" data-category="inc2 notes">
+            <div class="exam-meta">
+              <span class="exam-badge">2nd Incourse 2024 / Class Notes</span>
+              <span class="topic-badge">Type I &bull; IBP + L'H&ocirc;pital</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int_0^\infty (1 - x)e^{-x}\,dx$ using Integration by Parts and L'H&ocirc;pital's Rule.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Set $u = 1 - x$, $dv = e^{-x}\,dx \implies v = -e^{-x}$. The antiderivative simplifies cleanly to $xe^{-x}$!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Find the antiderivative via IBP</div>
+                With $u = 1 - x$ ($du = -dx$) and $dv = e^{-x}\,dx$ ($v = -e^{-x}$):
+                $$\int (1-x)e^{-x}\,dx = -(1-x)e^{-x} - \int e^{-x}\,dx = -(1-x)e^{-x} + e^{-x} = x e^{-x} + C.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply limit $b \to \infty$ and L'H&ocirc;pital's Rule</div>
+                $$\int_0^\infty (1-x)e^{-x}\,dx = \lim_{b\to\infty}\big[x e^{-x}\big]_0^b = \lim_{b\to\infty} \frac{b}{e^b} - 0.$$
+                Since $\frac{b}{e^b}$ has form $\frac{\infty}{\infty}$, L'H&ocirc;pital's Rule gives $\lim_{b\to\infty}\frac{1}{e^b} = 0$. Thus the integral converges to <strong>$0$</strong>!
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="exam-card" data-vid="v5" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &bull; Theorem 7.8</span>
+              <span class="topic-badge">Type I $p$-Integral Proof</span>
+            </div>
+            <div class="exam-prompt">
+              For what values of $p$ does $\displaystyle \int_1^\infty \frac{dx}{x^p}$ converge? Derive all three cases ($p = 1$, $p &gt; 1$, $p &lt; 1$).
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Treat $p = 1$ separately (since $\int x^{-1}\,dx = \ln x$). For $p \ne 1$, examine $\lim_{b\to\infty} b^{1-p}$ depending on the sign of $(1 - p)$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Case 1: $p = 1$</div>
+                $$\int_1^\infty \frac{dx}{x} = \lim_{b\to\infty}\big[\ln x\big]_1^b = \lim_{b\to\infty} \ln b = +\infty \implies \textbf{Diverges}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Case 2: $p \ne 1$</div>
+                $$\int_1^\infty x^{-p}\,dx = \lim_{b\to\infty}\left[\frac{x^{1-p}}{1-p}\right]_1^b = \lim_{b\to\infty}\frac{b^{1-p} - 1}{1 - p}.$$
+                &bull; If $p &gt; 1$, then $1 - p &lt; 0$, so $b^{1-p} \to 0$: <strong>Converges to $\dfrac{1}{p - 1}$</strong>.<br />
+                &bull; If $p &lt; 1$, then $1 - p &gt; 0$, so $b^{1-p} \to +\infty$: <strong>Diverges</strong>.
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="exam-card" data-vid="v6" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &bull; Log Singularity</span>
+              <span class="topic-badge">Type II &bull; IBP + L'H&ocirc;pital</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int_0^1 \ln x\,dx$ using Integration by Parts and L'H&ocirc;pital's Rule.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> $\ln x \to -\infty$ as $x \to 0^+$. Use $\int \ln x\,dx = x\ln x - x$, then resolve $\lim_{k\to 0^+} k\ln k$ by rewriting it as $\frac{\ln k}{1/k}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Write as Type II limit and integrate via IBP</div>
+                $$\int_0^1 \ln x\,dx = \lim_{k\to 0^+}\int_k^1 \ln x\,dx = \lim_{k\to 0^+}\big[x\ln x - x\big]_k^1 = \lim_{k\to 0^+}\big(-1 - k\ln k + k\big).$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Resolve $\lim_{k\to 0^+} k\ln k$ via L'H&ocirc;pital's Rule</div>
+                $$\lim_{k\to 0^+} k\ln k = \lim_{k\to 0^+} \frac{\ln k}{1/k} \;\stackrel{\text{L'H}}{=}\; \lim_{k\to 0^+} \frac{1/k}{-1/k^2} = \lim_{k\to 0^+}(-k) = 0.$$
+                $$\therefore\; \int_0^1 \ln x\,dx = -1 - 0 + 0 = -1.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 7 -->
+          <article class="exam-card" data-vid="v7" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &bull; Multi-Asymptote</span>
+              <span class="topic-badge">Type II &bull; Partial Fractions</span>
+            </div>
+            <div class="exam-prompt">
+              Determine whether $\displaystyle \int_1^4 \frac{dx}{(x - 1)(x - 2)(x - 3)}$ converges or diverges using partial fractions.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> There are vertical asymptotes at $x = 1, 2, 3$. Decompose into partial fractions and test just the first split $I_1 = \int_1^{1.5} f(x)\,dx$!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Partial Fraction Decomposition</div>
+                $$\frac{1}{(x-1)(x-2)(x-3)} = \frac{1/2}{x-1} - \frac{1}{x-2} + \frac{1/2}{x-3}.$$
+                Antiderivative: $F(x) = \frac{1}{2}\ln|x-1| - \ln|x-2| + \frac{1}{2}\ln|x-3|$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Test the first split $I_1 = \int_1^{1.5} f(x)\,dx$</div>
+                $$I_1 = \lim_{k\to 1^+} \Big[F(1.5) - \big(\tfrac{1}{2}\ln(k-1) - \ln|k-2| + \tfrac{1}{2}\ln|k-3|\big)\Big].$$
+                As $k \to 1^+$, $\ln(k-1) \to -\infty$, so $-\frac{1}{2}\ln(k-1) \to +\infty$. Thus $I_1 = +\infty$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Conclusion</div>
+                Because one sub-integral diverges, the entire improper integral <strong>Diverges</strong> (no need to compute the remaining splits!).
+              </div>
+            </div>
+          </article>
+
+          <!-- Vault 8 -->
+          <article class="exam-card" data-vid="v8" data-category="notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Class Notes &bull; Exponential Sub</span>
+              <span class="topic-badge">Mixed &bull; $u$-Substitution</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate $\displaystyle \int_0^\infty \frac{e^{-x}}{\sqrt{1 - e^{-x}}}\,dx$ via the substitution $u = 1 - e^{-x}$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Full Solution</button>
+              <button type="button" class="btn btn-sm btn-emerald review-toggle" style="margin-left:auto;">&#9744; Mark Reviewed</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Set $u = 1 - e^{-x} \implies du = e^{-x}\,dx$. As $x \to 0^+$, $u \to 0^+$; as $x \to \infty$, $u \to 1^-$. You get a convergent Type II $p$-integral ($p = \frac{1}{2} &lt; 1$)!
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Apply $u = 1 - e^{-x}$ and transform limits</div>
+                $du = e^{-x}\,dx$. When $x = k \to 0^+$, $u = 1 - e^{-k} \to 0^+$. When $x = b \to \infty$, $u = 1 - e^{-b} \to 1^-$.
+                $$\int_0^\infty \frac{e^{-x}}{\sqrt{1 - e^{-x}}}\,dx = \lim_{c\to 0^+}\int_c^1 u^{-1/2}\,du.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate the limit</div>
+                $$= \lim_{c\to 0^+}\big[2\sqrt{u}\big]_c^1 = 2(1) - \lim_{c\to 0^+} 2\sqrt{c} = 2.$$
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 5: QUICK MASTERY CHECK (5 INTERACTIVE MCQS)
+           ==================================================================== -->
+      <section class="section-block" id="section-quiz">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 5 &bull; Self-Assessment</span>
+            <h2>5. Quick Mastery Check</h2>
+          </div>
+          <p class="section-desc">
+            5 exam-targeted multiple-choice questions on $p$-integrals, interior asymptotes, mixed integrals, Cauchy principal values, and L'H&ocirc;pital's Rule.
+          </p>
+        </div>
+
+        <div class="quiz-topbar">
+          <div class="score-pill">
+            <span>Score:</span>
+            <span id="quizScore">0 / 5</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="resetQuizBtn">&#8634; Reset Quiz</button>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+
+          <!-- Q1 -->
+          <div class="quiz-card" data-qid="q1" data-answer="a">
+            <div class="quiz-qnum">Question 1 &bull; $p$-Integral Mirror ($p = 3/2$)</div>
+            <div>Compare the convergence of $I_1 = \displaystyle \int_1^\infty x^{-3/2}\,dx$ and $I_2 = \displaystyle \int_0^1 x^{-3/2}\,dx$:</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$I_1$ converges (to $2$), while $I_2$ diverges</button>
+              <button type="button" class="quiz-opt" data-val="b">$I_1$ diverges, while $I_2$ converges (to $2$)</button>
+              <button type="button" class="quiz-opt" data-val="c">Both $I_1$ and $I_2$ converge</button>
+              <button type="button" class="quiz-opt" data-val="d">Both $I_1$ and $I_2$ diverge</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-card" data-qid="q2" data-answer="c">
+            <div class="quiz-qnum">Question 2 &bull; Hidden Interior Asymptote Trap</div>
+            <div>Evaluate $\displaystyle \int_{-1}^2 \frac{dx}{x^3}$ carefully:</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\dfrac{3}{8}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$-\dfrac{3}{8}$</button>
+              <button type="button" class="quiz-opt" data-val="c">Diverges (interior vertical asymptote at $x = 0$ with $p = 3 \ge 1$)</button>
+              <button type="button" class="quiz-opt" data-val="d">$0$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-card" data-qid="q3" data-answer="d">
+            <div class="quiz-qnum">Question 3 &bull; Mixed Improper Integral (Final 2017 Q8b)</div>
+            <div>What is the exact value of $\displaystyle \int_0^\infty \frac{dx}{\sqrt{x}(x + 1)}$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\dfrac{\pi}{2}$</button>
+              <button type="button" class="quiz-opt" data-val="b">$2\pi$</button>
+              <button type="button" class="quiz-opt" data-val="c">Diverges</button>
+              <button type="button" class="quiz-opt" data-val="d">$\pi$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-card" data-qid="q4" data-answer="b">
+            <div class="quiz-qnum">Question 4 &bull; Symmetric Limit / Cauchy Principal Value Trap</div>
+            <div>Why does $\displaystyle \int_{-\infty}^\infty \sin x\,dx$ diverge even though $\displaystyle \lim_{b\to\infty}\int_{-b}^b \sin x\,dx = 0$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">Because $\sin x$ has a vertical asymptote at $x = 0$</button>
+              <button type="button" class="quiz-opt" data-val="b">Because $\int_0^\infty \sin x\,dx = \lim_{b\to\infty}(1 - \cos b)$ does not exist (oscillates), and both halves must converge independently</button>
+              <button type="button" class="quiz-opt" data-val="c">Because $\sin x$ is not continuous on $(-\infty, \infty)$</button>
+              <button type="button" class="quiz-opt" data-val="d">Because odd functions can never be integrated on $(-\infty, \infty)$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-card" data-qid="q5" data-answer="a">
+            <div class="quiz-qnum">Question 5 &bull; L'H&ocirc;pital's Rule in $\int_0^1 \ln x\,dx$</div>
+            <div>When evaluating $\int_0^1 \ln x\,dx = \lim_{k\to 0^+} (-1 - k\ln k + k)$, what is $\displaystyle \lim_{k\to 0^+} k\ln k$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$0$ (rewritten as $\frac{\ln k}{1/k}$, L'H&ocirc;pital gives $\lim_{k\to 0^+}(-k) = 0$)</button>
+              <button type="button" class="quiz-opt" data-val="b">$-\infty$</button>
+              <button type="button" class="quiz-opt" data-val="c">$-1$</button>
+              <button type="button" class="quiz-opt" data-val="d">$1$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Non-blocking Toast -->
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX RENDER HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2800);
+      }
+
+      document.getElementById('prevLessonBtn').addEventListener('click', () => {
+        showToast('Previous: Lesson 5 — Trig Integrals, Trig Sub & Partial Fractions');
+      });
+      document.getElementById('nextLessonBtn').addEventListener('click', () => {
+        showToast('Next Up: Lesson 7 — Gamma & Beta Functions');
+      });
+
+      /* ----------------------------------------------------------------------
+         2. SIDEBAR, SCROLLSPY & LIVE MASTERY PROGRESS (5 QUIZ + 8 VAULT = 13)
+         ---------------------------------------------------------------------- */
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      function setSidebar(open) {
+        sidebar.classList.toggle('open', open);
+        sidebarOverlay.classList.toggle('active', open);
+        menuToggle.setAttribute('aria-expanded', String(open));
+      }
+
+      menuToggle.addEventListener('click', () => setSidebar(!sidebar.classList.contains('open')));
+      sidebarOverlay.addEventListener('click', () => setSidebar(false));
+      document.querySelectorAll('.nav-link').forEach((l) => l.addEventListener('click', () => setSidebar(false)));
+
+      const reviewedVault = new Set();
+      const solvedQuiz = new Set();
+      const visitedSections = { lab1: false, lab2: false, theory: false };
+
+      function updateMasteryProgress() {
+        const total = 13; // 8 vault + 5 quiz
+        const done = reviewedVault.size + solvedQuiz.size;
+        const pct = Math.round((done / total) * 100);
+
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressCaption').textContent =
+          `Vault reviewed: ${reviewedVault.size}/8 • Quiz solved: ${solvedQuiz.size}/5`;
+
+        document.querySelector('[data-section="section-lab1"]').classList.toggle('done', visitedSections.lab1);
+        document.querySelector('[data-section="section-lab2"]').classList.toggle('done', visitedSections.lab2);
+        document.querySelector('[data-section="section-theory"]').classList.toggle('done', visitedSections.theory);
+        document.querySelector('[data-section="section-vault"]').classList.toggle('done', reviewedVault.size === 8);
+        document.querySelector('[data-section="section-quiz"]').classList.toggle('done', solvedQuiz.size === 5);
+      }
+
+      const sections = document.querySelectorAll('.section-block');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            navLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === id));
+            if (id === 'section-theory' && !visitedSections.theory) {
+              visitedSections.theory = true;
+              updateMasteryProgress();
+            }
+          }
+        });
+      }, { rootMargin: '-20% 0px -65% 0px' });
+      sections.forEach((s) => spy.observe(s));
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 1: LIMIT-TO-INFINITY & VERTICAL ASYMPTOTE SANDBOX
+         ---------------------------------------------------------------------- */
+      const type1Presets = [
+        {
+          id: 't1_p',
+          name: '1) p-Integral: ∫₁^∞ (1 / xᵖ) dx (Interactive p-slider)',
+          hasP: true,
+          pMin: 0.40, pMax: 3.00, pDef: 1.50,
+          cMin: 1.5, cMax: 35, cStep: 0.2, cDef: 10,
+          xRange: [0, 36], yRange: [-0.1, 1.35],
+          formulaTex: (p) => `\\int_1^\\infty \\frac{1}{x^{${p.toFixed(2)}}}\\,dx`,
+          f: (x, p) => (x > 0 ? Math.pow(x, -p) : NaN),
+          partial: (b, p) => (Math.abs(p - 1) < 1e-4 ? Math.log(b) : (Math.pow(b, 1 - p) - 1) / (1 - p)),
+          converges: (p) => p > 1.0001,
+          limitStr: (p) => (p > 1.0001 ? `${(1 / (p - 1)).toFixed(4)}  [1/(p-1)]` : '+∞ (Diverges)'),
+          noteHtml: (p) => p > 1.0001
+            ? `Since $p = ${p.toFixed(2)} &gt; 1$, the tail decays fast enough to enclose a finite area $\\frac{1}{p-1} = ${(1 / (p - 1)).toFixed(3)}$.`
+            : `Since $p = ${p.toFixed(2)} \\le 1$, the tail decays too slowly — the shaded area grows without bound to $+\\infty$!`
+        },
+        {
+          id: 't1_bell',
+          name: '2) Bell-like Rational (Final 2018): ∫_{-∞}^∞ 1/(1+x²) dx',
+          hasP: false,
+          cMin: 0.5, cMax: 12, cStep: 0.1, cDef: 4.0,
+          xRange: [-12.5, 12.5], yRange: [-0.15, 1.25],
+          formulaTex: () => `\\int_{-\\infty}^{\\infty} \\frac{1}{1+x^2}\\,dx`,
+          f: (x) => 1 / (1 + x * x),
+          partial: (b) => 2 * Math.atan(b),
+          converges: () => true,
+          limitStr: () => 'π ≈ 3.1416',
+          noteHtml: () => '<strong>Final 2018 Q6(c):</strong> Both halves $\\int_{-\\infty}^0$ and $\\int_0^\\infty$ converge <em>independently</em> to $\\frac{\\pi}{2}$, giving total area $\\pi \\approx 3.1416$.'
+        },
+        {
+          id: 't1_cancel',
+          name: '3) Cancellation Tail (2nd Incourse 2024): ∫₀^∞ (1-x)e⁻ˣ dx',
+          hasP: false,
+          cMin: 0.3, cMax: 10, cStep: 0.1, cDef: 4.0,
+          xRange: [-0.3, 10.5], yRange: [-0.45, 1.15],
+          formulaTex: () => `\\int_0^\\infty (1 - x)e^{-x}\\,dx`,
+          f: (x) => (1 - x) * Math.exp(-x),
+          partial: (b) => b * Math.exp(-b),
+          converges: () => true,
+          limitStr: () => '0.0000',
+          noteHtml: () => '<strong>Cancellation Tail:</strong> Positive area on $[0, 1]$ ($= e^{-1} \\approx 0.368$) is completely cancelled by the negative tail on $[1, \\infty)$, since $\\lim_{b\\to\\infty} be^{-b} = 0$!'
+        },
+        {
+          id: 't1_osc',
+          name: '4) Oscillating Tail (Class Notes): ∫₀^∞ cos(√x)/√x dx',
+          hasP: false,
+          cMin: 0.5, cMax: 60, cStep: 0.25, cDef: 20,
+          xRange: [0, 62], yRange: [-1.4, 1.4],
+          formulaTex: () => `\\int_0^\\infty \\frac{\\cos\\sqrt{x}}{\\sqrt{x}}\\,dx`,
+          f: (x) => (x > 0.02 ? Math.cos(Math.sqrt(x)) / Math.sqrt(x) : Math.cos(Math.sqrt(0.02)) / Math.sqrt(0.02)),
+          partial: (b) => 2 * Math.sin(Math.sqrt(b)),
+          converges: () => false,
+          limitStr: () => 'Oscillates in [-2, 2]',
+          noteHtml: () => '<strong>Diverges by Oscillation:</strong> With $u = \\sqrt{x}$, the partial area is $2\\sin(\\sqrt{b})$, which oscillates endlessly between $-2$ and $+2$ as $b \\to \\infty$.'
+        }
+      ];
+
+      const type2Presets = [
+        {
+          id: 't2_p',
+          name: '1) Type II p-Integral: ∫₀¹ (1 / xᵖ) dx (Interactive p-slider)',
+          hasP: true,
+          pMin: 0.20, pMax: 2.00, pDef: 0.50,
+          cMin: 0.005, cMax: 0.60, cStep: 0.005, cDef: 0.12,
+          xRange: [-0.08, 1.12], yRange: [-0.4, 10],
+          asymptoteX: 0,
+          formulaTex: (p) => `\\int_0^1 \\frac{1}{x^{${p.toFixed(2)}}}\\,dx`,
+          f: (x, p) => (x > 1e-6 ? Math.pow(x, -p) : NaN),
+          partial: (k, p) => (Math.abs(p - 1) < 1e-4 ? -Math.log(k) : (1 - Math.pow(k, 1 - p)) / (1 - p)),
+          converges: (p) => p < 0.9999,
+          limitStr: (p) => (p < 0.9999 ? `${(1 / (1 - p)).toFixed(4)}  [1/(1-p)]` : '+∞ (Diverges)'),
+          noteHtml: (p) => p < 0.9999
+            ? `Reversed threshold! Since $p = ${p.toFixed(2)} &lt; 1$, the spike at $x = 0^+$ is integrable and converges to $\\frac{1}{1-p} = ${(1 / (1 - p)).toFixed(3)}$.`
+            : `Since $p = ${p.toFixed(2)} \\ge 1$, the vertical asymptote at $x = 0^+$ is too thick — area diverges to $+\\infty$!`
+        },
+        {
+          id: 't2_log',
+          name: '2) Log Singularity (Class Notes): ∫₀¹ ln(x) dx',
+          hasP: false,
+          cMin: 0.005, cMax: 0.60, cStep: 0.005, cDef: 0.10,
+          xRange: [-0.08, 1.12], yRange: [-5.5, 0.7],
+          asymptoteX: 0,
+          formulaTex: () => `\\int_0^1 \\ln x\\,dx`,
+          f: (x) => (x > 1e-6 ? Math.log(x) : NaN),
+          partial: (k) => -1 - k * Math.log(k) + k,
+          converges: () => true,
+          limitStr: () => '-1.0000',
+          noteHtml: () => '<strong>Class Notes:</strong> Even though $\\ln x \\to -\\infty$ as $x \\to 0^+$, L\'H&ocirc;pital gives $\\lim_{k\\to 0^+} k\\ln k = 0$, so the negative area converges to $-1$.'
+        },
+        {
+          id: 't2_interior',
+          name: '3) Hidden Interior Asymptote Trap: ∫₁³ 1/(x - 2) dx',
+          hasP: false,
+          cMin: 0.01, cMax: 0.50, cStep: 0.01, cDef: 0.15,
+          xRange: [0.8, 3.2], yRange: [-12, 12],
+          asymptoteX: 2,
+          isInterior: true,
+          formulaTex: () => `\\int_1^3 \\frac{1}{x - 2}\\,dx`,
+          f: (x) => (Math.abs(x - 2) > 1e-5 ? 1 / (x - 2) : NaN),
+          partial: (eps) => Math.log(eps), // Left half = ln(eps) -> -inf, Right half = -ln(eps) -> +inf
+          converges: () => false,
+          limitStr: () => 'Left: -∞, Right: +∞',
+          noteHtml: () => '<strong>Hidden Asymptote at $x = 2$:</strong> Approaching $2 - \\varepsilon$ gives $\\ln\\varepsilon \\to -\\infty$ and $2 + \\varepsilon$ gives $-\\ln\\varepsilon \\to +\\infty$. Each half diverges!'
+        },
+        {
+          id: 't2_arclen',
+          name: '4) Arc Length Singularity (2nd Incourse 2022): ∫₀² 2x⁻¹/³ dx',
+          hasP: false,
+          cMin: 0.005, cMax: 1.00, cStep: 0.005, cDef: 0.15,
+          xRange: [-0.12, 2.2], yRange: [-0.4, 10],
+          asymptoteX: 0,
+          formulaTex: () => `\\int_0^2 2x^{-1/3}\\,dx`,
+          f: (x) => (x > 1e-6 ? 2 * Math.pow(x, -1 / 3) : NaN),
+          partial: (k) => 3 * Math.pow(2, 2 / 3) - 3 * Math.pow(k, 2 / 3),
+          converges: () => true,
+          limitStr: () => `3·2^(2/3) ≈ ${(3 * Math.pow(2, 2 / 3)).toFixed(4)}`,
+          noteHtml: () => '<strong>2nd Incourse 2022 Q5:</strong> Arises from the arc length of $y = (4-x^{2/3})^{3/2}$ on $[0, 2]$. Since $p = \\frac{1}{3} &lt; 1$, it converges to $3\\cdot 2^{2/3} \\approx 4.7622$!'
+        }
+      ];
+
+      const lab1State = {
+        type: 'type1', // 'type1' | 'type2'
+        idx: 0,
+        p: 1.50,
+        cutoff: 10,
+        animating: false,
+        rafId: null,
+        lastTs: 0
+      };
+
+      const impCanvas = document.getElementById('impCanvas');
+      const impPresetSelect = document.getElementById('impPresetSelect');
+      const pSliderBox = document.getElementById('pSliderBox');
+      const impPSlider = document.getElementById('impPSlider');
+      const impPDisplay = document.getElementById('impPDisplay');
+      const cutoffSlider = document.getElementById('cutoffSlider');
+      const cutoffDisplay = document.getElementById('cutoffDisplay');
+      const animateCutoffBtn = document.getElementById('animateCutoffBtn');
+
+      function getCurrentPreset() {
+        return lab1State.type === 'type1' ? type1Presets[lab1State.idx] : type2Presets[lab1State.idx];
+      }
+
+      function populatePresetSelect() {
+        const list = lab1State.type === 'type1' ? type1Presets : type2Presets;
+        document.getElementById('presetLabelText').textContent =
+          lab1State.type === 'type1' ? 'Select Type I Preset (Infinite Limits)' : 'Select Type II Preset (Vertical Asymptotes)';
+        impPresetSelect.innerHTML = list.map((p, i) => `<option value="${i}">${p.name}</option>`).join('');
+        lab1State.idx = 0;
+        impPresetSelect.value = '0';
+        syncPresetControls();
+      }
+
+      function syncPresetControls() {
+        const pr = getCurrentPreset();
+        if (pr.hasP) {
+          pSliderBox.classList.add('visible');
+          impPSlider.min = pr.pMin;
+          impPSlider.max = pr.pMax;
+          impPSlider.step = '0.05';
+          lab1State.p = pr.pDef;
+          impPSlider.value = pr.pDef;
+          const hintEl = document.getElementById('pThresholdHint');
+          hintEl.innerHTML = lab1State.type === 'type1'
+            ? 'Type I threshold at $p = 1$: Converges for $p &gt; 1$, Diverges for $p \\le 1$.'
+            : 'Type II threshold at $p = 1$: Converges for $p &lt; 1$, Diverges for $p \\ge 1$.';
+          renderMath(hintEl);
+        } else {
+          pSliderBox.classList.remove('visible');
+        }
+
+        cutoffSlider.min = pr.cMin;
+        cutoffSlider.max = pr.cMax;
+        cutoffSlider.step = pr.cStep;
+        lab1State.cutoff = pr.cDef;
+        cutoffSlider.value = pr.cDef;
+
+        document.getElementById('cutoffLabelText').textContent =
+          lab1State.type === 'type1'
+            ? (pr.id === 't1_bell' ? 'Symmetric Cutoff (±b)' : 'Upper Cutoff (b → ∞)')
+            : (pr.isInterior ? 'Asymptote Gap (ε → 0⁺)' : 'Lower Cutoff (k → 0⁺)');
+      }
+
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(260, Math.floor(rect.width));
+        const h = Math.max(210, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function niceStep(range, ticks) {
+        const rough = Math.max(range, 1e-6) / ticks;
+        const p10 = Math.pow(10, Math.floor(Math.log10(rough)));
+        const n = rough / p10;
+        const m = n > 5 ? 10 : n > 2 ? 5 : n > 1 ? 2 : 1;
+        return m * p10;
+      }
+
+      function drawImpSandbox() {
+        const pr = getCurrentPreset();
+        const p = lab1State.p;
+        const c = lab1State.cutoff;
+        const [xMin, xMax] = pr.xRange;
+        const [yMin, yMax] = pr.yRange;
+
+        const { ctx, w, h } = setupCanvas(impCanvas);
+        const pad = { top: 20, right: 20, bottom: 32, left: 46 };
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+        const y0 = toY(0);
+
+        // Background
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, w, h);
+
+        // Gridlines & ticks
+        const xStep = niceStep(xMax - xMin, 6);
+        const yStep = niceStep(yMax - yMin, 5);
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.font = '500 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#94a3b8';
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let xv = Math.ceil(xMin / xStep) * xStep; xv <= xMax + 1e-9; xv += xStep) {
+          const px = toX(xv);
+          ctx.beginPath(); ctx.moveTo(px, pad.top); ctx.lineTo(px, h - pad.bottom); ctx.stroke();
+          ctx.fillText(Math.abs(xv) < 1e-9 ? '0' : Number(xv.toFixed(2)).toString(), px, h - pad.bottom + 6);
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let yv = Math.ceil(yMin / yStep) * yStep; yv <= yMax + 1e-9; yv += yStep) {
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(pad.left, py); ctx.lineTo(w - pad.right, py); ctx.stroke();
+          ctx.fillText(Math.abs(yv) < 1e-9 ? '0' : Number(yv.toFixed(2)).toString(), pad.left - 8, py);
+        }
+
+        // Main axes
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.6;
+        if (yMin <= 0 && yMax >= 0) {
+          ctx.beginPath(); ctx.moveTo(pad.left, y0); ctx.lineTo(w - pad.right, y0); ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          const x0 = toX(0);
+          ctx.beginPath(); ctx.moveTo(x0, pad.top); ctx.lineTo(x0, h - pad.bottom); ctx.stroke();
+        }
+
+        // Clip plot region
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad.left, pad.top, plotW, plotH);
+        ctx.clip();
+
+        // Helper to shade [a, b]
+        function shadeInterval(xa, xb, steps) {
+          if (xb <= xa) return;
+          const dx = (xb - xa) / steps;
+          for (let i = 0; i < steps; i++) {
+            const x1 = xa + i * dx;
+            const x2 = x1 + dx;
+            const y1 = Math.max(yMin - 2, Math.min(yMax + 2, pr.f(x1, p)));
+            const y2 = Math.max(yMin - 2, Math.min(yMax + 2, pr.f(x2, p)));
+            if (!Number.isFinite(y1) || !Number.isFinite(y2)) continue;
+            const midY = (y1 + y2) * 0.5;
+            ctx.fillStyle = midY >= 0 ? 'rgba(16, 185, 129, 0.30)' : 'rgba(244, 63, 94, 0.30)';
+            ctx.beginPath();
+            ctx.moveTo(toX(x1), y0);
+            ctx.lineTo(toX(x1), toY(y1));
+            ctx.lineTo(toX(x2), toY(y2));
+            ctx.lineTo(toX(x2), y0);
+            ctx.closePath();
+            ctx.fill();
+          }
+        }
+
+        // 1. Shade Active Region
+        if (lab1State.type === 'type1') {
+          if (pr.id === 't1_p') shadeInterval(1, c, 140);
+          else if (pr.id === 't1_bell') shadeInterval(-c, c, 180);
+          else shadeInterval(0.02, c, 200);
+        } else {
+          if (pr.isInterior) {
+            shadeInterval(1, 2 - c, 100);
+            shadeInterval(2 + c, 3, 100);
+          } else if (pr.id === 't2_arclen') {
+            shadeInterval(c, 2, 160);
+          } else {
+            shadeInterval(c, 1, 160);
+          }
+        }
+
+        // 2. Draw Glowing Vertical Asymptote (Type II)
+        if (lab1State.type === 'type2') {
+          const ax = toX(pr.asymptoteX);
+          ctx.save();
+          ctx.shadowColor = '#f43f5e';
+          ctx.shadowBlur = 10;
+          ctx.strokeStyle = '#fb7185';
+          ctx.lineWidth = 2.4;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(ax, pad.top);
+          ctx.lineTo(ax, h - pad.bottom);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // 3. Draw Glowing Curve y = f(x)
+        ctx.save();
+        ctx.shadowColor = '#6366f1';
+        ctx.shadowBlur = 8;
+        ctx.strokeStyle = '#818cf8';
+        ctx.lineWidth = 2.6;
+
+        function strokeCurveSegment(xa, xb, samples) {
+          ctx.beginPath();
+          let started = false;
+          for (let i = 0; i <= samples; i++) {
+            const xv = xa + (i / samples) * (xb - xa);
+            const yv = pr.f(xv, p);
+            if (!Number.isFinite(yv) || yv > yMax + 25 || yv < yMin - 25) {
+              started = false;
+              continue;
+            }
+            const px = toX(xv);
+            const py = toY(Math.max(yMin - 3, Math.min(yMax + 3, yv)));
+            if (!started) { ctx.moveTo(px, py); started = true; }
+            else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+
+        if (lab1State.type === 'type2' && pr.isInterior) {
+          strokeCurveSegment(xMin, 1.985, 140);
+          strokeCurveSegment(2.015, xMax, 140);
+        } else if (lab1State.type === 'type2') {
+          strokeCurveSegment(0.004, xMax, 220);
+        } else if (pr.id === 't1_p') {
+          strokeCurveSegment(0.55, xMax, 220);
+        } else {
+          strokeCurveSegment(xMin, xMax, 280);
+        }
+        ctx.restore();
+
+        // 4. Draw Dashed Amber Cutoff Line(s)
+        function drawCutoffLine(xVal, label) {
+          const px = toX(xVal);
+          ctx.strokeStyle = '#fbbf24';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(px, pad.top);
+          ctx.lineTo(px, h - pad.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.textAlign = px > w - pad.right - 70 ? 'right' : 'left';
+          ctx.textBaseline = 'top';
+          ctx.fillText(label, px > w - pad.right - 70 ? px - 6 : px + 6, pad.top + 6);
+        }
+
+        if (lab1State.type === 'type1') {
+          if (pr.id === 't1_bell') {
+            drawCutoffLine(-c, `-b=${(-c).toFixed(1)}`);
+            drawCutoffLine(c, `b=${c.toFixed(1)}`);
+          } else {
+            drawCutoffLine(c, `b=${c.toFixed(1)}`);
+          }
+        } else {
+          if (pr.isInterior) {
+            drawCutoffLine(2 - c, `2-ε`);
+            drawCutoffLine(2 + c, `2+ε`);
+          } else {
+            drawCutoffLine(c, `k=${c.toFixed(3)}`);
+          }
+        }
+
+        ctx.restore(); // end clip
+
+        // Border frame
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pad.left, pad.top, plotW, plotH);
+
+        // 5. Update Telemetry Bar & Displays
+        if (pr.hasP) impPDisplay.textContent = `p = ${p.toFixed(2)}`;
+        const cutoffStr = lab1State.type === 'type1'
+          ? (pr.id === 't1_bell' ? `[-${c.toFixed(2)}, ${c.toFixed(2)}]` : `b = ${c.toFixed(2)}`)
+          : (pr.isInterior ? `ε = ${c.toFixed(3)}` : `k = ${c.toFixed(3)}`);
+        cutoffDisplay.textContent = cutoffStr;
+        document.getElementById('teleCutoff').textContent = cutoffStr;
+
+        const formulaEl = document.getElementById('teleFormula');
+        formulaEl.innerHTML = `$${pr.formulaTex(p)}$`;
+
+        const partialVal = pr.partial(c, p);
+        document.getElementById('telePartial').textContent = pr.isInterior
+          ? `L:${partialVal.toFixed(2)}, R:${(-partialVal).toFixed(2)}`
+          : partialVal.toFixed(4);
+        document.getElementById('teleLimit').textContent = pr.limitStr(p);
+
+        const isConv = pr.converges(p);
+        const statusCard = document.getElementById('teleStatusCard');
+        const statusBadge = document.getElementById('teleStatusBadge');
+        statusCard.className = `tele-card ${isConv ? 'converges' : 'diverges'}`;
+        statusBadge.className = `status-badge ${isConv ? 'conv' : 'div'}`;
+        statusBadge.textContent = isConv ? 'CONVERGES' : 'DIVERGES';
+
+        const noteEl = document.getElementById('impNoteBox');
+        noteEl.innerHTML = pr.noteHtml(p);
+
+        renderMath(formulaEl);
+        renderMath(noteEl);
+      }
+
+      function stopCutoffAnim() {
+        lab1State.animating = false;
+        if (lab1State.rafId) cancelAnimationFrame(lab1State.rafId);
+        lab1State.rafId = null;
+        animateCutoffBtn.innerHTML = '&#9654; Animate Limit';
+      }
+
+      function stepCutoffAnim(ts) {
+        if (!lab1State.animating) return;
+        if (!lab1State.lastTs) lab1State.lastTs = ts;
+        const dt = Math.min(0.05, (ts - lab1State.lastTs) / 1000);
+        lab1State.lastTs = ts;
+
+        const pr = getCurrentPreset();
+        if (lab1State.type === 'type1') {
+          const speed = (pr.cMax - pr.cMin) * 0.24;
+          lab1State.cutoff += speed * dt;
+          if (lab1State.cutoff >= pr.cMax) {
+            lab1State.cutoff = pr.cMax;
+            cutoffSlider.value = lab1State.cutoff;
+            drawImpSandbox();
+            stopCutoffAnim();
+            return;
+          }
+        } else {
+          // Exponential decay toward cMin (approaching 0+)
+          const remaining = lab1State.cutoff - pr.cMin;
+          lab1State.cutoff -= Math.max(0.008, remaining * 1.45) * dt;
+          if (lab1State.cutoff <= pr.cMin) {
+            lab1State.cutoff = pr.cMin;
+            cutoffSlider.value = lab1State.cutoff;
+            drawImpSandbox();
+            stopCutoffAnim();
+            return;
+          }
+        }
+        cutoffSlider.value = lab1State.cutoff;
+        drawImpSandbox();
+        lab1State.rafId = requestAnimationFrame(stepCutoffAnim);
+      }
+
+      // Lab 1 Event Listeners
+      document.querySelectorAll('[data-imptype]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          stopCutoffAnim();
+          document.querySelectorAll('[data-imptype]').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          lab1State.type = btn.dataset.imptype;
+          visitedSections.lab1 = true;
+          updateMasteryProgress();
+          populatePresetSelect();
+          drawImpSandbox();
+        });
+      });
+
+      impPresetSelect.addEventListener('change', () => {
+        stopCutoffAnim();
+        lab1State.idx = parseInt(impPresetSelect.value, 10);
+        visitedSections.lab1 = true;
+        updateMasteryProgress();
+        syncPresetControls();
+        drawImpSandbox();
+      });
+
+      impPSlider.addEventListener('input', () => {
+        lab1State.p = parseFloat(impPSlider.value);
+        visitedSections.lab1 = true;
+        updateMasteryProgress();
+        drawImpSandbox();
+      });
+
+      cutoffSlider.addEventListener('input', () => {
+        stopCutoffAnim();
+        lab1State.cutoff = parseFloat(cutoffSlider.value);
+        visitedSections.lab1 = true;
+        updateMasteryProgress();
+        drawImpSandbox();
+      });
+
+      animateCutoffBtn.addEventListener('click', () => {
+        visitedSections.lab1 = true;
+        updateMasteryProgress();
+        if (lab1State.animating) {
+          stopCutoffAnim();
+        } else {
+          const pr = getCurrentPreset();
+          if (lab1State.type === 'type1' && lab1State.cutoff >= pr.cMax - 0.1) {
+            lab1State.cutoff = pr.cMin;
+          } else if (lab1State.type === 'type2' && lab1State.cutoff <= pr.cMin + 0.005) {
+            lab1State.cutoff = pr.cMax;
+          }
+          lab1State.animating = true;
+          lab1State.lastTs = 0;
+          animateCutoffBtn.textContent = '❚❚ Pause';
+          lab1State.rafId = requestAnimationFrame(stepCutoffAnim);
+        }
+      });
+
+      document.getElementById('resetCutoffBtn').addEventListener('click', () => {
+        stopCutoffAnim();
+        syncPresetControls();
+        drawImpSandbox();
+      });
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2A: THE p-INTEGRAL MIRROR
+         ---------------------------------------------------------------------- */
+      const mirrorPSlider = document.getElementById('mirrorPSlider');
+      const mirrorPDisplay = document.getElementById('mirrorPDisplay');
+
+      function renderMirrorLab() {
+        const p = parseFloat(mirrorPSlider.value);
+        mirrorPDisplay.textContent = `p = ${p.toFixed(2)}`;
+
+        const t1Conv = p > 1.0001;
+        const t2Conv = p < 0.9999;
+
+        const c1 = document.getElementById('mirrorType1Card');
+        c1.className = `mirror-card ${t1Conv ? 'conv' : 'div'}`;
+        c1.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <span class="mono" style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;">Type I (Tail at $\\infty$)</span>
+            <span class="status-badge ${t1Conv ? 'conv' : 'div'}">${t1Conv ? 'CONVERGES' : 'DIVERGES'}</span>
+          </div>
+          <div style="font-size:1.05rem;">$$\\int_1^\\infty \\frac{1}{x^{${p.toFixed(2)}}}\\,dx = ${t1Conv ? `\\frac{1}{${(p - 1).toFixed(2)}} \\approx ${(1 / (p - 1)).toFixed(3)}` : '+\\infty'}$$</div>
+          <div style="font-size:0.84rem;color:var(--text-secondary);">Rule: Converges iff <strong>$p &gt; 1$</strong>.</div>
+        `;
+
+        const c2 = document.getElementById('mirrorType2Card');
+        c2.className = `mirror-card ${t2Conv ? 'conv' : 'div'}`;
+        c2.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <span class="mono" style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;">Type II (Asymptote at $0^+$)</span>
+            <span class="status-badge ${t2Conv ? 'conv' : 'div'}">${t2Conv ? 'CONVERGES' : 'DIVERGES'}</span>
+          </div>
+          <div style="font-size:1.05rem;">$$\\int_0^1 \\frac{1}{x^{${p.toFixed(2)}}}\\,dx = ${t2Conv ? `\\frac{1}{${(1 - p).toFixed(2)}} \\approx ${(1 / (1 - p)).toFixed(3)}` : '+\\infty'}$$</div>
+          <div style="font-size:0.84rem;color:var(--text-secondary);">Rule: Converges iff <strong>$p &lt; 1$</strong>.</div>
+        `;
+
+        const conc = document.getElementById('mirrorConclusion');
+        const reason = Math.abs(p - 1) < 1e-4
+          ? 'At $p = 1$, <strong>BOTH</strong> halves diverge ($+\\infty + \\infty$)!'
+          : t1Conv
+            ? `At $p = ${p.toFixed(2)} &gt; 1$, the Type I tail converges, but the Type II spike at $0^+$ <strong>diverges</strong>!`
+            : `At $p = ${p.toFixed(2)} &lt; 1$, the Type II spike at $0^+$ converges, but the Type I tail at $\\infty$ <strong>diverges</strong>!`;
+
+        conc.innerHTML = `
+          <div>
+            <strong style="color:var(--rose-light);">Universal Verdict:</strong>
+            $\\displaystyle \\int_0^\\infty \\frac{1}{x^p}\\,dx = \\int_0^1 x^{-p}\\,dx + \\int_1^\\infty x^{-p}\\,dx$ <strong>ALWAYS DIVERGES</strong> for every real $p$.
+            <div style="margin-top:4px;font-size:0.86rem;color:var(--text-secondary);">${reason}</div>
+          </div>
+          <span class="status-badge div">ALWAYS DIVERGES</span>
+        `;
+
+        renderMath(c1);
+        renderMath(c2);
+        renderMath(conc);
+      }
+
+      mirrorPSlider.addEventListener('input', () => {
+        visitedSections.lab2 = true;
+        updateMasteryProgress();
+        renderMirrorLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 2B: L'HÔPITAL LIMIT STEPPER (3 INDETERMINATE FORMS)
+         ---------------------------------------------------------------------- */
+      const lhopData = [
+        {
+          steps: [
+            { label: 'Step 1: Identify Indeterminate Form', body: 'Evaluate $\\displaystyle \\lim_{b\\to\\infty} b e^{-b}$ (from $\\int_0^\\infty (1-x)e^{-x}\\,dx$). Direct substitution gives the indeterminate product $\\infty \\cdot 0$.' },
+            { label: 'Step 2: Rewrite as a Quotient (∞/∞)', body: 'Move the negative exponential to the denominator: $$\\lim_{b\\to\\infty} \\frac{b}{e^b} \\quad \\left(\\text{form } \\frac{\\infty}{\\infty}\\right).$$' },
+            { label: 'Step 3: Apply L\'Hôpital\'s Rule (Differentiate Top & Bottom)', body: '$$\\lim_{b\\to\\infty} \\frac{\\frac{d}{db}(b)}{\\frac{d}{db}(e^b)} = \\lim_{b\\to\\infty} \\frac{1}{e^b}.$$' },
+            { label: 'Step 4: Evaluate Final Limit', final: true, body: '$$\\lim_{b\\to\\infty} \\frac{1}{e^b} = 0. \\qquad (\\text{Exponentials always outgrow polynomials!})$$' }
+          ]
+        },
+        {
+          steps: [
+            { label: 'Step 1: Identify Indeterminate Form', body: 'Evaluate $\\displaystyle \\lim_{k\\to 0^+} k \\ln k$ (from $\\int_0^1 \\ln x\\,dx$). As $k \\to 0^+$, this has the indeterminate product form $0 \\cdot (-\\infty)$.' },
+            { label: 'Step 2: Rewrite as a Quotient (-∞/∞)', body: 'Keep $\\ln k$ on top and move $k$ to the bottom as $\\frac{1}{k}$: $$\\lim_{k\\to 0^+} \\frac{\\ln k}{1/k} \\quad \\left(\\text{form } \\frac{-\\infty}{+\\infty}\\right).$$' },
+            { label: 'Step 3: Apply L\'Hôpital\'s Rule', body: '$$\\lim_{k\\to 0^+} \\frac{1/k}{-1/k^2} = \\lim_{k\\to 0^+} (-k).$$' },
+            { label: 'Step 4: Evaluate Final Limit', final: true, body: '$$\\lim_{k\\to 0^+} (-k) = 0. \\qquad (\\text{Powers of } k \\text{ beat } \\ln k \\text{ near } 0^+!)$$' }
+          ]
+        },
+        {
+          steps: [
+            { label: 'Step 1: Identify Indeterminate Form', body: 'Evaluate $\\displaystyle \\lim_{b\\to\\infty} \\frac{\\ln b}{b}$ (arises in $\\int_1^\\infty \\frac{\\ln x}{x^2}\\,dx$). Direct substitution gives $\\frac{\\infty}{\\infty}$.' },
+            { label: 'Step 2: Verify L\'Hôpital Conditions', body: 'Both $\\ln b$ and $b$ are differentiable for $b &gt; 1$ and approach $+\\infty$ as $b \\to \\infty$.' },
+            { label: 'Step 3: Apply L\'Hôpital\'s Rule', body: '$$\\lim_{b\\to\\infty} \\frac{\\frac{d}{db}(\\ln b)}{\\frac{d}{db}(b)} = \\lim_{b\\to\\infty} \\frac{1/b}{1} = \\lim_{b\\to\\infty} \\frac{1}{b}.$$' },
+            { label: 'Step 4: Evaluate Final Limit', final: true, body: '$$\\lim_{b\\to\\infty} \\frac{1}{b} = 0. \\qquad (\\text{Polynomials always outgrow logarithms!})$$' }
+          ]
+        }
+      ];
+
+      let lhopTab = 0;
+      let lhopStep = 1;
+      const lhopStepsWrap = document.getElementById('lhopStepsWrap');
+      const lhopCounter = document.getElementById('lhopCounter');
+
+      function renderLHopLab() {
+        const steps = lhopData[lhopTab].steps;
+        lhopStepsWrap.innerHTML = steps.map((s, i) => `
+          <div class="step-card ${i < lhopStep ? 'visible' : ''} ${s.final ? 'final-step' : ''}">
+            <div class="step-label">${s.label}</div>
+            <div>${s.body}</div>
+          </div>
+        `).join('');
+        lhopCounter.textContent = `Step ${lhopStep} of ${steps.length}`;
+        document.getElementById('lhopNextBtn').disabled = lhopStep >= steps.length;
+        renderMath(lhopStepsWrap);
+      }
+
+      document.querySelectorAll('#lhopTabs .mode-tab').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#lhopTabs .mode-tab').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          lhopTab = parseInt(btn.dataset.lhop, 10);
+          lhopStep = 1;
+          visitedSections.lab2 = true;
+          updateMasteryProgress();
+          renderLHopLab();
+        });
+      });
+
+      document.getElementById('lhopNextBtn').addEventListener('click', () => {
+        const max = lhopData[lhopTab].steps.length;
+        if (lhopStep < max) lhopStep++;
+        visitedSections.lab2 = true;
+        updateMasteryProgress();
+        renderLHopLab();
+      });
+
+      document.getElementById('lhopAllBtn').addEventListener('click', () => {
+        lhopStep = lhopData[lhopTab].steps.length;
+        visitedSections.lab2 = true;
+        updateMasteryProgress();
+        renderLHopLab();
+      });
+
+      document.getElementById('lhopResetBtn').addEventListener('click', () => {
+        lhopStep = 1;
+        renderLHopLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 4: ISRT PAST-EXAM VAULT (FILTERS, HINTS, SOLUTIONS, REVIEW)
+         ---------------------------------------------------------------------- */
+      const filterTabs = document.querySelectorAll('.filter-tab');
+      const examCards = document.querySelectorAll('.exam-card');
+
+      filterTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          filterTabs.forEach((t) => t.classList.remove('active'));
+          tab.classList.add('active');
+          const f = tab.dataset.filter;
+          examCards.forEach((card) => {
+            const cats = card.dataset.category.split(' ');
+            card.classList.toggle('hidden', f !== 'all' && !cats.includes(f));
+          });
+        });
+      });
+
+      examCards.forEach((card) => {
+        const vid = card.dataset.vid;
+        const hintBtn = card.querySelector('.hint-toggle');
+        const hintBox = card.querySelector('.hint-box');
+        const solBtn = card.querySelector('.sol-toggle');
+        const solBox = card.querySelector('.solution-box');
+        const revBtn = card.querySelector('.review-toggle');
+
+        hintBtn.addEventListener('click', () => {
+          const open = hintBox.classList.toggle('open');
+          hintBtn.textContent = open ? 'Hide Hint' : 'Show Hint';
+          if (open) renderMath(hintBox);
+        });
+
+        solBtn.addEventListener('click', () => {
+          const open = solBox.classList.toggle('open');
+          solBtn.textContent = open ? 'Hide Solution' : 'Show Full Solution';
+          if (open) renderMath(solBox);
+        });
+
+        revBtn.addEventListener('click', () => {
+          if (reviewedVault.has(vid)) {
+            reviewedVault.delete(vid);
+            revBtn.classList.remove('reviewed');
+            revBtn.innerHTML = '&#9744; Mark Reviewed';
+            card.classList.remove('reviewed-card');
+          } else {
+            reviewedVault.add(vid);
+            revBtn.classList.add('reviewed');
+            revBtn.innerHTML = '&#9745; Reviewed';
+            card.classList.add('reviewed-card');
+          }
+          updateMasteryProgress();
+        });
+      });
+
+      /* ----------------------------------------------------------------------
+         7. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizExplanations = {
+        q1: 'Here $p = \\frac{3}{2} &gt; 1$. For Type I ($[1,\\infty)$), $p &gt; 1$ converges to $\\frac{1}{p-1} = \\frac{1}{1/2} = 2$. For Type II ($(0,1]$), convergence requires $p &lt; 1$, so $I_2$ diverges!',
+        q2: 'Watch out for the hidden interior vertical asymptote at $x = 0 \\in [-1, 2]$! Splitting at $0$ gives $\\int_0^2 x^{-3}\\,dx$, which diverges by the Type II $p$-test ($p = 3 \\ge 1$).',
+        q3: 'Substituting $u = \\sqrt{x}$ ($\\frac{dx}{\\sqrt{x}} = 2\\,du$) transforms $\\int_0^\\infty \\frac{dx}{\\sqrt{x}(x+1)}$ into $2\\int_0^\\infty \\frac{du}{u^2+1} = 2\\left(\\frac{\\pi}{2} - 0\\right) = \\pi$.',
+        q4: 'Convergence of $\\int_{-\\infty}^\\infty f(x)\\,dx$ requires BOTH $\\int_{-\\infty}^0 f$ and $\\int_0^\\infty f$ to converge independently. Since $\\lim_{b\\to\\infty}(1 - \\cos b)$ oscillates and does not exist, the integral diverges.',
+        q5: 'Rewriting $k\\ln k = \\frac{\\ln k}{1/k}$ gives $\\frac{-\\infty}{+\\infty}$. Applying L\'H&ocirc;pital\'s Rule yields $\\lim_{k\\to 0^+}\\frac{1/k}{-1/k^2} = \\lim_{k\\to 0^+}(-k) = 0$.'
+      };
+
+      const quizResults = { q1: null, q2: null, q3: null, q4: null, q5: null };
+
+      function updateQuizScore() {
+        const correct = Object.values(quizResults).filter((v) => v === true).length;
+        document.getElementById('quizScore').textContent = `${correct} / 5`;
+      }
+
+      document.querySelectorAll('.quiz-card').forEach((card) => {
+        const qid = card.dataset.qid;
+        const ans = card.dataset.answer;
+        const opts = card.querySelectorAll('.quiz-opt');
+        const fb = card.querySelector('.quiz-feedback');
+
+        opts.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const ok = btn.dataset.val === ans;
+            opts.forEach((b) => {
+              b.disabled = true;
+              if (b.dataset.val === ans) b.classList.add('correct');
+            });
+            if (!ok) btn.classList.add('wrong');
+
+            quizResults[qid] = ok;
+            solvedQuiz.add(qid);
+            updateQuizScore();
+            updateMasteryProgress();
+
+            fb.className = `quiz-feedback show ${ok ? 'ok' : 'err'}`;
+            fb.innerHTML = `<strong>${ok ? 'Correct!' : 'Not quite.'}</strong> ${quizExplanations[qid]}`;
+            renderMath(fb);
+          });
+        });
+      });
+
+      document.getElementById('resetQuizBtn').addEventListener('click', () => {
+        Object.keys(quizResults).forEach((k) => { quizResults[k] = null; });
+        solvedQuiz.clear();
+        document.querySelectorAll('.quiz-opt').forEach((b) => {
+          b.disabled = false;
+          b.classList.remove('correct', 'wrong');
+        });
+        document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+          fb.className = 'quiz-feedback';
+          fb.innerHTML = '';
+        });
+        updateQuizScore();
+        updateMasteryProgress();
+      });
+
+      /* ----------------------------------------------------------------------
+         8. RESIZE OBSERVER & INITIALIZATION
+         ---------------------------------------------------------------------- */
+      const ro = new ResizeObserver(() => {
+        drawImpSandbox();
+      });
+      ro.observe(document.getElementById('impCanvasWrap'));
+
+      window.addEventListener('load', () => {
+        populatePresetSelect();
+        drawImpSandbox();
+        renderMirrorLab();
+        renderLHopLab();
+        updateMasteryProgress();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

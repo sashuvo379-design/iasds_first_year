@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON107 • Lesson 3: Theory of Demand &amp; Supply</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f4c81;
+      --primary-light: #e0f2fe;
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+      --warn: #d97706;
+      --warn-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-elevated: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-light: rgba(56, 189, 248, 0.14);
+      --accent: #2dd4bf;
+      --accent-light: rgba(45, 212, 191, 0.14);
+      --warn: #fbbf24;
+      --warn-light: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.14);
+      --success: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.14);
+      --purple: #a78bfa;
+      --purple-light: rgba(167, 139, 250, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1rem; }
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .brand-badge { color: #0b1120; }
+    .top-controls { display: flex; align-items: center; gap: 0.75rem; }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .progress-bar-wrap { width: 72px; height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+    .btn-icon {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+    .scroll-track { height: 3px; background: transparent; width: 100%; }
+    .scroll-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.1s linear; }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 4.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 9px;
+      transition: all 0.18s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-link.active .nav-num { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .nav-link.active .nav-num { color: #0b1120; }
+    .sidebar-meta {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sidebar-meta strong { color: var(--text); }
+
+    /* Main */
+    .main { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #0d9488 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+    }
+    .pill-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-accent { background: var(--accent-light); color: var(--accent); }
+    .pill-warn { background: var(--warn-light); color: var(--warn); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+
+    .hero h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.65rem; }
+    .hero p { color: rgba(255, 255, 255, 0.92); max-width: 72ch; font-size: 1rem; }
+    .hero-stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+    }
+    .hero-stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+    .hero-stat-val { font-size: 1rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.85rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .section-card h2 { font-size: 1.45rem; line-height: 1.25; }
+    .section-card h3 { font-size: 1.1rem; margin: 1.15rem 0 0.5rem; }
+    .section-card p { margin-bottom: 0.85rem; color: var(--text); }
+    .muted { color: var(--text-muted); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.2rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-light); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.95rem; }
+
+    /* Grids & Mini Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .mini-card h4 { font-size: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem; }
+    .mini-card ul { padding-left: 1.15rem; font-size: 0.91rem; color: var(--text-muted); }
+    .mini-card li { margin-bottom: 0.35rem; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.91rem; }
+    th, td { padding: 0.72rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-subtle); font-weight: 700; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+
+    /* Interactive Lab Layouts */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+    .canvas-wrap {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+    }
+    .control-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .shock-btn {
+      width: 100%;
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .shock-btn:hover { border-color: var(--primary); }
+    .shock-btn.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+    .readout-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-size: 0.88rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Tabs & Buttons */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .tab-btn.active { color: #0b1120; }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .slider-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; }
+
+    /* Math Code Box */
+    .math-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin: 0.65rem 0;
+    }
+
+    /* Accordion */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .acc-item { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated); }
+    .acc-btn {
+      width: 100%;
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: none;
+      padding: 0.95rem 1.15rem;
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .acc-btn:hover { filter: brightness(0.97); }
+    .acc-chevron { transition: transform 0.2s; font-size: 0.85rem; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 1.1rem 1.2rem; border-top: 1px solid var(--border); font-size: 0.92rem; }
+    .acc-item.open .acc-body { display: block; }
+
+    /* Quiz */
+    .quiz-q {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--bg-subtle);
+    }
+    .quiz-q-title { font-weight: 700; margin-bottom: 0.7rem; }
+    .quiz-opts { display: grid; gap: 0.45rem; }
+    .quiz-opt {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .quiz-opt.is-correct { background: var(--success-light); border-color: var(--success); font-weight: 600; }
+    .quiz-opt.is-wrong { background: var(--danger-light); border-color: var(--danger); }
+    .quiz-exp { margin-top: 0.65rem; font-size: 0.86rem; color: var(--text-muted); display: none; }
+    .quiz-exp.show { display: block; }
+
+    /* Done Button */
+    .done-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .done-btn.completed { background: var(--success-light); color: var(--success); border-color: var(--success); }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-2, .grid-3, .lab-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge">ECON107</span>
+        <span>Lesson 3: Theory of Demand &amp; Supply</span>
+      </div>
+      <div class="top-controls">
+        <div class="progress-pill">
+          <span id="progressText">0/6 Done</span>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="scroll-track"><div class="scroll-fill" id="scrollFill"></div></div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lesson 3 Roadmap</div>
+      <ul class="nav-list">
+        <li><a class="nav-link active" href="#sec-demand"><span class="nav-num">1</span> Demand &amp; Its Forces</a></li>
+        <li><a class="nav-link" href="#sec-supply"><span class="nav-num">2</span> Supply &amp; Its Forces</a></li>
+        <li><a class="nav-link" href="#sec-shifter"><span class="nav-num">3</span> Shift vs. Movement Lab</a></li>
+        <li><a class="nav-link" href="#sec-backward"><span class="nav-num">4</span> Backward-Bending Supply</a></li>
+        <li><a class="nav-link" href="#sec-calculus"><span class="nav-num">5</span> Demand Curve Calculus</a></li>
+        <li><a class="nav-link" href="#sec-pyq"><span class="nav-num">6</span> ISRT PYQ Vault</a></li>
+        <li><a class="nav-link" href="#sec-quiz"><span class="nav-num">7</span> Mastery Check</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <div><strong>Course:</strong> ECON107 (4 Credits)</div>
+        <div><strong>Institution:</strong> ISRT, University of Dhaka</div>
+        <div><strong>Sources:</strong> ECON107_L3.pdf, Ch. 3 &amp; Ch. 8C</div>
+        <div><strong>Exam Focus:</strong> 1st In-course &amp; Final Q2</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-badges">
+          <span class="pill pill-glass">Module 1 • 1st In-Course Scope</span>
+          <span class="pill pill-glass">Lecture 3 • ECON107</span>
+          <span class="pill pill-glass">Core Micro Foundation</span>
+        </div>
+        <h1>The Theory of Demand &amp; Supply</h1>
+        <p>
+          Master the two blades of the market scissors: why demand slopes downward (substitution &amp; income effects),
+          why supply slopes upward (diminishing returns), how to never confuse a shift of a curve with a movement along it,
+          why labor supply can bend backward, and how to analyze nonlinear demand curves with calculus.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Demand Drivers</div>
+            <div class="hero-stat-val">5 Non-Price Shifters</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Supply Drivers</div>
+            <div class="hero-stat-val">Costs, Tech &amp; Policy</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Interactive Labs</div>
+            <div class="hero-stat-val">3 Live Canvas Tools</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Past Questions</div>
+            <div class="hero-stat-val">6 ISRT PYQs (2017–25)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Demand -->
+      <section class="section-card" id="sec-demand">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 01 • The Buyer's Side</div>
+            <h2>Demand Schedule, Law of Demand &amp; Forces Behind Demand</h2>
+          </div>
+          <button class="done-btn" data-section="s1">✓ Mark Done</button>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Demand Schedule / Demand Curve (ECON107_L3)</div>
+          Shows the definite relationship between the <strong>market price</strong> of a good and the
+          <strong>quantity demanded</strong> of that good, <em>other things held constant (ceteris paribus)</em>.
+          The <strong>market demand curve</strong> is found by summing all individual quantities demanded horizontally at each price.
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3>Cornflakes Demand Schedule (Table 3-1)</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Point</th><th>Price ($ / box)</th><th>Qty Demanded (M boxes/yr)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>A</strong></td><td>$5</td><td>9</td></tr>
+                  <tr><td><strong>B</strong></td><td>$4</td><td>10</td></tr>
+                  <tr><td><strong>C</strong></td><td>$3</td><td>12</td></tr>
+                  <tr><td><strong>D</strong></td><td>$2</td><td>15</td></tr>
+                  <tr><td><strong>E</strong></td><td>$1</td><td>20</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3>Why Does Demand Slope Downward?</h3>
+            <p class="muted" style="font-size:0.9rem;">
+              <strong>Law of Downward-Sloping Demand:</strong> When price rises (holding other things constant), buyers buy less; when price falls, quantity demanded increases. Two forces drive this:
+            </p>
+            <div class="mini-card" style="margin-bottom:0.75rem; border-left:4px solid var(--primary);">
+              <h4>1. Substitution Effect</h4>
+              <p class="muted" style="font-size:0.87rem; margin:0;">
+                When the price of coffee (or fish) rises, it becomes relatively more expensive compared to alternatives (tea, chicken), so consumers switch away to cheaper substitutes.
+              </p>
+            </div>
+            <div class="mini-card" style="border-left:4px solid var(--accent);">
+              <h4>2. Income Effect</h4>
+              <p class="muted" style="font-size:0.87rem; margin:0;">
+                When a good's price falls, your <em>real purchasing power</em> increases—your fixed money income can now buy more goods, encouraging extra purchases.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <h3>5 Forces Behind the Demand Curve (Demand Shifters)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Force / Determinant</th><th>Effect on Demand Curve (Example: Automobiles)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>1. Average Income</strong></td><td>As household incomes rise, people buy more normal goods like cars (shifts right).</td></tr>
+              <tr><td><strong>2. Population (Market Size)</strong></td><td>Population growth increases the number of buyers, shifting demand right.</td></tr>
+              <tr><td><strong>3. Prices of Related Goods</strong></td><td><strong>Substitutes:</strong> Higher price of bus fares or tea raises demand for cars or coffee.<br><strong>Complements:</strong> Lower gasoline prices raise demand for cars.</td></tr>
+              <tr><td><strong>4. Tastes / Preferences</strong></td><td>Cultural shifts (e.g., cars as status symbols or health trends) shift demand.</td></tr>
+              <tr><td><strong>5. Special Influences</strong></td><td>Weather (umbrellas in monsoon), safety features, expectations of future price hikes, availability of alternatives.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 2: Supply -->
+      <section class="section-card" id="sec-supply">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 02 • The Seller's Side</div>
+            <h2>Supply Schedule, Upward Slope &amp; Forces Behind Supply</h2>
+          </div>
+          <button class="done-btn" data-section="s2">✓ Mark Done</button>
+        </div>
+
+        <div class="callout accent">
+          <div class="callout-title">Supply Schedule / Supply Curve</div>
+          Shows the relationship between a commodity's <strong>market price</strong> and the <strong>quantity producers are willing to produce and sell</strong>, holding other things constant (input prices, technology, related goods, government policies).
+        </div>
+
+        <div class="grid-2">
+          <div class="mini-card" style="border-top:4px solid var(--accent);">
+            <h4>📈 Why Is the Supply Curve Upward-Sloping?</h4>
+            <ul>
+              <li><strong>Profit Motive:</strong> Producers supply goods for profit. Higher market prices make production more profitable, attracting more output and new firms.</li>
+              <li><strong>Law of Diminishing Returns:</strong> Expanding output (e.g., orange juice or wine) requires adding more labor to limited suitable land. Each extra worker adds less extra product, pushing marginal production cost up—so a <em>higher price</em> is needed to coax out additional output.</li>
+            </ul>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--warn);">
+            <h4>⚡ Forces Behind the Supply Curve (Shifters)</h4>
+            <ul>
+              <li><strong>Cost of Production (Input Prices &amp; Tech):</strong> Lower wages, cheaper raw materials (e.g., watch batteries, microchips), or better tech lower costs and shift supply <em>rightward</em>.</li>
+              <li><strong>Prices of Related Goods:</strong> If corn prices surge, farmers switch farmland from soybeans to corn, reducing soybean supply.</li>
+              <li><strong>Government Policy:</strong> Taxes, minimum wages, and import quotas reduce supply; subsidies and free-trade agreements expand supply.</li>
+              <li><strong>Special Influences:</strong> Weather (agriculture), number of firms, expectations.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <div class="callout-title">Crucial Exam Distinction (1st In-course 2019 Q3): Direction of "Increase" Shifts</div>
+          <strong>Increase in Demand:</strong> Shifts the demand curve <strong>Rightward &amp; Upward</strong> (at each price, buyers want more; for each quantity, buyers are willing to pay more).<br>
+          <strong>Increase in Supply:</strong> Shifts the supply curve <strong>Rightward &amp; Downward</strong> (at each price, firms supply more; for each quantity, lower costs allow firms to accept a lower price).
+        </div>
+      </section>
+
+      <!-- Section 3: Interactive Curve Shifter Simulator -->
+      <section class="section-card" id="sec-shifter">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 03 • Interactive Simulator</div>
+            <h2>Shift of the Curve vs. Movement Along the Curve</h2>
+          </div>
+          <button class="done-btn" data-section="s3">✓ Mark Done</button>
+        </div>
+
+        <p class="muted" style="font-size:0.92rem;">
+          Switch between the <strong>Demand Curve (Coffee Market)</strong> and <strong>Supply Curve (Wristwatch Market)</strong>,
+          then trigger real-world shocks to see whether the shock causes a <strong>Movement Along</strong> or a <strong>Shift of</strong> the curve.
+        </p>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="modeDemand" onclick="setShifterMode('demand')">☕ Demand Curve (Coffee)</button>
+          <button class="tab-btn" id="modeSupply" onclick="setShifterMode('supply')">⌚ Supply Curve (Wristwatches)</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="shifterCanvas" width="520" height="380"></canvas>
+          </div>
+          <div class="control-panel">
+            <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; color:var(--text-muted);">Trigger an Economic Shock:</div>
+            <div id="shockButtons" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+            <div class="readout-card" id="shifterReadout"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Backward-Bending Supply Curve -->
+      <section class="section-card" id="sec-backward">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 04 • Special Case (Final 2024 PYQ)</div>
+            <h2>The Backward-Bending Labor Supply Curve</h2>
+          </div>
+          <button class="done-btn" data-section="s4">✓ Mark Done</button>
+        </div>
+
+        <p>
+          While most product supply curves slope steadily upward, the <strong>supply curve of labor</strong> can bend
+          backward at very high wage rates (Samuelson &amp; Nordhaus, Figure 8-10). Drag the wage slider below to see how
+          the <strong>Substitution Effect</strong> and <strong>Income Effect</strong> compete as wages rise:
+        </p>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="laborCanvas" width="520" height="340"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label">
+                <span>Hourly Wage Rate (W)</span>
+                <span id="wageVal" style="color:var(--primary);">$30 / hr</span>
+              </div>
+              <input type="range" id="wageSlider" min="10" max="100" step="2" value="30" />
+            </div>
+            <div class="readout-card" id="laborReadout"></div>
+            <div class="mini-card" style="font-size:0.85rem;">
+              <strong>Exam Justification:</strong>
+              <ul style="margin-top:0.35rem;">
+                <li><strong>Low-to-Mid Wages (Upward Slope):</strong> Higher wage raises the opportunity cost of leisure → <em>Substitution Effect</em> dominates → workers supply <strong>more hours</strong>.</li>
+                <li><strong>High Wages (Backward Bend):</strong> Workers earn enough to afford more leisure (a normal good) → <em>Income Effect</em> dominates → workers choose fewer hours (e.g., working 3 days instead of 6, or retiring earlier).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Calculus of Inverse Demand Curves -->
+      <section class="section-card" id="sec-calculus">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 05 • Mathematical Economics (1st In-course 2019 PYQ)</div>
+            <h2>Slopes &amp; Curvature of Inverse Demand Curves</h2>
+          </div>
+          <button class="done-btn" data-section="s5">✓ Mark Done</button>
+        </div>
+
+        <p>
+          In mathematical economics, an <strong>inverse demand curve</strong> expresses price as a function of quantity:
+          $P = f(X)$ for $P \ge 0, X \ge 0$. The slope at any output $X$ is the first derivative $rac{dP}{dX}$, and
+          curvature is determined by the second derivative $rac{d^2P}{dX^2}$.
+        </p>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="calcLinear" onclick="setCalcCurve('linear')">Curve (a): P = 100 − 5X</button>
+          <button class="tab-btn" id="calcQuad" onclick="setCalcCurve('quad')">Curve (b): P = 100 − 20X + X²</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="calcCanvas" width="520" height="340"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label">
+                <span>Evaluate Slope at Output X</span>
+                <span id="calcXVal" style="color:var(--primary);">X = 1.0</span>
+              </div>
+              <input type="range" id="calcXSlider" min="0" max="10" step="0.5" value="1" />
+            </div>
+            <div class="readout-card" id="calcReadout"></div>
+            <div class="math-box" id="calcFormulaBox"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: ISRT PYQ Vault -->
+      <section class="section-card" id="sec-pyq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 06 • Exam Preparation</div>
+            <h2>ISRT Past Exam Question (PYQ) Vault (2017–2025)</h2>
+          </div>
+          <button class="done-btn" data-section="s6">✓ Mark Done</button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">Final 2025 • Q2(a,b) [5 Marks]</span> Why is a supply curve upward sloping? Discuss three factors that can impact the supply of wrist watches.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) Upward Slope:</strong> Firms produce for profit. Higher market prices make extra output profitable, and due to the <strong>law of diminishing returns</strong>, producing additional units with fixed plant/land incurs rising marginal costs—so a higher price is required to coax out greater quantity supplied.</p>
+              <p style="margin:0;"><strong>(b) Three Factors for Wrist Watches:</strong> (1) <strong>Input Prices:</strong> Higher cost of quartz movements, stainless steel, or watchmaker wages increases production cost and shifts supply left. (2) <strong>Technology:</strong> Automated micro-assembly lowers per-unit cost and shifts supply right. (3) <strong>Government Policy / Trade:</strong> Higher import tariffs on watch components shift supply left, while tax breaks or free-trade deals shift supply right.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-accent">Final 2024 • Q1(3,4) &amp; Q2(a) [7 Marks]</span> Backward-bending supply curve; coffee downward demand via substitution effect; movement along vs. shift for ice cream.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Backward-Bending Supply:</strong> The <strong>labor supply curve</strong> bends backward at high wages. Initially higher wages increase hours worked (substitution effect: leisure is costlier), but above a high wage threshold the income effect dominates—workers afford more leisure and cut back hours.</p>
+              <p><strong>Coffee &amp; Substitution Effect:</strong> When coffee's price rises (other things constant), coffee becomes relatively more expensive than close substitutes like tea or energy drinks. Consumers substitute away from coffee toward tea, lowering quantity demanded of coffee.</p>
+              <p style="margin:0;"><strong>Ice Cream (Movement vs. Shift):</strong> A change in the <em>own price of ice cream</em> causes a <strong>movement along</strong> the same demand curve (change in quantity demanded). A change in a <em>non-price factor</em>—such as a hot summer heatwave, higher consumer incomes, or lower price of cones—causes a <strong>shift</strong> of the entire demand curve.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-warn">1st In-course 2024 • Q2(a,b) [4 Marks]</span> Construct a demand schedule for fish and comment on it. Explain its downward slope via substitution &amp; income effects.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Demand Schedule for Fish (per week):</strong> Price 600 BDT/kg → 5 kg; 500 BDT/kg → 8 kg; 400 BDT/kg → 12 kg; 300 BDT/kg → 18 kg. <em>Comment:</em> Quantity demanded varies inversely with price, holding income, tastes, and meat prices constant.</p>
+              <p style="margin:0;"><strong>Substitution &amp; Income Effects:</strong> When fish prices fall, fish becomes cheaper relative to chicken/beef, so households substitute fish for meat (<em>substitution effect</em>). Simultaneously, paying less per kg increases the household's real purchasing power, allowing them to buy more fish with the same budget (<em>income effect</em>).</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-purple">1st In-course 2023 • Q4 [5 Marks]</span> Explain graphically how demand for coffee changes when: (a) price of tea rises; (b) price of coffee rises.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) Price of Tea Rises:</strong> Tea is a substitute for coffee. Higher tea prices make consumers switch to coffee at every coffee price—causing a <strong>rightward shift</strong> of the coffee demand curve ($D 	o D'$).</p>
+              <p style="margin:0;"><strong>(b) Price of Coffee Rises:</strong> This is a change in the good's own price (holding other things constant), causing an <strong>upward/leftward movement along</strong> the existing coffee demand curve (a decrease in <em>quantity demanded</em>, not a shift).</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-danger">1st In-course 2019 • Q4 [10 Marks]</span> Calculus of inverse demand curves: (a) P = 100 − 5X and (b) P = 100 − 20X + X². Find slopes at X = 0, 1; downward-sloping condition; concave or convex?</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Curve (a) P = 100 − 5X:</strong> Slope $dP/dX = -5$. Thus at $X=0$, slope $= -5$; at $X=1$, slope $= -5$. For any linear inverse demand curve $P = a + bX$, the law of downward-sloping demand holds when <strong>$b &lt; 0$</strong>.</p>
+              <p style="margin:0;"><strong>Curve (b) P = 100 − 20X + X² (valid for $0 \le X \le 10$ where $P \ge 0$):</strong> Slope $dP/dX = -20 + 2X$. At $X=0$, slope $= -20$; at $X=1$, slope $= -18$. Second derivative $d^2P/dX^2 = +2 &gt; 0$. Because the second derivative is strictly positive (slope becomes less negative as $X$ rises), curve (b) is <strong>convex (like a cup)</strong>, not concave.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Quick Mastery Check -->
+      <section class="section-card" id="sec-quiz">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 07 • Self-Assessment</div>
+            <h2>Lesson 3 Quick Mastery Check</h2>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="resetQuiz()">↻ Reset Quiz</button>
+        </div>
+        <div id="quizContainer"></div>
+        <div class="callout accent" id="quizSummary" style="display:none;"></div>
+      </section>
+
+      <footer>
+        ECON107 Interactive Course Series • Lesson 3: Theory of Demand &amp; Supply • Built for ISRT, University of Dhaka
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme Toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('econ107_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('econ107_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      drawShifter(); drawLabor(); drawCalc();
+    });
+
+    // ---------- Scroll Progress & Active Nav ----------
+    const scrollFill = document.getElementById('scrollFill');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section-card');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      scrollFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      let currentId = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) currentId = sec.id; });
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + currentId));
+    });
+
+    // ---------- Completion Tracker ----------
+    const doneBtns = document.querySelectorAll('.done-btn');
+    let completedSet = new Set(JSON.parse(localStorage.getItem('econ107_l3_done') || '[]'));
+    function updateProgressUI() {
+      document.getElementById('progressText').textContent = `${completedSet.size}/${doneBtns.length} Done`;
+      document.getElementById('progressBar').style.width = `${(completedSet.size / doneBtns.length) * 100}%`;
+      doneBtns.forEach(btn => {
+        const isDone = completedSet.has(btn.dataset.section);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : '✓ Mark Done';
+      });
+    }
+    doneBtns.forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.section;
+      completedSet.has(k) ? completedSet.delete(k) : completedSet.add(k);
+      localStorage.setItem('econ107_l3_done', JSON.stringify([...completedSet]));
+      updateProgressUI();
+    }));
+    updateProgressUI();
+
+    // ---------- Accordion ----------
+    document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+
+    // ---------- Lab 1: Curve Shifter Simulator ----------
+    const shifterCanvas = document.getElementById('shifterCanvas');
+    const sCtx = shifterCanvas.getContext('2d');
+    let shifterMode = 'demand';
+    let activeShockIdx = 0;
+
+    const shocks = {
+      demand: [
+        {
+          label: "Baseline Equilibrium Point",
+          tag: "Baseline",
+          type: "base",
+          shift: 0,
+          moveP: 50,
+          badge: "pill-primary",
+          title: "Initial Demand Curve (D)",
+          desc: "Holding income, tastes, and related prices constant, the demand curve shows an inverse relationship between Coffee Price and Quantity Demanded."
+        },
+        {
+          label: "Own Price of Coffee Rises ($50 → $75)",
+          tag: "Movement",
+          type: "move",
+          shift: 0,
+          moveP: 75,
+          badge: "pill-warn",
+          title: "Movement Along the Same Curve (Change in Quantity Demanded)",
+          desc: "Because ONLY coffee's own price changed (ceteris paribus), the demand curve does NOT shift. We move upward-left along D from A to B."
+        },
+        {
+          label: "Price of Tea (Substitute) Rises",
+          tag: "Right Shift",
+          type: "shift",
+          shift: 25,
+          moveP: 50,
+          badge: "pill-success",
+          title: "Increase in Demand → Rightward & Upward Shift (D → D')",
+          desc: "Tea is a substitute for coffee. When tea gets pricier, buyers want MORE coffee at every price level, shifting the entire curve rightward."
+        },
+        {
+          label: "Price of Sugar (Complement) Rises",
+          tag: "Left Shift",
+          type: "shift",
+          shift: -22,
+          moveP: 50,
+          badge: "pill-danger",
+          title: "Decrease in Demand → Leftward Shift (D → D')",
+          desc: "Sugar is consumed together with coffee. Higher sugar prices discourage coffee drinking at every price, shifting the demand curve leftward."
+        },
+        {
+          label: "Average Consumer Income Rises",
+          tag: "Right Shift",
+          type: "shift",
+          shift: 22,
+          moveP: 50,
+          badge: "pill-success",
+          title: "Increase in Demand → Rightward Shift (D → D')",
+          desc: "Assuming coffee is a normal good, higher household income increases willingness to buy at every price, shifting D to the right."
+        }
+      ],
+      supply: [
+        {
+          label: "Baseline Supply Curve",
+          tag: "Baseline",
+          type: "base",
+          shift: 0,
+          moveP: 50,
+          badge: "pill-primary",
+          title: "Initial Supply Curve (S)",
+          desc: "Holding input prices, technology, and taxes constant, higher wristwatch prices coax firms to supply more watches."
+        },
+        {
+          label: "Market Price of Wristwatches Rises ($50 → $75)",
+          tag: "Movement",
+          type: "move",
+          shift: 0,
+          moveP: 75,
+          badge: "pill-warn",
+          title: "Movement Along the Same Curve (Change in Quantity Supplied)",
+          desc: "Only the watch's own market price rose. Producers move upward-right along S from A to B—no shift of the curve."
+        },
+        {
+          label: "Automated Tech Lowers Assembly Cost",
+          tag: "Right Shift",
+          type: "shift",
+          shift: 25,
+          moveP: 50,
+          badge: "pill-success",
+          title: "Increase in Supply → Rightward & Downward Shift (S → S')",
+          desc: "Lower production costs make firms willing to supply MORE watches at every price (and accept lower prices for any given quantity)."
+        },
+        {
+          label: "Cost of Steel & Quartz Inputs Rises",
+          tag: "Left Shift",
+          type: "shift",
+          shift: -22,
+          moveP: 50,
+          badge: "pill-danger",
+          title: "Decrease in Supply → Leftward & Upward Shift (S → S')",
+          desc: "Higher input costs squeeze profits, so firms supply fewer watches at every price, shifting S leftward to S'."
+        },
+        {
+          label: "Government Imposes Excise Tax on Watches",
+          tag: "Left Shift",
+          type: "shift",
+          shift: -20,
+          moveP: 50,
+          badge: "pill-danger",
+          title: "Decrease in Supply → Leftward Shift (S → S')",
+          desc: "A per-unit tax acts like a cost increase, shifting the supply curve upward/leftward."
+        }
+      ]
+    };
+
+    function setShifterMode(mode) {
+      shifterMode = mode;
+      activeShockIdx = 0;
+      document.getElementById('modeDemand').classList.toggle('active', mode === 'demand');
+      document.getElementById('modeSupply').classList.toggle('active', mode === 'supply');
+      renderShockButtons();
+      drawShifter();
+    }
+
+    function renderShockButtons() {
+      const wrap = document.getElementById('shockButtons');
+      wrap.innerHTML = shocks[shifterMode].map((s, idx) => `
+        <button class="shock-btn ${idx === activeShockIdx ? 'active' : ''}" type="button" onclick="selectShock(${idx})">
+          <span>${s.label}</span>
+          <span class="pill ${s.badge}" style="font-size:0.68rem;">${s.tag}</span>
+        </button>
+      `).join('');
+    }
+
+    function selectShock(idx) {
+      activeShockIdx = idx;
+      renderShockButtons();
+      drawShifter();
+    }
+
+    function drawShifter() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const pad = { l: 55, r: 24, t: 24, b: 46 };
+      const W = shifterCanvas.width, H = shifterCanvas.height;
+      const sx = q => pad.l + (q / 100) * (W - pad.l - pad.r);
+      const sy = p => H - pad.b - (p / 100) * (H - pad.t - pad.b);
+
+      sCtx.clearRect(0, 0, W, H);
+
+      // Grid
+      sCtx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0';
+      sCtx.lineWidth = 1;
+      for (let v = 20; v <= 100; v += 20) {
+        sCtx.beginPath(); sCtx.moveTo(sx(v), pad.t); sCtx.lineTo(sx(v), H - pad.b); sCtx.stroke();
+        sCtx.beginPath(); sCtx.moveTo(pad.l, sy(v)); sCtx.lineTo(W - pad.r, sy(v)); sCtx.stroke();
+      }
+
+      // Axes
+      sCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      sCtx.lineWidth = 2;
+      sCtx.beginPath();
+      sCtx.moveTo(pad.l, pad.t); sCtx.lineTo(pad.l, H - pad.b); sCtx.lineTo(W - pad.r, H - pad.b);
+      sCtx.stroke();
+
+      sCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      sCtx.font = 'bold 12px system-ui, sans-serif';
+      sCtx.textAlign = 'center';
+      sCtx.fillText(shifterMode === 'demand' ? 'Quantity of Coffee (Q)' : 'Quantity of Wristwatches (Q)', (pad.l + W - pad.r) / 2, H - 12);
+      sCtx.save();
+      sCtx.translate(18, (pad.t + H - pad.b) / 2);
+      sCtx.rotate(-Math.PI / 2);
+      sCtx.fillText('Price (P)', 0, 0);
+      sCtx.restore();
+
+      const shock = shocks[shifterMode][activeShockIdx];
+      const baseFn = shifterMode === 'demand' ? (p => 100 - p) : (p => p);
+      const baseColor = shifterMode === 'demand' ? (isDark ? '#38bdf8' : '#0f4c81') : (isDark ? '#2dd4bf' : '#0d9488');
+
+      // Draw Baseline Curve
+      sCtx.save();
+      if (shock.type === 'shift') sCtx.setLineDash([6, 5]);
+      sCtx.strokeStyle = shock.type === 'shift' ? (isDark ? '#64748b' : '#94a3b8') : baseColor;
+      sCtx.lineWidth = 3.2;
+      sCtx.beginPath();
+      if (shifterMode === 'demand') {
+        sCtx.moveTo(sx(10), sy(90)); sCtx.lineTo(sx(90), sy(10));
+      } else {
+        sCtx.moveTo(sx(10), sy(10)); sCtx.lineTo(sx(90), sy(90));
+      }
+      sCtx.stroke();
+      sCtx.restore();
+
+      // Label Baseline
+      sCtx.fillStyle = shock.type === 'shift' ? (isDark ? '#94a3b8' : '#64748b') : baseColor;
+      sCtx.font = 'bold 13px system-ui, sans-serif';
+      sCtx.fillText(shifterMode === 'demand' ? 'D' : 'S', sx(92), sy(shifterMode === 'demand' ? 12 : 90));
+
+      // Initial Point A (P=50, Q=50)
+      const qA = baseFn(50), pA = 50;
+      sCtx.fillStyle = baseColor;
+      sCtx.beginPath(); sCtx.arc(sx(qA), sy(pA), 6, 0, Math.PI * 2); sCtx.fill();
+      sCtx.fillStyle = isDark ? '#f1f5f9' : '#0f172a';
+      sCtx.fillText('A', sx(qA) - 14, sy(pA) - 8);
+
+      // If Movement Along
+      if (shock.type === 'move') {
+        const qB = baseFn(shock.moveP), pB = shock.moveP;
+        sCtx.save();
+        sCtx.setLineDash([4, 4]);
+        sCtx.strokeStyle = '#d97706';
+        sCtx.lineWidth = 1.6;
+        sCtx.beginPath();
+        sCtx.moveTo(pad.l, sy(pB)); sCtx.lineTo(sx(qB), sy(pB)); sCtx.lineTo(sx(qB), H - pad.b);
+        sCtx.stroke();
+        sCtx.restore();
+
+        sCtx.fillStyle = '#d97706';
+        sCtx.beginPath(); sCtx.arc(sx(qB), sy(pB), 7.5, 0, Math.PI * 2); sCtx.fill();
+        sCtx.strokeStyle = '#fff'; sCtx.lineWidth = 2; sCtx.stroke();
+        sCtx.fillStyle = '#d97706';
+        sCtx.fillText('B (Moved Along)', sx(qB) + 52, sy(pB) - 8);
+      }
+
+      // If Shift
+      if (shock.type === 'shift') {
+        const shiftColor = shock.shift > 0 ? '#16a34a' : '#dc2626';
+        sCtx.strokeStyle = shiftColor;
+        sCtx.lineWidth = 3.5;
+        sCtx.beginPath();
+        if (shifterMode === 'demand') {
+          const p1 = Math.min(95, Math.max(5, 90)), q1 = Math.min(98, Math.max(2, 100 - p1 + shock.shift));
+          const p2 = 10, q2 = Math.min(98, Math.max(2, 100 - p2 + shock.shift));
+          sCtx.moveTo(sx(q1), sy(100 - (q1 - shock.shift)));
+          sCtx.lineTo(sx(q2), sy(100 - (q2 - shock.shift)));
+        } else {
+          const q1 = Math.min(98, Math.max(2, 10 + shock.shift));
+          const q2 = Math.min(98, Math.max(2, 90 + shock.shift));
+          sCtx.moveTo(sx(q1), sy(q1 - shock.shift));
+          sCtx.lineTo(sx(q2), sy(q2 - shock.shift));
+        }
+        sCtx.stroke();
+
+        // Arrow showing shift at P=50
+        const qNew = qA + shock.shift;
+        sCtx.strokeStyle = shiftColor;
+        sCtx.lineWidth = 2.5;
+        sCtx.beginPath();
+        sCtx.moveTo(sx(qA), sy(50));
+        sCtx.lineTo(sx(qNew), sy(50));
+        sCtx.stroke();
+        sCtx.fillStyle = shiftColor;
+        sCtx.beginPath(); sCtx.arc(sx(qNew), sy(50), 6.5, 0, Math.PI * 2); sCtx.fill();
+        sCtx.fillText(shifterMode === 'demand' ? "D'" : "S'", sx(qNew) + (shock.shift > 0 ? 14 : -14), sy(50) - 10);
+      }
+
+      document.getElementById('shifterReadout').innerHTML = `
+        <span class="status-badge ${shock.badge}">${shock.tag}</span>
+        <div style="font-weight:700; margin-bottom:0.25rem;">${shock.title}</div>
+        <div class="muted" style="font-size:0.84rem;">${shock.desc}</div>
+      `;
+    }
+    setShifterMode('demand');
+
+    // ---------- Lab 2: Backward-Bending Labor Supply ----------
+    const laborCanvas = document.getElementById('laborCanvas');
+    const lCtx = laborCanvas.getContext('2d');
+    const wageSlider = document.getElementById('wageSlider');
+
+    function hoursFromWage(w) {
+      // Smooth backward-bending curve peaking around W = 60 at H = 48 hrs
+      return 20 + 0.95 * w - 0.008 * w * w;
+    }
+
+    function drawLabor() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const W = laborCanvas.width, H = laborCanvas.height;
+      const pad = { l: 55, r: 24, t: 22, b: 44 };
+      const sx = hrs => pad.l + (hrs / 60) * (W - pad.l - pad.r);
+      const sy = w => H - pad.b - (w / 110) * (H - pad.t - pad.b);
+
+      lCtx.clearRect(0, 0, W, H);
+
+      // Axes
+      lCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      lCtx.lineWidth = 2;
+      lCtx.beginPath();
+      lCtx.moveTo(pad.l, pad.t); lCtx.lineTo(pad.l, H - pad.b); lCtx.lineTo(W - pad.r, H - pad.b);
+      lCtx.stroke();
+
+      lCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      lCtx.font = 'bold 12px system-ui, sans-serif';
+      lCtx.textAlign = 'center';
+      lCtx.fillText('Hours Worked per Week (Quantity of Labor)', (pad.l + W - pad.r) / 2, H - 12);
+      lCtx.save();
+      lCtx.translate(18, (pad.t + H - pad.b) / 2);
+      lCtx.rotate(-Math.PI / 2);
+      lCtx.fillText('Hourly Wage ($)', 0, 0);
+      lCtx.restore();
+
+      // Turning point dashed line (W = 59.375)
+      lCtx.save();
+      lCtx.setLineDash([5, 5]);
+      lCtx.strokeStyle = isDark ? '#64748b' : '#94a3b8';
+      lCtx.beginPath(); lCtx.moveTo(pad.l, sy(60)); lCtx.lineTo(W - pad.r, sy(60)); lCtx.stroke();
+      lCtx.restore();
+      lCtx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+      lCtx.font = '11px system-ui, sans-serif';
+      lCtx.textAlign = 'left';
+      lCtx.fillText('Turning Point (~$60/hr)', pad.l + 8, sy(60) - 6);
+
+      // Curve
+      lCtx.strokeStyle = isDark ? '#38bdf8' : '#0f4c81';
+      lCtx.lineWidth = 3.5;
+      lCtx.beginPath();
+      for (let w = 10; w <= 100; w += 1) {
+        const hrs = hoursFromWage(w);
+        if (w === 10) lCtx.moveTo(sx(hrs), sy(w));
+        else lCtx.lineTo(sx(hrs), sy(w));
+      }
+      lCtx.stroke();
+
+      // Active Point
+      const curW = parseFloat(wageSlider.value);
+      const curH = hoursFromWage(curW);
+      const isBackward = curW > 60;
+      const ptColor = isBackward ? '#7c3aed' : '#16a34a';
+
+      lCtx.save();
+      lCtx.setLineDash([4, 4]);
+      lCtx.strokeStyle = ptColor;
+      lCtx.lineWidth = 1.5;
+      lCtx.beginPath();
+      lCtx.moveTo(pad.l, sy(curW)); lCtx.lineTo(sx(curH), sy(curW)); lCtx.lineTo(sx(curH), H - pad.b);
+      lCtx.stroke();
+      lCtx.restore();
+
+      lCtx.fillStyle = ptColor;
+      lCtx.beginPath(); lCtx.arc(sx(curH), sy(curW), 7, 0, Math.PI * 2); lCtx.fill();
+      lCtx.strokeStyle = '#fff'; lCtx.lineWidth = 2; lCtx.stroke();
+
+      document.getElementById('wageVal').textContent = `$${curW} / hr`;
+      document.getElementById('laborReadout').innerHTML = `
+        <span class="status-badge ${isBackward ? 'pill-purple' : 'pill-success'}">
+          ${isBackward ? '↩️ Backward-Bending Region (Income Effect Dominates)' : '↗️ Upward-Sloping Region (Substitution Effect Dominates)'}
+        </span>
+        <div><strong>Wage:</strong> $${curW}/hr → <strong>Labor Supplied:</strong> ${curH.toFixed(1)} hrs/week</div>
+        <div class="muted" style="font-size:0.82rem; margin-top:0.2rem;">
+          ${isBackward
+            ? 'Higher wages now make the worker feel wealthy enough to take more leisure, reducing hours worked.'
+            : 'Higher wages raise the reward for working vs. leisure, encouraging extra hours.'}
+        </div>
+      `;
+    }
+    wageSlider.addEventListener('input', drawLabor);
+    drawLabor();
+
+    // ---------- Lab 3: Demand Curve Calculus ----------
+    const calcCanvas = document.getElementById('calcCanvas');
+    const cCtx = calcCanvas.getContext('2d');
+    const calcXSlider = document.getElementById('calcXSlider');
+    let calcMode = 'linear';
+
+    function setCalcCurve(mode) {
+      calcMode = mode;
+      document.getElementById('calcLinear').classList.toggle('active', mode === 'linear');
+      document.getElementById('calcQuad').classList.toggle('active', mode === 'quad');
+      calcXSlider.max = mode === 'linear' ? 20 : 10;
+      if (parseFloat(calcXSlider.value) > parseFloat(calcXSlider.max)) calcXSlider.value = 1;
+      drawCalc();
+    }
+
+    function drawCalc() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const W = calcCanvas.width, H = calcCanvas.height;
+      const pad = { l: 55, r: 24, t: 22, b: 44 };
+      const maxX = calcMode === 'linear' ? 22 : 12;
+      const maxP = 110;
+      const sx = x => pad.l + (x / maxX) * (W - pad.l - pad.r);
+      const sy = p => H - pad.b - (p / maxP) * (H - pad.t - pad.b);
+
+      cCtx.clearRect(0, 0, W, H);
+
+      // Axes
+      cCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      cCtx.lineWidth = 2;
+      cCtx.beginPath();
+      cCtx.moveTo(pad.l, pad.t); cCtx.lineTo(pad.l, H - pad.b); cCtx.lineTo(W - pad.r, H - pad.b);
+      cCtx.stroke();
+
+      cCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      cCtx.font = 'bold 12px system-ui, sans-serif';
+      cCtx.textAlign = 'center';
+      cCtx.fillText('Output (X)', (pad.l + W - pad.r) / 2, H - 12);
+      cCtx.save();
+      cCtx.translate(18, (pad.t + H - pad.b) / 2);
+      cCtx.rotate(-Math.PI / 2);
+      cCtx.fillText('Price (P)', 0, 0);
+      cCtx.restore();
+
+      const fn = x => calcMode === 'linear' ? (100 - 5 * x) : (100 - 20 * x + x * x);
+      const dfn = x => calcMode === 'linear' ? -5 : (-20 + 2 * x);
+      const xLimit = calcMode === 'linear' ? 20 : 10;
+
+      // Curve
+      cCtx.strokeStyle = isDark ? '#38bdf8' : '#0f4c81';
+      cCtx.lineWidth = 3.2;
+      cCtx.beginPath();
+      for (let x = 0; x <= xLimit; x += 0.1) {
+        const p = fn(x);
+        if (x === 0) cCtx.moveTo(sx(x), sy(p));
+        else cCtx.lineTo(sx(x), sy(p));
+      }
+      cCtx.stroke();
+
+      // Tangent line at X
+      const curX = parseFloat(calcXSlider.value);
+      const curP = fn(curX);
+      const slope = dfn(curX);
+      const dx = calcMode === 'linear' ? 4 : 2.5;
+      const x1 = Math.max(0, curX - dx), x2 = Math.min(xLimit, curX + dx);
+      const p1 = curP + slope * (x1 - curX);
+      const p2 = curP + slope * (x2 - curX);
+
+      cCtx.strokeStyle = '#d97706';
+      cCtx.lineWidth = 2.5;
+      cCtx.beginPath();
+      cCtx.moveTo(sx(x1), sy(Math.max(0, Math.min(108, p1))));
+      cCtx.lineTo(sx(x2), sy(Math.max(0, Math.min(108, p2))));
+      cCtx.stroke();
+
+      cCtx.fillStyle = '#d97706';
+      cCtx.beginPath(); cCtx.arc(sx(curX), sy(curP), 6.5, 0, Math.PI * 2); cCtx.fill();
+      cCtx.strokeStyle = '#fff'; cCtx.lineWidth = 2; cCtx.stroke();
+
+      document.getElementById('calcXVal').textContent = `X = ${curX.toFixed(1)}`;
+      document.getElementById('calcReadout').innerHTML = `
+        <span class="status-badge ${calcMode === 'linear' ? 'pill-primary' : 'pill-purple'}">
+          ${calcMode === 'linear' ? 'Linear Demand (Constant Slope)' : 'Convex Curve (Like a Cup: d²P/dX² = +2 > 0)'}
+        </span>
+        <div><strong>At X = ${curX.toFixed(1)}:</strong> P = ${curP.toFixed(2)}, Slope (dP/dX) = <strong>${slope.toFixed(1)}</strong></div>
+        <div class="muted" style="font-size:0.82rem; margin-top:0.2rem;">
+          ${calcMode === 'linear'
+            ? 'Downward-sloping condition for P = a + bX is b < 0 (here b = −5).'
+            : 'Notice slope flattens from −20 (at X=0) to −18 (at X=1) to 0 (at X=10).'}
+        </div>
+      `;
+      document.getElementById('calcFormulaBox').innerHTML = calcMode === 'linear'
+        ? `P(X) = 100 − 5X<br>dP/dX = −5 &nbsp;(constant)<br>d²P/dX² = 0`
+        : `P(X) = 100 − 20X + X²<br>dP/dX = −20 + 2X<br>d²P/dX² = +2 &gt; 0 ⇒ Convex`;
+    }
+    calcXSlider.addEventListener('input', drawCalc);
+    drawCalc();
+
+    // ---------- Quick Mastery Check Quiz ----------
+    const quizData = [
+      {
+        q: "1. When the price of tea rises, what happens in the market for coffee (a substitute)?",
+        opts: [
+          "Movement upward along the coffee demand curve",
+          "Rightward shift of the coffee demand curve",
+          "Leftward shift of the coffee demand curve",
+          "Rightward shift of the coffee supply curve"
+        ],
+        ans: 1,
+        exp: "Tea is a substitute for coffee. A rise in the price of a related good is a non-price determinant, so it shifts the coffee demand curve to the right."
+      },
+      {
+        q: "2. Which of the following causes a MOVEMENT ALONG the demand curve for ice cream rather than a shift?",
+        opts: [
+          "A heatwave strikes Dhaka.",
+          "Consumer incomes rise by 15%.",
+          "The price of ice cream itself drops by 20%.",
+          "The price of frozen yogurt (a substitute) falls."
+        ],
+        ans: 2,
+        exp: "Only a change in a good's own market price causes a movement along the existing demand curve (a change in quantity demanded)."
+      },
+      {
+        q: "3. An increase in supply is represented graphically by a:",
+        opts: [
+          "Rightward and downward shift of the supply curve",
+          "Rightward and upward shift of the supply curve",
+          "Leftward and upward shift of the supply curve",
+          "Movement up along the supply curve"
+        ],
+        ans: 0,
+        exp: "An increase in supply means producers supply more at every price (rightward) and require a lower price for any given quantity (downward)."
+      },
+      {
+        q: "4. Why does the labor supply curve bend backward at very high wage rates?",
+        opts: [
+          "The substitution effect becomes stronger than the income effect.",
+          "The income effect dominates the substitution effect, so workers choose more leisure.",
+          "The law of diminishing returns stops working.",
+          "Government minimum wage laws forbid working overtime."
+        ],
+        ans: 1,
+        exp: "At high wages, workers feel wealthy enough to consume more leisure (income effect dominates substitution effect), reducing hours supplied."
+      },
+      {
+        q: "5. For the inverse demand curve P = 100 − 20X + X² (0 ≤ X ≤ 10), what is its slope at X = 1 and its curvature?",
+        opts: [
+          "Slope = −20, Concave (dome)",
+          "Slope = −18, Convex (cup)",
+          "Slope = −18, Concave (dome)",
+          "Slope = −5, Linear"
+        ],
+        ans: 1,
+        exp: "dP/dX = −20 + 2X, so at X=1 the slope is −18. Since d²P/dX² = +2 > 0, the curve is convex (like a cup)."
+      },
+      {
+        q: "6. One key reason a typical supply curve slopes upward is:",
+        opts: [
+          "The law of diminishing marginal utility",
+          "The substitution effect",
+          "The law of diminishing returns (rising marginal cost as output expands)",
+          "The fallacy of composition"
+        ],
+        ans: 2,
+        exp: "Adding more variable inputs (like labor) to fixed inputs (like land) yields diminishing extra product, raising marginal cost and requiring higher prices to coax out extra supply."
+      }
+    ];
+
+    let quizAnswers = {};
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        div.innerHTML = `
+          <div class="quiz-q-title">${item.q}</div>
+          <div class="quiz-opts">
+            ${item.opts.map((opt, oIdx) => `<button class="quiz-opt" type="button" onclick="answerQuiz(${idx}, ${oIdx}, this)">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${idx}">${item.exp}</div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('quizSummary').style.display = 'none';
+    }
+
+    function answerQuiz(qIdx, oIdx, btn) {
+      if (quizAnswers[qIdx] !== undefined) return;
+      quizAnswers[qIdx] = oIdx;
+      const allBtns = btn.closest('.quiz-q').querySelectorAll('.quiz-opt');
+      const correctIdx = quizData[qIdx].ans;
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === correctIdx) b.classList.add('is-correct');
+        else if (i === oIdx) b.classList.add('is-wrong');
+      });
+      document.getElementById(`qexp-${qIdx}`).classList.add('show');
+
+      if (Object.keys(quizAnswers).length === quizData.length) {
+        let score = 0;
+        quizData.forEach((q, i) => { if (quizAnswers[i] === q.ans) score++; });
+        const summary = document.getElementById('quizSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `
+          <div class="callout-title">Mastery Check Complete: ${score} / ${quizData.length} (${Math.round(score / quizData.length * 100)}%)</div>
+          ${score === quizData.length
+            ? "Fantastic! You've mastered Demand & Supply shifts, backward-bending labor supply, and demand calculus—ready for Lesson 4 (Market Equilibrium & Dynamics)!"
+            : "Good work! Review the highlighted explanations above and try resetting the quiz to aim for 100%."}
+        `;
+      }
+    }
+
+    function resetQuiz() { quizAnswers = {}; renderQuiz(); }
+    renderQuiz();
+  </script>
+</body>
+</html>

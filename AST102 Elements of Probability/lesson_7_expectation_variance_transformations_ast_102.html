@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 7: Expectation, Variance &amp; Transformations — AST 102 (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            primary: '#4f46e5',
+            tealAccent: '#0d9488',
+            amberTrap: '#d97706',
+            roseDanger: '#e11d48',
+            emeraldOk: '#059669',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX 0.16.11 via jsDelivr CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #4f46e5;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVIGATION BAR & LIVE READING PROGRESS BAR                 -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <!-- Top Reading Progress Bar -->
+    <div class="w-full h-[3px] bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-[#4f46e5] via-indigo-500 to-[#0d9488] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam Badges -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+          <span class="inline-flex items-center gap-1.5 font-bold text-slate-900">
+            <span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span>
+            AST 102: Elements of Probability
+          </span>
+          <span class="text-slate-300">→</span>
+          <span class="text-slate-600">Module 2</span>
+          <span class="text-slate-300">→</span>
+          <span class="text-[#4f46e5] font-semibold">Lesson 7 of 14</span>
+        </nav>
+
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            2nd Incourse + Year Final
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-[#4f46e5] border border-indigo-200">
+            Module 2 Finale
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+            ~35 min
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Section Quick-Jump Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#4f46e5] hover:bg-indigo-50 transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#0d9488] hover:bg-teal-50 transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#4f46e5] hover:bg-indigo-50 transition-colors">Proofs</a>
+        <a href="#exams" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#d97706] hover:bg-amber-50 transition-colors">Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#059669] hover:bg-emerald-50 transition-colors">Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO BANNER                                                           -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-[#115e59] text-white py-12 sm:py-16 border-b border-indigo-950">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-200 text-xs font-semibold tracking-wide uppercase mb-4">
+          ISRT · University of Dhaka · Module 2 Finale · Ross Ch. 4–5 &amp; Past Papers 2018–2024
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
+          Lesson 7: Expectation, Variance &amp; Transformations
+        </h1>
+        <p class="text-indigo-100/90 text-base sm:text-lg leading-relaxed mb-6">
+          Summarize an entire probability distribution by its center of mass ($E[X]$) and spread ($\text{Var}(X)$), compute $E[g(X)]$ effortlessly via <strong>LOTUS</strong>, and master both linear ($Y = a + bX$) and non-monotone ($Y = X^2$) random variable transformations.
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+          <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-950/40 transition-all">
+            Open 4-Tab Interactive Lab
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </a>
+          <a href="#exams" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+            Jump to ISRT Exam Vault
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: CORE CONCEPTS & INTUITION                                -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Section 01 • Core Theory</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-slate-500">Ross Ch. 4.3–4.5, 5.2, 5.7 · ISRT AST 102 Class Notes &amp; Finals</p>
+      </div>
+
+      <!-- Grid: 1. Expectation & 2. LOTUS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Card 1: Mathematical Expectation -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-[#4f46e5] text-xs font-bold">01 · Center of Mass</span>
+            <span class="text-xs text-slate-400 font-medium">Mean $\mu = E[X]$</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">Mathematical Expectation ($E[X]$)</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            The expected value $E[X]$ is the probability-weighted average of all possible values of $X$. Physically, if you place mass $p(x)$ (or density $f(x)$) along a weightless rod, $\mu = E[X]$ is the exact <strong>balance point (center of mass)</strong>.
+          </p>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+            $$E[X] = \begin{cases} \displaystyle \sum_{x} x \, p(x) & \text{(Discrete)} \\[10pt] \displaystyle \int_{-\infty}^{\infty} x \, f(x)\,dx & \text{(Continuous)} \end{cases}$$
+          </div>
+        </article>
+
+        <!-- Card 2: LOTUS -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="px-2.5 py-1 rounded-lg bg-teal-50 text-[#0d9488] text-xs font-bold">02 · Expectation of $g(X)$</span>
+            <span class="text-xs text-slate-400 font-medium">Ross Prop. 4.1</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">LOTUS (Law of the Unconscious Statistician)</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            To compute $E[g(X)]$ (such as $E[X^2]$, $E[e^X]$, or $E[e^{2X}]$), you <strong>do NOT need to derive the distribution of $Y = g(X)$ first</strong>. Simply replace $x$ with $g(x)$ inside the sum or integral using $X$'s original distribution:
+          </p>
+          <div class="p-3.5 rounded-xl bg-teal-50/60 border border-teal-200 text-center">
+            $$E[g(X)] = \begin{cases} \displaystyle \sum_{x} g(x)\,p(x) & \text{(Discrete)} \\[10pt] \displaystyle \int_{-\infty}^{\infty} g(x)\,f(x)\,dx & \text{(Continuous)} \end{cases}$$
+          </div>
+        </article>
+      </div>
+
+      <!-- Card 3: Variance, Standard Deviation & Minimum MSE Property -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4f46e5] font-mono text-xs font-bold inline-flex items-center justify-center">03</span>
+            Variance, Standard Deviation &amp; The Minimum MSE Property
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">Year Final 2023 Q1(h) · Year Final 2024 Q1(b)</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase text-[#4f46e5]">Variance &amp; Shortcut</div>
+            <div class="text-center py-1">$$\text{Var}(X) = E[(X - \mu)^2] = E[X^2] - (E[X])^2$$</div>
+            <p class="text-xs text-slate-600">Standard deviation $\sigma_X = \sqrt{\text{Var}(X)}$ restores the original units of $X$. Always $\text{Var}(X) \ge 0$.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase text-[#4f46e5]">Minimum MSE (Final 2024 Q1b)</div>
+            <div class="text-center py-1">$$E[(X - a)^2] = (\mu - a)^2 + \sigma^2$$</div>
+            <p class="text-xs text-slate-700">Because $(\mu - a)^2 \ge 0$, the mean squared error $E[(X - a)^2]$ is <strong>uniquely minimized when $a = \mu = E[X]$</strong>, with minimum value $\sigma^2$.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase text-[#059669]">Zero-Mean Deviation (Final 2023 Q1h)</div>
+            <div class="text-center py-1">$$E\big[X - E(X)\big] = E[X] - E[X] = 0$$</div>
+            <p class="text-xs text-slate-700">Positive and negative deviations from $\mu$ cancel out completely—which is why variance squares $(X - \mu)$.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Linear Transformations (Y = a + bX) + Amber Exam Trap -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4f46e5] font-mono text-xs font-bold inline-flex items-center justify-center">04</span>
+            Linear Transformations ($Y = a + bX$)
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">Year Final 2019 Q1(d) · Year Final 2023 Q5(c)</span>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                <th class="py-3.5 px-5 font-bold">Summary Measure</th>
+                <th class="py-3.5 px-5 font-bold">Transformation Law ($Y = a + bX$)</th>
+                <th class="py-3.5 px-5 font-bold">Effect of Shift ($a$)</th>
+                <th class="py-3.5 px-5 font-bold">Effect of Scale ($b$)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr>
+                <td class="py-3.5 px-5 font-bold text-slate-900">Mean (Expectation)</td>
+                <td class="py-3.5 px-5 font-semibold text-[#4f46e5]">$E[a + bX] = a + b\,E[X]$</td>
+                <td class="py-3.5 px-5">Shifts mean by $+a$</td>
+                <td class="py-3.5 px-5">Scales (and flips if $b < 0$) by $b$</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 font-bold text-slate-900">Variance</td>
+                <td class="py-3.5 px-5 font-semibold text-[#0d9488]">$\text{Var}(a + bX) = b^2\,\text{Var}(X)$</td>
+                <td class="py-3.5 px-5"><strong>Vanishes</strong> (shift does not change spread)</td>
+                <td class="py-3.5 px-5">Multiplies by $b^2 \ge 0$ (always non-negative!)</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 font-bold text-slate-900">Standard Deviation</td>
+                <td class="py-3.5 px-5 font-semibold text-[#059669]">$\sigma_{a+bX} = |b|\,\sigma_X$</td>
+                <td class="py-3.5 px-5"><strong>Vanishes</strong></td>
+                <td class="py-3.5 px-5">Multiplies by $|b|$ (absolute value!)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Amber Exam Trap Callout -->
+        <div class="rounded-2xl border-2 border-amber-300 bg-amber-50/85 p-5 flex items-start gap-3.5 shadow-xs">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#d97706] text-white font-extrabold text-sm shrink-0 mt-0.5">!</span>
+          <div class="space-y-1.5 text-xs sm:text-sm text-amber-950 leading-relaxed">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-800">ISRT Exam Trap · Year Final 2019 Q1(d) &amp; 2023 Q5(c)</div>
+            <p>
+              <strong>1. Negative Slopes Square to Positive:</strong> For $Y = 2 - 3X$ or $Y = -2X + 5$, variance multiplies by $(-3)^2 = \mathbf{+9}$ (NEVER $-9$), and standard deviation multiplies by $|-3| = \mathbf{+3}$ (NEVER $-3$).
+            </p>
+            <p>
+              <strong>2. Independent Differences STILL ADD Variances:</strong> For independent $X$ and $Y$,
+              $\text{Var}(aX - bY + c) = a^2\text{Var}(X) + (-b)^2\text{Var}(Y) = \mathbf{a^2\text{Var}(X) + b^2\text{Var}(Y)}$. Subtracting two independent random variables <em>increases</em> total uncertainty!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Distribution of a Function Y = g(X) -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4f46e5] font-mono text-xs font-bold inline-flex items-center justify-center">05</span>
+            Distribution of a Function of a Random Variable ($Y = g(X)$)
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">2nd Incourse 2021 Q1 · Year Final Q4(b,c)</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <span class="px-2 py-0.5 rounded bg-indigo-100 text-[#4f46e5] text-[11px] font-bold">Case A · Discrete</span>
+            <h4 class="font-bold text-slate-900 text-sm">Direct Mapping &amp; Merging</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Map each support point $x_i \mapsto y_i = g(x_i)$. Sum probabilities of all $x_i$ that map to the same $y$:
+            </p>
+            <div class="text-center text-xs bg-white p-2 rounded-lg border border-slate-200">
+              $$p_Y(y) = \sum_{\{x \,:\, g(x)=y\}} p_X(x)$$
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-teal-50/60 border border-teal-200 space-y-2">
+            <span class="px-2 py-0.5 rounded bg-teal-100 text-[#0d9488] text-[11px] font-bold">Case B · Continuous Monotone</span>
+            <h4 class="font-bold text-slate-900 text-sm">Jacobian / Change-of-Variable</h4>
+            <p class="text-xs text-slate-700 leading-relaxed">
+              If $y = g(x)$ is strictly increasing or strictly decreasing with inverse $x = g^{-1}(y)$:
+            </p>
+            <div class="text-center text-xs bg-white p-2 rounded-lg border border-teal-200">
+              $$f_Y(y) = f_X\!\big(g^{-1}(y)\big)\left|\frac{dx}{dy}\right|$$
+            </div>
+            <p class="text-[11px] text-teal-900 font-semibold">Always transform the support endpoints too!</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-amber-50/60 border border-amber-200 space-y-2">
+            <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold">Case C · Non-Monotone</span>
+            <h4 class="font-bold text-slate-900 text-sm">The Universal CDF Method</h4>
+            <p class="text-xs text-slate-700 leading-relaxed">
+              When $g(x)$ is not 1-to-1 (e.g., $Y = X^2$ on $(-1, 2)$), start from the CDF, split $y$-intervals by branch count, and differentiate:
+            </p>
+            <div class="text-center text-xs bg-white p-2 rounded-lg border border-amber-200">
+              $$F_Y(y) = P(g(X) \le y) \implies f_Y(y) = \frac{d}{dy}F_Y(y)$$
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: 4-TAB INTERACTIVE WORKBENCH                              -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0d9488]">Section 02 • Interactive Studio</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">4-Tab Expectation &amp; Transformation Workbench</h2>
+        </div>
+        <p class="text-sm text-slate-500">High-DPI live plots with exact symbolic KaTeX readouts</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Tab Strip -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-slate-200 bg-slate-50 p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="linear" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#4f46e5] text-white shadow-sm">
+            1. Linear Transformation ($Y = a + bX$)
+          </button>
+          <button type="button" role="tab" data-tab="mse" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            2. Center of Mass &amp; $E[(X-a)^2]$
+          </button>
+          <button type="button" role="tab" data-tab="lotus" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            3. LOTUS Integrator ($E[g(X)]$)
+          </button>
+          <button type="button" role="tab" data-tab="nonmono" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            4. Non-Monotone ($Y = X^2$)
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: LINEAR TRANSFORMATION LAB (Y = a + bX)                   -->
+        <!-- =============================================================== -->
+        <div id="tab-linear" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-slate-100">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">Linear Transformation Lab: $Y = a + bX$</h3>
+                <p class="text-xs sm:text-sm text-slate-500">Watch how shift $a$ moves the mean without changing spread, while scale $b$ stretches support by $|b|$ and scales PDF height by $1/|b|$.</p>
+              </div>
+              <select id="linDistSelect" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs sm:text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#4f46e5]">
+                <option value="ramp">Triangular Ramp: f(x) = 2x, 0 &lt; x &lt; 1</option>
+                <option value="unif">Uniform(0, 1): f(x) = 1, 0 ≤ x ≤ 1</option>
+                <option value="symtri">Symmetric Triangle: (0, 2)</option>
+                <option value="disc2023">Discrete ISRT 2023 Q5c: {2, 4, 6, 8}</option>
+              </select>
+            </div>
+
+            <!-- Quick ISRT Preset Buttons -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-lpreset="q4b" class="lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all">Y = 3X + 1 (Final Q4b)</button>
+              <button type="button" data-lpreset="midterm" class="lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Y = -2X + 5 (Midterm Q3c)</button>
+              <button type="button" data-lpreset="fin2023" class="lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Y = 2 - 3X (Final 2023 Q5c)</button>
+              <button type="button" data-lpreset="std" class="lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-50 text-[#0d9488] border border-teal-200 hover:bg-teal-100 transition-all">Standardize Z = (X − μ)/σ</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left Controls & Live Metrics -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                <div>
+                  <div class="flex justify-between text-xs font-bold mb-1">
+                    <span class="text-[#4f46e5]">Shift Parameter $a$</span>
+                    <span id="linValA" class="font-mono text-slate-900">1.00</span>
+                  </div>
+                  <input id="linSliderA" type="range" min="-5" max="5" step="0.5" value="1" class="w-full" />
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs font-bold mb-1">
+                    <span class="text-[#0d9488]">Scale Parameter $b$</span>
+                    <span id="linValB" class="font-mono text-slate-900">3.00</span>
+                  </div>
+                  <input id="linSliderB" type="range" min="-3" max="3" step="0.25" value="3" class="w-full" />
+                </div>
+              </div>
+
+              <!-- Side-by-Side Live Metrics -->
+              <div class="rounded-2xl border border-slate-200 overflow-hidden text-xs">
+                <table class="w-full text-center border-collapse">
+                  <thead>
+                    <tr class="bg-slate-100 text-slate-600 font-bold">
+                      <th class="py-2.5 px-2 text-left">Metric</th>
+                      <th class="py-2.5 px-2 text-[#4f46e5]">Original $X$</th>
+                      <th class="py-2.5 px-2 text-[#0d9488]">Transformed $Y$</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 font-mono">
+                    <tr>
+                      <td class="py-2.5 px-2 font-sans font-semibold text-left text-slate-700">Mean $E[\cdot]$</td>
+                      <td id="linMeanX" class="py-2.5 px-2 font-bold text-slate-800">0.6667</td>
+                      <td id="linMeanY" class="py-2.5 px-2 font-bold text-[#0d9488]">3.0000</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 px-2 font-sans font-semibold text-left text-slate-700">Variance $\text{Var}(\cdot)$</td>
+                      <td id="linVarX" class="py-2.5 px-2 font-bold text-slate-800">0.0556</td>
+                      <td id="linVarY" class="py-2.5 px-2 font-bold text-[#0d9488]">0.5000</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2.5 px-2 font-sans font-semibold text-left text-slate-700">Std Dev $\sigma$</td>
+                      <td id="linSdX" class="py-2.5 px-2 font-bold text-slate-800">0.2357</td>
+                      <td id="linSdY" class="py-2.5 px-2 font-bold text-[#0d9488]">0.7071</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Exact Transformed PDF / Support Box -->
+              <div id="linFormulaBox" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 overflow-x-auto leading-relaxed"></div>
+            </div>
+
+            <!-- Right: High-DPI Shared Axis Canvas -->
+            <div class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-4 shadow-inner space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-slate-500">Unified Axis Comparison: $X$ vs. $Y = a + bX$</span>
+                <div class="flex items-center gap-3 font-semibold">
+                  <span class="inline-flex items-center gap-1.5 text-[#4f46e5]"><span class="w-3 h-3 rounded bg-[#4f46e5]"></span>Original $X$</span>
+                  <span class="inline-flex items-center gap-1.5 text-[#0d9488]"><span class="w-3 h-3 rounded bg-[#0d9488]"></span>Transformed $Y$</span>
+                </div>
+              </div>
+              <div id="linCanvasWrap" class="w-full">
+                <canvas id="linCanvas" aria-label="Linear transformation distribution plot"></canvas>
+              </div>
+              <p class="text-[11px] text-slate-500 leading-relaxed">
+                Dashed vertical lines mark $\mu_X$ and $\mu_Y$; horizontal brackets below the axis show the $\pm 1\sigma$ spread. Notice that flipping $b < 0$ mirrors the shape horizontally while keeping $\text{Var}(Y) = b^2\text{Var}(X) \ge 0$.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: CENTER OF MASS & E[(X - a)^2] MINIMIZER                  -->
+        <!-- =============================================================== -->
+        <div id="tab-mse" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Center of Mass &amp; $E[(X - a)^2]$ Minimizer (ISRT 2024 Q1b)</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Slide the fulcrum $a$ and watch $E[(X - a)^2] = (\mu - a)^2 + \sigma^2$ reach its exact minimum at $a = \mu$.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-mpreset="unif4" class="mse-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all">Uniform(0, 4)</button>
+              <button type="button" data-mpreset="ramp" class="mse-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Right-Skewed f(x)=2x</button>
+              <button type="button" data-mpreset="die" class="mse-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Discrete Die {1..6}</button>
+            </div>
+          </div>
+
+          <!-- Controls & Decomposition Strip -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+            <div class="lg:col-span-6 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between text-xs font-bold">
+                <span class="text-[#d97706]">Movable Constant / Fulcrum $a$</span>
+                <span id="mseValA" class="font-mono text-base text-slate-900">1.00</span>
+              </div>
+              <input id="mseSliderA" type="range" min="0" max="4" step="0.05" value="1.00" class="w-full" />
+              <div class="flex items-center justify-between gap-2 pt-1">
+                <span id="mseTiltStatus" class="text-xs font-semibold text-amber-700">Tilting Right (a &lt; μ)</span>
+                <button type="button" id="mseSnapBtn" class="px-3.5 py-1.5 rounded-xl bg-[#059669] hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors">
+                  Snap a to μ (Minimize!)
+                </button>
+              </div>
+            </div>
+
+            <div class="lg:col-span-6 grid grid-cols-3 gap-2.5 text-center">
+              <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                <div class="text-[11px] font-bold text-[#d97706]">Bias Penalty $(\mu - a)^2$</div>
+                <div id="mseOutBias" class="text-lg sm:text-xl font-extrabold font-mono text-amber-950 mt-0.5">1.0000</div>
+              </div>
+              <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-200">
+                <div class="text-[11px] font-bold text-[#4f46e5]">Variance Floor $\sigma^2$</div>
+                <div id="mseOutVar" class="text-lg sm:text-xl font-extrabold font-mono text-indigo-950 mt-0.5">1.3333</div>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900 text-white">
+                <div class="text-[11px] font-bold text-teal-300">Total $E[(X - a)^2]$</div>
+                <div id="mseOutTotal" class="text-lg sm:text-xl font-extrabold font-mono text-white mt-0.5">2.3333</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dual Canvases: Top Fulcrum + Bottom Parabola -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-inner">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">1. Physical Balance Beam (Fulcrum at $a$ vs. Target $\mu$)</div>
+              <div id="mseTopWrap" class="w-full">
+                <canvas id="mseTopCanvas" aria-label="Center of mass fulcrum visualization"></canvas>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-inner">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">2. Parabola $h(a) = (\mu - a)^2 + \sigma^2$</div>
+              <div id="mseBotWrap" class="w-full">
+                <canvas id="mseBotCanvas" aria-label="Mean squared error parabola plot"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: LOTUS INTEGRATOR (E[g(X)])                               -->
+        <!-- =============================================================== -->
+        <div id="tab-lotus" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">LOTUS Integrator: $E[g(X)] = \int_0^1 g(x)\,f(x)\,dx$</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Compare the base PDF $f(x)$ (dashed indigo) with the weighted curve $g(x)f(x)$ (shaded teal area = $E[g(X)]$).</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Selectors & Exact Symbolic Output -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 text-xs">
+                <label class="block">
+                  <span class="font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Base Density $f(x)$ on $[0, 1]$</span>
+                  <select id="lotusDistSelect" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-white font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#4f46e5]">
+                    <option value="unif">Uniform(0, 1): f(x) = 1</option>
+                    <option value="lin">Triangular Ramp: f(x) = 2x</option>
+                    <option value="quad">Quadratic Ramp: f(x) = 3x²</option>
+                  </select>
+                </label>
+
+                <div>
+                  <span class="font-bold uppercase tracking-wider text-slate-500 block mb-1.5">Function $g(x)$</span>
+                  <div class="flex flex-wrap gap-1.5" id="lotusFuncBtns">
+                    <button type="button" data-g="exp2" class="lotus-g-btn px-3 py-1.5 rounded-lg font-bold bg-[#4f46e5] text-white shadow-xs transition-all">$e^{2x}$ (ISRT 2023)</button>
+                    <button type="button" data-g="exp1" class="lotus-g-btn px-3 py-1.5 rounded-lg font-bold bg-white border border-slate-200 text-slate-700 hover:border-[#4f46e5] transition-all">$e^x$ (ISRT 2022/24)</button>
+                    <button type="button" data-g="x2" class="lotus-g-btn px-3 py-1.5 rounded-lg font-bold bg-white border border-slate-200 text-slate-700 hover:border-[#4f46e5] transition-all">$x^2$</button>
+                    <button type="button" data-g="x3" class="lotus-g-btn px-3 py-1.5 rounded-lg font-bold bg-white border border-slate-200 text-slate-700 hover:border-[#4f46e5] transition-all">$x^3$</button>
+                    <button type="button" data-g="sqrt" class="lotus-g-btn px-3 py-1.5 rounded-lg font-bold bg-white border border-slate-200 text-slate-700 hover:border-[#4f46e5] transition-all">$\sqrt{x}$</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-slate-900 text-white space-y-2">
+                <div class="text-[11px] uppercase tracking-wider text-teal-300 font-bold">Exact LOTUS Value</div>
+                <div id="lotusDecimalOut" class="text-3xl font-extrabold font-mono text-white">3.1945</div>
+                <div class="text-xs text-slate-400">Shaded Teal Area = $\int_0^1 g(x)f(x)\,dx$</div>
+              </div>
+
+              <div id="lotusStepsBox" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 overflow-x-auto leading-relaxed"></div>
+            </div>
+
+            <!-- Right Canvas -->
+            <div class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-4 shadow-inner space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-slate-500">Weighted Integrand $g(x)f(x)$ vs. Base PDF $f(x)$</span>
+                <div class="flex items-center gap-3 font-semibold">
+                  <span class="inline-flex items-center gap-1.5 text-[#4f46e5]"><span class="w-4 border-t-2 border-dashed border-[#4f46e5]"></span>$f(x)$</span>
+                  <span class="inline-flex items-center gap-1.5 text-[#0d9488]"><span class="w-3 h-3 rounded bg-[#0d9488]/50 border border-[#0d9488]"></span>$g(x)f(x)$</span>
+                </div>
+              </div>
+              <div id="lotusCanvasWrap" class="w-full">
+                <canvas id="lotusCanvas" aria-label="LOTUS integrand visualization"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: NON-MONOTONE TRANSFORMATION LAB (Y = X^2, ISRT 2021 Q1)  -->
+        <!-- =============================================================== -->
+        <div id="tab-nonmono" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold mb-1">ISRT 2nd Incourse 2021 · Q1 Classic</span>
+              <h3 class="text-lg font-bold text-slate-900">Non-Monotone Transformation Lab: $Y = X^2$</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Slide $y$ across the boundary $y = 1$ to see why $X \sim \text{Uniform}(-1, 2)$ creates a <strong>2-branch regime</strong> ($0 < y < 1$) and a <strong>1-branch regime</strong> ($1 \le y < 4$), causing a jump discontinuity in $f_Y(y)$.</p>
+            </div>
+            <div class="inline-flex rounded-xl bg-slate-100 p-1 text-xs font-bold shrink-0">
+              <button type="button" data-nmode="asym" class="nm-mode-btn px-3.5 py-2 rounded-lg bg-white text-[#4f46e5] shadow-xs transition-all">Asymmetric: Uniform(-1, 2)</button>
+              <button type="button" data-nmode="sym" class="nm-mode-btn px-3.5 py-2 rounded-lg text-slate-600 transition-all">Symmetric: Uniform(-1, 1)</button>
+            </div>
+          </div>
+
+          <!-- Slider & Branch Status Strip -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+            <div class="lg:col-span-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <div class="flex justify-between text-xs font-bold">
+                <span class="text-[#4f46e5]">Target Value $y$</span>
+                <span id="nmValY" class="font-mono text-base text-slate-900">0.64</span>
+              </div>
+              <input id="nmSliderY" type="range" min="0.05" max="4.0" step="0.01" value="0.64" class="w-full" />
+              <div id="nmBranchBadge" class="inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold bg-teal-100 text-teal-900">
+                2-Branch Regime: 0 &lt; y &lt; 1 (both -√y and +√y inside support)
+              </div>
+            </div>
+
+            <div id="nmFormulaReadout" class="lg:col-span-7 p-4 rounded-2xl bg-slate-900 text-white text-xs sm:text-sm space-y-1.5 overflow-x-auto"></div>
+          </div>
+
+          <!-- Dual Canvases: Left y=x^2 Pre-image | Right Piecewise PDF f_Y(y) -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-inner">
+              <div class="flex items-center justify-between mb-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-slate-500">1. Parabola $y = x^2$ &amp; Pre-Image $\{x : x^2 \le y\}$</span>
+              </div>
+              <div id="nmLeftWrap" class="w-full">
+                <canvas id="nmLeftCanvas" aria-label="Parabola pre-image visualization"></canvas>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-inner">
+              <div class="flex items-center justify-between mb-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-slate-500">2. Transformed PDF $f_Y(y)$ &amp; Shaded CDF $F_Y(y)$</span>
+              </div>
+              <div id="nmRightWrap" class="w-full">
+                <canvas id="nmRightCanvas" aria-label="Transformed PDF of Y equals X squared"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: COLLAPSIBLE PROOFS & DERIVATIONS DRAWER                  -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Section 03 • Exam Proofs</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-slate-500">4 essential AST 102 proofs — click any card to expand</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-[#4f46e5] text-[11px] font-bold mb-1">Proof 1 · Variance Shortcut &amp; Zero Deviation</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Prove $E[X - E(X)] = 0$ and $\text{Var}(X) = E[X^2] - (E[X])^2$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Let $\mu = E[X]$ (a constant). By linearity of expectation and $E[\mu] = \mu$:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$E[X - E(X)] = E[X - \mu] = E[X] - \mu = \mu - \mu = 0$$
+            </div>
+            <p>For the variance shortcut, expand $(X - \mu)^2$ inside the expectation:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950">
+              $$\text{Var}(X) = E[(X - \mu)^2] = E[X^2 - 2\mu X + \mu^2] = E[X^2] - 2\mu E[X] + \mu^2$$
+              $$= E[X^2] - 2\mu^2 + \mu^2 = E[X^2] - \mu^2 = E[X^2] - (E[X])^2 \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-teal-50 text-[#0d9488] text-[11px] font-bold mb-1">Proof 2 · ISRT Year Final 2024 Q1(b)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Minimum Mean Squared Deviation: Prove $E[(X - a)^2] = (\mu - a)^2 + \sigma^2$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Add and subtract $\mu = E[X]$ inside the square:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$E[(X - a)^2] = E\big[((X - \mu) + (\mu - a))^2\big]$$
+              $$= E[(X - \mu)^2] + 2(\mu - a)\underbrace{E[X - \mu]}_{=\,0} + (\mu - a)^2$$
+            </div>
+            <p>Since $E[X - \mu] = 0$ and $E[(X - \mu)^2] = \sigma^2$, the cross-term vanishes completely:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950 font-semibold">
+              $$E[(X - a)^2] = (\mu - a)^2 + \sigma^2$$
+            </div>
+            <p>Because $(\mu - a)^2 \ge 0$ for all real $a$ and equals $0$ if and only if $a = \mu$, $E[(X - a)^2]$ achieves its unique minimum value $\sigma^2$ at $a = \mu$. $\blacksquare$</p>
+          </div>
+        </div>
+
+        <!-- Proof 3 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-[#4f46e5] text-[11px] font-bold mb-1">Proof 3 · ISRT Year Final 2019 Q1(d)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Linear Transformation Laws: $E[a+bX] = a+bE[X]$, $\text{Var}(a+bX) = b^2\text{Var}(X)$, $\sigma_Y = |b|\sigma_X$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong>1. Expectation (shown for continuous; discrete replaces $\int$ with $\sum$):</strong></p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$E[a + bX] = \int_{-\infty}^{\infty} (a + bx)f(x)\,dx = a\underbrace{\int_{-\infty}^{\infty} f(x)\,dx}_{=\,1} + b\underbrace{\int_{-\infty}^{\infty} xf(x)\,dx}_{=\,E[X]} = a + bE[X]$$
+            </div>
+            <p><strong>2. Variance &amp; Standard Deviation:</strong> Let $Y = a + bX$ and $\mu_Y = a + b\mu_X$. Then $Y - \mu_Y = (a + bX) - (a + b\mu_X) = b(X - \mu_X)$ (notice $a$ cancels!). Hence:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950 font-semibold">
+              $$\text{Var}(Y) = E[(Y - \mu_Y)^2] = E\big[b^2(X - \mu_X)^2\big] = b^2 E[(X - \mu_X)^2] = b^2\text{Var}(X)$$
+              $$\sigma_Y = \sqrt{b^2 \sigma_X^2} = |b|\,\sigma_X \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 4 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-amber-50 text-amber-800 text-[11px] font-bold mb-1">Proof 4 · Change-of-Variable (Jacobian) Theorem</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Derive $f_Y(y) = f_X(g^{-1}(y))\left|\dfrac{dx}{dy}\right|$ for Strictly Monotone $g(x)$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Let $Y = g(X)$ where $g$ is differentiable and strictly monotone with inverse $x = g^{-1}(y)$:</p>
+            <p><strong>Case 1 — Strictly Increasing ($g'(x) > 0$, so $\frac{dx}{dy} > 0$):</strong></p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$F_Y(y) = P(g(X) \le y) = P(X \le g^{-1}(y)) = F_X(g^{-1}(y))$$
+              $$f_Y(y) = \frac{d}{dy}F_X(g^{-1}(y)) = f_X(g^{-1}(y))\,\frac{dx}{dy}$$
+            </div>
+            <p><strong>Case 2 — Strictly Decreasing ($g'(x) < 0$, so $\frac{dx}{dy} < 0$):</strong> Applying $g^{-1}$ reverses the inequality sign:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$F_Y(y) = P(g(X) \le y) = P(X \ge g^{-1}(y)) = 1 - F_X(g^{-1}(y))$$
+              $$f_Y(y) = \frac{d}{dy}\big[1 - F_X(g^{-1}(y))\big] = -f_X(g^{-1}(y))\,\frac{dx}{dy} = f_X(g^{-1}(y))\left|\frac{dx}{dy}\right|$$
+            </div>
+            <p>Combining both cases yields the unified Jacobian formula $f_Y(y) = f_X(g^{-1}(y))\left|\frac{dx}{dy}\right|$. $\blacksquare$</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: AUTHENTIC ISRT PAST EXAM VAULT (AST 102)                 -->
+    <!-- =================================================================== -->
+    <section id="exams" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#d97706]">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Past ISRT Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-slate-500">5 authentic exam sets (2018–2024) with complete worked solutions</p>
+      </div>
+
+      <div class="space-y-5">
+
+        <!-- Exam 1: Year Final 2023 Q5(b) & Q5(c) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">ISRT Year Final 2023 · Q5(b) &amp; Q5(c) [9 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">LOTUS + Linear Variance · AST 102</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q5(b):</strong> Given $f(x) = 1$ for $0 \le x \le 1$ ($0$ otherwise), find $E[e^{2X}]$.</p>
+              <p><strong>Q5(c):</strong> A discrete RV $X$ has PMF $P(X=x) = kx$ for $x = 2, 4, 6$, and $P(X=8) = k(8 - 2) = 6k$. Find (i) $k$, (ii) $F(5)$, (iii) $E[X]$, and (iv) $\text{Var}(2 - 3X)$.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong>Q5(b):</strong> By LOTUS:
+              $$E[e^{2X}] = \int_0^1 e^{2x} \cdot 1\,dx = \left[\frac{e^{2x}}{2}\right]_0^1 = \mathbf{\frac{e^2 - 1}{2} \approx 3.1945}$$
+            </p>
+            <div class="pt-2 border-t border-slate-200 space-y-1.5">
+              <p><strong>Q5(c):</strong></p>
+              <p>(i) $2k + 4k + 6k + 6k = 18k = 1 \implies k = \mathbf{\frac{1}{18}}$.</p>
+              <p>(ii) $F(5) = P(X \le 5) = p(2) + p(4) = \frac{2}{18} + \frac{4}{18} = \frac{6}{18} = \mathbf{\frac{1}{3}}$.</p>
+              <p>(iii) $E[X] = \frac{2(2) + 4(4) + 6(6) + 8(6)}{18} = \frac{4 + 16 + 36 + 48}{18} = \frac{104}{18} = \mathbf{\frac{52}{9} \approx 5.7778}$.</p>
+              <p>(iv) $E[X^2] = \frac{4(2) + 16(4) + 36(6) + 64(6)}{18} = \frac{8 + 64 + 216 + 384}{18} = \frac{672}{18} = \frac{112}{3}$. Thus:
+                $$\text{Var}(X) = \frac{112}{3} - \left(\frac{52}{9}\right)^2 = \frac{3024 - 2704}{81} = \frac{320}{81}$$
+                $$\text{Var}(2 - 3X) = (-3)^2 \text{Var}(X) = 9 \cdot \frac{320}{81} = \mathbf{\frac{320}{9} \approx 35.5556}$$
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam 2: Year Final 2024 Q4(b) & Q5(c) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">ISRT Year Final 2024 · Q4(b) &amp; Q5(c) [7 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">Symbolic Summation + LOTUS · AST 102</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q4(b):</strong> A discrete RV $X$ has PMF $f(x) = \dfrac{2(2r - x)}{3r(r+1)}$ for $x = 0, 1, 2, \dots, r$. Find $E[X]$ and $V(X)$.</p>
+              <p><strong>Q5(c):</strong> Given $f(x) = 1$ for $0 \le x \le 1$ ($0$ otherwise), find $E[e^X]$.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong>Q4(b):</strong> Using $\sum_{x=0}^r x = \frac{r(r+1)}{2}$, $\sum_{x=0}^r x^2 = \frac{r(r+1)(2r+1)}{6}$, and $\sum_{x=0}^r x^3 = \left[\frac{r(r+1)}{2}\right]^2$:</p>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 text-center space-y-2">
+              $$E[X] = \frac{2}{3r(r+1)}\sum_{x=0}^{r} (2rx - x^2) = \frac{2}{3r(r+1)}\left[2r\cdot\frac{r(r+1)}{2} - \frac{r(r+1)(2r+1)}{6}\right] = \frac{2}{3}\left(r - \frac{2r+1}{6}\right) = \mathbf{\frac{4r - 1}{9}}$$
+              $$E[X^2] = \frac{2}{3r(r+1)}\sum_{x=0}^{r} (2rx^2 - x^3) = \frac{2}{3r(r+1)}\left[\frac{r^2(r+1)(2r+1)}{3} - \frac{r^2(r+1)^2}{4}\right] = \frac{r(5r + 1)}{18}$$
+              $$V(X) = \frac{r(5r+1)}{18} - \frac{(4r-1)^2}{81} = \frac{9r(5r+1) - 2(16r^2 - 8r + 1)}{162} = \mathbf{\frac{13r^2 + 25r - 2}{162}}$$
+            </div>
+            <p><strong>Q5(c):</strong> $E[e^X] = \int_0^1 e^x \cdot 1\,dx = \left[e^x\right]_0^1 = \mathbf{e - 1 \approx 1.7183}$.</p>
+          </div>
+        </div>
+
+        <!-- Exam 3: Year Final Q4(b) & Q4(c) — Linear Transformations -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">ISRT Year Final · Q4(b) &amp; Q4(c) [8 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">Continuous &amp; Discrete Linear Transformations</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q4(b) [3 Marks]:</strong> Given $f(x) = 2x$ for $0 < x < 1$ ($0$ elsewhere), let $Y = 3X + 1$. Find the PDF of $Y$.</p>
+              <p><strong>Q4(c) [5 Marks]:</strong> An urn contains 4 red chips and 3 white chips. Two are drawn at random without replacement. Let $X$ be the number of red chips in the sample. Find the probability distribution of $Y = 2X - 1$, along with its mean and variance.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong>Q4(b):</strong> Inverse: $x = \frac{y - 1}{3}$, Jacobian: $\left|\frac{dx}{dy}\right| = \frac{1}{3}$. Support: $0 < x < 1 \implies 1 < y < 4$.
+              $$f_Y(y) = f_X\!\left(\frac{y-1}{3}\right)\cdot\frac{1}{3} = 2\left(\frac{y-1}{3}\right)\cdot\frac{1}{3} = \mathbf{\frac{2(y - 1)}{9}}, \quad 1 < y < 4 \;\; (0 \text{ elsewhere})$$
+            </p>
+            <div class="pt-2 border-t border-slate-200 space-y-1.5">
+              <p><strong>Q4(c):</strong> Total draws $= \binom{7}{2} = 21$. Distribution of $X \in \{0, 1, 2\}$ and $Y = 2X - 1 \in \{-1, 1, 3\}$:</p>
+              <ul class="list-disc list-inside font-mono text-xs bg-white p-3 rounded-xl border border-slate-200 space-y-1">
+                <li>X = 0 ⇒ Y = -1 : P = C(4,0)C(3,2)/21 = 3/21 = 1/7</li>
+                <li>X = 1 ⇒ Y =  1 : P = C(4,1)C(3,1)/21 = 12/21 = 4/7</li>
+                <li>X = 2 ⇒ Y =  3 : P = C(4,2)C(3,0)/21 = 6/21 = 2/7</li>
+              </ul>
+              <p>$E[X] = \frac{0(1) + 1(4) + 2(2)}{7} = \frac{8}{7}$, $E[X^2] = \frac{0 + 4 + 8}{7} = \frac{12}{7}$, $\text{Var}(X) = \frac{12}{7} - \frac{64}{49} = \frac{20}{49}$.</p>
+              <p>Therefore: $E[Y] = 2\left(\frac{8}{7}\right) - 1 = \mathbf{\frac{9}{7}}$ and $\text{Var}(Y) = 2^2\left(\frac{20}{49}\right) = \mathbf{\frac{80}{49}}$.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam 4: 2nd Incourse 2018 Q1(b) & Q2(b) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-indigo-100 text-[#4f46e5] text-xs font-bold">ISRT 2nd Incourse 2018 · Q1(b) &amp; Q2(b) [6 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">Solving PMF from Moments + Expected Gain</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q1(b):</strong> A discrete RV $X$ takes only values $-1, 0, 1$. (i) Given $f(0) = \frac{1}{2}$, find $E[X^2]$. (ii) If also $E[X] = \frac{1}{6}$, find $f(-1)$ and $f(1)$.</p>
+              <p><strong>Q2(b):</strong> Three fair coins are tossed. A player wins $\$5$ if all heads or all tails appear, and loses $\$3$ otherwise. Find the expected gain.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>Q1(b)(i):</strong> Since $f(-1) + f(0) + f(1) = 1$ and $f(0) = \frac{1}{2}$, we have $f(-1) + f(1) = \frac{1}{2}$. Now:
+              $$E[X^2] = (-1)^2 f(-1) + 0^2 f(0) + (1)^2 f(1) = f(-1) + f(1) = \mathbf{\frac{1}{2}}$$
+            </p>
+            <p><strong>Q1(b)(ii):</strong> $E[X] = -f(-1) + f(1) = \frac{1}{6}$. Adding this to $f(-1) + f(1) = \frac{1}{2}$ gives $2f(1) = \frac{2}{3} \implies f(1) = \mathbf{\frac{1}{3}}$ and $f(-1) = \frac{1}{2} - \frac{1}{3} = \mathbf{\frac{1}{6}}$.</p>
+            <p class="pt-2 border-t border-slate-200"><strong>Q2(b):</strong> $P(\text{all H or all T}) = \frac{2}{8} = \frac{1}{4}$; $P(\text{otherwise}) = \frac{6}{8} = \frac{3}{4}$.
+              $$E[\text{Gain}] = 5\left(\frac{1}{4}\right) + (-3)\left(\frac{3}{4}\right) = \frac{5 - 9}{4} = \mathbf{-\$1}$$
+            </p>
+          </div>
+        </div>
+
+        <!-- Exam 5: 2nd Incourse 2021 Q1 & Q3 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-indigo-100 text-[#4f46e5] text-xs font-bold">ISRT 2nd Incourse 2021 · Q1 &amp; Q3 [8 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">Non-Monotone $Y=X^2$ + Independent Linear Combo</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q1:</strong> Let $X \sim \text{Uniform}(-1, 2)$ with $f_X(x) = \frac{1}{3}$ on $(-1, 2)$. Find the PDF of $Y = X^2$.</p>
+              <p><strong>Q3:</strong> Let $X$ and $Y$ be independent with $\mu_X = 10, \mu_Y = 7, \sigma_X^2 = 5, \sigma_Y^2 = 3$. For $Z = -2X + 4Y - 3$, find $E[Z]$ and $\text{Var}(Z)$.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong>Q1 (CDF Method):</strong> Support of $Y = X^2$ is $[0, 4)$. Split into two regimes:</p>
+            <ul class="list-disc list-inside space-y-1">
+              <li><strong>Regime 1 ($0 < y < 1$):</strong> Both $-\sqrt{y}$ and $+\sqrt{y}$ lie in $(-1, 2)$, so $F_Y(y) = P(-\sqrt{y} \le X \le \sqrt{y}) = \int_{-\sqrt{y}}^{\sqrt{y}} \frac{1}{3}\,dx = \frac{2\sqrt{y}}{3} \implies f_Y(y) = F_Y'(y) = \mathbf{\dfrac{1}{3\sqrt{y}}}$.</li>
+              <li><strong>Regime 2 ($1 \le y < 4$):</strong> Lower bound clips at $x = -1$, so $F_Y(y) = P(-1 < X \le \sqrt{y}) = \int_{-1}^{\sqrt{y}} \frac{1}{3}\,dx = \frac{\sqrt{y} + 1}{3} \implies f_Y(y) = F_Y'(y) = \mathbf{\dfrac{1}{6\sqrt{y}}}$.</li>
+            </ul>
+            <p class="pt-2 border-t border-slate-200"><strong>Q3:</strong> By linearity and independence:
+              $$E[Z] = -2(10) + 4(7) - 3 = -20 + 28 - 3 = \mathbf{5}$$
+              $$\text{Var}(Z) = (-2)^2\text{Var}(X) + 4^2\text{Var}(Y) = 4(5) + 16(3) = 20 + 48 = \mathbf{68}$$
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 5: INTERACTIVE 5-QUESTION MASTERY QUIZ                      -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#059669]">Section 05 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Quick Mastery Check</h2>
+            <p class="text-sm text-slate-500 mt-1">Complete these 5 exam-style checks to finish Module 2 with confidence.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-emerald-400">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-slate-200 bg-white mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+        ← Previous: Lesson 6 (Random Variables, PMF, PDF &amp; CDF)
+      </div>
+      <div class="text-slate-500 text-center">
+        <strong class="text-slate-800">AST 102: Elements of Probability</strong> · ISRT, University of Dhaka
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-indigo-50 text-[#4f46e5] font-semibold border border-indigo-200">
+        Next: Lesson 8 (Joint, Marginal &amp; Conditional Distributions) →
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         UTILITIES: SAFE KATEX RENDER & HIGH-DPI CANVAS HELPER
+      ------------------------------------------------------------------- */
+      function safeRenderMath(rootEl) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(rootEl || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX auto-render skipped:', err);
+        }
+      }
+
+      function setupHiDPI(canvas, wrapEl, aspect, minH, maxH) {
+        const w = Math.max(240, wrapEl.clientWidth);
+        const h = Math.max(minH, Math.min(maxH, Math.round(w * aspect)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      /* -------------------------------------------------------------------
+         1. READING PROGRESS BAR
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      /* -------------------------------------------------------------------
+         2. ACCORDIONS (PROOFS & EXAM VAULT)
+      ------------------------------------------------------------------- */
+      document.querySelectorAll('.accordion-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.rounded-2xl');
+          const panel = card ? card.querySelector('.accordion-panel') : null;
+          const icon = btn.querySelector('.accordion-icon');
+          const labelSpan = btn.querySelector('span');
+          if (!panel) return;
+
+          const isOpen = !panel.classList.contains('hidden');
+          if (isOpen) {
+            panel.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            if (labelSpan && labelSpan.textContent === 'Hide Model Solution') {
+              labelSpan.textContent = 'Show Model Solution';
+            }
+          } else {
+            panel.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+            if (labelSpan && labelSpan.textContent === 'Show Model Solution') {
+              labelSpan.textContent = 'Hide Model Solution';
+            }
+            safeRenderMath(panel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         3. TAB SWITCHER
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      function redrawVisibleCanvases() {
+        if (!document.getElementById('tab-linear').classList.contains('hidden')) renderLinearLab();
+        if (!document.getElementById('tab-mse').classList.contains('hidden')) renderMseLab();
+        if (!document.getElementById('tab-lotus').classList.contains('hidden')) renderLotusLab();
+        if (!document.getElementById('tab-nonmono').classList.contains('hidden')) renderNonMonoLab();
+      }
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#4f46e5]', 'text-white', 'shadow-sm');
+            t.classList.add('text-slate-600', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-[#4f46e5]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-slate-600', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const activePanel = document.getElementById('tab-' + target);
+          if (activePanel) {
+            activePanel.classList.remove('hidden');
+            redrawVisibleCanvases();
+            safeRenderMath(activePanel);
+          }
+        });
+      });
+
+      window.addEventListener('resize', redrawVisibleCanvases);
+
+      /* -------------------------------------------------------------------
+         4. TAB 1: LINEAR TRANSFORMATION LAB (Y = a + bX)
+      ------------------------------------------------------------------- */
+      const LIN_DISTS = {
+        ramp: {
+          type: 'cont', xMin: 0, xMax: 1, mean: 2 / 3, variance: 1 / 18, maxH: 2.0,
+          pdf: x => (x > 0 && x < 1) ? 2 * x : 0,
+          formulaStr: (a, b) => {
+            const lo = Math.min(a, a + b), hi = Math.max(a, a + b);
+            const absB = Math.abs(b);
+            return `$f_Y(y) = \\dfrac{2(y - (${a.toFixed(2)}))}{${(b * absB).toFixed(2)}}$ on $(${lo.toFixed(2)},\\, ${hi.toFixed(2)})$`;
+          }
+        },
+        unif: {
+          type: 'cont', xMin: 0, xMax: 1, mean: 0.5, variance: 1 / 12, maxH: 1.0,
+          pdf: x => (x >= 0 && x <= 1) ? 1 : 0,
+          formulaStr: (a, b) => {
+            const lo = Math.min(a, a + b), hi = Math.max(a, a + b);
+            return `$f_Y(y) = \\dfrac{1}{${Math.abs(b).toFixed(2)}} = ${(1 / Math.abs(b)).toFixed(3)}$ on $[${lo.toFixed(2)},\\, ${hi.toFixed(2)}]$`;
+          }
+        },
+        symtri: {
+          type: 'cont', xMin: 0, xMax: 2, mean: 1.0, variance: 1 / 6, maxH: 1.0,
+          pdf: x => (x > 0 && x <= 1) ? x : ((x > 1 && x < 2) ? 2 - x : 0),
+          formulaStr: (a, b) => {
+            const lo = Math.min(a, a + 2 * b), hi = Math.max(a, a + 2 * b);
+            return `$f_Y(y) = \\dfrac{1}{${Math.abs(b).toFixed(2)}}\\,f_X\\!\\left(\\dfrac{y - (${a.toFixed(2)})}{${b.toFixed(2)}}\\right)$ on $(${lo.toFixed(2)},\\, ${hi.toFixed(2)})$`;
+          }
+        },
+        disc2023: {
+          type: 'disc', xMin: 2, xMax: 8, mean: 52 / 9, variance: 320 / 81, maxH: 6 / 18,
+          points: [
+            { x: 2, p: 2 / 18 },
+            { x: 4, p: 4 / 18 },
+            { x: 6, p: 6 / 18 },
+            { x: 8, p: 6 / 18 }
+          ],
+          formulaStr: (a, b) => {
+            const ys = [2, 4, 6, 8].map(x => (a + b * x).toFixed(2));
+            return `$Y \\in \\{${ys.join(',\\, ')}\\}$ with PMF $\\{2/18,\\, 4/18,\\, 6/18,\\, 6/18\\}$`;
+          }
+        }
+      };
+
+      let linState = { distKey: 'ramp', a: 1, b: 3 };
+      const linSliderA = document.getElementById('linSliderA');
+      const linSliderB = document.getElementById('linSliderB');
+      const linDistSelect = document.getElementById('linDistSelect');
+
+      function renderLinearLab() {
+        const d = LIN_DISTS[linState.distKey];
+        const a = linState.a;
+        const b = linState.b;
+
+        document.getElementById('linValA').textContent = a.toFixed(2);
+        document.getElementById('linValB').textContent = b.toFixed(2);
+
+        const muX = d.mean;
+        const varX = d.variance;
+        const sdX = Math.sqrt(varX);
+        const muY = a + b * muX;
+        const varY = b * b * varX;
+        const sdY = Math.abs(b) * sdX;
+
+        document.getElementById('linMeanX').textContent = muX.toFixed(4);
+        document.getElementById('linMeanY').textContent = muY.toFixed(4);
+        document.getElementById('linVarX').textContent = varX.toFixed(4);
+        document.getElementById('linVarY').textContent = varY.toFixed(4);
+        document.getElementById('linSdX').textContent = sdX.toFixed(4);
+        document.getElementById('linSdY').textContent = sdY.toFixed(4);
+
+        const fBox = document.getElementById('linFormulaBox');
+        if (Math.abs(b) < 1e-6) {
+          fBox.innerHTML = `<strong>Degenerate Constant ($b = 0$):</strong> $Y = ${a.toFixed(2)}$ with probability $1$ ($\\text{Var}(Y) = 0$).`;
+        } else {
+          fBox.innerHTML = `<strong>Transformed Distribution ($Y = ${a.toFixed(2)} ${b >= 0 ? '+' : '-'} ${Math.abs(b).toFixed(2)}X$):</strong><br/>${d.formulaStr(a, b)}`;
+        }
+        safeRenderMath(fBox);
+
+        // High-DPI Plot
+        const { ctx, w, h } = setupHiDPI(
+          document.getElementById('linCanvas'),
+          document.getElementById('linCanvasWrap'),
+          0.54, 230, 310
+        );
+        const padL = 44, padR = 20, padT = 22, padB = 48;
+        const plotW = w - padL - padR;
+        const plotH = h - padT - padB;
+
+        const yLo = Math.min(a + b * d.xMin, a + b * d.xMax);
+        const yHi = Math.max(a + b * d.xMin, a + b * d.xMax);
+        const rawMin = Math.min(d.xMin, yLo, muX - sdX, muY - sdY);
+        const rawMax = Math.max(d.xMax, yHi, muX + sdX, muY + sdY);
+        const span = Math.max(1, rawMax - rawMin);
+        const xMin = rawMin - span * 0.12;
+        const xMax = rawMax + span * 0.12;
+
+        const yHeightY = (d.type === 'cont' && Math.abs(b) > 1e-6) ? d.maxH / Math.abs(b) : d.maxH;
+        const yMax = Math.max(d.maxH, Math.min(yHeightY, d.maxH * 4)) * 1.18;
+
+        const toX = x => padL + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = y => padT + plotH * (1 - Math.min(y, yMax) / yMax);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid lines
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (yMax * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        // X-axis ticks
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let i = 0; i <= 5; i++) {
+          const xv = xMin + (xMax - xMin) * (i / 5);
+          ctx.fillText(xv.toFixed(1), toX(xv), padT + plotH + 6);
+        }
+
+        if (d.type === 'cont') {
+          // Plot Original X (Indigo)
+          const steps = 220;
+          ctx.fillStyle = 'rgba(79, 70, 229, 0.18)';
+          ctx.strokeStyle = '#4f46e5';
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.moveTo(toX(d.xMin), toY(0));
+          for (let i = 0; i <= steps; i++) {
+            const xi = d.xMin + (d.xMax - d.xMin) * (i / steps);
+            ctx.lineTo(toX(xi), toY(d.pdf(xi)));
+          }
+          ctx.lineTo(toX(d.xMax), toY(0));
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Plot Transformed Y (Teal)
+          if (Math.abs(b) < 1e-6) {
+            // Degenerate Dirac Spike at y = a
+            const sx = toX(a);
+            ctx.strokeStyle = '#0d9488';
+            ctx.lineWidth = 3.2;
+            ctx.beginPath(); ctx.moveTo(sx, toY(0)); ctx.lineTo(sx, padT + 10); ctx.stroke();
+            ctx.fillStyle = '#0d9488';
+            ctx.beginPath(); ctx.arc(sx, padT + 10, 5.5, 0, Math.PI * 2); ctx.fill();
+            ctx.font = '700 10px Inter, sans-serif';
+            ctx.fillText(`Spike at y=${a.toFixed(1)}`, sx, padT - 2);
+          } else {
+            ctx.fillStyle = 'rgba(13, 148, 136, 0.22)';
+            ctx.strokeStyle = '#0d9488';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(toX(yLo), toY(0));
+            for (let i = 0; i <= steps; i++) {
+              const yi = yLo + (yHi - yLo) * (i / steps);
+              const xi = (yi - a) / b;
+              const fy = d.pdf(xi) / Math.abs(b);
+              ctx.lineTo(toX(yi), toY(fy));
+            }
+            ctx.lineTo(toX(yHi), toY(0));
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+        } else {
+          // Discrete Lollipops for X (Indigo)
+          d.points.forEach(pt => {
+            const px = toX(pt.x), py = toY(pt.p);
+            ctx.strokeStyle = '#4f46e5'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(px, toY(0)); ctx.lineTo(px, py); ctx.stroke();
+            ctx.fillStyle = '#4f46e5';
+            ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+          });
+
+          // Discrete Lollipops for Y (Teal)
+          if (Math.abs(b) < 1e-6) {
+            const sx = toX(a);
+            ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(sx, toY(0)); ctx.lineTo(sx, padT + 12); ctx.stroke();
+            ctx.fillStyle = '#0d9488';
+            ctx.beginPath(); ctx.arc(sx, padT + 12, 5.5, 0, Math.PI * 2); ctx.fill();
+          } else {
+            d.points.forEach(pt => {
+              const yv = a + b * pt.x;
+              const px = toX(yv), py = toY(pt.p);
+              ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 3;
+              ctx.beginPath(); ctx.moveTo(px, toY(0)); ctx.lineTo(px, py); ctx.stroke();
+              ctx.fillStyle = '#0d9488';
+              ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill();
+            });
+          }
+        }
+
+        // Mean dashed lines & +-1 sigma brackets
+        [ { mu: muX, sd: sdX, col: '#4f46e5', lbl: 'μX', rowY: padT + plotH + 26 },
+          { mu: muY, sd: sdY, col: '#0d9488', lbl: 'μY', rowY: padT + plotH + 37 }
+        ].forEach(m => {
+          const mx = toX(m.mu);
+          ctx.save();
+          ctx.setLineDash([4, 3]);
+          ctx.strokeStyle = m.col; ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.moveTo(mx, padT); ctx.lineTo(mx, padT + plotH); ctx.stroke();
+          ctx.restore();
+
+          ctx.fillStyle = m.col;
+          ctx.font = '700 10px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(m.lbl, mx, padT - 12);
+
+          if (m.sd > 1e-5) {
+            const x1 = toX(m.mu - m.sd), x2 = toX(m.mu + m.sd);
+            ctx.strokeStyle = m.col; ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x1, m.rowY); ctx.lineTo(x2, m.rowY);
+            ctx.moveTo(x1, m.rowY - 3); ctx.lineTo(x1, m.rowY + 3);
+            ctx.moveTo(x2, m.rowY - 3); ctx.lineTo(x2, m.rowY + 3);
+            ctx.stroke();
+          }
+        });
+
+        // Axes
+        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      linSliderA.addEventListener('input', () => { linState.a = parseFloat(linSliderA.value); renderLinearLab(); });
+      linSliderB.addEventListener('input', () => { linState.b = parseFloat(linSliderB.value); renderLinearLab(); });
+      linDistSelect.addEventListener('change', () => { linState.distKey = linDistSelect.value; renderLinearLab(); });
+
+      document.querySelectorAll('.lin-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-lpreset');
+          if (p === 'q4b') { linState = { distKey: 'ramp', a: 1, b: 3 }; }
+          else if (p === 'midterm') { linState = { distKey: 'unif', a: 5, b: -2 }; }
+          else if (p === 'fin2023') { linState = { distKey: 'disc2023', a: 2, b: -3 }; }
+          else if (p === 'std') {
+            const d = LIN_DISTS[linState.distKey];
+            const sd = Math.sqrt(d.variance);
+            linState.b = 1 / sd;
+            linState.a = -d.mean / sd;
+          }
+          linDistSelect.value = linState.distKey;
+          linSliderA.value = Math.max(-5, Math.min(5, linState.a));
+          linSliderB.value = Math.max(-3, Math.min(3, linState.b));
+          document.querySelectorAll('.lin-preset').forEach(b => {
+            if (b.getAttribute('data-lpreset') === 'std') {
+              b.className = b === btn
+                ? 'lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0d9488] text-white shadow-xs transition-all'
+                : 'lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-50 text-[#0d9488] border border-teal-200 hover:bg-teal-100 transition-all';
+            } else {
+              b.className = b === btn
+                ? 'lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+                : 'lin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+            }
+          });
+          renderLinearLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         5. TAB 2: CENTER OF MASS & E[(X - a)^2] MINIMIZER
+      ------------------------------------------------------------------- */
+      const MSE_DISTS = {
+        unif4: { type: 'cont', min: 0, max: 4, mu: 2.0, variance: 4 / 3, maxH: 0.25, pdf: x => (x >= 0 && x <= 4) ? 0.25 : 0 },
+        ramp:  { type: 'cont', min: 0, max: 1, mu: 2 / 3, variance: 1 / 18, maxH: 2.0, pdf: x => (x >= 0 && x <= 1) ? 2 * x : 0 },
+        die:   { type: 'disc', min: 1, max: 6, mu: 3.5, variance: 35 / 12, maxH: 1 / 6, pts: [1,2,3,4,5,6].map(x => ({ x, p: 1/6 })) }
+      };
+
+      let mseKey = 'unif4';
+      const mseSliderA = document.getElementById('mseSliderA');
+
+      function loadMsePreset(key) {
+        mseKey = key;
+        const d = MSE_DISTS[key];
+        mseSliderA.min = d.min;
+        mseSliderA.max = d.max;
+        mseSliderA.step = (d.max - d.min) / 80;
+        mseSliderA.value = (d.min + (d.max - d.min) * 0.25).toFixed(2);
+        renderMseLab();
+      }
+
+      function renderMseLab() {
+        const d = MSE_DISTS[mseKey];
+        const a = parseFloat(mseSliderA.value);
+        const bias = (d.mu - a) * (d.mu - a);
+        const total = bias + d.variance;
+
+        document.getElementById('mseValA').textContent = a.toFixed(2);
+        document.getElementById('mseOutBias').textContent = bias.toFixed(4);
+        document.getElementById('mseOutVar').textContent = d.variance.toFixed(4);
+        document.getElementById('mseOutTotal').textContent = total.toFixed(4);
+
+        const tiltEl = document.getElementById('mseTiltStatus');
+        if (Math.abs(a - d.mu) < (d.max - d.min) * 0.015) {
+          tiltEl.textContent = 'Balanced! Minimum MSE achieved (a = μ)';
+          tiltEl.className = 'text-xs font-bold text-[#059669]';
+        } else if (a < d.mu) {
+          tiltEl.textContent = 'Tilting Right (fulcrum a < μ)';
+          tiltEl.className = 'text-xs font-semibold text-[#d97706]';
+        } else {
+          tiltEl.textContent = 'Tilting Left (fulcrum a > μ)';
+          tiltEl.className = 'text-xs font-semibold text-[#d97706]';
+        }
+
+        // --- Canvas 1: Distribution + Fulcrum ---
+        const { ctx: tCtx, w: tw, h: th } = setupHiDPI(
+          document.getElementById('mseTopCanvas'),
+          document.getElementById('mseTopWrap'),
+          0.58, 200, 240
+        );
+        const padL = 36, padR = 20, padT = 20, padB = 46;
+        const plotW = tw - padL - padR;
+        const plotH = th - padT - padB;
+        const xPad = (d.max - d.min) * 0.12;
+        const xMin = d.min - xPad, xMax = d.max + xPad;
+        const toX = x => padL + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = y => padT + plotH * (1 - y / (d.maxH * 1.25));
+
+        tCtx.clearRect(0, 0, tw, th);
+
+        // Draw distribution shape
+        if (d.type === 'cont') {
+          tCtx.fillStyle = 'rgba(79, 70, 229, 0.2)';
+          tCtx.strokeStyle = '#4f46e5'; tCtx.lineWidth = 2.4;
+          tCtx.beginPath();
+          tCtx.moveTo(toX(d.min), toY(0));
+          for (let i = 0; i <= 120; i++) {
+            const xi = d.min + (d.max - d.min) * (i / 120);
+            tCtx.lineTo(toX(xi), toY(d.pdf(xi)));
+          }
+          tCtx.lineTo(toX(d.max), toY(0));
+          tCtx.closePath();
+          tCtx.fill(); tCtx.stroke();
+        } else {
+          d.pts.forEach(pt => {
+            const px = toX(pt.x), py = toY(pt.p);
+            tCtx.strokeStyle = '#4f46e5'; tCtx.lineWidth = 4;
+            tCtx.beginPath(); tCtx.moveTo(px, toY(0)); tCtx.lineTo(px, py); tCtx.stroke();
+            tCtx.fillStyle = '#4f46e5';
+            tCtx.beginPath(); tCtx.arc(px, py, 5, 0, Math.PI * 2); tCtx.fill();
+          });
+        }
+
+        // Balance beam baseline
+        tCtx.strokeStyle = '#334155'; tCtx.lineWidth = 3;
+        tCtx.beginPath(); tCtx.moveTo(toX(d.min), toY(0)); tCtx.lineTo(toX(d.max), toY(0)); tCtx.stroke();
+
+        // Target mu marker
+        const muX = toX(d.mu);
+        tCtx.save();
+        tCtx.setLineDash([4, 3]);
+        tCtx.strokeStyle = '#059669'; tCtx.lineWidth = 2;
+        tCtx.beginPath(); tCtx.moveTo(muX, padT); tCtx.lineTo(muX, toY(0)); tCtx.stroke();
+        tCtx.restore();
+        tCtx.fillStyle = '#059669';
+        tCtx.font = '700 11px JetBrains Mono, monospace';
+        tCtx.textAlign = 'center';
+        tCtx.fillText(`μ=${d.mu.toFixed(2)}`, muX, padT - 4);
+
+        // Movable fulcrum triangle at a
+        const ax = toX(a);
+        const baseY = toY(0);
+        tCtx.fillStyle = Math.abs(a - d.mu) < (d.max - d.min) * 0.015 ? '#059669' : '#d97706';
+        tCtx.beginPath();
+        tCtx.moveTo(ax, baseY + 1);
+        tCtx.lineTo(ax - 11, baseY + 20);
+        tCtx.lineTo(ax + 11, baseY + 20);
+        tCtx.closePath();
+        tCtx.fill();
+        tCtx.font = '700 11px JetBrains Mono, monospace';
+        tCtx.fillText(`a=${a.toFixed(2)}`, ax, baseY + 34);
+
+        // --- Canvas 2: Parabola h(a) = (mu - a)^2 + sigma^2 ---
+        const { ctx: bCtx, w: bw, h: bh } = setupHiDPI(
+          document.getElementById('mseBotCanvas'),
+          document.getElementById('mseBotWrap'),
+          0.58, 200, 240
+        );
+        const bPadL = 44, bPadR = 18, bPadT = 18, bPadB = 34;
+        const bPlotW = bw - bPadL - bPadR;
+        const bPlotH = bh - bPadT - bPadB;
+        const maxDiff = Math.max(Math.abs(d.mu - d.min), Math.abs(d.max - d.mu));
+        const hMax = (maxDiff * maxDiff + d.variance) * 1.15;
+        const toXb = x => bPadL + ((x - d.min) / (d.max - d.min)) * bPlotW;
+        const toYb = y => bPadT + bPlotH * (1 - y / hMax);
+
+        bCtx.clearRect(0, 0, bw, bh);
+
+        // Grid
+        bCtx.strokeStyle = '#e2e8f0'; bCtx.lineWidth = 1;
+        bCtx.font = '600 10px JetBrains Mono, monospace'; bCtx.fillStyle = '#64748b'; bCtx.textAlign = 'right'; bCtx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (hMax * i) / 4;
+          const py = toYb(yv);
+          bCtx.beginPath(); bCtx.moveTo(bPadL, py); bCtx.lineTo(bPadL + bPlotW, py); bCtx.stroke();
+          bCtx.fillText(yv.toFixed(2), bPadL - 6, py);
+        }
+
+        // Irreducible variance floor shaded band
+        const varY = toYb(d.variance);
+        bCtx.fillStyle = 'rgba(79, 70, 229, 0.12)';
+        bCtx.fillRect(bPadL, varY, bPlotW, toYb(0) - varY);
+        bCtx.save();
+        bCtx.setLineDash([5, 4]);
+        bCtx.strokeStyle = '#4f46e5'; bCtx.lineWidth = 1.6;
+        bCtx.beginPath(); bCtx.moveTo(bPadL, varY); bCtx.lineTo(bPadL + bPlotW, varY); bCtx.stroke();
+        bCtx.restore();
+
+        // Parabola curve
+        bCtx.strokeStyle = '#0d9488'; bCtx.lineWidth = 2.6;
+        bCtx.beginPath();
+        for (let i = 0; i <= 140; i++) {
+          const xi = d.min + (d.max - d.min) * (i / 140);
+          const hi = (d.mu - xi) * (d.mu - xi) + d.variance;
+          if (i === 0) bCtx.moveTo(toXb(xi), toYb(hi));
+          else bCtx.lineTo(toXb(xi), toYb(hi));
+        }
+        bCtx.stroke();
+
+        // Vertical decomposition bar at current a: Indigo [0, var] + Amber [var, total]
+        const curX = toXb(a);
+        const curY = toYb(total);
+        bCtx.strokeStyle = '#4f46e5'; bCtx.lineWidth = 5;
+        bCtx.beginPath(); bCtx.moveTo(curX, toYb(0)); bCtx.lineTo(curX, varY); bCtx.stroke();
+        if (bias > 1e-6) {
+          bCtx.strokeStyle = '#d97706'; bCtx.lineWidth = 5;
+          bCtx.beginPath(); bCtx.moveTo(curX, varY); bCtx.lineTo(curX, curY); bCtx.stroke();
+        }
+
+        // Glowing dot at (a, h(a))
+        bCtx.fillStyle = 'rgba(217, 119, 6, 0.25)';
+        bCtx.beginPath(); bCtx.arc(curX, curY, 10, 0, Math.PI * 2); bCtx.fill();
+        bCtx.fillStyle = Math.abs(a - d.mu) < (d.max - d.min) * 0.015 ? '#059669' : '#d97706';
+        bCtx.beginPath(); bCtx.arc(curX, curY, 5, 0, Math.PI * 2); bCtx.fill();
+
+        // Minimum star marker at (mu, variance)
+        bCtx.fillStyle = '#059669';
+        bCtx.beginPath(); bCtx.arc(toXb(d.mu), varY, 4.5, 0, Math.PI * 2); bCtx.fill();
+
+        // Axes
+        bCtx.strokeStyle = '#64748b'; bCtx.lineWidth = 1.4;
+        bCtx.beginPath(); bCtx.moveTo(bPadL, bPadT); bCtx.lineTo(bPadL, bPadT + bPlotH); bCtx.lineTo(bPadL + bPlotW, bPadT + bPlotH); bCtx.stroke();
+        bCtx.fillStyle = '#64748b'; bCtx.textAlign = 'center'; bCtx.textBaseline = 'top';
+        bCtx.fillText(`a ∈ [${d.min}, ${d.max}]`, bPadL + bPlotW / 2, bPadT + bPlotH + 10);
+      }
+
+      mseSliderA.addEventListener('input', renderMseLab);
+      document.getElementById('mseSnapBtn').addEventListener('click', () => {
+        mseSliderA.value = MSE_DISTS[mseKey].mu.toFixed(4);
+        renderMseLab();
+      });
+
+      document.querySelectorAll('.mse-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.mse-preset').forEach(b => {
+            b.className = b === btn
+              ? 'mse-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+              : 'mse-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          loadMsePreset(btn.getAttribute('data-mpreset'));
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 3: LOTUS INTEGRATOR (E[g(X)])
+      ------------------------------------------------------------------- */
+      const LOTUS_DISTS = {
+        unif: { fn: () => 1, latex: '1' },
+        lin:  { fn: x => 2 * x, latex: '2x' },
+        quad: { fn: x => 3 * x * x, latex: '3x^2' }
+      };
+
+      const LOTUS_G = {
+        exp2: { fn: x => Math.exp(2 * x), latex: 'e^{2x}' },
+        exp1: { fn: x => Math.exp(x), latex: 'e^x' },
+        x2:   { fn: x => x * x, latex: 'x^2' },
+        x3:   { fn: x => x * x * x, latex: 'x^3' },
+        sqrt: { fn: x => Math.sqrt(x), latex: '\\sqrt{x}' }
+      };
+
+      const LOTUS_EXACT = {
+        'unif|exp2': { val: (Math.E * Math.E - 1) / 2, step: '\\int_0^1 e^{2x}\\cdot 1\\,dx = \\left[\\frac{e^{2x}}{2}\\right]_0^1 = \\frac{e^2 - 1}{2}' },
+        'unif|exp1': { val: Math.E - 1, step: '\\int_0^1 e^{x}\\cdot 1\\,dx = \\left[e^{x}\\right]_0^1 = e - 1' },
+        'unif|x2':   { val: 1 / 3, step: '\\int_0^1 x^2\\cdot 1\\,dx = \\left[\\frac{x^3}{3}\\right]_0^1 = \\frac{1}{3}' },
+        'unif|x3':   { val: 1 / 4, step: '\\int_0^1 x^3\\cdot 1\\,dx = \\left[\\frac{x^4}{4}\\right]_0^1 = \\frac{1}{4}' },
+        'unif|sqrt': { val: 2 / 3, step: '\\int_0^1 x^{1/2}\\cdot 1\\,dx = \\left[\\frac{2}{3}x^{3/2}\\right]_0^1 = \\frac{2}{3}' },
+
+        'lin|exp2':  { val: (Math.E * Math.E + 1) / 2, step: '\\int_0^1 2x e^{2x}\\,dx = \\left[x e^{2x} - \\frac{1}{2}e^{2x}\\right]_0^1 = \\frac{e^2 + 1}{2}' },
+        'lin|exp1':  { val: 2, step: '\\int_0^1 2x e^x\\,dx = 2\\left[x e^x - e^x\\right]_0^1 = 2(0 - (-1)) = 2' },
+        'lin|x2':    { val: 0.5, step: '\\int_0^1 2x^3\\,dx = \\left[\\frac{x^4}{2}\\right]_0^1 = \\frac{1}{2}' },
+        'lin|x3':    { val: 0.4, step: '\\int_0^1 2x^4\\,dx = \\left[\\frac{2x^5}{5}\\right]_0^1 = \\frac{2}{5}' },
+        'lin|sqrt':  { val: 0.8, step: '\\int_0^1 2x^{3/2}\\,dx = \\left[\\frac{4}{5}x^{5/2}\\right]_0^1 = \\frac{4}{5}' },
+
+        'quad|exp2': { val: 3 * (Math.E * Math.E - 1) / 4, step: '\\int_0^1 3x^2 e^{2x}\\,dx = 3\\left[\\frac{x^2 e^{2x}}{2} - \\frac{x e^{2x}}{2} + \\frac{e^{2x}}{4}\\right]_0^1 = \\frac{3(e^2 - 1)}{4}' },
+        'quad|exp1': { val: 3 * (Math.E - 2), step: '\\int_0^1 3x^2 e^x\\,dx = 3\\left[(x^2 - 2x + 2)e^x\\right]_0^1 = 3(e - 2)' },
+        'quad|x2':   { val: 0.6, step: '\\int_0^1 3x^4\\,dx = \\left[\\frac{3x^5}{5}\\right]_0^1 = \\frac{3}{5}' },
+        'quad|x3':   { val: 0.5, step: '\\int_0^1 3x^5\\,dx = \\left[\\frac{x^6}{2}\\right]_0^1 = \\frac{1}{2}' },
+        'quad|sqrt': { val: 6 / 7, step: '\\int_0^1 3x^{5/2}\\,dx = \\left[\\frac{6}{7}x^{7/2}\\right]_0^1 = \\frac{6}{7}' }
+      };
+
+      let lotusDistKey = 'unif';
+      let lotusGKey = 'exp2';
+
+      function renderLotusLab() {
+        const fObj = LOTUS_DISTS[lotusDistKey];
+        const gObj = LOTUS_G[lotusGKey];
+        const exact = LOTUS_EXACT[`${lotusDistKey}|${lotusGKey}`];
+
+        document.getElementById('lotusDecimalOut').textContent = exact.val.toFixed(4);
+        const stepBox = document.getElementById('lotusStepsBox');
+        stepBox.innerHTML = `<strong>Exact Symbolic Integration:</strong>$$E[${gObj.latex}] = ${exact.step} \\approx ${exact.val.toFixed(4)}$$`;
+        safeRenderMath(stepBox);
+
+        const { ctx, w, h } = setupHiDPI(
+          document.getElementById('lotusCanvas'),
+          document.getElementById('lotusCanvasWrap'),
+          0.56, 220, 290
+        );
+        const padL = 44, padR = 18, padT = 18, padB = 30;
+        const plotW = w - padL - padR;
+        const plotH = h - padT - padB;
+
+        // Compute yMax cleanly across [0, 1]
+        let maxY = 1.2;
+        for (let i = 0; i <= 100; i++) {
+          const x = i / 100;
+          maxY = Math.max(maxY, fObj.fn(x), gObj.fn(x) * fObj.fn(x));
+        }
+        maxY *= 1.12;
+
+        const toX = x => padL + x * plotW;
+        const toY = y => padT + plotH * (1 - y / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#64748b'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(1), padL - 6, py);
+        }
+
+        // Filled teal area for g(x)*f(x)
+        ctx.fillStyle = 'rgba(13, 148, 136, 0.30)';
+        ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        ctx.moveTo(toX(0), toY(0));
+        for (let i = 0; i <= 160; i++) {
+          const x = i / 160;
+          ctx.lineTo(toX(x), toY(gObj.fn(x) * fObj.fn(x)));
+        }
+        ctx.lineTo(toX(1), toY(0));
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Dashed indigo base PDF f(x)
+        ctx.save();
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = '#4f46e5'; ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        for (let i = 0; i <= 160; i++) {
+          const x = i / 160;
+          if (i === 0) ctx.moveTo(toX(x), toY(fObj.fn(x)));
+          else ctx.lineTo(toX(x), toY(fObj.fn(x)));
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Axes & X-ticks
+        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+        ctx.fillStyle = '#64748b'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        [0, 0.25, 0.5, 0.75, 1.0].forEach(xv => ctx.fillText(xv.toFixed(2), toX(xv), padT + plotH + 6));
+      }
+
+      document.getElementById('lotusDistSelect').addEventListener('change', (e) => {
+        lotusDistKey = e.target.value;
+        renderLotusLab();
+      });
+
+      document.querySelectorAll('.lotus-g-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          lotusGKey = btn.getAttribute('data-g');
+          document.querySelectorAll('.lotus-g-btn').forEach(b => {
+            b.className = b === btn
+              ? 'lotus-g-btn px-3 py-1.5 rounded-lg font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+              : 'lotus-g-btn px-3 py-1.5 rounded-lg font-bold bg-white border border-slate-200 text-slate-700 hover:border-[#4f46e5] transition-all';
+          });
+          renderLotusLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. TAB 4: NON-MONOTONE TRANSFORMATION LAB (Y = X^2)
+      ------------------------------------------------------------------- */
+      let nmMode = 'asym'; // 'asym' = Uniform(-1, 2) | 'sym' = Uniform(-1, 1)
+      const nmSliderY = document.getElementById('nmSliderY');
+
+      function renderNonMonoLab() {
+        const isAsym = (nmMode === 'asym');
+        const y = parseFloat(nmSliderY.value);
+        const sqY = Math.sqrt(y);
+        const isTwoBranch = (y < 1);
+
+        document.getElementById('nmValY').textContent = y.toFixed(2);
+
+        const badge = document.getElementById('nmBranchBadge');
+        const readout = document.getElementById('nmFormulaReadout');
+
+        let fyVal = 0, FyVal = 0;
+        if (isAsym) {
+          if (isTwoBranch) {
+            FyVal = (2 * sqY) / 3;
+            fyVal = 1 / (3 * sqY);
+            badge.textContent = '2-Branch Regime (0 < y < 1): −√y < x < +√y inside (−1, 2)';
+            badge.className = 'inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold bg-teal-100 text-teal-900';
+            readout.innerHTML = `
+              <div class="text-teal-300 font-bold text-xs uppercase">Active Branch: $0 < y < 1$ (Two Pre-Images $\\pm\\sqrt{y}$)</div>
+              <div>$F_Y(y) = P(-\\sqrt{y} \\le X \\le \\sqrt{y}) = \\dfrac{2\\sqrt{y}}{3} = \\mathbf{${FyVal.toFixed(4)}}$</div>
+              <div>$f_Y(y) = F_Y'(y) = \\dfrac{1}{3\\sqrt{y}} = \\mathbf{${fyVal.toFixed(4)}}$</div>
+            `;
+          } else {
+            FyVal = (sqY + 1) / 3;
+            fyVal = 1 / (6 * sqY);
+            badge.textContent = '1-Branch Regime (1 ≤ y < 4): −1 < x < +√y (left branch clipped!)';
+            badge.className = 'inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-100 text-amber-900';
+            readout.innerHTML = `
+              <div class="text-amber-300 font-bold text-xs uppercase">Active Branch: $1 \\le y < 4$ (One Pre-Image $+\\sqrt{y}$ only)</div>
+              <div>$F_Y(y) = P(-1 < X \\le \\sqrt{y}) = \\dfrac{\\sqrt{y} + 1}{3} = \\mathbf{${FyVal.toFixed(4)}}$</div>
+              <div>$f_Y(y) = F_Y'(y) = \\dfrac{1}{6\\sqrt{y}} = \\mathbf{${fyVal.toFixed(4)}}$</div>
+            `;
+          }
+        } else {
+          FyVal = sqY;
+          fyVal = 1 / (2 * sqY);
+          badge.textContent = 'Symmetric 2-Branch Regime (0 < y < 1): −√y < x < +√y inside (−1, 1)';
+          badge.className = 'inline-block px-2.5 py-1 rounded-lg text-[11px] font-bold bg-teal-100 text-teal-900';
+          readout.innerHTML = `
+            <div class="text-teal-300 font-bold text-xs uppercase">Symmetric Support $X \\sim \\text{Uniform}(-1, 1)$</div>
+            <div>$F_Y(y) = P(-\\sqrt{y} \\le X \\le \\sqrt{y}) = \\sqrt{y} = \\mathbf{${FyVal.toFixed(4)}}$</div>
+            <div>$f_Y(y) = F_Y'(y) = \\dfrac{1}{2\\sqrt{y}} = \\mathbf{${fyVal.toFixed(4)}}$</div>
+          `;
+        }
+        safeRenderMath(readout);
+
+        // --- Left Canvas: y = x^2 & Pre-image on x-axis ---
+        const { ctx: lCtx, w: lw, h: lh } = setupHiDPI(
+          document.getElementById('nmLeftCanvas'),
+          document.getElementById('nmLeftWrap'),
+          0.62, 210, 260
+        );
+        const padL = 38, padR = 16, padT = 16, padB = 34;
+        const plotW = lw - padL - padR;
+        const plotH = lh - padT - padB;
+        const xMinL = -1.3, xMaxL = isAsym ? 2.25 : 1.3;
+        const yMaxL = isAsym ? 4.3 : 1.2;
+        const toXL = x => padL + ((x - xMinL) / (xMaxL - xMinL)) * plotW;
+        const toYL = v => padT + plotH * (1 - v / yMaxL);
+
+        lCtx.clearRect(0, 0, lw, lh);
+
+        // Support band shading [-1, 2] or [-1, 1]
+        const supLo = -1, supHi = isAsym ? 2 : 1;
+        lCtx.fillStyle = 'rgba(241, 245, 249, 0.9)';
+        lCtx.fillRect(toXL(supLo), padT, toXL(supHi) - toXL(supLo), plotH);
+
+        // Pre-image interval [preLo, preHi]
+        const preLo = Math.max(supLo, -sqY);
+        const preHi = Math.min(supHi, sqY);
+        const regimeColor = (isAsym && !isTwoBranch) ? '#d97706' : '#0d9488';
+        const regimeFill  = (isAsym && !isTwoBranch) ? 'rgba(217, 119, 6, 0.20)' : 'rgba(13, 148, 136, 0.20)';
+
+        lCtx.fillStyle = regimeFill;
+        lCtx.fillRect(toXL(preLo), toYL(y), toXL(preHi) - toXL(preLo), toYL(0) - toYL(y));
+
+        // Thick highlight on x-axis for pre-image
+        lCtx.strokeStyle = regimeColor; lCtx.lineWidth = 5;
+        lCtx.beginPath(); lCtx.moveTo(toXL(preLo), toYL(0)); lCtx.lineTo(toXL(preHi), toYL(0)); lCtx.stroke();
+
+        // Parabola y = x^2
+        lCtx.strokeStyle = '#4f46e5'; lCtx.lineWidth = 2.5;
+        lCtx.beginPath();
+        for (let i = 0; i <= 140; i++) {
+          const xi = supLo + (supHi - supLo) * (i / 140);
+          if (i === 0) lCtx.moveTo(toXL(xi), toYL(xi * xi));
+          else lCtx.lineTo(toXL(xi), toYL(xi * xi));
+        }
+        lCtx.stroke();
+
+        // Horizontal slice line at y
+        lCtx.save();
+        lCtx.setLineDash([5, 4]);
+        lCtx.strokeStyle = regimeColor; lCtx.lineWidth = 1.8;
+        lCtx.beginPath(); lCtx.moveTo(padL, toYL(y)); lCtx.lineTo(padL + plotW, toYL(y)); lCtx.stroke();
+        lCtx.restore();
+
+        // Intersection dots
+        lCtx.fillStyle = regimeColor;
+        lCtx.beginPath(); lCtx.arc(toXL(sqY), toYL(y), 4.5, 0, Math.PI * 2); lCtx.fill();
+        if (-sqY >= supLo) {
+          lCtx.beginPath(); lCtx.arc(toXL(-sqY), toYL(y), 4.5, 0, Math.PI * 2); lCtx.fill();
+        }
+
+        // Axes & ticks
+        lCtx.strokeStyle = '#64748b'; lCtx.lineWidth = 1.3;
+        lCtx.beginPath(); lCtx.moveTo(padL, padT); lCtx.lineTo(padL, padT + plotH); lCtx.lineTo(padL + plotW, padT + plotH); lCtx.stroke();
+        lCtx.fillStyle = '#475569'; lCtx.font = '600 10px JetBrains Mono, monospace'; lCtx.textAlign = 'center'; lCtx.textBaseline = 'top';
+        (isAsym ? [-1, 0, 1, 2] : [-1, 0, 1]).forEach(xv => lCtx.fillText(xv, toXL(xv), padT + plotH + 6));
+        lCtx.textAlign = 'right'; lCtx.textBaseline = 'middle';
+        (isAsym ? [0, 1, 2, 3, 4] : [0, 0.5, 1]).forEach(yv => lCtx.fillText(yv, padL - 6, toYL(yv)));
+
+        // --- Right Canvas: Transformed Piecewise PDF f_Y(y) ---
+        const { ctx: rCtx, w: rw, h: rh } = setupHiDPI(
+          document.getElementById('nmRightCanvas'),
+          document.getElementById('nmRightWrap'),
+          0.62, 210, 260
+        );
+        const rPlotW = rw - padL - padR;
+        const rPlotH = rh - padT - padB;
+        const yMaxR = isAsym ? 4.1 : 1.05;
+        const fMaxR = isAsym ? 1.6 : 2.2;
+        const toXR = v => padL + (v / yMaxR) * rPlotW;
+        const toYR = f => padT + rPlotH * (1 - Math.min(f, fMaxR) / fMaxR);
+
+        rCtx.clearRect(0, 0, rw, rh);
+
+        const pdfY = v => {
+          if (v <= 0.001) return fMaxR;
+          if (isAsym) return v < 1 ? 1 / (3 * Math.sqrt(v)) : (v < 4 ? 1 / (6 * Math.sqrt(v)) : 0);
+          return v < 1 ? 1 / (2 * Math.sqrt(v)) : 0;
+        };
+
+        // Shaded CDF area [0.01, y]
+        const shadeEnd1 = Math.min(y, 1);
+        rCtx.fillStyle = 'rgba(13, 148, 136, 0.30)';
+        rCtx.beginPath();
+        rCtx.moveTo(toXR(0.015), toYR(0));
+        for (let i = 0; i <= 80; i++) {
+          const vi = 0.015 + (shadeEnd1 - 0.015) * (i / 80);
+          rCtx.lineTo(toXR(vi), toYR(pdfY(vi)));
+        }
+        rCtx.lineTo(toXR(shadeEnd1), toYR(0));
+        rCtx.closePath();
+        rCtx.fill();
+
+        if (isAsym && y > 1) {
+          rCtx.fillStyle = 'rgba(217, 119, 6, 0.30)';
+          rCtx.beginPath();
+          rCtx.moveTo(toXR(1), toYR(0));
+          for (let i = 0; i <= 80; i++) {
+            const vi = 1 + (y - 1) * (i / 80);
+            rCtx.lineTo(toXR(vi), toYR(pdfY(vi)));
+          }
+          rCtx.lineTo(toXR(y), toYR(0));
+          rCtx.closePath();
+          rCtx.fill();
+        }
+
+        // Curve Branch 1: (0, 1)
+        rCtx.strokeStyle = '#0d9488'; rCtx.lineWidth = 2.5;
+        rCtx.beginPath();
+        for (let i = 0; i <= 100; i++) {
+          const vi = 0.02 + (0.995 - 0.02) * (i / 100);
+          if (i === 0) rCtx.moveTo(toXR(vi), toYR(pdfY(vi)));
+          else rCtx.lineTo(toXR(vi), toYR(pdfY(vi)));
+        }
+        rCtx.stroke();
+
+        // Curve Branch 2 (Asymmetric only): [1, 4) + jump marker at y = 1
+        if (isAsym) {
+          rCtx.strokeStyle = '#d97706'; rCtx.lineWidth = 2.5;
+          rCtx.beginPath();
+          for (let i = 0; i <= 100; i++) {
+            const vi = 1.0 + (4.0 - 1.0) * (i / 100);
+            if (i === 0) rCtx.moveTo(toXR(vi), toYR(pdfY(vi)));
+            else rCtx.lineTo(toXR(vi), toYR(pdfY(vi)));
+          }
+          rCtx.stroke();
+
+          // Dashed jump at y = 1 (from 1/3 down to 1/6)
+          rCtx.save();
+          rCtx.setLineDash([3, 3]);
+          rCtx.strokeStyle = '#94a3b8'; rCtx.lineWidth = 1.4;
+          rCtx.beginPath(); rCtx.moveTo(toXR(1), toYR(1 / 3)); rCtx.lineTo(toXR(1), toYR(1 / 6)); rCtx.stroke();
+          rCtx.restore();
+
+          // Open dot at (1, 1/3), closed dot at (1, 1/6)
+          rCtx.fillStyle = '#ffffff'; rCtx.strokeStyle = '#0d9488'; rCtx.lineWidth = 2;
+          rCtx.beginPath(); rCtx.arc(toXR(1), toYR(1 / 3), 4, 0, Math.PI * 2); rCtx.fill(); rCtx.stroke();
+          rCtx.fillStyle = '#d97706';
+          rCtx.beginPath(); rCtx.arc(toXR(1), toYR(1 / 6), 4, 0, Math.PI * 2); rCtx.fill();
+        }
+
+        // Current y marker line
+        rCtx.save();
+        rCtx.setLineDash([4, 3]);
+        rCtx.strokeStyle = regimeColor; rCtx.lineWidth = 1.8;
+        rCtx.beginPath(); rCtx.moveTo(toXR(y), padT); rCtx.lineTo(toXR(y), toYR(0)); rCtx.stroke();
+        rCtx.restore();
+
+        // Axes & ticks
+        rCtx.strokeStyle = '#64748b'; rCtx.lineWidth = 1.3;
+        rCtx.beginPath(); rCtx.moveTo(padL, padT); rCtx.lineTo(padL, padT + rPlotH); rCtx.lineTo(padL + rPlotW, padT + rPlotH); rCtx.stroke();
+        rCtx.fillStyle = '#475569'; rCtx.font = '600 10px JetBrains Mono, monospace'; rCtx.textAlign = 'center'; rCtx.textBaseline = 'top';
+        (isAsym ? [0, 1, 2, 3, 4] : [0, 0.25, 0.5, 0.75, 1]).forEach(v => rCtx.fillText(v, toXR(v), padT + rPlotH + 6));
+        rCtx.textAlign = 'right'; rCtx.textBaseline = 'middle';
+        [0, 0.5, 1.0, 1.5].forEach(fv => {
+          if (fv <= fMaxR) rCtx.fillText(fv.toFixed(1), padL - 6, toYR(fv));
+        });
+      }
+
+      nmSliderY.addEventListener('input', renderNonMonoLab);
+      document.querySelectorAll('.nm-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          nmMode = btn.getAttribute('data-nmode');
+          document.querySelectorAll('.nm-mode-btn').forEach(b => {
+            b.className = b === btn
+              ? 'nm-mode-btn px-3.5 py-2 rounded-lg bg-white text-[#4f46e5] shadow-xs transition-all'
+              : 'nm-mode-btn px-3.5 py-2 rounded-lg text-slate-600 transition-all';
+          });
+          if (nmMode === 'asym') {
+            nmSliderY.max = '4.0'; nmSliderY.value = '0.64';
+          } else {
+            nmSliderY.max = '1.0'; nmSliderY.value = '0.50';
+          }
+          renderNonMonoLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         8. SECTION 5: INTERACTIVE 5-QUESTION MASTERY QUIZ
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. If $\\text{Var}(X) = 3$, what is $\\text{Var}(5 - 4X)$?',
+          options: [
+            '$-12$',
+            '$-43$',
+            '$48$',
+            '$53$'
+          ],
+          correct: 2,
+          explanation: 'The additive shift $5$ vanishes and the negative slope $-4$ squares to $+16$: $\\text{Var}(5 - 4X) = (-4)^2 \\text{Var}(X) = 16 \\times 3 = 48$.'
+        },
+        {
+          q: '2. Suppose $\\sigma_X = 4$ and $Y = 10 - 2X$. What is the standard deviation $\\sigma_Y$?',
+          options: [
+            '$-8$',
+            '$2$',
+            '$8$',
+            '$16$'
+          ],
+          correct: 2,
+          explanation: 'Standard deviation scales by the absolute value of the slope: $\\sigma_Y = |-2|\\sigma_X = 2 \\times 4 = 8$ (never negative!).'
+        },
+        {
+          q: '3. For a random variable $X$ with $E[X] = 7$ and $\\text{Var}(X) = 9$, which constant $a$ minimizes $E[(X - a)^2]$, and what is that minimum value?',
+          options: [
+            '$a = 9$, minimum value $= 7$',
+            '$a = 7$, minimum value $= 9$',
+            '$a = 7$, minimum value $= 3$',
+            '$a = 0$, minimum value $= 58$'
+          ],
+          correct: 1,
+          explanation: 'Since $E[(X - a)^2] = (\\mu - a)^2 + \\sigma^2 = (7 - a)^2 + 9$, the unique minimizer is $a = \\mu = 7$, giving minimum value $\\sigma^2 = 9$.'
+        },
+        {
+          q: '4. Let $X$ have support $(0, 1)$ and let $Y = -2X + 5$. What are the transformed support of $Y$ and the Jacobian factor $\\left|\\frac{dx}{dy}\\right|$?',
+          options: [
+            'Support $(3, 5)$ and $\\left|\\frac{dx}{dy}\\right| = \\frac{1}{2}$',
+            'Support $(3, 5)$ and $\\left|\\frac{dx}{dy}\\right| = -\\frac{1}{2}$',
+            'Support $(5, 7)$ and $\\left|\\frac{dx}{dy}\\right| = 2$',
+            'Support $(0, 1)$ and $\\left|\\frac{dx}{dy}\\right| = \\frac{1}{2}$'
+          ],
+          correct: 0,
+          explanation: 'Endpoints $x = 0 \\mapsto y = 5$ and $x = 1 \\mapsto y = 3$, giving support $(3, 5)$. Since $x = \\frac{5 - y}{2}$, the Jacobian is $\\left|\\frac{dx}{dy}\\right| = \\left|-\\frac{1}{2}\\right| = \\frac{1}{2}$.'
+        },
+        {
+          q: '5. Let $X$ and $Y$ be independent random variables with $\\text{Var}(X) = 2$ and $\\text{Var}(Y) = 5$. What is $\\text{Var}(3X - 2Y + 1)$?',
+          options: [
+            '$-2$',
+            '$16$',
+            '$38$',
+            '$39$'
+          ],
+          correct: 2,
+          explanation: 'For independent $X, Y$, variances ADD even with a minus sign, and the constant $+1$ drops: $\\text{Var}(3X - 2Y + 1) = 3^2(2) + (-2)^2(5) = 18 + 20 = 38$.'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-white border-slate-200 text-slate-700 hover:border-[#4f46e5] hover:bg-indigo-50/40';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-rose-50 border-rose-400 text-rose-900 font-semibold';
+              else cls = 'bg-slate-50 border-slate-200 text-slate-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-slate-900 text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        safeRenderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         9. INITIALIZATION ON WINDOW LOAD
+      ------------------------------------------------------------------- */
+      window.addEventListener('load', () => {
+        renderLinearLab();
+        loadMsePreset('unif4');
+        renderLotusLab();
+        renderNonMonoLab();
+        renderQuiz();
+        updateScrollProgress();
+        safeRenderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

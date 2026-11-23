@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 3: Linear Systems, Elimination & LU Factorization | Linear Algebra (MATH 106)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent-1: #2563eb;
+      --accent-2: #e11d48;
+      --accent-3: #059669;
+      --accent-4: #d97706;
+      --accent-purple: #7c3aed;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --sidebar-w: 270px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-card: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --primary: #60a5fa;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --primary-hover: #93c5fd;
+      --accent-1: #60a5fa;
+      --accent-2: #fb7185;
+      --accent-3: #34d399;
+      --accent-4: #fbbf24;
+      --accent-purple: #a78bfa;
+      --success: #34d399;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --warning: #fbbf24;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .brand-badge {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #059669, #2563eb);
+      color: #fff; font-weight: 800; font-size: 14px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-title { font-size: 14px; font-weight: 700; line-height: 1.25; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+
+    .progress-box { background: var(--bg-subtle); border-radius: 10px; padding: 12px; margin-bottom: 18px; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-bar { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent-3)); transition: width 0.35s ease; }
+
+    .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin: 12px 8px 6px; }
+    .nav-links { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+    .nav-links a {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px;
+      color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      width: 20px; height: 20px; border-radius: 6px; background: var(--bg-subtle);
+      font-size: 11px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;
+    }
+    .nav-links a.active .nav-num { background: var(--primary); color: #fff; }
+
+    .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .theme-btn {
+      width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .theme-btn:hover { border-color: var(--primary); }
+
+    /* Mobile Header */
+    .mobile-bar {
+      display: none; position: fixed; top: 0; left: 0; right: 0; height: 54px;
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 0 16px; align-items: center; justify-content: space-between; z-index: 120;
+    }
+    .menu-btn {
+      background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Main */
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 80px; max-width: 1120px; }
+
+    /* Hero */
+    .hero {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 32px; box-shadow: var(--shadow); margin-bottom: 32px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #059669, #2563eb, #7c3aed);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--primary-soft); color: var(--primary); }
+    .pill.neutral { background: var(--bg-subtle); color: var(--text-muted); }
+    .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .hero-desc { color: var(--text-muted); font-size: 15px; max-width: 780px; margin-bottom: 18px; }
+    .guiding-quote {
+      border-left: 3.5px solid var(--primary); background: var(--primary-soft);
+      padding: 12px 16px; border-radius: 0 10px 10px 0; font-size: 14px; margin-bottom: 20px;
+    }
+    .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+    .obj-item { background: var(--bg-subtle); padding: 10px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 8px; }
+    .obj-check { color: var(--success); font-weight: 800; }
+
+    /* Sections & Cards */
+    section { margin-bottom: 44px; scroll-margin-top: 24px; }
+    .sec-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .sec-title { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; display: flex; align-items: center; gap: 10px; }
+    .sec-tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary); color: #fff; }
+    .mark-btn {
+      font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); cursor: pointer;
+    }
+    .mark-btn.done { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow); margin-bottom: 18px;
+    }
+    .card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    .formula-box {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 16px; margin: 10px 0; overflow-x: auto;
+    }
+    .callout { border-radius: 10px; padding: 12px 16px; font-size: 13.5px; margin-top: 12px; }
+    .callout.warn { background: var(--warning-bg); border-left: 3.5px solid var(--warning); }
+    .callout.info { background: var(--primary-soft); border-left: 3.5px solid var(--primary); }
+    .callout.good { background: var(--success-bg); border-left: 3.5px solid var(--success); }
+
+    /* Interactive System Lab */
+    .lab-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; align-items: start; }
+    .canvas-wrap { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    #sysCanvas { width: 100%; height: auto; display: block; }
+    .canvas-hint {
+      font-size: 12px; color: var(--text-muted); padding: 8px 12px; border-top: 1px solid var(--border);
+      background: var(--bg-card); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+    }
+    .controls-panel { display: flex; flex-direction: column; gap: 12px; }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-btn {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text); cursor: pointer;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .tab-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text-muted); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .eq-box {
+      background: var(--bg-subtle); padding: 12px; border-radius: 10px;
+      display: flex; flex-direction: column; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    }
+    .eq-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .eq-row input {
+      width: 56px; padding: 5px 6px; text-align: center; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text);
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+    }
+    .telemetry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-box { background: var(--bg-subtle); padding: 9px 11px; border-radius: 9px; border: 1px solid var(--border); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; margin-top: 2px; }
+
+    /* Stepper */
+    .proof-steps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .proof-step {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-subtle); opacity: 0.3; transition: all 0.25s;
+    }
+    .proof-step.revealed { opacity: 1; background: var(--bg-card); border-color: var(--primary); }
+    .proof-step .step-reason { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    th {
+      background: var(--bg-subtle); font-weight: 700; font-size: 12.5px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+    }
+
+    /* Solvers */
+    .solver-input {
+      padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      text-align: center;
+    }
+    .mat3-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+      background: var(--bg-subtle); padding: 12px; border-radius: 10px; margin-bottom: 10px;
+    }
+    .mat3-grid input { width: 100%; }
+    .mat3-b { border-left: 2.5px solid var(--primary) !important; }
+    .btn-primary {
+      padding: 9px 16px; border-radius: 8px; border: none; background: var(--primary);
+      color: #fff; font-weight: 600; font-size: 13.5px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-weight: 600; font-size: 12.5px; cursor: pointer;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .solver-output {
+      margin-top: 12px; background: var(--bg-subtle); border-radius: 10px;
+      padding: 14px 16px; font-size: 13px; max-height: 440px; overflow-y: auto;
+    }
+    .step-line { padding: 7px 0; border-bottom: 1px dashed var(--border); }
+    .step-line:last-child { border-bottom: none; }
+    .mat-inline {
+      display: inline-grid; gap: 3px 10px; padding: 5px 10px;
+      border-left: 2px solid var(--text); border-right: 2px solid var(--text); border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; text-align: right;
+      vertical-align: middle; margin: 4px 0;
+    }
+    .aug-sep { border-left: 1.5px dashed var(--text-muted); padding-left: 8px; }
+
+    /* True/False & Exam Cards */
+    .tf-item, .exam-card {
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      margin-bottom: 14px; background: var(--bg-card);
+    }
+    .tf-meta { font-size: 11.5px; font-weight: 700; color: var(--accent-purple); margin-bottom: 4px; }
+    .tf-q { font-size: 14.5px; font-weight: 500; margin-bottom: 10px; }
+    .tf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tf-btn {
+      padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-weight: 700; font-size: 12.5px; cursor: pointer;
+    }
+    .tf-btn.selected-correct { background: var(--success); color: #fff; border-color: var(--success); }
+    .tf-btn.selected-wrong { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .tf-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 13px; display: none; }
+    .tf-feedback.show { display: block; }
+    .tf-feedback.correct { background: var(--success-bg); border-left: 3px solid var(--success); }
+    .tf-feedback.wrong { background: var(--danger-bg); border-left: 3px solid var(--danger); }
+
+    .exam-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .exam-badge { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary-soft); color: var(--primary); }
+    .exam-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .reveal-box {
+      margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+      background: var(--bg-subtle); font-size: 13.5px; display: none;
+    }
+    .reveal-box.show { display: block; }
+
+    .lesson-footer {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding-top: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+    }
+
+    @media (max-width: 960px) { .lab-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 820px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); top: 54px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 74px 18px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Bar -->
+  <div class="mobile-bar">
+    <strong>MATH 106 &middot; Lesson 3</strong>
+    <button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">Menu</button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">L3</div>
+      <div>
+        <div class="brand-title">Linear Algebra</div>
+        <div class="brand-sub">MATH 106 / AST 107 &middot; DU IASDS</div>
+      </div>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson 3 Mastery</span>
+        <span id="progText">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <div class="nav-label">Lesson Sections</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#orientation" class="active"><span class="nav-num">0</span> Orientation</a></li>
+      <li><a href="#lab"><span class="nav-num">1</span> Row vs. Column Lab</a></li>
+      <li><a href="#elimination"><span class="nav-num">2</span> REF, RREF &amp; Consistency</a></li>
+      <li><a href="#lu-section"><span class="nav-num">3</span> $A = LU$ Factorization</a></li>
+      <li><a href="#dictionary"><span class="nav-num">4</span> Geometric Dictionary</a></li>
+      <li><a href="#solvers"><span class="nav-num">5</span> Interactive Solvers</a></li>
+      <li><a href="#exam-arena"><span class="nav-num">6</span> DU Past-Exam Arena</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">Switch to Dark Mode</button>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center;">
+        Module 1 of 4 &middot; Lesson 3 of 12
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- 0. Orientation -->
+    <section id="orientation" class="hero">
+      <div class="pill-row">
+        <span class="pill">Module 1: Foundations</span>
+        <span class="pill neutral">Lesson 3 of 12</span>
+        <span class="pill neutral">1st Incourse Core</span>
+        <span class="pill neutral">Anton Ch. 1 &amp; 9.1 &middot; Strang Ch. 2</span>
+      </div>
+      <h1>Linear Systems, Elimination &amp; $LU$ Factorization</h1>
+      <p class="hero-desc">
+        Solving $A\mathbf{x} = \mathbf{b}$ is the central problem of Linear Algebra. Here you will connect the
+        <strong>Row Picture</strong> (intersecting lines/planes) and the <strong>Column Picture</strong> (linear combinations),
+        master Gaussian &amp; Gauss-Jordan elimination (REF/RREF), diagnose consistency with the Rouch&eacute;-Capelli theorem,
+        and factor $A = LU$ to solve multiple right-hand sides cheaply.
+      </p>
+      <div class="guiding-quote">
+        <strong>Two Lenses on $A\mathbf{x} = \mathbf{b}$:</strong> In the <em>Row Picture</em>, each equation is a line (or plane) and the solution is their intersection.
+        In the <em>Column Picture</em>, we ask: what combination of the columns of $A$ builds $\mathbf{b}$?
+      </div>
+      <div class="obj-grid">
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Switch effortlessly between Row Picture and Column Picture</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Reduce augmented matrices $[A|\mathbf{b}]$ to REF and RREF</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Classify unique, infinite, and inconsistent systems (including `*` matrices)</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Compute $A = LU$ and solve via $L\mathbf{y}=\mathbf{b}$ then $U\mathbf{x}=\mathbf{y}$</span></div>
+      </div>
+    </section>
+
+    <!-- 1. Visual Intuition Lab -->
+    <section id="lab">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">LAB</span> 1. Interactive 2&times;2 System Explorer (Row vs. Column Picture)</h2>
+        <button class="mark-btn" data-sec="lab" onclick="toggleDone('lab', this)">Mark Complete</button>
+      </div>
+
+      <div class="card">
+        <div class="lab-layout">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+              <div class="tab-bar">
+                <button class="tab-btn active" id="viewRowBtn" onclick="setLabView('row')">Row Picture (Intersecting Lines)</button>
+                <button class="tab-btn" id="viewColBtn" onclick="setLabView('col')">Column Picture ($x\mathbf{a}_1 + y\mathbf{a}_2 = \mathbf{b}$)</button>
+              </div>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="sysCanvas" width="560" height="440"></canvas>
+              <div class="canvas-hint" id="labHint">
+                <span>Blue = Eq 1, Red = Eq 2, Green Dot = Intersection Solution</span>
+                <span>Grid: 1 unit</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-panel">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">COURSE &amp; EXAM PRESETS</div>
+              <div class="preset-row">
+                <button class="chip-btn" onclick="setSys(2,1,5, 1,-1,1)">Unique (L2 Ex.)</button>
+                <button class="chip-btn" onclick="setSys(1,1,4, 3,3,6)">Parallel (No Sol.)</button>
+                <button class="chip-btn" onclick="setSys(2,-1,2, 4,-2,4)">Coincident (&infin; Sol.)</button>
+                <button class="chip-btn" onclick="setSys(-4,1,-2, 4,-1,2)">DU 2025 (k=&minus;4)</button>
+                <button class="chip-btn" onclick="setSys(1,-2,0, 2,1,0)">Homogeneous (Ax=0)</button>
+              </div>
+            </div>
+
+            <div class="eq-box">
+              <div class="eq-row">
+                <span style="color:var(--accent-1);font-weight:800;">Eq 1:</span>
+                <input type="number" id="s_a11" value="2" step="0.5" oninput="drawSys()"> $x +$
+                <input type="number" id="s_a12" value="1" step="0.5" oninput="drawSys()"> $y =$
+                <input type="number" id="s_b1" value="5" step="0.5" oninput="drawSys()">
+              </div>
+              <div class="eq-row">
+                <span style="color:var(--accent-2);font-weight:800;">Eq 2:</span>
+                <input type="number" id="s_a21" value="1" step="0.5" oninput="drawSys()"> $x +$
+                <input type="number" id="s_a22" value="-1" step="0.5" oninput="drawSys()"> $y =$
+                <input type="number" id="s_b2" value="1" step="0.5" oninput="drawSys()">
+              </div>
+            </div>
+
+            <div class="telemetry">
+              <div class="stat-box">
+                <div class="stat-label">Determinant $\det(A)$</div>
+                <div class="stat-val" id="sysDet">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Ranks $\text{r}(A)$ vs $\text{r}([A|b])$</div>
+                <div class="stat-val" id="sysRank">&mdash;</div>
+              </div>
+              <div class="stat-box" style="grid-column: span 2;">
+                <div class="stat-label">Solution Verdict</div>
+                <div class="stat-val" id="sysVerdict">&mdash;</div>
+              </div>
+            </div>
+
+            <div class="callout info" style="margin-top:0; font-size:12.5px;" id="sysExplain">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. REF, RREF, Consistency & Homogeneous Systems -->
+    <section id="elimination">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">THEORY</span> 2. Gaussian Elimination, REF vs. RREF &amp; Consistency</h2>
+        <button class="mark-btn" data-sec="elimination" onclick="toggleDone('elimination', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>2.1 Elementary Row Operations &amp; Echelon Forms</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:8px;">
+            Three legal row operations preserve the exact solution set of $[A|\mathbf{b}]$:
+            <strong>(1) Swap</strong> two rows ($R_i \leftrightarrow R_j$), <strong>(2) Scale</strong> a row by $k \neq 0$,
+            <strong>(3) Add</strong> a multiple of one row to another ($R_i \leftarrow R_i + kR_j$).
+          </p>
+          <div class="formula-box">
+            <strong>REF (Gaussian):</strong> Leading 1's step strictly right; zeros <em>below</em> pivots.
+            $$\begin{bmatrix} 1 & * & * \\ 0 & 1 & * \\ 0 & 0 & 1 \end{bmatrix}$$
+            <strong>RREF (Gauss-Jordan):</strong> Zeros both <em>above and below</em> every leading 1.
+            $$\begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix}$$
+          </div>
+          <div class="callout good" style="font-size:12.5px;">
+            <strong>Practical Slide Tip:</strong> When a system has infinitely many solutions, push all the way to <strong>RREF</strong>—reading off the free variables and parametric solution becomes automatic without sign errors!
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>2.2 Rouch&eacute;-Capelli Theorem &amp; Homogeneous Systems</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:8px;">
+            For an $m \times n$ system $A\mathbf{x} = \mathbf{b}$ (with $m$ equations, $n$ unknowns):
+          </p>
+          <ul style="padding-left:18px; font-size:13.5px; color:var(--text-muted); display:flex; flex-direction:column; gap:6px;">
+            <li><strong>Inconsistent (No Solution):</strong> $\text{rank}(A) &lt; \text{rank}([A|\mathbf{b}])$ &mdash; RREF has a contradiction row $\begin{bmatrix} 0 & \cdots & 0 & | & c \end{bmatrix}$ with $c \neq 0$.</li>
+            <li><strong>Unique Solution:</strong> $\text{rank}(A) = \text{rank}([A|\mathbf{b}]) = n$ (no free variables).</li>
+            <li><strong>Infinitely Many Solutions:</strong> $\text{rank}(A) = \text{rank}([A|\mathbf{b}]) = r &lt; n$ (exactly $n - r$ free parameters).</li>
+          </ul>
+          <div class="callout info" style="font-size:13px;">
+            <strong>Homogeneous Systems ($A\mathbf{x} = \mathbf{0}$):</strong><br>
+            &bull; <strong>Always consistent</strong> (the trivial solution $\mathbf{x} = \mathbf{0}$ always works).<br>
+            &bull; Has <strong>nontrivial solutions</strong> $\iff \text{rank}(A) &lt; n$ (for square $A$: $\det(A) = 0$).<br>
+            &bull; If $n &gt; m$ (more unknowns than equations), a homogeneous system <em>always</em> has infinitely many solutions!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. LU Factorization -->
+    <section id="lu-section">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">FACTORIZATION</span> 3. Elimination = Factorization ($A = LU$)</h2>
+        <button class="mark-btn" data-sec="lu" onclick="toggleDone('lu', this)">Mark Complete</button>
+      </div>
+
+      <div class="card">
+        <div class="grid-2" style="margin-bottom:14px;">
+          <div>
+            <h3>What is $A = LU$?</h3>
+            <p style="font-size:13.5px; color:var(--text-muted);">
+              When elimination proceeds without row swaps, it factors $A$ into:
+            </p>
+            <ul style="padding-left:18px; font-size:13.5px; color:var(--text-muted); margin-top:6px;">
+              <li><strong>$U$:</strong> Upper triangular matrix (the echelon form after forward elimination).</li>
+              <li><strong>$L$:</strong> Unit lower triangular matrix ($1$'s on diagonal) storing the <strong>multipliers $\ell_{ij}$</strong> used to zero out entry $(i, j)$ via $R_i \leftarrow R_i - \ell_{ij}R_j$.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Why Factorize? (The Two-Step Triangular Solve)</h3>
+            <p style="font-size:13.5px; color:var(--text-muted);">
+              To solve $A\mathbf{x} = \mathbf{b}$ (especially for <em>many</em> right-hand sides $\mathbf{b}_1, \mathbf{b}_2, \dots$):
+            </p>
+            <div class="formula-box" style="margin:8px 0;">
+              $$A\mathbf{x} = \mathbf{b} \iff L(U\mathbf{x}) = \mathbf{b} \implies \begin{cases} \text{1. Solve } L\mathbf{y} = \mathbf{b} \text{ (forward sub.)} \\ \text{2. Solve } U\mathbf{x} = \mathbf{y} \text{ (back sub.)} \end{cases}$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Stepper for Lecture 3x3 LU Example -->
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:12px;">
+          <div>
+            <strong>Interactive Walkthrough: Lecture $3\times 3$ $LU$ Factorization</strong>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Factor $A = \begin{bmatrix} 2 & 1 & 1 \\ 4 & 3 & 3 \\ 8 & 7 & 9 \end{bmatrix}$ into $L$ and $U$ step-by-step.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-primary" onclick="nextLUStep()">Next Step</button>
+            <button class="btn-outline" onclick="resetLUStep()">Reset</button>
+          </div>
+        </div>
+
+        <div class="proof-steps" id="luSteps">
+          <div class="proof-step revealed">
+            <div class="step-reason">Step 1: Eliminate below Pivot 1 ($a_{11} = 2$)</div>
+            Operations: $R_2 \leftarrow R_2 - \mathbf{2}R_1$ ($\ell_{21} = 2$) and $R_3 \leftarrow R_3 - \mathbf{4}R_1$ ($\ell_{31} = 4$).
+            $$\begin{bmatrix} 2 & 1 & 1 \\ 4 & 3 & 3 \\ 8 & 7 & 9 \end{bmatrix} \longrightarrow \begin{bmatrix} 2 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 3 & 5 \end{bmatrix}, \qquad L \text{ so far} = \begin{bmatrix} 1 & 0 & 0 \\ \mathbf{2} & 1 & 0 \\ \mathbf{4} & * & 1 \end{bmatrix}$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 2: Eliminate below Pivot 2 ($u_{22} = 1$)</div>
+            Operation: $R_3 \leftarrow R_3 - \mathbf{3}R_2$ ($\ell_{32} = 3$).
+            $$\begin{bmatrix} 2 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 3 & 5 \end{bmatrix} \longrightarrow U = \begin{bmatrix} 2 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 2 \end{bmatrix}, \qquad L = \begin{bmatrix} 1 & 0 & 0 \\ \mathbf{2} & 1 & 0 \\ \mathbf{4} & \mathbf{3} & 1 \end{bmatrix}$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 3: Verify $LU = A$ (The multipliers rebuild $A$!)</div>
+            $$LU = \begin{bmatrix} 1 & 0 & 0 \\ 2 & 1 & 0 \\ 4 & 3 & 1 \end{bmatrix}\begin{bmatrix} 2 & 1 & 1 \\ 0 & 1 & 1 \\ 0 & 0 & 2 \end{bmatrix} = \begin{bmatrix} 2 & 1 & 1 \\ 4 & 3 & 3 \\ 8 & 7 & 9 \end{bmatrix} = A. \quad \checkmark$$
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Geometric Dictionary -->
+    <section id="dictionary">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">MAP</span> 4. Lesson 3 Geometric Dictionary</h2>
+        <button class="mark-btn" data-sec="dictionary" onclick="toggleDone('dictionary', this)">Mark Complete</button>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Algebraic Concept</th>
+              <th>Geometric Picture</th>
+              <th>Exam Diagnostic</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Consistent &amp; Unique Solution</td>
+              <td>Lines/planes meet at a single point; $\mathbf{b}$ is a unique combo of columns</td>
+              <td>$\text{rank}(A) = \text{rank}([A|\mathbf{b}]) = n$ (every col has a pivot)</td>
+            </tr>
+            <tr>
+              <td>Inconsistent System</td>
+              <td>Parallel lines/planes with no common point; $\mathbf{b} \notin \text{Col}(A)$</td>
+              <td>A row $\begin{bmatrix} 0 & \cdots & 0 & | & c \neq 0 \end{bmatrix}$ appears in REF</td>
+            </tr>
+            <tr>
+              <td>Infinitely Many Solutions</td>
+              <td>Solution set is a line, plane, or $k$-D flat ($k = n - r$ free vars)</td>
+              <td>Consistent with at least one free (non-pivot) column</td>
+            </tr>
+            <tr>
+              <td>Homogeneous $A\mathbf{x} = \mathbf{0}$</td>
+              <td>All planes pass through the origin $\mathbf{0}$</td>
+              <td>Never inconsistent; nontrivial solution iff $r &lt; n$</td>
+            </tr>
+            <tr>
+              <td>Row of zeros $\begin{bmatrix} 0 & \cdots & 0 & | & 0 \end{bmatrix}$</td>
+              <td>Redundant equation (lies in span of other equations)</td>
+              <td><strong>Trap:</strong> Does <em>not</em> guarantee $\infty$ solutions if $r = n$ (e.g., $4\times 3$ system)</td>
+            </tr>
+            <tr>
+              <td>$A = LU$</td>
+              <td>Records elimination multipliers in $L$ and pivots/echelon in $U$</td>
+              <td>Requires no row exchanges (otherwise $PA = LU$)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Interactive Solvers -->
+    <section id="solvers">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">TOOLS</span> 5. Interactive Step-by-Step Solvers</h2>
+        <button class="mark-btn" data-sec="solvers" onclick="toggleDone('solvers', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Solver A: 3x3 Gauss-Jordan RREF Solver -->
+        <div class="card">
+          <h3>Solver A: $3\times 3$ Step-by-Step RREF Solver</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Enter $[A \mid \mathbf{b}]$ below to watch every elementary row operation to RREF.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadGJPreset([1,1,2,9, 2,4,-3,1, 3,6,-5,0])">Lecture Ex. (Unique)</button>
+            <button class="chip-btn" onclick="loadGJPreset([1,2,-1,3, 2,4,-2,6, 1,1,1,2])">Infinitely Many</button>
+            <button class="chip-btn" onclick="loadGJPreset([1,1,1,2, 2,2,2,5, 1,-1,1,0])">Inconsistent</button>
+            <button class="chip-btn" onclick="loadGJPreset([2,-1,3,3, 4,2,-2,2, 6,-3,1,9])">DU Final 2025 Trig</button>
+          </div>
+          <div class="mat3-grid" id="gjGrid">
+            <input class="solver-input" id="gj00" type="number" step="any" value="1">
+            <input class="solver-input" id="gj01" type="number" step="any" value="1">
+            <input class="solver-input" id="gj02" type="number" step="any" value="2">
+            <input class="solver-input mat3-b" id="gj03" type="number" step="any" value="9">
+
+            <input class="solver-input" id="gj10" type="number" step="any" value="2">
+            <input class="solver-input" id="gj11" type="number" step="any" value="4">
+            <input class="solver-input" id="gj12" type="number" step="any" value="-3">
+            <input class="solver-input mat3-b" id="gj13" type="number" step="any" value="1">
+
+            <input class="solver-input" id="gj20" type="number" step="any" value="3">
+            <input class="solver-input" id="gj21" type="number" step="any" value="6">
+            <input class="solver-input" id="gj22" type="number" step="any" value="-5">
+            <input class="solver-input mat3-b" id="gj23" type="number" step="any" value="0">
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runGJSolver()">Row Reduce to RREF Step-by-Step</button>
+          <div class="solver-output" id="gjOut"></div>
+        </div>
+
+        <!-- Solver B: 3x3 LU Factorizer & Solver -->
+        <div class="card">
+          <h3>Solver B: $3\times 3$ $A = LU$ Factorizer &amp; Solver</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Computes $L$ and $U$ (without pivoting), then solves $L\mathbf{y}=\mathbf{b}$ and $U\mathbf{x}=\mathbf{y}$.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadLUPreset([2,1,1,5, 4,3,3,13, 8,7,9,31])">Lecture Ex.</button>
+            <button class="chip-btn" onclick="loadLUPreset([2,4,6,2, 1,4,7,3, 1,3,7,4])">Anton Ch. 9 Ex.</button>
+            <button class="chip-btn" onclick="loadLUPreset([1,1,1,6, 1,2,2,9, 1,2,3,10])">Strang Ch. 2 Ex.</button>
+          </div>
+          <div class="mat3-grid" id="luGrid">
+            <input class="solver-input" id="lu00" type="number" step="any" value="2">
+            <input class="solver-input" id="lu01" type="number" step="any" value="1">
+            <input class="solver-input" id="lu02" type="number" step="any" value="1">
+            <input class="solver-input mat3-b" id="lu03" type="number" step="any" value="5">
+
+            <input class="solver-input" id="lu10" type="number" step="any" value="4">
+            <input class="solver-input" id="lu11" type="number" step="any" value="3">
+            <input class="solver-input" id="lu12" type="number" step="any" value="3">
+            <input class="solver-input mat3-b" id="lu13" type="number" step="any" value="13">
+
+            <input class="solver-input" id="lu20" type="number" step="any" value="8">
+            <input class="solver-input" id="lu21" type="number" step="any" value="7">
+            <input class="solver-input" id="lu22" type="number" step="any" value="9">
+            <input class="solver-input mat3-b" id="lu23" type="number" step="any" value="31">
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runLUSolver()">Factor $A = LU$ &amp; Solve $A\mathbf{x}=\mathbf{b}$</button>
+          <div class="solver-output" id="luOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. DU Past-Exam Arena -->
+    <section id="exam-arena">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">EXAM ARENA</span> 6. DU Past-Exam Practice (2017&ndash;2025)</h2>
+        <button class="mark-btn" data-sec="exam" onclick="toggleDone('exam', this)">Mark Complete</button>
+      </div>
+
+      <!-- Part A: True/False -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+          <div>
+            <h3 style="margin-bottom:2px;">Part A: True / False Conceptual Traps</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Directly from DU 1st Incourse 2024 &amp; 2025 linear systems questions.</p>
+          </div>
+          <div class="pill" id="tfScore">Score: 0 / 5</div>
+        </div>
+        <div id="tfContainer"></div>
+      </div>
+
+      <!-- Part B: Written Past Exam Problems -->
+      <h3 style="margin:22px 0 12px; font-size:18px;">Part B: Written Exam Problems (Interactive Checks, Hints &amp; Solutions)</h3>
+
+      <!-- Problem 1: Asterisk RREF Matrix (1st Incourse 2025 Q2a) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 1: Asterisk (`*`) Augmented Matrix Classification</strong>
+          <span class="exam-badge">1st Incourse 2025 Q2(a) (3 Marks)</span>
+        </div>
+        <p style="font-size:14px; margin-bottom:10px;">
+          In each augmented matrix, `*` represents an unspecified real number. Classify each system as
+          <strong>Consistent &amp; Unique</strong>, <strong>Infinitely Many</strong>, <strong>Inconsistent</strong>, or <strong>Inconclusive</strong>:
+        </p>
+        <div class="grid-3">
+          <div class="formula-box" style="margin:0;">
+            <strong>(a)</strong> $$\begin{bmatrix} 1 & * & * & | & * \\ 0 & 1 & * & | & * \\ 0 & 0 & 1 & | & 1 \end{bmatrix}$$
+            <select class="solver-input" style="width:100%; margin-top:6px;" id="astA" onchange="checkAst('A','unique')">
+              <option value="">-- Choose verdict --</option>
+              <option value="unique">Consistent &amp; Unique</option>
+              <option value="inf">Infinitely Many</option>
+              <option value="incons">Inconsistent</option>
+              <option value="inconcl">Inconclusive</option>
+            </select>
+            <div id="astMsgA" style="font-size:12px; margin-top:5px; font-weight:600;"></div>
+          </div>
+          <div class="formula-box" style="margin:0;">
+            <strong>(b)</strong> $$\begin{bmatrix} 1 & * & * & | & * \\ 0 & 1 & * & | & * \\ 0 & 0 & 0 & | & 1 \end{bmatrix}$$
+            <select class="solver-input" style="width:100%; margin-top:6px;" id="astB" onchange="checkAst('B','incons')">
+              <option value="">-- Choose verdict --</option>
+              <option value="unique">Consistent &amp; Unique</option>
+              <option value="inf">Infinitely Many</option>
+              <option value="incons">Inconsistent</option>
+              <option value="inconcl">Inconclusive</option>
+            </select>
+            <div id="astMsgB" style="font-size:12px; margin-top:5px; font-weight:600;"></div>
+          </div>
+          <div class="formula-box" style="margin:0;">
+            <strong>(c)</strong> $$\begin{bmatrix} 1 & * & * & | & * \\ 1 & 0 & 0 & | & 1 \\ 1 & 0 & 0 & | & 1 \end{bmatrix}$$
+            <select class="solver-input" style="width:100%; margin-top:6px;" id="astC" onchange="checkAst('C','inconcl')">
+              <option value="">-- Choose verdict --</option>
+              <option value="unique">Consistent &amp; Unique</option>
+              <option value="inf">Infinitely Many</option>
+              <option value="incons">Inconsistent</option>
+              <option value="inconcl">Inconclusive</option>
+            </select>
+            <div id="astMsgC" style="font-size:12px; margin-top:5px; font-weight:600;"></div>
+          </div>
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol1')">Show Full Explanation</button>
+        </div>
+        <div class="reveal-box" id="sol1">
+          <strong>Explanation:</strong><br>
+          &bull; <strong>(a) Consistent &amp; Unique:</strong> In REF with 3 pivots for 3 unknowns ($z = 1$, back-substitution uniquely determines $y$ and $x$).<br>
+          &bull; <strong>(b) Inconsistent:</strong> The last row reads $0x + 0y + 0z = 1$, a contradiction.<br>
+          &bull; <strong>(c) Inconclusive:</strong> Rows 2 &amp; 3 both force $x = 1$. Substituting into Row 1 gives $1 + a y + b z = c \implies ay + bz = c - 1$. If $a=b=0$ and $c \neq 1$, it's <em>inconsistent</em>; otherwise it has <em>infinitely many</em> solutions. Not enough info to decide!
+        </div>
+      </div>
+
+      <!-- Problem 2: Parameter k consistency (1st Incourse 2025 Q1b) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 2: Parameter $k$ for Consistency (Famous Trap!)</strong>
+          <span class="exam-badge">1st Incourse 2025 Q1(b) (2 Marks)</span>
+        </div>
+        <p style="font-size:14px;">
+          Find all values of $k$ for which the augmented matrix $\begin{bmatrix} k & 1 & | & -2 \\ 4 & -1 & | & 2 \end{bmatrix}$ corresponds to a consistent linear system.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint2')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol2')">Show Full Solution</button>
+          <button class="btn-outline" onclick="setSys(-4,1,-2, 4,-1,2); location.href='#lab';">Inspect k = &minus;4 in Lab</button>
+        </div>
+        <div class="reveal-box" id="hint2">
+          <strong>Hint:</strong> Add Row 2 to Row 1! Don't stop at $\det(A) = 0$—actually plug in $k = -4$ to see whether the lines are parallel or coincident!
+        </div>
+        <div class="reveal-box" id="sol2">
+          <strong>Solution:</strong><br>
+          Perform $R_1 \leftarrow R_1 + R_2$:
+          $$\begin{bmatrix} k & 1 & | & -2 \\ 4 & -1 & | & 2 \end{bmatrix} \xrightarrow{R_1 + R_2} \begin{bmatrix} k+4 & 0 & | & 0 \\ 4 & -1 & | & 2 \end{bmatrix}.$$
+          &bull; <strong>Case 1 ($k \neq -4$):</strong> $x = 0$ and $y = -2$ (<strong>unique solution</strong>, consistent).<br>
+          &bull; <strong>Case 2 ($k = -4$):</strong> Row 1 becomes $\begin{bmatrix} 0 & 0 & | & 0 \end{bmatrix}$ (no contradiction!), leaving $4x - y = 2$ (<strong>infinitely many solutions</strong>, also consistent!).<br>
+          <strong>Conclusion:</strong> The system is consistent for <strong>all real values of $k \in \mathbb{R}$</strong>.
+        </div>
+      </div>
+
+      <!-- Problem 3: Nonlinear Trig System (Final 2025 Q4b) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 3: Nonlinear Trigonometric System</strong>
+          <span class="exam-badge">Final 2025 Q4(b) &middot; 1st Incourse 2020 (5 Marks)</span>
+        </div>
+        <p style="font-size:14px;">
+          Solve for the unknown angles $\alpha, \beta, \gamma$ where $0 \le \alpha \le 2\pi$, $0 \le \beta \le 2\pi$, and $0 \le \gamma \le \pi$:
+        </p>
+        <div class="formula-box">
+          $$\begin{cases} 2\sin\alpha - \cos\beta + 3\tan\gamma = 3 \\ 4\sin\alpha + 2\cos\beta - 2\tan\gamma = 2 \\ 6\sin\alpha - 3\cos\beta + \tan\gamma = 9 \end{cases}$$
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint3')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol3')">Show Full Solution</button>
+          <button class="btn-outline" onclick="loadGJPreset([2,-1,3,3, 4,2,-2,2, 6,-3,1,9]); location.href='#solvers';">Solve Linear Part in Solver A</button>
+        </div>
+        <div class="reveal-box" id="hint3">
+          <strong>Hint:</strong> Substitute $u = \sin\alpha$, $v = \cos\beta$, $w = \tan\gamma$ to get a standard $3\times 3$ linear system, solve for $(u, v, w)$, then invert each trig function within its given domain!
+        </div>
+        <div class="reveal-box" id="sol3">
+          <strong>Solution:</strong><br>
+          1. Let $u = \sin\alpha$, $v = \cos\beta$, $w = \tan\gamma$. Row-reducing $\begin{bmatrix} 2 & -1 & 3 & | & 3 \\ 4 & 2 & -2 & | & 2 \\ 6 & -3 & 1 & | & 9 \end{bmatrix}$:<br>
+          &bull; $R_2 \leftarrow R_2 - 2R_1$ and $R_3 \leftarrow R_3 - 3R_1$ gives $\begin{bmatrix} 2 & -1 & 3 & | & 3 \\ 0 & 4 & -8 & | & -4 \\ 0 & 0 & -8 & | & 0 \end{bmatrix}$.<br>
+          2. Back-substitution:<br>
+          &bull; $-8w = 0 \implies w = 0$.<br>
+          &bull; $4v - 8(0) = -4 \implies v = -1$.<br>
+          &bull; $2u - (-1) + 0 = 3 \implies 2u = 2 \implies u = 1$.<br>
+          3. Convert back to angles on the specified intervals:<br>
+          &bull; $\sin\alpha = 1$ on $[0, 2\pi] \implies \mathbf{\alpha = \frac{\pi}{2}}$.<br>
+          &bull; $\cos\beta = -1$ on $[0, 2\pi] \implies \mathbf{\beta = \pi}$.<br>
+          &bull; $\tan\gamma = 0$ on $[0, \pi] \implies \mathbf{\gamma = 0 \text{ or } \gamma = \pi}$.
+        </div>
+      </div>
+
+      <!-- Problem 4: Conditions on b_i (MISC Example 8) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 4: Conditions on $b_1, b_2, b_3$ for Consistency</strong>
+          <span class="exam-badge">MISC Slides Example 8</span>
+        </div>
+        <p style="font-size:14px;">
+          Determine the conditions on $b_1, b_2, b_3$, if any, so that the system $a - 2b - c = b_1$, $-4a + 5b + 2c = b_2$, $-4a + 7b + 4c = b_3$ is consistent.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol4')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol4">
+          <strong>Solution:</strong><br>
+          Row-reducing $[A|\mathbf{b}]$:
+          $$\begin{bmatrix} 1 & -2 & -1 & | & b_1 \\ -4 & 5 & 2 & | & b_2 \\ -4 & 7 & 4 & | & b_3 \end{bmatrix} \xrightarrow{R_2+4R_1,\,R_3+4R_1} \begin{bmatrix} 1 & -2 & -1 & | & b_1 \\ 0 & -3 & -2 & | & b_2+4b_1 \\ 0 & -1 & 0 & | & b_3+4b_1 \end{bmatrix} \xrightarrow{R_2 \leftrightarrow R_3,\, R_3-3R_2} \begin{bmatrix} 1 & -2 & -1 & | & b_1 \\ 0 & -1 & 0 & | & b_3+4b_1 \\ 0 & 0 & -2 & | & b_2-8b_1-3b_3 \end{bmatrix}.$$
+          Since there are 3 nonzero pivots ($1, -1, -2$), $\det(A) = -2 \neq 0$ and $\text{rank}(A) = \text{rank}([A|\mathbf{b}]) = 3$ for <strong>every</strong> $\mathbf{b}$.<br>
+          <strong>Answer:</strong> <strong>No condition</strong> on $b_1, b_2, b_3$ is needed; the system is always consistent with a unique solution.
+        </div>
+      </div>
+
+      <!-- Problem 5: Solving via LU Factorization -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 5: Solving $A\mathbf{x} = \mathbf{b}$ via $LU$ Factorization</strong>
+          <span class="exam-badge">Lecture Slides Worked Example</span>
+        </div>
+        <p style="font-size:14px;">
+          Solve $\begin{cases} 2x_1 + x_2 = 5 \\ 8x_1 + 7x_2 = 23 \end{cases}$ by finding $A = LU$ and solving $L\mathbf{y} = \mathbf{b}$ followed by $U\mathbf{x} = \mathbf{y}$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol5')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol5">
+          <strong>Solution:</strong><br>
+          1. <strong>Factor $A = LU$:</strong> $R_2 \leftarrow R_2 - 4R_1$ gives $U = \begin{bmatrix} 2 & 1 \\ 0 & 3 \end{bmatrix}$ and $L = \begin{bmatrix} 1 & 0 \\ 4 & 1 \end{bmatrix}$.<br>
+          2. <strong>Forward substitution ($L\mathbf{y} = \mathbf{b}$):</strong>
+          $$y_1 = 5, \qquad 4y_1 + y_2 = 23 \implies y_2 = 23 - 20 = 3 \implies \mathbf{y} = \begin{bmatrix} 5 \\ 3 \end{bmatrix}.$$
+          3. <strong>Back substitution ($U\mathbf{x} = \mathbf{y}$):</strong>
+          $$3x_2 = 3 \implies x_2 = 1, \qquad 2x_1 + x_2 = 5 \implies x_1 = 2 \implies \mathbf{x} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}.$$
+        </div>
+      </div>
+    </section>
+
+    <footer class="lesson-footer">
+      <div style="font-size:13px; color:var(--text-muted);">
+        &larr; Lesson 2: Matrices, Core Operations &amp; Linear Maps
+      </div>
+      <div style="font-size:13px; font-weight:600; color:var(--primary);">
+        Next up &rarr; Lesson 4: Determinants, Adjoint, Inverses &amp; Cramer's Rule
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    /* ============== THEME TOGGLE ============== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('themeBtn').textContent = isDark ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+      localStorage.setItem('la_theme', isDark ? 'light' : 'dark');
+      drawSys();
+    }
+    (function initTheme(){
+      if (localStorage.getItem('la_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeBtn').textContent = 'Switch to Light Mode';
+      }
+    })();
+
+    /* ============== PROGRESS TRACKER ============== */
+    const sections = ['lab', 'elimination', 'lu', 'dictionary', 'solvers', 'exam'];
+    let doneState = JSON.parse(localStorage.getItem('la_l3_done') || '{}');
+    function updateProgressUI() {
+      let count = 0;
+      sections.forEach(s => {
+        const btn = document.querySelector(`.mark-btn[data-sec="${s}"]`);
+        if (doneState[s]) { count++; if (btn) { btn.classList.add('done'); btn.textContent = 'Completed \u2713'; } }
+        else if (btn) { btn.classList.remove('done'); btn.textContent = 'Mark Complete'; }
+      });
+      const pct = Math.round((count / sections.length) * 100);
+      document.getElementById('progText').textContent = pct + '%';
+      document.getElementById('progFill').style.width = pct + '%';
+    }
+    function toggleDone(sec) {
+      doneState[sec] = !doneState[sec];
+      localStorage.setItem('la_l3_done', JSON.stringify(doneState));
+      updateProgressUI();
+    }
+    updateProgressUI();
+
+    /* ============== SCROLL SPY ============== */
+    const navAnchors = document.querySelectorAll('#navLinks a');
+    window.addEventListener('scroll', () => {
+      let cur = 'orientation';
+      document.querySelectorAll('main section').forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) cur = sec.id;
+      });
+      navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    });
+
+    /* ============== 2x2 ROW vs COLUMN PICTURE LAB ============== */
+    const canvas = document.getElementById('sysCanvas');
+    const ctx = canvas.getContext('2d');
+    const SCALE = 38, OX = canvas.width / 2, OY = canvas.height / 2;
+    let labView = 'row';
+
+    function toC(x, y) { return { cx: OX + x * SCALE, cy: OY - y * SCALE }; }
+    function setLabView(v) {
+      labView = v;
+      document.getElementById('viewRowBtn').classList.toggle('active', v === 'row');
+      document.getElementById('viewColBtn').classList.toggle('active', v === 'col');
+      document.getElementById('labHint').innerHTML = v === 'row'
+        ? '<span>Blue = Eq 1 line, Red = Eq 2 line, Green Dot = Intersection</span><span>Grid: 1 unit</span>'
+        : '<span>Blue = Col 1 (a<sub>1</sub>), Red = Col 2 (a<sub>2</sub>), Amber = Target b</span><span>Grid: 1 unit</span>';
+      drawSys();
+    }
+    function setSys(a11, a12, b1, a21, a22, b2) {
+      document.getElementById('s_a11').value = a11; document.getElementById('s_a12').value = a12; document.getElementById('s_b1').value = b1;
+      document.getElementById('s_a21').value = a21; document.getElementById('s_a22').value = a22; document.getElementById('s_b2').value = b2;
+      drawSys();
+    }
+
+    function drawArrow(x1, y1, x2, y2, color, width = 2.6, dashed = false, label = '') {
+      const p1 = toC(x1, y1), p2 = toC(x2, y2);
+      const dx = p2.cx - p1.cx, dy = p2.cy - p1.cy;
+      if (Math.hypot(dx, dy) < 2) return;
+      const ang = Math.atan2(dy, dx);
+      ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+      if (dashed) ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(p1.cx, p1.cy); ctx.lineTo(p2.cx - 8*Math.cos(ang), p2.cy - 8*Math.sin(ang)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(p2.cx, p2.cy);
+      ctx.lineTo(p2.cx - 10*Math.cos(ang - 0.42), p2.cy - 10*Math.sin(ang - 0.42));
+      ctx.lineTo(p2.cx - 10*Math.cos(ang + 0.42), p2.cy - 10*Math.sin(ang + 0.42));
+      ctx.closePath(); ctx.fill();
+      if (label) { ctx.font = '700 12px Inter, sans-serif'; ctx.fillText(label, p2.cx + 7, p2.cy - 5); }
+      ctx.restore();
+    }
+
+    function drawLineEq(a, b, c, color, width = 2.6, dashed = false) {
+      if (Math.abs(a) < 1e-9 && Math.abs(b) < 1e-9) return;
+      ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width;
+      if (dashed) ctx.setLineDash([6, 4]);
+      let p1, p2;
+      if (Math.abs(b) > 1e-6) {
+        const xMin = -8, xMax = 8;
+        p1 = toC(xMin, (c - a * xMin) / b);
+        p2 = toC(xMax, (c - a * xMax) / b);
+      } else {
+        const xVal = c / a;
+        p1 = toC(xVal, -7); p2 = toC(xVal, 7);
+      }
+      ctx.beginPath(); ctx.moveTo(p1.cx, p1.cy); ctx.lineTo(p2.cx, p2.cy); ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawSys() {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const a11 = parseFloat(document.getElementById('s_a11').value) || 0;
+      const a12 = parseFloat(document.getElementById('s_a12').value) || 0;
+      const b1  = parseFloat(document.getElementById('s_b1').value)  || 0;
+      const a21 = parseFloat(document.getElementById('s_a21').value) || 0;
+      const a22 = parseFloat(document.getElementById('s_a22').value) || 0;
+      const b2  = parseFloat(document.getElementById('s_b2').value)  || 0;
+
+      const gridCol = dark ? '#1e293b' : '#e2e8f0';
+      const axisCol = dark ? '#64748b' : '#94a3b8';
+      const c1 = dark ? '#60a5fa' : '#2563eb';
+      const c2 = dark ? '#fb7185' : '#e11d48';
+      const c3 = dark ? '#34d399' : '#059669';
+      const c4 = dark ? '#fbbf24' : '#d97706';
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Grid & Axes
+      ctx.strokeStyle = gridCol; ctx.lineWidth = 1;
+      for (let i = -8; i <= 8; i++) {
+        let p = toC(i, 0); ctx.beginPath(); ctx.moveTo(p.cx, 0); ctx.lineTo(p.cx, canvas.height); ctx.stroke();
+        p = toC(0, i); ctx.beginPath(); ctx.moveTo(0, p.cy); ctx.lineTo(canvas.width, p.cy); ctx.stroke();
+      }
+      ctx.strokeStyle = axisCol; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(0, OY); ctx.lineTo(canvas.width, OY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(OX, 0); ctx.lineTo(OX, canvas.height); ctx.stroke();
+
+      // Classify system
+      const det = a11 * a22 - a12 * a21;
+      const dX = b1 * a22 - a12 * b2;
+      const dY = a11 * b2 - b1 * a21;
+      const allZeroA = Math.abs(a11)<1e-8 && Math.abs(a12)<1e-8 && Math.abs(a21)<1e-8 && Math.abs(a22)<1e-8;
+      let rankA = Math.abs(det) > 1e-7 ? 2 : (allZeroA ? 0 : 1);
+      let rankAug = rankA;
+      if (rankA === 1 && (Math.abs(dX) > 1e-6 || Math.abs(dY) > 1e-6)) rankAug = 2;
+      if (rankA === 0 && (Math.abs(b1) > 1e-6 || Math.abs(b2) > 1e-6)) rankAug = 1;
+
+      let solX = null, solY = null, status = '';
+      if (rankA === 2) {
+        solX = dX / det; solY = dY / det;
+        status = 'unique';
+      } else if (rankA === rankAug) {
+        status = 'inf';
+      } else {
+        status = 'incons';
+      }
+
+      if (labView === 'row') {
+        drawLineEq(a11, a12, b1, c1, 3, false);
+        drawLineEq(a21, a22, b2, c2, 2.6, status === 'inf');
+        if (status === 'unique') {
+          const p = toC(solX, solY);
+          ctx.beginPath(); ctx.arc(p.cx, p.cy, 7, 0, Math.PI * 2);
+          ctx.fillStyle = c3; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+          ctx.fillStyle = dark ? '#f8fafc' : '#0f172a';
+          ctx.font = '700 13px JetBrains Mono, monospace';
+          ctx.fillText(`(${solX.toFixed(2)}, ${solY.toFixed(2)})`, p.cx + 10, p.cy - 8);
+        }
+      } else {
+        // Column Picture
+        drawArrow(0, 0, a11, a21, c1, 2.8, false, `a1(${a11},${a21})`);
+        drawArrow(0, 0, a12, a22, c2, 2.8, false, `a2(${a12},${a22})`);
+        drawArrow(0, 0, b1, b2, c4, 3.2, false, `b(${b1},${b2})`);
+        if (status === 'unique') {
+          const sx = solX * a11, sy = solX * a21;
+          drawArrow(0, 0, sx, sy, c3, 2.2, true, `${solX.toFixed(1)}a1`);
+          drawArrow(sx, sy, b1, b2, c3, 2.2, true, `${solY.toFixed(1)}a2`);
+        }
+      }
+
+      document.getElementById('sysDet').textContent = det.toFixed(2);
+      document.getElementById('sysRank').textContent = `r(A)=${rankA}, r([A|b])=${rankAug}`;
+      const vEl = document.getElementById('sysVerdict');
+      const eEl = document.getElementById('sysExplain');
+
+      if (status === 'unique') {
+        vEl.innerHTML = `<span style="color:var(--success)">Unique Solution: x = ${solX.toFixed(2)}, y = ${solY.toFixed(2)}</span>`;
+        eEl.innerHTML = `<strong>Why:</strong> det(A) &ne; 0, so the two lines cross at one point and the two columns span all of &Ropf;&sup2; (reaching <strong>b</strong> uniquely).`;
+      } else if (status === 'inf') {
+        vEl.innerHTML = `<span style="color:var(--primary)">Infinitely Many Solutions (Coincident Lines)</span>`;
+        eEl.innerHTML = `<strong>Why:</strong> r(A) = r([A|b]) &lt; 2. Both equations describe the same line; <strong>b</strong> lies directly on the line spanned by the dependent columns.`;
+      } else {
+        vEl.innerHTML = `<span style="color:var(--danger)">Inconsistent &mdash; No Solution (Parallel Lines)</span>`;
+        eEl.innerHTML = `<strong>Why:</strong> r(A) &lt; r([A|b]). The lines are parallel and never meet; <strong>b</strong> points off the line spanned by the columns of A.`;
+      }
+    }
+    drawSys();
+
+    /* ============== LU STEPPER ============== */
+    let luCur = 1;
+    function nextLUStep() {
+      const steps = document.querySelectorAll('#luSteps .proof-step');
+      if (luCur < steps.length) { steps[luCur].classList.add('revealed'); luCur++; }
+    }
+    function resetLUStep() {
+      document.querySelectorAll('#luSteps .proof-step').forEach((el, i) => el.classList.toggle('revealed', i === 0));
+      luCur = 1;
+    }
+
+    /* ============== MATRIX FORMAT HELPER ============== */
+    function fmtNum(n) {
+      if (Math.abs(n) < 1e-9) return '0';
+      if (Math.abs(n - Math.round(n)) < 1e-6) return String(Math.round(n));
+      return n.toFixed(2);
+    }
+    function augMatHTML(M, isAug = true) {
+      const cols = M[0].length;
+      let html = `<div class="mat-inline" style="grid-template-columns:repeat(${cols}, auto);">`;
+      for (let r = 0; r < M.length; r++) {
+        for (let c = 0; c < cols; c++) {
+          const cls = (isAug && c === cols - 1) ? 'aug-sep' : '';
+          html += `<span class="${cls}">${fmtNum(M[r][c])}</span>`;
+        }
+      }
+      return html + '</div>';
+    }
+
+    /* ============== SOLVER A: 3x3 GAUSS-JORDAN RREF ============== */
+    function loadGJPreset(arr) {
+      for (let r = 0; r < 3; r++)
+        for (let c = 0; c < 4; c++)
+          document.getElementById(`gj${r}${c}`).value = arr[r*4 + c];
+      runGJSolver();
+    }
+
+    function runGJSolver() {
+      const M = [];
+      for (let r = 0; r < 3; r++) {
+        M.push([0,1,2,3].map(c => parseFloat(document.getElementById(`gj${r}${c}`).value) || 0));
+      }
+      const logs = [`<div class="step-line"><strong>Initial Augmented Matrix [A | b]:</strong><br>${augMatHTML(M)}</div>`];
+      let pivotRow = 0;
+      const pivotCols = [];
+
+      for (let col = 0; col < 3 && pivotRow < 3; col++) {
+        // Find pivot
+        let maxR = pivotRow;
+        for (let r = pivotRow + 1; r < 3; r++) {
+          if (Math.abs(M[r][col]) > Math.abs(M[maxR][col])) maxR = r;
+        }
+        if (Math.abs(M[maxR][col]) < 1e-9) continue;
+
+        if (maxR !== pivotRow) {
+          [M[pivotRow], M[maxR]] = [M[maxR], M[pivotRow]];
+          logs.push(`<div class="step-line"><strong>Swap R<sub>${pivotRow+1}</sub> &harr; R<sub>${maxR+1}</sub>:</strong><br>${augMatHTML(M)}</div>`);
+        }
+
+        const piv = M[pivotRow][col];
+        if (Math.abs(piv - 1) > 1e-9) {
+          for (let c = col; c < 4; c++) M[pivotRow][c] /= piv;
+          logs.push(`<div class="step-line"><strong>Scale R<sub>${pivotRow+1}</sub> &larr; (1/${fmtNum(piv)})R<sub>${pivotRow+1}</sub>:</strong><br>${augMatHTML(M)}</div>`);
+        }
+
+        let ops = [];
+        for (let r = 0; r < 3; r++) {
+          if (r !== pivotRow && Math.abs(M[r][col]) > 1e-9) {
+            const f = M[r][col];
+            for (let c = col; c < 4; c++) M[r][c] -= f * M[pivotRow][c];
+            ops.push(`R<sub>${r+1}</sub> &larr; R<sub>${r+1}</sub> ${f >= 0 ? '&minus; ' + fmtNum(f) : '+ ' + fmtNum(-f)}R<sub>${pivotRow+1}</sub>`);
+          }
+        }
+        if (ops.length) {
+          logs.push(`<div class="step-line"><strong>Eliminate Col ${col+1}:</strong> ${ops.join(', ')}<br>${augMatHTML(M)}</div>`);
+        }
+        pivotCols.push(col);
+        pivotRow++;
+      }
+
+      // Diagnosis
+      let inconsistent = false;
+      for (let r = 0; r < 3; r++) {
+        if (Math.abs(M[r][0])<1e-7 && Math.abs(M[r][1])<1e-7 && Math.abs(M[r][2])<1e-7 && Math.abs(M[r][3])>1e-7) {
+          inconsistent = true;
+        }
+      }
+      let verdict = '';
+      if (inconsistent) {
+        verdict = `<strong style="color:var(--danger)">Inconsistent System (No Solution)</strong> &mdash; contradiction row [0 0 0 | c &ne; 0].`;
+      } else if (pivotCols.length === 3) {
+        verdict = `<strong style="color:var(--success)">Unique Solution:</strong> x<sub>1</sub> = ${fmtNum(M[0][3])}, x<sub>2</sub> = ${fmtNum(M[1][3])}, x<sub>3</sub> = ${fmtNum(M[2][3])}.`;
+      } else {
+        verdict = `<strong style="color:var(--primary)">Infinitely Many Solutions</strong> &mdash; rank = ${pivotCols.length} &lt; 3 (${3 - pivotCols.length} free parameter${3-pivotCols.length>1?'s':''}).`;
+      }
+      logs.push(`<div class="step-line"><strong>Final RREF Verdict:</strong> ${verdict}</div>`);
+      document.getElementById('gjOut').innerHTML = logs.join('');
+    }
+    runGJSolver();
+
+    /* ============== SOLVER B: 3x3 LU FACTORIZER ============== */
+    function loadLUPreset(arr) {
+      for (let r = 0; r < 3; r++)
+        for (let c = 0; c < 4; c++)
+          document.getElementById(`lu${r}${c}`).value = arr[r*4 + c];
+      runLUSolver();
+    }
+
+    function runLUSolver() {
+      const U = [], b = [];
+      for (let r = 0; r < 3; r++) {
+        U.push([0,1,2].map(c => parseFloat(document.getElementById(`lu${r}${c}`).value) || 0));
+        b.push(parseFloat(document.getElementById(`lu${r}3`).value) || 0);
+      }
+      const L = [[1,0,0],[0,1,0],[0,0,1]];
+      const out = document.getElementById('luOut');
+
+      // Forward elimination without pivoting
+      for (let k = 0; k < 2; k++) {
+        if (Math.abs(U[k][k]) < 1e-9) {
+          out.innerHTML = `<span style="color:var(--danger);font-weight:600;">Zero pivot encountered at (${k+1},${k+1}). Row exchange (PA = LU) is required for this matrix.</span>`;
+          return;
+        }
+        for (let i = k + 1; i < 3; i++) {
+          const mult = U[i][k] / U[k][k];
+          L[i][k] = mult;
+          for (let j = k; j < 3; j++) U[i][j] -= mult * U[k][j];
+        }
+      }
+      if (Math.abs(U[2][2]) < 1e-9) {
+        out.innerHTML = `<div class="step-line"><strong>L =</strong> ${augMatHTML(L, false)} &nbsp; <strong>U =</strong> ${augMatHTML(U, false)}</div>
+                         <div class="step-line" style="color:var(--warning);font-weight:600;">Matrix is singular (u<sub>33</sub> = 0), so back-substitution does not yield a unique solution.</div>`;
+        return;
+      }
+
+      // Forward solve Ly = b
+      const y = [0, 0, 0];
+      y[0] = b[0];
+      y[1] = b[1] - L[1][0]*y[0];
+      y[2] = b[2] - L[2][0]*y[0] - L[2][1]*y[1];
+
+      // Back solve Ux = y
+      const x = [0, 0, 0];
+      x[2] = y[2] / U[2][2];
+      x[1] = (y[1] - U[1][2]*x[2]) / U[1][1];
+      x[0] = (y[0] - U[0][1]*x[1] - U[0][2]*x[2]) / U[0][0];
+
+      out.innerHTML = `
+        <div class="step-line"><strong>1. Factors (A = LU):</strong><br>
+          <strong>L =</strong> ${augMatHTML(L, false)} &nbsp;&nbsp; <strong>U =</strong> ${augMatHTML(U, false)}
+        </div>
+        <div class="step-line"><strong>2. Forward Sub (Ly = b):</strong><br>
+          y<sub>1</sub> = ${fmtNum(y[0])}, &nbsp; y<sub>2</sub> = ${fmtNum(y[1])}, &nbsp; y<sub>3</sub> = ${fmtNum(y[2])}
+        </div>
+        <div class="step-line"><strong>3. Back Sub (Ux = y):</strong><br>
+          <strong style="color:var(--success);">x<sub>1</sub> = ${fmtNum(x[0])}, &nbsp; x<sub>2</sub> = ${fmtNum(x[1])}, &nbsp; x<sub>3</sub> = ${fmtNum(x[2])}</strong>
+        </div>
+      `;
+    }
+    runLUSolver();
+
+    /* ============== TRUE / FALSE EXAM QUIZ ============== */
+    const tfData = [
+      {
+        src: "DU 1st Incourse 2025 Q1(a)(1)",
+        q: "Let A be an n\u00D7n matrix. The linear system Ax = 4x has a unique solution if and only if A \u2212 4I is an invertible matrix.",
+        ans: true,
+        exp: "TRUE. Rewriting Ax = 4x gives (A \u2212 4I)x = 0. This homogeneous system has the unique (trivial) solution x = 0 iff A \u2212 4I is invertible."
+      },
+      {
+        src: "DU 1st Incourse 2025 Q1(a)(4)",
+        q: "If the number of equations in a linear system exceeds the number of unknowns, then the system must be inconsistent.",
+        ans: false,
+        exp: "FALSE. Extra equations can be redundant! Example: x = 1, 2x = 2, 3x = 3 has 3 equations and 1 unknown, yet is perfectly consistent (x = 1)."
+      },
+      {
+        src: "DU 1st Incourse 2025 Q1(a)(5)",
+        q: "If the reduced row echelon form (RREF) of the augmented matrix for a linear system has a row of zeros, then the system must have infinitely many solutions.",
+        ans: false,
+        exp: "FALSE. A row of zeros only means an equation was redundant. A 3\u00D72 system with RREF [[1,0|2],[0,1|3],[0,0|0]] has a UNIQUE solution (x=2, y=3). It could even be inconsistent if another row is [0,0|1]!"
+      },
+      {
+        src: "DU 1st Incourse 2024 Q1(a)(1)",
+        q: "All leading 1's in a matrix in row echelon form (REF) must occur in different columns.",
+        ans: true,
+        exp: "TRUE. By definition of REF, each leading 1 sits strictly to the right of the leading 1 in the row above it."
+      },
+      {
+        src: "DU 1st Incourse 2024 Q1(a)(2)",
+        q: "The linear system x \u2212 y = 3, 2x \u2212 2y = k cannot have a unique solution, regardless of the value of k.",
+        ans: true,
+        exp: "TRUE. The two lines have the same slope (parallel). If k = 6 they coincide (infinitely many solutions); if k \u2260 6 they never meet (no solution). Never unique!"
+      }
+    ];
+
+    let tfResults = {};
+    const tfContainer = document.getElementById('tfContainer');
+    tfData.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'tf-item';
+      div.innerHTML = `
+        <div class="tf-meta">${item.src}</div>
+        <div class="tf-q">${idx + 1}. ${item.q}</div>
+        <div class="tf-actions">
+          <button class="tf-btn" id="tf-${idx}-t" onclick="answerTF(${idx}, true)">True</button>
+          <button class="tf-btn" id="tf-${idx}-f" onclick="answerTF(${idx}, false)">False</button>
+        </div>
+        <div class="tf-feedback" id="tf-fb-${idx}"></div>
+      `;
+      tfContainer.appendChild(div);
+    });
+
+    function answerTF(idx, choice) {
+      const item = tfData[idx];
+      const isCorrect = choice === item.ans;
+      tfResults[idx] = isCorrect;
+      const btnT = document.getElementById(`tf-${idx}-t`), btnF = document.getElementById(`tf-${idx}-f`);
+      btnT.className = 'tf-btn'; btnF.className = 'tf-btn';
+      (choice ? btnT : btnF).classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+      const fb = document.getElementById(`tf-fb-${idx}`);
+      fb.className = `tf-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+      fb.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Not quite.'}</strong> ${item.exp}`;
+      const score = Object.values(tfResults).filter(Boolean).length;
+      document.getElementById('tfScore').textContent = `Score: ${score} / ${tfData.length}`;
+    }
+
+    function checkAst(letter, expected) {
+      const val = document.getElementById('ast' + letter).value;
+      const msg = document.getElementById('astMsg' + letter);
+      if (!val) { msg.textContent = ''; return; }
+      if (val === expected) {
+        msg.style.color = 'var(--success)'; msg.textContent = '\u2713 Correct!';
+      } else {
+        msg.style.color = 'var(--danger)'; msg.textContent = '\u2717 Try again (check the pivots & last row).';
+      }
+    }
+
+    function toggleBox(id) { document.getElementById(id).classList.toggle('show'); }
+  </script>
+</body>
+</html>

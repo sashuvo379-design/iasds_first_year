@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 4: Determinants, Adjoint, Inverses & Cramer's Rule | Linear Algebra (MATH 106)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent-1: #2563eb;
+      --accent-2: #e11d48;
+      --accent-3: #059669;
+      --accent-4: #d97706;
+      --accent-purple: #7c3aed;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --sidebar-w: 270px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-card: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --primary: #60a5fa;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --primary-hover: #93c5fd;
+      --accent-1: #60a5fa;
+      --accent-2: #fb7185;
+      --accent-3: #34d399;
+      --accent-4: #fbbf24;
+      --accent-purple: #a78bfa;
+      --success: #34d399;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --warning: #fbbf24;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .brand-badge {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff; font-weight: 800; font-size: 14px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-title { font-size: 14px; font-weight: 700; line-height: 1.25; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+
+    .progress-box { background: var(--bg-subtle); border-radius: 10px; padding: 12px; margin-bottom: 18px; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-bar { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-purple), var(--primary)); transition: width 0.35s ease; }
+
+    .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin: 12px 8px 6px; }
+    .nav-links { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+    .nav-links a {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px;
+      color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      width: 20px; height: 20px; border-radius: 6px; background: var(--bg-subtle);
+      font-size: 11px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;
+    }
+    .nav-links a.active .nav-num { background: var(--primary); color: #fff; }
+
+    .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .theme-btn {
+      width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .theme-btn:hover { border-color: var(--primary); }
+
+    /* Mobile Header */
+    .mobile-bar {
+      display: none; position: fixed; top: 0; left: 0; right: 0; height: 54px;
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 0 16px; align-items: center; justify-content: space-between; z-index: 120;
+    }
+    .menu-btn {
+      background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Main */
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 80px; max-width: 1120px; }
+
+    /* Hero */
+    .hero {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 32px; box-shadow: var(--shadow); margin-bottom: 32px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #7c3aed, #2563eb, #e11d48);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--primary-soft); color: var(--primary); }
+    .pill.neutral { background: var(--bg-subtle); color: var(--text-muted); }
+    .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .hero-desc { color: var(--text-muted); font-size: 15px; max-width: 780px; margin-bottom: 18px; }
+    .guiding-quote {
+      border-left: 3.5px solid var(--accent-purple); background: var(--primary-soft);
+      padding: 12px 16px; border-radius: 0 10px 10px 0; font-size: 14px; margin-bottom: 20px;
+    }
+    .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+    .obj-item { background: var(--bg-subtle); padding: 10px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 8px; }
+    .obj-check { color: var(--success); font-weight: 800; }
+
+    /* Sections & Cards */
+    section { margin-bottom: 44px; scroll-margin-top: 24px; }
+    .sec-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .sec-title { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; display: flex; align-items: center; gap: 10px; }
+    .sec-tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary); color: #fff; }
+    .mark-btn {
+      font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); cursor: pointer;
+    }
+    .mark-btn.done { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow); margin-bottom: 18px;
+    }
+    .card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+    .formula-box {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 16px; margin: 10px 0; overflow-x: auto;
+    }
+    .callout { border-radius: 10px; padding: 12px 16px; font-size: 13.5px; margin-top: 12px; }
+    .callout.warn { background: var(--warning-bg); border-left: 3.5px solid var(--warning); }
+    .callout.info { background: var(--primary-soft); border-left: 3.5px solid var(--primary); }
+    .callout.good { background: var(--success-bg); border-left: 3.5px solid var(--success); }
+
+    /* Interactive Determinant Lab */
+    .lab-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; align-items: start; }
+    .canvas-wrap { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    #detCanvas { width: 100%; height: auto; display: block; cursor: grab; touch-action: none; }
+    #detCanvas:active { cursor: grabbing; }
+    .canvas-hint {
+      font-size: 12px; color: var(--text-muted); padding: 8px 12px; border-top: 1px solid var(--border);
+      background: var(--bg-card); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+    }
+    .controls-panel { display: flex; flex-direction: column; gap: 12px; }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-btn {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text); cursor: pointer;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    .mat-bracket {
+      display: inline-grid; grid-template-columns: 60px 60px; gap: 6px;
+      padding: 6px 10px; border-left: 2.5px solid var(--text); border-right: 2.5px solid var(--text); border-radius: 6px;
+    }
+    .mat-bracket input {
+      width: 60px; padding: 5px; text-align: center; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text);
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+    }
+    .col-1-inp { border-bottom: 2.5px solid var(--accent-1) !important; }
+    .col-2-inp { border-bottom: 2.5px solid var(--accent-2) !important; }
+
+    .toggle-item {
+      display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600;
+      background: var(--bg-subtle); padding: 8px 12px; border-radius: 8px; cursor: pointer;
+    }
+    .telemetry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-box { background: var(--bg-subtle); padding: 9px 11px; border-radius: 9px; border: 1px solid var(--border); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; margin-top: 2px; }
+
+    /* Stepper */
+    .proof-steps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .proof-step {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-subtle); opacity: 0.3; transition: all 0.25s;
+    }
+    .proof-step.revealed { opacity: 1; background: var(--bg-card); border-color: var(--primary); }
+    .proof-step .step-reason { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    th {
+      background: var(--bg-subtle); font-weight: 700; font-size: 12.5px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+    }
+
+    /* Solvers */
+    .solver-input {
+      padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      text-align: center;
+    }
+    .mat3-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+      background: var(--bg-subtle); padding: 12px; border-radius: 10px; margin-bottom: 10px;
+    }
+    .mat3-aug-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+      background: var(--bg-subtle); padding: 12px; border-radius: 10px; margin-bottom: 10px;
+    }
+    .mat3-grid input, .mat3-aug-grid input { width: 100%; }
+    .mat3-b { border-left: 2.5px solid var(--primary) !important; }
+    .btn-primary {
+      padding: 9px 16px; border-radius: 8px; border: none; background: var(--primary);
+      color: #fff; font-weight: 600; font-size: 13.5px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-weight: 600; font-size: 12.5px; cursor: pointer;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .solver-output {
+      margin-top: 12px; background: var(--bg-subtle); border-radius: 10px;
+      padding: 14px 16px; font-size: 13px; max-height: 440px; overflow-y: auto;
+    }
+    .step-line { padding: 7px 0; border-bottom: 1px dashed var(--border); }
+    .step-line:last-child { border-bottom: none; }
+    .mat-inline {
+      display: inline-grid; gap: 3px 10px; padding: 5px 10px;
+      border-left: 2px solid var(--text); border-right: 2px solid var(--text); border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12.5px; font-weight: 600; text-align: right;
+      vertical-align: middle; margin: 4px 0;
+    }
+
+    /* True/False & Exam Cards */
+    .tf-item, .exam-card {
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      margin-bottom: 14px; background: var(--bg-card);
+    }
+    .tf-meta { font-size: 11.5px; font-weight: 700; color: var(--accent-purple); margin-bottom: 4px; }
+    .tf-q { font-size: 14.5px; font-weight: 500; margin-bottom: 10px; }
+    .tf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tf-btn {
+      padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-weight: 700; font-size: 12.5px; cursor: pointer;
+    }
+    .tf-btn.selected-correct { background: var(--success); color: #fff; border-color: var(--success); }
+    .tf-btn.selected-wrong { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .tf-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 13px; display: none; }
+    .tf-feedback.show { display: block; }
+    .tf-feedback.correct { background: var(--success-bg); border-left: 3px solid var(--success); }
+    .tf-feedback.wrong { background: var(--danger-bg); border-left: 3px solid var(--danger); }
+
+    .exam-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .exam-badge { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary-soft); color: var(--primary); }
+    .exam-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .reveal-box {
+      margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+      background: var(--bg-subtle); font-size: 13.5px; display: none;
+    }
+    .reveal-box.show { display: block; }
+
+    .lesson-footer {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding-top: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+    }
+
+    @media (max-width: 960px) { .lab-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 820px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); top: 54px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 74px 18px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Bar -->
+  <div class="mobile-bar">
+    <strong>MATH 106 &middot; Lesson 4</strong>
+    <button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">Menu</button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">L4</div>
+      <div>
+        <div class="brand-title">Linear Algebra</div>
+        <div class="brand-sub">MATH 106 / AST 107 &middot; DU IASDS</div>
+      </div>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson 4 Mastery</span>
+        <span id="progText">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <div class="nav-label">Lesson Sections</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#orientation" class="active"><span class="nav-num">0</span> Orientation</a></li>
+      <li><a href="#lab"><span class="nav-num">1</span> Signed Area &amp; Inverse Lab</a></li>
+      <li><a href="#determinants"><span class="nav-num">2</span> Determinants &amp; Properties</a></li>
+      <li><a href="#inverses"><span class="nav-num">3</span> Adjoint, Inverses &amp; Cramer</a></li>
+      <li><a href="#dictionary"><span class="nav-num">4</span> Geometric Dictionary</a></li>
+      <li><a href="#solvers"><span class="nav-num">5</span> Interactive Solvers</a></li>
+      <li><a href="#exam-arena"><span class="nav-num">6</span> DU Past-Exam Arena</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">Switch to Dark Mode</button>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center;">
+        Module 1 of 4 &middot; Lesson 4 of 12
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- 0. Orientation -->
+    <section id="orientation" class="hero">
+      <div class="pill-row">
+        <span class="pill">Module 1: Foundations (Finale)</span>
+        <span class="pill neutral">Lesson 4 of 12</span>
+        <span class="pill neutral">1st Incourse &amp; Finals Core</span>
+        <span class="pill neutral">Anton Ch. 1&ndash;2 &middot; Strang Ch. 2 &amp; 5</span>
+      </div>
+      <h1>Determinants, Adjoint, Inverses &amp; Cramer's Rule</h1>
+      <p class="hero-desc">
+        One number—the <strong>determinant</strong>—decides whether a matrix is invertible, measures how it scales
+        area or volume, powers the explicit <strong>Adjoint inverse formula</strong>, and drives <strong>Cramer's Rule</strong>.
+        Master both its algebraic rules and its geometric meaning, then drill high-frequency DU exam proofs and row-reduction determinants.
+      </p>
+      <div class="guiding-quote">
+        <strong>Geometric Anchor:</strong> $|\det(A)|$ is the <em>area/volume scaling factor</em> of the transformation $A$,
+        and its sign tells whether orientation is preserved ($+$) or flipped ($-$). When $\det(A) = 0$, space collapses to a lower dimension, information is lost, and <strong>no inverse can undo it</strong>.
+      </div>
+      <div class="obj-grid">
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Evaluate determinants via cofactor expansion &amp; row reduction</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Apply $\det(kA)=k^n\det A$, $\det(AB)=\det A\det B$, $\det(A^{-1})=1/\det A$</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Compute $A^{-1}$ via Adjoint formula &amp; Gauss-Jordan $[A|I] \to [I|A^{-1}]$</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Solve $n\times n$ systems via Cramer's Rule &amp; prove core inverse theorems</span></div>
+      </div>
+    </section>
+
+    <!-- 1. Visual Intuition Lab -->
+    <section id="lab">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">LAB</span> 1. Interactive Signed Area ($\det A$) &amp; Inverse ($A^{-1}$) Lab</h2>
+        <button class="mark-btn" data-sec="lab" onclick="toggleDone('lab', this)">Mark Complete</button>
+      </div>
+
+      <div class="card">
+        <div class="lab-layout">
+          <div>
+            <div class="canvas-wrap">
+              <canvas id="detCanvas" width="560" height="450"></canvas>
+              <div class="canvas-hint">
+                <span><strong>Drag</strong> <span style="color:var(--accent-1);font-weight:700;">a<sub>1</sub> (Col 1)</span> or <span style="color:var(--accent-2);font-weight:700;">a<sub>2</sub> (Col 2)</span> to see $\det(A)$ update live!</span>
+                <span>Blue = $\det&gt;0$, Red = $\det&lt;0$</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-panel">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">QUICK PRESETS</div>
+              <div class="preset-row">
+                <button class="chip-btn" onclick="setDetMat(4,1, 1,3)">Strang Ex. (det=11)</button>
+                <button class="chip-btn" onclick="setDetMat(2,0, 0,2)">Scale 2I (det=4)</button>
+                <button class="chip-btn" onclick="setDetMat(1,2, 0,1)">Shear (det=1)</button>
+                <button class="chip-btn" onclick="setDetMat(1,3, 4,1)">Flipped (det=&minus;11)</button>
+                <button class="chip-btn" onclick="setDetMat(2,4, 1,2)">Singular (det=0)</button>
+              </div>
+            </div>
+
+            <div style="background:var(--bg-subtle); padding:12px; border-radius:10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+              <div>
+                <div style="font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Matrix $A = [\,\color{#2563eb}{\mathbf{a}_1}\;\; \color{#e11d48}{\mathbf{a}_2}\,]$</div>
+                <div class="mat-bracket">
+                  <input type="number" id="d_a" value="4" step="0.5" class="col-1-inp" oninput="syncDetInputs()">
+                  <input type="number" id="d_b" value="1" step="0.5" class="col-2-inp" oninput="syncDetInputs()">
+                  <input type="number" id="d_c" value="1" step="0.5" class="col-1-inp" oninput="syncDetInputs()">
+                  <input type="number" id="d_d" value="3" step="0.5" class="col-2-inp" oninput="syncDetInputs()">
+                </div>
+              </div>
+              <div id="invPreviewBox" style="font-family:'JetBrains Mono', monospace; font-size:12.5px;"></div>
+            </div>
+
+            <label class="toggle-item">
+              <input type="checkbox" id="chkInv" onchange="drawDetLab()">
+              Overlay $A^{-1}$ Parallelogram (Area = $1/|\det A|$)
+            </label>
+
+            <div class="telemetry">
+              <div class="stat-box">
+                <div class="stat-label">Determinant $\det(A) = ad - bc$</div>
+                <div class="stat-val" id="valDet">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Orientation</div>
+                <div class="stat-val" id="valOrient">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Invertible?</div>
+                <div class="stat-val" id="valInv">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">$\det(A^{-1}) = 1/\det(A)$</div>
+                <div class="stat-val" id="valDetInv">&mdash;</div>
+              </div>
+            </div>
+
+            <div class="callout info" style="margin-top:0; font-size:12.5px;" id="detExplain"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Determinants & Properties -->
+    <section id="determinants">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">THEORY</span> 2. Cofactor Expansion &amp; Determinant Properties</h2>
+        <button class="mark-btn" data-sec="determinants" onclick="toggleDone('determinants', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>2.1 Minors, Cofactors &amp; Expansion</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+            Delete row $i$ and column $j$ of $A$ to get the <strong>minor</strong> $M_{ij}$. Attach the checkerboard sign to get the <strong>cofactor</strong>:
+          </p>
+          <div class="formula-box">
+            $$C_{ij} = (-1)^{i+j} M_{ij}, \qquad \text{Signs: } \begin{bmatrix} + & - & + \\ - & + & - \\ + & - & + \end{bmatrix}$$
+            $$\det(A) = \sum_{j=1}^n a_{ij} C_{ij} \quad (\text{along any row } i \text{ or column } j)$$
+          </div>
+          <ul style="padding-left:18px; font-size:13.5px; color:var(--text-muted);">
+            <li><strong>Pro tip:</strong> Always expand along the row or column with the <em>most zeros</em>.</li>
+            <li><strong>Triangular / Diagonal matrices:</strong> $\det(A) = a_{11}a_{22}\cdots a_{nn}$ (product of main diagonal!).</li>
+            <li><strong>Alien Cofactor Theorem:</strong> Multiplying row $i$ by cofactors of a <em>different</em> row $k \neq i$ always sums to $0$.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>2.2 Row Operations &amp; Algebraic Rules</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+            <strong>Row (or Column) Operation Effects:</strong>
+          </p>
+          <ul style="padding-left:18px; font-size:13.5px; color:var(--text-muted); margin-bottom:10px;">
+            <li><strong>Swap</strong> two rows/cols: $\det$ <strong>flips sign</strong> ($\times -1$).</li>
+            <li><strong>Scale</strong> one row/col by $k$: $\det$ is <strong>multiplied by $k$</strong>.</li>
+            <li><strong>Add</strong> multiple of one row/col to another: $\det$ is <strong>unchanged</strong>!</li>
+            <li><strong>Zero row / identical or proportional rows:</strong> $\det(A) = 0$.</li>
+          </ul>
+          <div class="formula-box">
+            $$\det(I) = 1, \quad \det(A^T) = \det(A), \quad \det(AB) = \det(A)\det(B)$$
+            $$\det(kA) = k^n \det(A) \;\;(A \in \mathbb{R}^{n\times n}), \qquad \det(A^{-1}) = \frac{1}{\det(A)}$$
+          </div>
+          <div class="callout warn" style="font-size:12.5px;">
+            <strong>Warning:</strong> $\det(A + B) \neq \det(A) + \det(B)$ in general! (Example: $\det(I + I) = \det(2I) = 2^n \neq 1 + 1$).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Adjoint, Inverses & Cramer's Rule -->
+    <section id="inverses">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">INVERSES</span> 3. Adjoint Formula, Gauss-Jordan &amp; Cramer's Rule</h2>
+        <button class="mark-btn" data-sec="inverses" onclick="toggleDone('inverses', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:18px;">
+        <div class="card" style="margin-bottom:0;">
+          <h3>Method 1: Adjoint Formula</h3>
+          <p style="font-size:13px; color:var(--text-muted);">
+            The <strong>adjoint</strong> (adjugate) is the <em>transpose</em> of the cofactor matrix: $\text{adj}(A) = C^T$.
+          </p>
+          <div class="formula-box">
+            $$A^{-1} = \frac{1}{\det(A)}\,\text{adj}(A)$$
+          </div>
+          <p style="font-size:12.5px; color:var(--text-muted);">
+            Great for $2\times 2$ ($\frac{1}{ad-bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$) and symbolic proofs.
+          </p>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <h3>Method 2: Gauss-Jordan</h3>
+          <p style="font-size:13px; color:var(--text-muted);">
+            Adjoin $I_n$ to $A$ and row-reduce the left half to $I_n$:
+          </p>
+          <div class="formula-box">
+            $$[\,A \mid I\,] \xrightarrow{\text{row ops}} [\,I \mid A^{-1}\,]$$
+          </div>
+          <p style="font-size:12.5px; color:var(--text-muted);">
+            Best numerical method for $3\times 3$ and larger matrices. If a zero row appears on the left, $A$ is singular.
+          </p>
+        </div>
+
+        <div class="card" style="margin-bottom:0;">
+          <h3>Cramer's Rule ($A\mathbf{x}=\mathbf{b}$)</h3>
+          <p style="font-size:13px; color:var(--text-muted);">
+            When $\det(A) \neq 0$, replace column $j$ of $A$ with $\mathbf{b}$ to form $A_j$:
+          </p>
+          <div class="formula-box">
+            $$x_j = \frac{\det(A_j)}{\det(A)}, \quad j=1,\dots,n$$
+          </div>
+          <p style="font-size:12.5px; color:var(--text-muted);">
+            Ideal when an exam asks for just <em>one</em> variable (e.g., solve for $y$ only) or small $3\times 3$ systems.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Proof Stepper: Adjoint Inverse Formula -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div>
+            <strong>Interactive Exam Proof: $A^{-1} = \dfrac{1}{\det(A)}\,\text{adj}(A)$</strong>
+            <span class="exam-badge" style="margin-left:6px;">DU Final 2023 Q4(d) &middot; Final 2025 Q4(c)</span>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Key inverse identities also tested: <strong>Uniqueness</strong> ($B=BA C = C$) and <strong>Reverse Product Rule</strong> ($(AB)^{-1}=B^{-1}A^{-1}$).
+            </p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-primary" onclick="nextProofStep()">Next Proof Step</button>
+            <button class="btn-outline" onclick="resetProof()">Reset</button>
+          </div>
+        </div>
+
+        <div class="proof-steps" id="proofSteps">
+          <div class="proof-step revealed">
+            <div class="step-reason">Step 1: Multiply $A$ by $\text{adj}(A) = C^T$ entry-by-entry</div>
+            The $(i, k)$ entry of $A\,\text{adj}(A)$ is the dot product of Row $i$ of $A$ with Column $k$ of $C^T$ (which is Row $k$ of the cofactor matrix $C$):
+            $$\big(A\,\text{adj}(A)\big)_{ik} = a_{i1}C_{k1} + a_{i2}C_{k2} + \cdots + a_{in}C_{kn}.$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 2: Split into Diagonal ($i = k$) vs. Off-Diagonal ($i \neq k$) cases</div>
+            &bull; When $i = k$: this is the exact cofactor expansion of $\det(A)$ along Row $i$, so the entry equals $\mathbf{\det(A)}$.<br>
+            &bull; When $i \neq k$: this is the expansion of a matrix with two identical rows (Row $i$ copied into Row $k$), so the entry equals $\mathbf{0}$.
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 3: Assemble the matrix identity</div>
+            $$A\,\text{adj}(A) = \begin{bmatrix} \det(A) & 0 & \cdots & 0 \\ 0 & \det(A) & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & \det(A) \end{bmatrix} = \det(A)\,I_n.$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 4: Divide by $\det(A) \neq 0$ (valid since $A$ is invertible) and left-multiply by $A^{-1}$</div>
+            $$A\left(\frac{1}{\det(A)}\,\text{adj}(A)\right) = I_n \implies \mathbf{A^{-1} = \frac{1}{\det(A)}\,\text{adj}(A)}. \quad \blacksquare$$
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Geometric Dictionary -->
+    <section id="dictionary">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">MAP</span> 4. Lesson 4 Geometric Dictionary</h2>
+        <button class="mark-btn" data-sec="dictionary" onclick="toggleDone('dictionary', this)">Mark Complete</button>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Algebraic Statement</th>
+              <th>Geometric Picture</th>
+              <th>Quick Mental Check</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>$|\det(A)|$</td>
+              <td>Area (2D) or Volume (3D) of box formed by columns/rows of $A$</td>
+              <td>Unit cube has $\det(I) = 1$</td>
+            </tr>
+            <tr>
+              <td>$\det(A) &lt; 0$</td>
+              <td>Space is turned inside-out (orientation reversed / reflected)</td>
+              <td>Swapping two columns flips handedness</td>
+            </tr>
+            <tr>
+              <td>$\det(A) = 0$</td>
+              <td>Space is squashed onto a line/plane (zero area/volume)</td>
+              <td>Singular &harr; no inverse &harr; dependent columns</td>
+            </tr>
+            <tr>
+              <td>$\det(kA) = k^n \det(A)$</td>
+              <td>Scaling all $n$ axes by $k$ scales $n$-D volume by $k^n$</td>
+              <td>Doubling a 3D cube multiplies volume by $2^3 = 8$</td>
+            </tr>
+            <tr>
+              <td>$A^{-1}$ and $\det(A^{-1}) = 1/\det(A)$</td>
+              <td>Reverse transformation that undoes $A$ and restores original area</td>
+              <td>If $A$ triples area, $A^{-1}$ shrinks area to $1/3$</td>
+            </tr>
+            <tr>
+              <td>$x_j = \det(A_j)/\det(A)$</td>
+              <td>Ratio of sheared box volume (with $\mathbf{b}$) to original box volume</td>
+              <td>Cramer's Rule requires $\det(A) \neq 0$</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Interactive Solvers -->
+    <section id="solvers">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">TOOLS</span> 5. Interactive Step-by-Step Solvers</h2>
+        <button class="mark-btn" data-sec="solvers" onclick="toggleDone('solvers', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Solver A: 3x3 Det, Cofactor, Adjoint & Inverse -->
+        <div class="card">
+          <h3>Solver A: $3\times 3$ Determinant, Adjoint &amp; Inverse</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Computes $\det(A)$, Cofactor matrix $C$, $\text{adj}(A)=C^T$, and $A^{-1}$.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadAdjPreset([3,2,-1, 1,6,3, 2,-4,0])">Anton Ex. 6/7</button>
+            <button class="chip-btn" onclick="loadAdjPreset([2,-1,0, -1,2,-1, 0,-1,2])">Lecture GJ Ex.</button>
+            <button class="chip-btn" onclick="loadAdjPreset([1,2,3, 0,4,5, 1,0,6])">Lecture 1 Ex.</button>
+            <button class="chip-btn" onclick="loadAdjPreset([1,2,3, 1,0,1, 2,4,6])">Singular (det=0)</button>
+          </div>
+          <div class="mat3-grid">
+            <input class="solver-input" id="ad00" type="number" step="any" value="3">
+            <input class="solver-input" id="ad01" type="number" step="any" value="2">
+            <input class="solver-input" id="ad02" type="number" step="any" value="-1">
+            <input class="solver-input" id="ad10" type="number" step="any" value="1">
+            <input class="solver-input" id="ad11" type="number" step="any" value="6">
+            <input class="solver-input" id="ad12" type="number" step="any" value="3">
+            <input class="solver-input" id="ad20" type="number" step="any" value="2">
+            <input class="solver-input" id="ad21" type="number" step="any" value="-4">
+            <input class="solver-input" id="ad22" type="number" step="any" value="0">
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runAdjSolver()">Compute $\det(A)$, $\text{adj}(A)$ &amp; $A^{-1}$</button>
+          <div class="solver-output" id="adjOut"></div>
+        </div>
+
+        <!-- Solver B: 3x3 Cramer's Rule Solver -->
+        <div class="card">
+          <h3>Solver B: $3\times 3$ Cramer's Rule Solver</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Enter $[A \mid \mathbf{b}]$ to compute $\det(A), \det(A_1), \det(A_2), \det(A_3)$ and $(x, y, z)$.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadCramPreset([4,5,0,2, 11,1,2,3, 1,5,2,1])">DU 1st Inc 2024</button>
+            <button class="chip-btn" onclick="loadCramPreset([2,6,2,0, 1,4,2,0, 5,9,0,1])">Strang 5.3B</button>
+            <button class="chip-btn" onclick="loadCramPreset([1,1,2,9, 2,4,-3,1, 3,6,-5,0])">Lecture System</button>
+          </div>
+          <div class="mat3-aug-grid">
+            <input class="solver-input" id="cr00" type="number" step="any" value="4">
+            <input class="solver-input" id="cr01" type="number" step="any" value="5">
+            <input class="solver-input" id="cr02" type="number" step="any" value="0">
+            <input class="solver-input mat3-b" id="cr03" type="number" step="any" value="2">
+
+            <input class="solver-input" id="cr10" type="number" step="any" value="11">
+            <input class="solver-input" id="cr11" type="number" step="any" value="1">
+            <input class="solver-input" id="cr12" type="number" step="any" value="2">
+            <input class="solver-input mat3-b" id="cr13" type="number" step="any" value="3">
+
+            <input class="solver-input" id="cr20" type="number" step="any" value="1">
+            <input class="solver-input" id="cr21" type="number" step="any" value="5">
+            <input class="solver-input" id="cr22" type="number" step="any" value="2">
+            <input class="solver-input mat3-b" id="cr23" type="number" step="any" value="1">
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runCramSolver()">Solve via Cramer's Rule</button>
+          <div class="solver-output" id="cramOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. DU Past-Exam Arena -->
+    <section id="exam-arena">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">EXAM ARENA</span> 6. DU Past-Exam Practice (2017&ndash;2025)</h2>
+        <button class="mark-btn" data-sec="exam" onclick="toggleDone('exam', this)">Mark Complete</button>
+      </div>
+
+      <!-- Part A: True/False -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+          <div>
+            <h3 style="margin-bottom:2px;">Part A: True / False Conceptual Traps</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Direct determinant &amp; invertibility questions from DU 1st Incourse 2024 &amp; 2025 and Anton Ch. 2.</p>
+          </div>
+          <div class="pill" id="tfScore">Score: 0 / 5</div>
+        </div>
+        <div id="tfContainer"></div>
+      </div>
+
+      <!-- Part B: Written Past Exam Problems -->
+      <h3 style="margin:22px 0 12px; font-size:18px;">Part B: Written Exam Problems (Interactive Checks, Hints &amp; Solutions)</h3>
+
+      <!-- Problem 1: 1st Incourse 2025 Q3 (Nontrivial solution iff alpha = beta) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 1: Nontrivial Solution iff $\alpha = \beta$</strong>
+          <span class="exam-badge">1st Incourse 2025 Q3 (4 Marks)</span>
+        </div>
+        <p style="font-size:14px; margin-bottom:6px;">
+          By examining the determinant of the coefficient matrix, show that the homogeneous system below has a nontrivial solution if and only if $\alpha = \beta$:
+        </p>
+        <div class="formula-box">
+          $$\begin{cases} x + y + \alpha z = 0 \\ x + y + \beta z = 0 \\ \alpha x + \beta y + z = 0 \end{cases}$$
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint1')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol1')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="hint1">
+          <strong>Hint:</strong> Subtract Row 1 from Row 2 ($R_2 \leftarrow R_2 - R_1$) to immediately create two zeros in Row 2, then expand along Row 2!
+        </div>
+        <div class="reveal-box" id="sol1">
+          <strong>Solution:</strong><br>
+          1. Form the determinant of the coefficient matrix $A$ and apply $R_2 \leftarrow R_2 - R_1$:
+          $$\det(A) = \begin{vmatrix} 1 & 1 & \alpha \\ 1 & 1 & \beta \\ \alpha & \beta & 1 \end{vmatrix} \xrightarrow{R_2 - R_1} \begin{vmatrix} 1 & 1 & \alpha \\ 0 & 0 & \beta - \alpha \\ \alpha & \beta & 1 \end{vmatrix}.$$
+          2. Expand along Row 2 (note position $(2,3)$ has sign $(-1)^{2+3} = -1$):
+          $$\det(A) = -(\beta - \alpha)\begin{vmatrix} 1 & 1 \\ \alpha & \beta \end{vmatrix} = -(\beta - \alpha)(\beta - \alpha) = -(\alpha - \beta)^2.$$
+          3. A homogeneous $n\times n$ system $A\mathbf{x}=\mathbf{0}$ has a nontrivial solution $\iff \det(A) = 0$:
+          $$-(\alpha - \beta)^2 = 0 \iff \mathbf{\alpha = \beta}. \quad \blacksquare$$
+        </div>
+      </div>
+
+      <!-- Problem 2: 1st Incourse 2025 Q5 (Row Reduction Determinant) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 2: Symbolic Determinant by Row Reduction</strong>
+          <span class="exam-badge">1st Incourse 2025 Q5 (4 Marks)</span>
+        </div>
+        <p style="font-size:14px; margin-bottom:6px;">
+          Use row reduction to show that:
+        </p>
+        <div class="formula-box">
+          $$\begin{vmatrix} 1 & a & a^2 - bc \\ 1 & b & b^2 - ca \\ 1 & c & c^2 - ab \end{vmatrix} = 0$$
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('hint2')">Toggle Hint</button>
+          <button class="btn-outline" onclick="toggleBox('sol2')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="hint2">
+          <strong>Hint:</strong> Apply $R_2 \leftarrow R_2 - R_1$ and $R_3 \leftarrow R_3 - R_1$. Then factor $(b - a)$ out of Row 2 and $(c - a)$ out of Row 3!
+        </div>
+        <div class="reveal-box" id="sol2">
+          <strong>Solution:</strong><br>
+          1. Perform $R_2 \leftarrow R_2 - R_1$ and $R_3 \leftarrow R_3 - R_1$ (leaves $\det$ unchanged):
+          $$\begin{vmatrix} 1 & a & a^2 - bc \\ 0 & b - a & (b^2 - a^2) + c(b - a) \\ 0 & c - a & (c^2 - a^2) + b(c - a) \end{vmatrix}.$$
+          2. Notice that $(b^2 - a^2) + c(b - a) = (b - a)(b + a + c)$ and $(c^2 - a^2) + b(c - a) = (c - a)(c + a + b)$.<br>
+          3. Factor $(b - a)$ from Row 2 and $(c - a)$ from Row 3:
+          $$(b - a)(c - a) \begin{vmatrix} 1 & a & a^2 - bc \\ 0 & 1 & a + b + c \\ 0 & 1 & a + b + c \end{vmatrix}.$$
+          4. Since Row 2 and Row 3 are <strong>identical</strong>, the determinant is $\mathbf{0}$. $\blacksquare$
+        </div>
+      </div>
+
+      <!-- Problem 3: 1st Incourse 2024 Cramer's Rule -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 3: Solving a $3\times 3$ System by Cramer's Rule</strong>
+          <span class="exam-badge">1st Incourse 2024 Q2 (5 Marks)</span>
+        </div>
+        <p style="font-size:14px; margin-bottom:6px;">
+          Solve the following system using Cramer's Rule:
+        </p>
+        <div class="formula-box">
+          $$\begin{cases} 4x + 5y = 2 \\ 11x + y + 2z = 3 \\ x + 5y + 2z = 1 \end{cases}$$
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol3')">Show Full Solution</button>
+          <button class="btn-outline" onclick="loadCramPreset([4,5,0,2, 11,1,2,3, 1,5,2,1]); location.href='#solvers';">Load in Solver B</button>
+        </div>
+        <div class="reveal-box" id="sol3">
+          <strong>Solution:</strong><br>
+          1. $\det(A) = \begin{vmatrix} 4 & 5 & 0 \\ 11 & 1 & 2 \\ 1 & 5 & 2 \end{vmatrix} = 4(2 - 10) - 5(22 - 2) + 0 = -32 - 100 = \mathbf{-132} \neq 0$.<br>
+          2. $\det(A_1) = \begin{vmatrix} 2 & 5 & 0 \\ 3 & 1 & 2 \\ 1 & 5 & 2 \end{vmatrix} = 2(2 - 10) - 5(6 - 2) = -16 - 20 = \mathbf{-36}$.<br>
+          3. $\det(A_2) = \begin{vmatrix} 4 & 2 & 0 \\ 11 & 3 & 2 \\ 1 & 1 & 2 \end{vmatrix} = 4(6 - 2) - 2(22 - 2) = 16 - 40 = \mathbf{-24}$.<br>
+          4. $\det(A_3) = \begin{vmatrix} 4 & 5 & 2 \\ 11 & 1 & 3 \\ 1 & 5 & 1 \end{vmatrix} = 4(1 - 15) - 5(11 - 3) + 2(55 - 1) = -56 - 40 + 108 = \mathbf{12}$.<br>
+          5. <strong>Solution:</strong> $x = \dfrac{-36}{-132} = \mathbf{\dfrac{3}{11}}, \quad y = \dfrac{-24}{-132} = \mathbf{\dfrac{2}{11}}, \quad z = \dfrac{12}{-132} = \mathbf{-\dfrac{1}{11}}.$
+        </div>
+      </div>
+
+      <!-- Problem 4: Uniqueness & Reverse Product Rule Proofs -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 4: Proving Inverse Uniqueness &amp; $(AB)^{-1} = B^{-1}A^{-1}$</strong>
+          <span class="exam-badge">Final 2025 Q4(a) &middot; Anton Thm 1.4.4 &amp; 1.4.6</span>
+        </div>
+        <p style="font-size:14px;">
+          (a) Show that the inverse of an invertible matrix $A$ is unique.<br>
+          (b) If $A$ and $B$ are invertible $n\times n$ matrices, show that $(AB)^{-1} = B^{-1}A^{-1}$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol4')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol4">
+          <strong>Solution:</strong><br>
+          <strong>(a) Uniqueness:</strong> Suppose $B$ and $C$ are both inverses of $A$, so $BA = I$ and $AC = I$. Then:
+          $$B = BI = B(AC) = (BA)C = IC = C.$$
+          Hence the inverse is unique. $\blacksquare$<br><br>
+          <strong>(b) Product Rule:</strong> Multiply $AB$ on both sides by $B^{-1}A^{-1}$:
+          $$(AB)(B^{-1}A^{-1}) = A(BB^{-1})A^{-1} = AIA^{-1} = AA^{-1} = I,$$
+          $$(B^{-1}A^{-1})(AB) = B^{-1}(A^{-1}A)B = B^{-1}IB = B^{-1}B = I.$$
+          By uniqueness of the inverse, $(AB)^{-1} = B^{-1}A^{-1}$. $\blacksquare$
+        </div>
+      </div>
+
+      <!-- Problem 5: Determinant Properties Drill -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 5: Determinant Scaling Drill ($4\times 4$ Matrix)</strong>
+          <span class="exam-badge">Anton 2.3 Q34 &middot; Strang 5.1 Q1</span>
+        </div>
+        <p style="font-size:14px; margin-bottom:8px;">
+          Suppose $A$ is a $4\times 4$ matrix with $\det(A) = -2$. Find $\det(2A^T)$.
+        </p>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:600;">Your answer for $\det(2A^T)$:</span>
+          <input type="number" id="ansDet4" class="solver-input" style="width:100px;" placeholder="?" />
+          <button class="btn-primary" onclick="checkDet4()">Check</button>
+          <span id="det4Msg" style="font-size:13px; font-weight:600;"></span>
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol5')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol5">
+          <strong>Solution:</strong><br>
+          Since $A$ is $4\times 4$ ($n = 4$):
+          $$\det(2A^T) = 2^4 \det(A^T) = 16 \det(A) = 16(-2) = \mathbf{-32}.$$
+          <em>Bonus checks for the same $4\times 4$ matrix:</em> $\det(-A) = (-1)^4(-2) = -2$; $\det(A^{-1}) = -\frac{1}{2}$; $\det(A^3) = (-2)^3 = -8$.
+        </div>
+      </div>
+    </section>
+
+    <footer class="lesson-footer">
+      <div style="font-size:13px; color:var(--text-muted);">
+        &larr; Lesson 3: Linear Systems, Elimination &amp; $LU$ Factorization
+      </div>
+      <div style="font-size:13px; font-weight:600; color:var(--primary);">
+        Module 2 starts next &rarr; Lesson 5: Vector Spaces, Subspaces &amp; Span
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    /* ============== THEME TOGGLE ============== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('themeBtn').textContent = isDark ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+      localStorage.setItem('la_theme', isDark ? 'light' : 'dark');
+      drawDetLab();
+    }
+    (function initTheme(){
+      if (localStorage.getItem('la_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeBtn').textContent = 'Switch to Light Mode';
+      }
+    })();
+
+    /* ============== PROGRESS TRACKER ============== */
+    const sections = ['lab', 'determinants', 'inverses', 'dictionary', 'solvers', 'exam'];
+    let doneState = JSON.parse(localStorage.getItem('la_l4_done') || '{}');
+    function updateProgressUI() {
+      let count = 0;
+      sections.forEach(s => {
+        const btn = document.querySelector(`.mark-btn[data-sec="${s}"]`);
+        if (doneState[s]) { count++; if (btn) { btn.classList.add('done'); btn.textContent = 'Completed \u2713'; } }
+        else if (btn) { btn.classList.remove('done'); btn.textContent = 'Mark Complete'; }
+      });
+      const pct = Math.round((count / sections.length) * 100);
+      document.getElementById('progText').textContent = pct + '%';
+      document.getElementById('progFill').style.width = pct + '%';
+    }
+    function toggleDone(sec) {
+      doneState[sec] = !doneState[sec];
+      localStorage.setItem('la_l4_done', JSON.stringify(doneState));
+      updateProgressUI();
+    }
+    updateProgressUI();
+
+    /* ============== SCROLL SPY ============== */
+    const navAnchors = document.querySelectorAll('#navLinks a');
+    window.addEventListener('scroll', () => {
+      let cur = 'orientation';
+      document.querySelectorAll('main section').forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) cur = sec.id;
+      });
+      navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    });
+
+    /* ============== INTERACTIVE SIGNED AREA & INVERSE LAB ============== */
+    const canvas = document.getElementById('detCanvas');
+    const ctx = canvas.getContext('2d');
+    const SCALE = 42, OX = canvas.width / 2, OY = canvas.height / 2;
+
+    let dMat = { a: 4, b: 1, c: 1, d: 3 };
+    let dragging = null;
+
+    function toC(x, y) { return { cx: OX + x * SCALE, cy: OY - y * SCALE }; }
+    function toM(cx, cy) {
+      return {
+        x: Math.round(((cx - OX) / SCALE) * 2) / 2,
+        y: Math.round(((OY - cy) / SCALE) * 2) / 2
+      };
+    }
+
+    function setDetMat(a, b, c, d) {
+      dMat = { a, b, c, d };
+      document.getElementById('d_a').value = a;
+      document.getElementById('d_b').value = b;
+      document.getElementById('d_c').value = c;
+      document.getElementById('d_d').value = d;
+      drawDetLab();
+    }
+    function syncDetInputs() {
+      dMat.a = parseFloat(document.getElementById('d_a').value) || 0;
+      dMat.b = parseFloat(document.getElementById('d_b').value) || 0;
+      dMat.c = parseFloat(document.getElementById('d_c').value) || 0;
+      dMat.d = parseFloat(document.getElementById('d_d').value) || 0;
+      drawDetLab();
+    }
+
+    function drawArrow(x1, y1, x2, y2, color, width = 2.8, dashed = false, label = '') {
+      const p1 = toC(x1, y1), p2 = toC(x2, y2);
+      const dx = p2.cx - p1.cx, dy = p2.cy - p1.cy;
+      if (Math.hypot(dx, dy) < 2) return;
+      const ang = Math.atan2(dy, dx);
+      ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+      if (dashed) ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(p1.cx, p1.cy); ctx.lineTo(p2.cx - 8*Math.cos(ang), p2.cy - 8*Math.sin(ang)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(p2.cx, p2.cy);
+      ctx.lineTo(p2.cx - 10*Math.cos(ang - 0.42), p2.cy - 10*Math.sin(ang - 0.42));
+      ctx.lineTo(p2.cx - 10*Math.cos(ang + 0.42), p2.cy - 10*Math.sin(ang + 0.42));
+      ctx.closePath(); ctx.fill();
+      if (label) { ctx.font = '700 12.5px Inter, sans-serif'; ctx.fillText(label, p2.cx + 8, p2.cy - 6); }
+      ctx.restore();
+    }
+
+    function drawDetLab() {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const gridCol = dark ? '#1e293b' : '#e2e8f0';
+      const axisCol = dark ? '#64748b' : '#94a3b8';
+      const col1 = dark ? '#60a5fa' : '#2563eb';
+      const col2 = dark ? '#fb7185' : '#e11d48';
+      const colInv = dark ? '#34d399' : '#059669';
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Grid & Axes
+      ctx.strokeStyle = gridCol; ctx.lineWidth = 1;
+      for (let i = -8; i <= 8; i++) {
+        let p = toC(i, 0); ctx.beginPath(); ctx.moveTo(p.cx, 0); ctx.lineTo(p.cx, canvas.height); ctx.stroke();
+        p = toC(0, i); ctx.beginPath(); ctx.moveTo(0, p.cy); ctx.lineTo(canvas.width, p.cy); ctx.stroke();
+      }
+      ctx.strokeStyle = axisCol; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(0, OY); ctx.lineTo(canvas.width, OY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(OX, 0); ctx.lineTo(OX, canvas.height); ctx.stroke();
+
+      // Unit square reference
+      const u0 = toC(0,0), u1 = toC(1,0), u2 = toC(1,1), u3 = toC(0,1);
+      ctx.save();
+      ctx.strokeStyle = axisCol; ctx.setLineDash([4,4]); ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(u0.cx,u0.cy); ctx.lineTo(u1.cx,u1.cy); ctx.lineTo(u2.cx,u2.cy); ctx.lineTo(u3.cx,u3.cy); ctx.closePath(); ctx.stroke();
+      ctx.restore();
+
+      const det = dMat.a * dMat.d - dMat.b * dMat.c;
+      const p0 = toC(0, 0), p1 = toC(dMat.a, dMat.c), p2 = toC(dMat.b, dMat.d), p12 = toC(dMat.a + dMat.b, dMat.c + dMat.d);
+
+      // Shaded parallelogram for A
+      ctx.save();
+      if (Math.abs(det) < 1e-6) {
+        ctx.strokeStyle = '#d97706'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(p0.cx, p0.cy); ctx.lineTo(p12.cx, p12.cy); ctx.stroke();
+      } else {
+        ctx.fillStyle = det > 0
+          ? (dark ? 'rgba(59,130,246,0.24)' : 'rgba(37,99,235,0.18)')
+          : (dark ? 'rgba(248,113,113,0.26)' : 'rgba(225,29,72,0.18)');
+        ctx.strokeStyle = det > 0 ? col1 : col2;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(p0.cx, p0.cy); ctx.lineTo(p1.cx, p1.cy); ctx.lineTo(p12.cx, p12.cy); ctx.lineTo(p2.cx, p2.cy);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      }
+      ctx.restore();
+
+      // Optional A^-1 parallelogram
+      if (document.getElementById('chkInv').checked && Math.abs(det) > 1e-6) {
+        const ia = dMat.d / det, ib = -dMat.b / det, ic = -dMat.c / det, id = dMat.a / det;
+        const q1 = toC(ia, ic), q2 = toC(ib, id), q12 = toC(ia + ib, ic + id);
+        ctx.save();
+        ctx.fillStyle = dark ? 'rgba(52,211,153,0.32)' : 'rgba(5,150,105,0.28)';
+        ctx.strokeStyle = colInv; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(p0.cx, p0.cy); ctx.lineTo(q1.cx, q1.cy); ctx.lineTo(q12.cx, q12.cy); ctx.lineTo(q2.cx, q2.cy);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.restore();
+      }
+
+      // Column arrows
+      drawArrow(0, 0, dMat.a, dMat.c, col1, 3.2, false, `a1(${dMat.a},${dMat.c})`);
+      drawArrow(0, 0, dMat.b, dMat.d, col2, 3.2, false, `a2(${dMat.b},${dMat.d})`);
+
+      // Handles
+      [ { p: p1, c: col1 }, { p: p2, c: col2 } ].forEach(h => {
+        ctx.beginPath(); ctx.arc(h.p.cx, h.p.cy, 6, 0, Math.PI * 2);
+        ctx.fillStyle = h.c; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+      });
+
+      // Center Area Label
+      if (Math.abs(det) > 0.4) {
+        const midX = (p0.cx + p12.cx) / 2, midY = (p0.cy + p12.cy) / 2;
+        ctx.fillStyle = dark ? '#f8fafc' : '#0f172a';
+        ctx.font = '800 13px JetBrains Mono, monospace';
+        ctx.fillText(`Area = ${Math.abs(det).toFixed(1)}`, midX - 36, midY + 4);
+      }
+
+      // Telemetry
+      document.getElementById('valDet').textContent = det.toFixed(2);
+      const invBox = document.getElementById('invPreviewBox');
+      if (Math.abs(det) < 1e-6) {
+        document.getElementById('valOrient').innerHTML = '<span style="color:var(--warning)">Collapsed (0 Area)</span>';
+        document.getElementById('valInv').innerHTML = '<span style="color:var(--danger)">NO (Singular)</span>';
+        document.getElementById('valDetInv').textContent = 'Undefined';
+        invBox.innerHTML = '<span style="color:var(--danger);font-weight:700;">No A<sup>&minus;1</sup> (det = 0)</span>';
+        document.getElementById('detExplain').innerHTML = '<strong>Space Collapsed:</strong> The two columns lie on the same line, squashing the 2D unit square to area 0. Division by det(A) = 0 is impossible!';
+      } else {
+        document.getElementById('valOrient').innerHTML = det > 0
+          ? '<span style="color:var(--primary)">Preserved (+)</span>'
+          : '<span style="color:var(--danger)">Reversed (&minus;)</span>';
+        document.getElementById('valInv').innerHTML = '<span style="color:var(--success)">YES (Nonsingular)</span>';
+        document.getElementById('valDetInv').textContent = (1 / det).toFixed(3);
+        invBox.innerHTML = `<strong>A<sup>&minus;1</sup> = 1/(${det.toFixed(1)})</strong> [${dMat.d}, ${-dMat.b}; ${-dMat.c}, ${dMat.a}]`;
+        document.getElementById('detExplain').innerHTML = `<strong>Area Scaling:</strong> Matrix A multiplies areas by |det(A)| = <strong>${Math.abs(det).toFixed(2)}</strong>. Its inverse A<sup>&minus;1</sup> shrinks areas back by <strong>${(1/Math.abs(det)).toFixed(3)}</strong>.`;
+      }
+    }
+
+    function getPos(e) {
+      const r = canvas.getBoundingClientRect();
+      const cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      const cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+      return { cx: cx * (canvas.width / r.width), cy: cy * (canvas.height / r.height) };
+    }
+    canvas.addEventListener('mousedown', e => {
+      const p = getPos(e);
+      const p1 = toC(dMat.a, dMat.c), p2 = toC(dMat.b, dMat.d);
+      if (Math.hypot(p.cx - p1.cx, p.cy - p1.cy) < 22) dragging = '1';
+      else if (Math.hypot(p.cx - p2.cx, p.cy - p2.cy) < 22) dragging = '2';
+    });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const p = getPos(e), m = toM(p.cx, p.cy);
+      m.x = Math.max(-5, Math.min(5, m.x)); m.y = Math.max(-4.5, Math.min(4.5, m.y));
+      if (dragging === '1') { dMat.a = m.x; dMat.c = m.y; }
+      else { dMat.b = m.x; dMat.d = m.y; }
+      setDetMat(dMat.a, dMat.b, dMat.c, dMat.d);
+    });
+    window.addEventListener('mouseup', () => dragging = null);
+    drawDetLab();
+
+    /* ============== INTERACTIVE PROOF STEPPER ============== */
+    let curStep = 1;
+    function nextProofStep() {
+      const steps = document.querySelectorAll('#proofSteps .proof-step');
+      if (curStep < steps.length) { steps[curStep].classList.add('revealed'); curStep++; }
+    }
+    function resetProof() {
+      document.querySelectorAll('#proofSteps .proof-step').forEach((el, i) => el.classList.toggle('revealed', i === 0));
+      curStep = 1;
+    }
+
+    /* ============== 3x3 DETERMINANT & MATRIX HELPERS ============== */
+    function det3(M) {
+      return M[0][0]*(M[1][1]*M[2][2] - M[1][2]*M[2][1])
+           - M[0][1]*(M[1][0]*M[2][2] - M[1][2]*M[2][0])
+           + M[0][2]*(M[1][0]*M[2][1] - M[1][1]*M[2][0]);
+    }
+    function fmtN(n) {
+      if (Math.abs(n) < 1e-9) return '0';
+      if (Math.abs(n - Math.round(n)) < 1e-6) return String(Math.round(n));
+      return n.toFixed(3);
+    }
+    function mat3HTML(M) {
+      let h = `<span class="mat-inline" style="grid-template-columns:repeat(3,auto);">`;
+      for (let r = 0; r < 3; r++)
+        for (let c = 0; c < 3; c++) h += `<span>${fmtN(M[r][c])}</span>`;
+      return h + '</span>';
+    }
+
+    /* ============== SOLVER A: 3x3 ADJOINT & INVERSE ============== */
+    function loadAdjPreset(arr) {
+      for (let r = 0; r < 3; r++)
+        for (let c = 0; c < 3; c++)
+          document.getElementById(`ad${r}${c}`).value = arr[r*3 + c];
+      runAdjSolver();
+    }
+    function runAdjSolver() {
+      const A = [0,1,2].map(r => [0,1,2].map(c => parseFloat(document.getElementById(`ad${r}${c}`).value) || 0));
+      const C = [[0,0,0],[0,0,0],[0,0,0]];
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          const rows = [0,1,2].filter(r => r !== i);
+          const cols = [0,1,2].filter(c => c !== j);
+          const minor = A[rows[0]][cols[0]]*A[rows[1]][cols[1]] - A[rows[0]][cols[1]]*A[rows[1]][cols[0]];
+          C[i][j] = ((i + j) % 2 === 0 ? 1 : -1) * minor;
+        }
+      }
+      const adj = [0,1,2].map(r => [0,1,2].map(c => C[c][r]));
+      const d = A[0][0]*C[0][0] + A[0][1]*C[0][1] + A[0][2]*C[0][2];
+
+      let invHTML = `<span style="color:var(--danger);font-weight:700;">Matrix is Singular (det = 0) &mdash; A<sup>&minus;1</sup> does not exist!</span>`;
+      if (Math.abs(d) > 1e-9) {
+        const inv = adj.map(row => row.map(val => val / d));
+        invHTML = `<strong>A<sup>&minus;1</sup> = (1/${fmtN(d)}) adj(A) =</strong><br>${mat3HTML(inv)}`;
+      }
+      document.getElementById('adjOut').innerHTML = `
+        <div class="step-line"><strong>1. Cofactor Expansion (Row 1):</strong><br>
+          det(A) = (${fmtN(A[0][0])})(${fmtN(C[0][0])}) + (${fmtN(A[0][1])})(${fmtN(C[0][1])}) + (${fmtN(A[0][2])})(${fmtN(C[0][2])}) = <strong style="color:var(--primary);">${fmtN(d)}</strong>
+        </div>
+        <div class="step-line"><strong>2. Cofactor Matrix C &amp; Adjoint adj(A) = C<sup>T</sup>:</strong><br>
+          C = ${mat3HTML(C)} &nbsp;&nbsp; adj(A) = ${mat3HTML(adj)}
+        </div>
+        <div class="step-line"><strong>3. Inverse:</strong><br>${invHTML}</div>
+      `;
+    }
+    runAdjSolver();
+
+    /* ============== SOLVER B: 3x3 CRAMER'S RULE ============== */
+    function loadCramPreset(arr) {
+      for (let r = 0; r < 3; r++)
+        for (let c = 0; c < 4; c++)
+          document.getElementById(`cr${r}${c}`).value = arr[r*4 + c];
+      runCramSolver();
+    }
+    function runCramSolver() {
+      const A = [0,1,2].map(r => [0,1,2].map(c => parseFloat(document.getElementById(`cr${r}${c}`).value) || 0));
+      const b = [0,1,2].map(r => parseFloat(document.getElementById(`cr${r}3`).value) || 0);
+      const dA = det3(A);
+      const out = document.getElementById('cramOut');
+      if (Math.abs(dA) < 1e-9) {
+        out.innerHTML = `<div class="step-line" style="color:var(--danger);font-weight:700;">det(A) = 0 &mdash; Cramer's Rule does not apply (system has either no solution or infinitely many solutions).</div>`;
+        return;
+      }
+      const rep = (colIdx) => A.map((row, r) => row.map((val, c) => c === colIdx ? b[r] : val));
+      const A1 = rep(0), A2 = rep(1), A3 = rep(2);
+      const d1 = det3(A1), d2 = det3(A2), d3 = det3(A3);
+      out.innerHTML = `
+        <div class="step-line"><strong>1. Coefficient Determinant:</strong> det(A) = <strong>${fmtN(dA)}</strong> (&ne; 0 &#10003;)</div>
+        <div class="step-line"><strong>2. Replaced Column Determinants:</strong><br>
+          det(A<sub>1</sub>) = <strong>${fmtN(d1)}</strong>, &nbsp; det(A<sub>2</sub>) = <strong>${fmtN(d2)}</strong>, &nbsp; det(A<sub>3</sub>) = <strong>${fmtN(d3)}</strong>
+        </div>
+        <div class="step-line"><strong>3. Unique Solution (x<sub>j</sub> = det(A<sub>j</sub>) / det(A)):</strong><br>
+          <strong style="color:var(--success);">
+            x = ${fmtN(d1)}/${fmtN(dA)} &approx; ${fmtN(d1/dA)}, &nbsp;
+            y = ${fmtN(d2)}/${fmtN(dA)} &approx; ${fmtN(d2/dA)}, &nbsp;
+            z = ${fmtN(d3)}/${fmtN(dA)} &approx; ${fmtN(d3/dA)}
+          </strong>
+        </div>
+      `;
+    }
+    runCramSolver();
+
+    /* ============== TRUE / FALSE EXAM QUIZ ============== */
+    const tfData = [
+      {
+        src: "DU 1st Incourse 2025 Q1(a)(6)",
+        q: "A square matrix A is invertible if and only if det(A) = 0.",
+        ans: false,
+        exp: "FALSE. A square matrix A is invertible if and only if det(A) \u2260 0! When det(A) = 0, A is singular (not invertible)."
+      },
+      {
+        src: "DU 1st Incourse 2024 Q1(a)(4)",
+        q: "If A is invertible and a multiple of the first row of A is added to the second row, then the resulting matrix is not invertible.",
+        ans: false,
+        exp: "FALSE. Adding a multiple of one row to another leaves the determinant UNCHANGED. Since det(A) \u2260 0, the new matrix still has det \u2260 0 and remains invertible!"
+      },
+      {
+        src: "DU 1st Incourse 2024 Q1(a)(5)",
+        q: "If A is a square matrix and the linear system Ax = 0 has multiple solutions for x, then det(A) = 0.",
+        ans: true,
+        exp: "TRUE. Multiple solutions to Ax = 0 means nontrivial solutions exist, which happens iff A is singular, i.e., det(A) = 0."
+      },
+      {
+        src: "Anton Ch. 2.3 Concept Check",
+        q: "If A and B are square matrices of the same size and A is invertible, then det(A\u207B\u00B9 B A) = det(B).",
+        ans: true,
+        exp: "TRUE. By the product rule, det(A\u207B\u00B9BA) = det(A\u207B\u00B9)det(B)det(A) = (1/det(A))det(B)det(A) = det(B)."
+      },
+      {
+        src: "Strang Ch. 5.1 Trap",
+        q: "For any 3\u00D73 matrix A, det(4A) = 4 det(A).",
+        ans: false,
+        exp: "FALSE. Multiplying a 3\u00D73 matrix by 4 scales ALL THREE rows by 4, so det(4A) = 4\u00B3 det(A) = 64 det(A)."
+      }
+    ];
+
+    let tfResults = {};
+    const tfContainer = document.getElementById('tfContainer');
+    tfData.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'tf-item';
+      div.innerHTML = `
+        <div class="tf-meta">${item.src}</div>
+        <div class="tf-q">${idx + 1}. ${item.q}</div>
+        <div class="tf-actions">
+          <button class="tf-btn" id="tf-${idx}-t" onclick="answerTF(${idx}, true)">True</button>
+          <button class="tf-btn" id="tf-${idx}-f" onclick="answerTF(${idx}, false)">False</button>
+        </div>
+        <div class="tf-feedback" id="tf-fb-${idx}"></div>
+      `;
+      tfContainer.appendChild(div);
+    });
+
+    function answerTF(idx, choice) {
+      const item = tfData[idx];
+      const isCorrect = choice === item.ans;
+      tfResults[idx] = isCorrect;
+      const btnT = document.getElementById(`tf-${idx}-t`), btnF = document.getElementById(`tf-${idx}-f`);
+      btnT.className = 'tf-btn'; btnF.className = 'tf-btn';
+      (choice ? btnT : btnF).classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+      const fb = document.getElementById(`tf-fb-${idx}`);
+      fb.className = `tf-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+      fb.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Not quite.'}</strong> ${item.exp}`;
+      const score = Object.values(tfResults).filter(Boolean).length;
+      document.getElementById('tfScore').textContent = `Score: ${score} / ${tfData.length}`;
+    }
+
+    function checkDet4() {
+      const val = parseFloat(document.getElementById('ansDet4').value);
+      const msg = document.getElementById('det4Msg');
+      if (val === -32) {
+        msg.style.color = 'var(--success)'; msg.textContent = '\u2713 Correct! 2\u2074 \u00D7 (-2) = 16 \u00D7 (-2) = -32.';
+      } else {
+        msg.style.color = 'var(--danger)'; msg.textContent = '\u2717 Remember: det(kA) = k\u207F det(A) with n = 4!';
+      }
+    }
+    function toggleBox(id) { document.getElementById(id).classList.toggle('show'); }
+  </script>
+</body>
+</html>

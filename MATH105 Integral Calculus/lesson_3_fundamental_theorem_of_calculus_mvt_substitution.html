@@ -1,0 +1,3320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 3: Fundamental Theorem of Calculus, MVT &amp; Substitution — MATH 105: Integral Calculus (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & COHESIVE COURSE PALETTE
+       ========================================================================== */
+    :root {
+      --bg-page: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+
+      --accent: #4f46e5;
+      --accent-dark: #3730a3;
+      --accent-soft: #eef2ff;
+      --accent-border: #c7d2fe;
+
+      --emerald: #10b981;
+      --emerald-dark: #047857;
+      --emerald-soft: #ecfdf5;
+      --emerald-border: #a7f3d0;
+
+      --rose: #f43f5e;
+      --rose-dark: #be123c;
+      --rose-soft: #fff1f2;
+      --rose-border: #fecdd3;
+
+      --amber: #f59e0b;
+      --amber-dark: #b45309;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 10px 28px rgba(15, 23, 42, 0.09);
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+
+      --sidebar-w: 284px;
+      --header-h: 64px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-page: #0b1120;
+      --bg-surface: #111827;
+      --bg-subtle: #1e293b;
+      --border: #1f2937;
+      --border-strong: #334155;
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+
+      --accent: #818cf8;
+      --accent-dark: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.16);
+      --accent-border: rgba(129, 140, 248, 0.35);
+
+      --emerald: #34d399;
+      --emerald-dark: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --emerald-border: rgba(52, 211, 153, 0.32);
+
+      --rose: #fb7185;
+      --rose-dark: #fb7185;
+      --rose-soft: rgba(244, 63, 94, 0.14);
+      --rose-border: rgba(251, 113, 133, 0.32);
+
+      --amber: #fbbf24;
+      --amber-dark: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.32);
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.65;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
+    }
+
+    code, .mono {
+      font-family: var(--font-mono);
+    }
+
+    button, select, input {
+      font-family: inherit;
+    }
+
+    /* ==========================================================================
+       TOP HEADER
+       ========================================================================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--header-h);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    [data-theme="dark"] .brand-badge {
+      color: var(--accent);
+    }
+
+    .header-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ==========================================================================
+       APP SHELL & STICKY LEFT SIDEBAR
+       ========================================================================== */
+    .app-shell {
+      display: flex;
+      max-width: 1440px;
+      margin: 0 auto;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .sidebar {
+      position: sticky;
+      top: var(--header-h);
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      z-index: 30;
+      transition: transform 0.28s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 6px;
+    }
+
+    .sidebar-course {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-lesson-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-dark);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    [data-theme="dark"] .sidebar-lesson-badge {
+      color: var(--accent);
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    .progress-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-pct {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 0.85rem;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--radius-full);
+      background: linear-gradient(90deg, var(--accent-dark), var(--accent), var(--emerald));
+      transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-caption {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .nav-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 10px;
+      margin-bottom: 6px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 500;
+      transition: all 0.18s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .nav-link.active {
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      border-color: var(--accent-border);
+      font-weight: 600;
+    }
+
+    [data-theme="dark"] .nav-link.active {
+      color: var(--accent);
+    }
+
+    .nav-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .nav-link.active .nav-num {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .nav-check {
+      margin-left: auto;
+      color: var(--emerald);
+      font-weight: 700;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link.done .nav-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      font-size: 0.77rem;
+      color: var(--text-muted);
+    }
+
+    .sidebar-footer strong {
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+      padding: 28px 32px 68px;
+      display: flex;
+      flex-direction: column;
+      gap: 38px;
+    }
+
+    .lesson-hero {
+      background: linear-gradient(135deg, #1e293b 0%, #3730a3 52%, #4f46e5 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 28px 30px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lesson-hero::after {
+      content: "";
+      position: absolute;
+      right: -55px;
+      top: -55px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(255, 255, 255, 0.16);
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+    }
+
+    .lesson-hero h1 {
+      font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .lesson-hero p {
+      max-width: 790px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.96rem;
+      margin-bottom: 18px;
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hero-pill {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: var(--radius-full);
+      background: rgba(15, 23, 42, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    /* ==========================================================================
+       SECTIONS & CARDS
+       ========================================================================== */
+    .section-block {
+      scroll-margin-top: calc(var(--header-h) + 20px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .section-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.25rem, 2vw, 1.55rem);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+
+    .section-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      max-width: 750px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ==========================================================================
+       INTERACTIVE LABS & DUAL-CANVAS LAYOUT
+       ========================================================================== */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.48fr) minmax(300px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .canvas-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .canvas-label-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      padding: 0 2px;
+    }
+
+    .canvas-label-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      min-height: 290px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .canvas-wrapper.dual-pane {
+      aspect-ratio: 16 / 7.2;
+      min-height: 205px;
+    }
+
+    .canvas-wrapper canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      padding: 2px 4px 0;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch-pos { background: var(--emerald); }
+    .swatch-neg { background: var(--rose); }
+    .swatch-indigo { background: var(--accent); border-radius: 999px; }
+    .swatch-amber { background: var(--amber); }
+
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .control-value {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    select.styled-select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    select.styled-select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 0.78rem;
+    }
+
+    /* Limit Swap Toggle Switch */
+    .swap-toggle-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .swap-toggle-box.swapped {
+      background: var(--rose-soft);
+      border-color: var(--rose-border);
+    }
+
+    .swap-switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .swap-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-round {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--border-strong);
+      transition: 0.25s;
+      border-radius: 24px;
+    }
+
+    .slider-round::before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      transition: 0.25s;
+      border-radius: 50%;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .switch input:checked + .slider-round {
+      background-color: var(--rose);
+    }
+
+    .switch input:checked + .slider-round::before {
+      transform: translateX(22px);
+    }
+
+    .swap-caption {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .status-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.84rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+    }
+
+    .status-banner.inc {
+      background: var(--emerald-soft);
+      border-color: var(--emerald-border);
+      color: var(--emerald-dark);
+    }
+
+    .status-banner.dec {
+      background: var(--rose-soft);
+      border-color: var(--rose-border);
+      color: var(--rose-dark);
+    }
+
+    .status-banner.crit {
+      background: var(--amber-soft);
+      border-color: var(--amber-border);
+      color: var(--amber-dark);
+    }
+
+    .formula-box {
+      background: var(--bg-subtle);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-size: 0.87rem;
+      overflow-x: auto;
+    }
+
+    /* Readout Metric Cards */
+    .readout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .metric-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metric-card.accent {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+    }
+
+    .metric-card.emerald {
+      background: var(--emerald-soft);
+      border-color: var(--emerald-border);
+    }
+
+    .metric-card.amber {
+      background: var(--amber-soft);
+      border-color: var(--amber-border);
+    }
+
+    .metric-card.rose {
+      background: var(--rose-soft);
+      border-color: var(--rose-border);
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY, U-SUB STEPPER & EXAM TRAPS
+       ========================================================================== */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .theory-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theory-card h3 {
+      font-size: 1.06rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Interactive u-Substitution Stepper */
+    .stepper-widget {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .tab-btn {
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .usub-steps-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .usub-step {
+      display: none;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 13px 15px;
+      font-size: 0.92rem;
+      overflow-x: auto;
+    }
+
+    .usub-step.visible {
+      display: block;
+      animation: fadeSlide 0.22s ease;
+    }
+
+    .usub-step-label {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .stepper-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 4 Rose-Accented High-Yield Exam Traps */
+    .traps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .trap-card {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .trap-card-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--rose-dark);
+    }
+
+    /* ==========================================================================
+       SECTION 4: ISRT PAST-EXAM VAULT
+       ========================================================================== */
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 15px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .filter-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    .vault-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .exam-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .exam-card.hidden {
+      display: none;
+    }
+
+    .exam-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exam-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: var(--radius-full);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-dark);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .exam-badge {
+      color: var(--accent);
+    }
+
+    .topic-pill {
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .exam-prompt {
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .hint-box {
+      display: none;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      color: var(--text-primary);
+    }
+
+    .hint-box.open {
+      display: block;
+    }
+
+    .solution-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .solution-box.open {
+      display: flex;
+    }
+
+    .sol-step {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--emerald);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.91rem;
+      overflow-x: auto;
+    }
+
+    .sol-step-title {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--emerald-dark);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    /* ==========================================================================
+       SECTION 5: QUICK MASTERY CHECK (QUIZ)
+       ========================================================================== */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+    }
+
+    .score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quiz-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-qnum {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-size: 0.89rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .quiz-opt:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .quiz-opt.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .quiz-opt.wrong {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+    }
+
+    .quiz-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+    }
+
+    .quiz-feedback.show {
+      display: block;
+    }
+
+    .quiz-feedback.ok {
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .quiz-feedback.err {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1060px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-content {
+        padding: 22px 20px 56px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .menu-btn {
+        display: inline-flex;
+      }
+      .header-subtitle {
+        display: none;
+      }
+      .sidebar {
+        position: fixed;
+        top: var(--header-h);
+        left: 0;
+        height: calc(100vh - var(--header-h));
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .top-header {
+        padding: 0 12px;
+      }
+      .main-content {
+        padding: 16px 14px 48px;
+      }
+      .card, .exam-card, .theory-card, .quiz-card, .stepper-widget {
+        padding: 16px;
+      }
+      .lesson-hero {
+        padding: 20px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP HEADER
+       ======================================================================== -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuToggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="brand-badge">MATH 105 &bull; Lesson 3 of 17</span>
+      <span class="header-subtitle">ISRT, University of Dhaka &mdash; FTC, MVT &amp; Definite Substitution</span>
+    </div>
+
+    <div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
+        <span id="themeIcon" aria-hidden="true">&#9790;</span>
+        <span id="themeText">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ========================================================================
+       APP SHELL
+       ======================================================================== -->
+  <div class="app-shell">
+
+    <!-- STICKY LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar" aria-label="Lesson 3 navigation">
+      <div class="sidebar-brand">
+        <div class="sidebar-course">MATH 105 &bull; Integral Calculus</div>
+        <span class="sidebar-lesson-badge">Lesson 3 &bull; Module 1 Capstone</span>
+      </div>
+
+      <div class="progress-box">
+        <div class="progress-header">
+          <span>Mastery Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-caption" id="progressCaption">Explore the FTC &amp; MVT labs and take the quiz.</p>
+      </div>
+
+      <nav>
+        <div class="nav-label">Lesson 3 Sections</div>
+        <ul class="nav-list" id="sidebarNav">
+          <li>
+            <a class="nav-link active" href="#section-lab1" data-section="section-lab1">
+              <span class="nav-num">1</span>
+              <span>FTC Part II Accumulator Lab</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-lab2" data-section="section-lab2">
+              <span class="nav-num">2</span>
+              <span>MVT &amp; Average Value Lab</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-theory" data-section="section-theory">
+              <span class="nav-num">3</span>
+              <span>Core Theory, $u$-Sub &amp; Traps</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-vault" data-section="section-vault">
+              <span class="nav-num">4</span>
+              <span>ISRT Past-Exam Vault</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+          <li>
+            <a class="nav-link" href="#section-quiz" data-section="section-quiz">
+              <span class="nav-num">5</span>
+              <span>Quick Mastery Check</span>
+              <span class="nav-check">&#10003;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <strong>Module 1 Complete!</strong>
+        Covers Anton Sec. 5.6&ndash;5.9: FTC Parts I &amp; II, MVT for Integrals, Average Value, and Definite $u$-Substitution.
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HERO -->
+      <section class="lesson-hero">
+        <div class="hero-eyebrow">Module 1: Foundations of Integration &bull; Lesson 3</div>
+        <h1>Fundamental Theorem of Calculus, MVT &amp; Substitution</h1>
+        <p>
+          Connect differentiation and integration visually with the live FTC Part II Accumulator, watch the Mean Value Theorem's equal-area rectangle snap to $f_{\text{ave}}$, and master definite $u$-substitution limit conversions tested across ISRT 2022&ndash;2025 exams.
+        </p>
+        <div class="hero-pills">
+          <span class="hero-pill">FTC Part I &amp; II</span>
+          <span class="hero-pill">Reversed-Limit Trap $\int_x^a$</span>
+          <span class="hero-pill">MVT &amp; $f_{\text{ave}}$</span>
+          <span class="hero-pill">Definite $u$-Substitution</span>
+          <span class="hero-pill">8 Solved ISRT Problems</span>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 1: FTC PART II ACCUMULATOR LAB (DUAL-CANVAS)
+           ==================================================================== -->
+      <section class="section-block" id="section-lab1">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 1 &bull; Interactive Lab 1</span>
+            <h2>FTC Part II Accumulator Lab</h2>
+          </div>
+          <p class="section-desc">
+            Drag $x$ to watch the signed area under $y = f(t)$ (top) accumulate into $F(x)$ (bottom), with a live tangent line proving $F'(x) = \pm f(x)$.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="lab-grid">
+            <!-- Stacked Dual-Canvas Column -->
+            <div class="canvas-stack">
+              <div class="canvas-label-bar">
+                <span>Top Graph: Integrand $y = f(t)$ &amp; Signed Area Slice</span>
+                <span class="canvas-label-pill" id="topCanvasBadge">Direction: a &rarr; x</span>
+              </div>
+              <div class="canvas-wrapper dual-pane" id="ftcTopWrap">
+                <canvas id="ftcTopCanvas" aria-label="Integrand f(t) shaded area canvas"></canvas>
+              </div>
+
+              <div class="canvas-label-bar" style="margin-top:4px;">
+                <span>Bottom Graph: Accumulator $y = F(x)$ &amp; Tangent Slope $F'(x)$</span>
+                <span class="canvas-label-pill" id="botCanvasBadge">F(x) = &int;_a^x f(t) dt</span>
+              </div>
+              <div class="canvas-wrapper dual-pane" id="ftcBotWrap">
+                <canvas id="ftcBotCanvas" aria-label="Accumulation function F(x) canvas"></canvas>
+              </div>
+
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-pos"></span> Positive Contribution</span>
+                <span class="legend-item"><span class="swatch swatch-neg"></span> Negative Contribution</span>
+                <span class="legend-item"><span class="swatch swatch-indigo"></span> Curve $f(t)$ / $F(x)$</span>
+                <span class="legend-item"><span class="swatch swatch-amber"></span> Slice $t = x$ &amp; Tangent Line</span>
+              </div>
+            </div>
+
+            <!-- Controls Column -->
+            <div class="controls-panel">
+              <div class="control-group">
+                <label class="control-label" for="ftcPresetSelect">
+                  <span>ISRT Exam Function</span>
+                </label>
+                <select id="ftcPresetSelect" class="styled-select">
+                  <option value="0">1) Final 2025 Q1(d): f(t) = √(t² + 9), a = 4</option>
+                  <option value="1">2) Final 2024 Q4(a): f(t) = (t - 3)/(t² + 7), a = 0</option>
+                  <option value="2">3) Final 2024 Q1(d): f(t) = 1 - t², a = 0</option>
+                  <option value="3">4) Final 2023 Q1(d): f(t) = t sec(t), a = 0</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="ftcXSlider">
+                  <span>Variable Limit ($x$)</span>
+                  <span class="control-value" id="ftcXDisplay">x = 4.00</span>
+                </label>
+                <input type="range" id="ftcXSlider" min="0" max="6" step="0.02" value="4" />
+                <div class="btn-row">
+                  <button type="button" class="btn btn-sm btn-primary" id="ftcPlayBtn">&#9654; Play / Sweep $x$</button>
+                  <button type="button" class="btn btn-sm" id="ftcJumpABtn">Jump to $x = a$</button>
+                </div>
+              </div>
+
+              <!-- Swap Limits Toggle -->
+              <div class="swap-toggle-box" id="swapToggleBox">
+                <div class="swap-switch-row">
+                  <span class="swap-title" id="swapTitleText">Standard $\int_a^x f(t)\,dt$</span>
+                  <label class="switch" aria-label="Swap integration limits">
+                    <input type="checkbox" id="swapLimitsCheck" />
+                    <span class="slider-round"></span>
+                  </label>
+                </div>
+                <div class="swap-caption" id="swapCaptionText">
+                  Toggle to <strong>Reversed $\int_x^a$ (ISRT Exam Trap!)</strong> to see $F(x)$ and $F'(x)$ flip sign in real time.
+                </div>
+              </div>
+
+              <!-- Live Status Badge -->
+              <div class="status-banner inc" id="ftcStatusBanner">
+                <span id="ftcStatusText">F is increasing (F'(x) &gt; 0)</span>
+                <span class="mono" id="ftcConcavityText">F''(x) &gt; 0</span>
+              </div>
+
+              <!-- Dynamic Formula & Exam Insight -->
+              <div class="formula-box" id="ftcInsightBox">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Readout Cards -->
+          <div class="readout-grid">
+            <div class="metric-card">
+              <span class="metric-label">Current Limit $x$</span>
+              <span class="metric-value" id="ftcReadX">4.0000</span>
+              <span class="metric-sub" id="ftcReadXSub">Fixed anchor a = 4</span>
+            </div>
+            <div class="metric-card accent">
+              <span class="metric-label">Accumulator $F(x)$</span>
+              <span class="metric-value" id="ftcReadF">0.0000</span>
+              <span class="metric-sub">Computed via Simpson's Rule</span>
+            </div>
+            <div class="metric-card emerald" id="ftcReadFpCard">
+              <span class="metric-label">Derivative $F'(x)$</span>
+              <span class="metric-value" id="ftcReadFp">5.0000</span>
+              <span class="metric-sub" id="ftcReadFpSub">= +f(x) (Tangent Slope)</span>
+            </div>
+            <div class="metric-card amber">
+              <span class="metric-label">2nd Derivative $F''(x)$</span>
+              <span class="metric-value" id="ftcReadFpp">0.8000</span>
+              <span class="metric-sub" id="ftcReadFppSub">= +f'(x) (Concavity)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 2: MVT FOR INTEGRALS & AVERAGE VALUE VISUALIZER
+           ==================================================================== -->
+      <section class="section-block" id="section-lab2">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 2 &bull; Interactive Lab 2</span>
+            <h2>MVT for Integrals &amp; Average Value Visualizer</h2>
+          </div>
+          <p class="section-desc">
+            See why a continuous function on $[a, b]$ always has at least one point $x^* \in [a, b]$ where the translucent amber rectangle of height $f_{\text{ave}}$ matches the exact area under $f(x)$.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="lab-grid">
+            <!-- Canvas -->
+            <div class="canvas-stack">
+              <div class="canvas-wrapper" id="mvtCanvasWrap">
+                <canvas id="mvtCanvas" aria-label="Mean Value Theorem for Integrals visualizer"></canvas>
+              </div>
+              <div class="canvas-legend">
+                <span class="legend-item"><span class="swatch swatch-pos"></span> Curve Area $\int_a^b f(x)\,dx$</span>
+                <span class="legend-item"><span class="swatch swatch-amber"></span> Equal-Area Rectangle $f_{\text{ave}}(b-a)$</span>
+                <span class="legend-item"><span class="swatch swatch-indigo"></span> Curve $y = f(x)$</span>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-panel">
+              <div class="control-group">
+                <label class="control-label" for="mvtPresetSelect">
+                  <span>Select Function Preset</span>
+                </label>
+                <select id="mvtPresetSelect" class="styled-select">
+                  <option value="0">1) Final 2025 Q1(c): f(x) = √x on [1, 4]</option>
+                  <option value="1">2) Class Notes (Anton Ex. 9): f(x) = x² on [1, 4]</option>
+                  <option value="2">3) Trigonometric: f(x) = sin(x) on [0, π] (Two x*!)</option>
+                  <option value="3">4) Cubic: f(x) = x³ - 3x + 3 on [0, 2.5]</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="mvtASlider">
+                  <span>Lower Limit ($a$)</span>
+                  <span class="control-value" id="mvtADisplay">a = 1.00</span>
+                </label>
+                <input type="range" id="mvtASlider" min="0" max="4.5" step="0.05" value="1" />
+              </div>
+
+              <div class="control-group">
+                <label class="control-label" for="mvtBSlider">
+                  <span>Upper Limit ($b$)</span>
+                  <span class="control-value" id="mvtBDisplay">b = 4.00</span>
+                </label>
+                <input type="range" id="mvtBSlider" min="0.2" max="5" step="0.05" value="4" />
+              </div>
+
+              <div class="btn-row">
+                <button type="button" class="btn btn-sm btn-primary" id="mvtResetBtn">&#8634; Reset to Exam Interval</button>
+              </div>
+
+              <div class="formula-box" id="mvtNoteBox">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- MVT Live Readouts -->
+          <div class="readout-grid">
+            <div class="metric-card emerald">
+              <span class="metric-label">Definite Integral $\int_a^b f(x)\,dx$</span>
+              <span class="metric-value" id="mvtReadInt">4.6667</span>
+              <span class="metric-sub" id="mvtReadIntSub">Exact curve area</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Interval Width $(b - a)$</span>
+              <span class="metric-value" id="mvtReadWidth">3.0000</span>
+              <span class="metric-sub" id="mvtReadInterval">[1.00, 4.00]</span>
+            </div>
+            <div class="metric-card amber">
+              <span class="metric-label">Average Value $f_{\text{ave}}$</span>
+              <span class="metric-value" id="mvtReadAve">1.5556</span>
+              <span class="metric-sub" id="mvtReadAveSub">14/9 &approx; 1.5556</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-label">Rectangle Area $f_{\text{ave}}(b-a)$</span>
+              <span class="metric-value" id="mvtReadRect">4.6667</span>
+              <span class="metric-sub">Matches $\int_a^b f(x)\,dx$ exactly!</span>
+            </div>
+            <div class="metric-card accent">
+              <span class="metric-label">MVT Point(s) $x^* \in [a,b]$</span>
+              <span class="metric-value" id="mvtReadXstar">2.4198</span>
+              <span class="metric-sub" id="mvtReadXstarSub">Where $f(x^*) = f_{\text{ave}}$</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 3: CORE THEORY, DEFINITE U-SUB & ISRT EXAM TRAPS
+           ==================================================================== -->
+      <section class="section-block" id="section-theory">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 3 &bull; Exam-Ready Theory</span>
+            <h2>Core Theory, Definite $u$-Substitution &amp; ISRT Exam Traps</h2>
+          </div>
+          <p class="section-desc">
+            Every theorem statement, chain-rule extension, domain rule, and $u$-substitution limit conversion required for full marks.
+          </p>
+        </div>
+
+        <!-- 4 Core Formula Cards -->
+        <div class="theory-grid">
+          <article class="theory-card">
+            <h3>1. FTC Part I &amp; Total vs. Net Signed Area</h3>
+            <p>
+              If $f$ is <strong>continuous</strong> on $[a, b]$ and $F$ is any antiderivative of $f$ on $[a, b]$ ($F'(x) = f(x)$), then:
+            </p>
+            <div class="formula-box">
+              $$\int_a^b f(x)\,dx = F(b) - F(a) = \big[F(x)\big]_a^b$$
+            </div>
+            <p style="font-size:0.9rem;color:var(--text-secondary);">
+              For <strong>Total Area</strong>, find all roots of $f(x) = 0$ inside $[a, b]$ and integrate $|f(x)|$:
+              $$\text{Total Area} = \int_a^b |f(x)|\,dx$$
+              splitting at every sign change so negative regions are negated.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <h3>2. FTC Part II &amp; Leibniz / Chain Rule Extensions</h3>
+            <p>
+              If $f$ is continuous on an open interval $I$ containing $a$, then for every $x \in I$:
+            </p>
+            <div class="formula-box" style="font-size:0.88rem;">
+              $$\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$$
+              $$\frac{d}{dx}\int_x^a f(t)\,dt = -\frac{d}{dx}\int_a^x f(t)\,dt = -f(x)$$
+              $$\frac{d}{dx}\int_{g(x)}^{h(x)} f(t)\,dt = f\big(h(x)\big)h'(x) - f\big(g(x)\big)g'(x)$$
+            </div>
+          </article>
+
+          <article class="theory-card">
+            <h3>3. Maximal Open Interval of Antiderivatives</h3>
+            <p>
+              An integral $F(x) = \int_a^x f(t)\,dt$ represents an antiderivative of $f$ only on the <strong>largest open interval containing $a$</strong> on which $f$ is continuous:
+            </p>
+            <div class="formula-box" style="font-size:0.87rem;">
+              <div>&bull; $F(x) = \displaystyle\int_1^x \frac{dt}{t}$ has discontinuity at $t=0$ $\implies$ valid on $(0, \infty)$.</div>
+              <div style="margin-top:6px;">&bull; $F(x) = \displaystyle\int_1^x \frac{dt}{t^2 - 9}$ has discontinuities at $t = \pm 3$ $\implies$ since $1 \in (-3, 3)$, valid on $(-3, 3)$.</div>
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-secondary);">
+              <strong>$x$-Intercept Rule:</strong> Since $F(a) = \int_a^a f(t)\,dt = 0$, the graph of $y = F(x)$ <em>always</em> crosses the $x$-axis at $(a, 0)$.
+            </p>
+          </article>
+
+          <article class="theory-card">
+            <h3>4. MVT for Integrals, Average Value &amp; Net Change</h3>
+            <p>
+              If $f$ is continuous on $[a, b]$, there exists at least one $x^* \in [a, b]$ such that:
+            </p>
+            <div class="formula-box" style="font-size:0.88rem;">
+              $$\int_a^b f(x)\,dx = f(x^*)(b - a), \qquad f_{\text{ave}} = \frac{1}{b-a}\int_a^b f(x)\,dx$$
+              $$\text{Net Change:}\quad \int_a^b F'(x)\,dx = F(b) - F(a)$$
+            </div>
+            <p style="font-size:0.88rem;color:var(--text-secondary);">
+              Integrating a rate of change (like velocity or birth minus death rate) over $[a, b]$ gives the exact <strong>net change</strong> in the quantity.
+            </p>
+          </article>
+        </div>
+
+        <!-- Interactive Definite u-Substitution Stepper -->
+        <div class="stepper-widget" id="usubWidget">
+          <div>
+            <span class="section-tag" style="margin-bottom:2px;">Interactive Walkthrough</span>
+            <h3 style="font-size:1.12rem;font-weight:800;">Definite $u$-Substitution &amp; Limit-Conversion Stepper</h3>
+            <p style="font-size:0.88rem;color:var(--text-secondary);">
+              Choose one of the 3 classic ISRT substitution &amp; splitting templates and step through how the limits $x \to u$ transform.
+            </p>
+          </div>
+
+          <div class="tab-bar" role="tablist" aria-label="Definite u-substitution examples">
+            <button type="button" class="tab-btn active" data-usub="0">1) $\int_0^1 5x(1-x^2)^{3/2}\,dx$ (2022)</button>
+            <button type="button" class="tab-btn" data-usub="1">2) $\int_1^4 \frac{|2-x|}{x}\,dx$ (2024)</button>
+            <button type="button" class="tab-btn" data-usub="2">3) King's Property $\int_0^a f(x)\,dx$ (2023)</button>
+          </div>
+
+          <div class="usub-steps-wrap" id="usubStepsWrap">
+            <!-- Dynamically populated -->
+          </div>
+
+          <div class="stepper-footer">
+            <span class="mono" style="font-size:0.82rem;color:var(--text-muted);" id="usubCounter">Step 1 of 4</span>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm" id="usubPrevBtn">&larr; Prev</button>
+              <button type="button" class="btn btn-sm btn-primary" id="usubNextBtn">Next Step &rarr;</button>
+              <button type="button" class="btn btn-sm" id="usubAllBtn">Show All</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 High-Yield ISRT Exam Traps -->
+        <div>
+          <h3 style="font-size:1.05rem;font-weight:800;margin-bottom:12px;color:var(--rose-dark);">&#9888; 4 High-Yield ISRT Exam Traps</h3>
+          <div class="traps-grid">
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 1: Lower-Limit Minus Sign</div>
+              <p>
+                In 1st In-course 2023 Q4 &amp; Final 2023 Q1(d), $x$ is the <strong>lower limit</strong>: $F(x) = \int_x^a f(t)\,dt$. Always rewrite as $-\int_a^x f(t)\,dt$ first, so $F'(x) = -f(x)$ and $F''(x) = -f'(x)$!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 2: Absolute-Value Root Splitting</div>
+              <p>
+                Never integrate $|2 - x|$ or $1 - x^2$ straight across a sign change when asked for <em>Total Area</em>. Always locate the root ($x=2$ or $x=1$) and split into separate integrals.
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 3: Discontinuity / FTC Part I Trap</div>
+              <p>
+                FTC Part I requires $f$ to be <strong>continuous on $[a,b]$</strong>. Blindly evaluating $\int_{-1}^1 x^{-2}\,dx = [-1/x]_{-1}^1 = -2$ is <em>wrong</em> because $1/x^2$ is unbounded at $x = 0$!
+              </p>
+            </div>
+            <div class="trap-card">
+              <div class="trap-card-title">Trap 4: Forgetting to Convert $u$-Limits</div>
+              <p>
+                When substituting $u = g(x)$ in a definite integral, immediately update $x=a \to u=g(a)$ and $x=b \to u=g(b)$ (never write $\int_0^1 u^{3/2}\,du$ with old $x$-limits).
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 4: ISRT PAST-EXAM VAULT
+           ==================================================================== -->
+      <section class="section-block" id="section-vault">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 4 &bull; ISRT Past-Exam Vault</span>
+            <h2>8 Authentic ISRT Exam &amp; Class-Note Problems</h2>
+          </div>
+          <p class="section-desc">
+            Filter by exam type, check the hint if needed, and reveal the complete step-by-step exam solution.
+          </p>
+        </div>
+
+        <div class="filter-tabs" id="vaultFilters" role="tablist" aria-label="Filter exam problems">
+          <button type="button" class="filter-tab active" data-filter="all">All (8)</button>
+          <button type="button" class="filter-tab" data-filter="final">Year Final (5)</button>
+          <button type="button" class="filter-tab" data-filter="incourse">In-course (3)</button>
+          <button type="button" class="filter-tab" data-filter="notes">Class Notes (3)</button>
+        </div>
+
+        <div class="vault-list" id="vaultList">
+
+          <!-- Problem 1 -->
+          <article class="exam-card" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 Q1(d) &bull; 2 Marks</span>
+              <span class="topic-pill">FTC Part II</span>
+            </div>
+            <div class="exam-prompt">
+              Let $\displaystyle F(x) = \int_4^x \sqrt{t^2 + 9}\,dt$. Evaluate $F(4)$, $F'(4)$, and $F''(4)$ using the Fundamental Theorem of Calculus (Part II).
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Since $x$ is the upper limit, $F'(x) = \sqrt{x^2+9}$ directly. Then differentiate $F'(x)$ once more using the chain rule to get $F''(x)$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Evaluate $F(4)$</div>
+                $$F(4) = \int_4^4 \sqrt{t^2 + 9}\,dt = 0.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply FTC Part II for $F'(x)$ and $F'(4)$</div>
+                Since $f(t) = \sqrt{t^2 + 9}$ is continuous everywhere:
+                $$F'(x) = \sqrt{x^2 + 9} \implies F'(4) = \sqrt{4^2 + 9} = \sqrt{25} = 5.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Differentiate again for $F''(x)$ and $F''(4)$</div>
+                $$F''(x) = \frac{d}{dx}(x^2 + 9)^{1/2} = \frac{2x}{2\sqrt{x^2 + 9}} = \frac{x}{\sqrt{x^2 + 9}} \implies F''(4) = \frac{4}{5}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 2 -->
+          <article class="exam-card" data-category="incourse">
+            <div class="exam-meta">
+              <span class="exam-badge">1st In-course 2023 Q4 &bull; 4 Marks</span>
+              <span class="topic-pill">FTC Part II (Reversed Limit)</span>
+            </div>
+            <div class="exam-prompt">
+              Let $\displaystyle F(x) = \int_x^4 \sqrt{t^2 + 4}\,dt$. Find (a) $F(4)$, (b) $F'(4)$, and (c) $F''(4)$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Watch the lower-limit trap! Rewrite $F(x) = -\int_4^x \sqrt{t^2 + 4}\,dt$ before applying FTC Part II.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Rewrite with $x$ as the upper limit</div>
+                $$F(x) = -\int_4^x \sqrt{t^2 + 4}\,dt.$$
+                <strong>(a)</strong> $F(4) = -\int_4^4 \sqrt{t^2 + 4}\,dt = 0$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Find $F'(4)$</div>
+                <strong>(b)</strong> By FTC Part II:
+                $$F'(x) = -\sqrt{x^2 + 4} \implies F'(4) = -\sqrt{4^2 + 4} = -\sqrt{20} = -2\sqrt{5}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 3: Find $F''(4)$</div>
+                <strong>(c)</strong> Differentiating $F'(x)$:
+                $$F''(x) = -\frac{x}{\sqrt{x^2 + 4}} \implies F''(4) = -\frac{4}{2\sqrt{5}} = -\frac{2}{\sqrt{5}}.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 3 -->
+          <article class="exam-card" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2023 Q1(d) &bull; 2 Marks</span>
+              <span class="topic-pill">FTC Part II (Reversed Limit)</span>
+            </div>
+            <div class="exam-prompt">
+              Let $\displaystyle F(x) = \int_x^0 t\sec t\,dt$. Evaluate $F(0)$, $F'(0)$, and $F''(0)$ using the Fundamental Theorem of Calculus (Part II).
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Flip limits to get $F(x) = -\int_0^x t\sec t\,dt$, then use the product rule for $F''(x)$ and recall $\sec 0 = 1$, $\tan 0 = 0$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Evaluate $F(0)$ and $F'(0)$</div>
+                Rewrite $F(x) = -\int_0^x t\sec t\,dt$. Note $t\sec t$ is continuous on $(-\frac{\pi}{2}, \frac{\pi}{2})$ containing $0$.
+                $$F(0) = -\int_0^0 t\sec t\,dt = 0.$$
+                $$F'(x) = -x\sec x \implies F'(0) = -0 \cdot \sec 0 = 0.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Apply Product Rule for $F''(0)$</div>
+                $$F''(x) = -\frac{d}{dx}(x\sec x) = -\big(\sec x + x\sec x\tan x\big).$$
+                $$F''(0) = -(1 + 0 \cdot 1 \cdot 0) = -1.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 4 -->
+          <article class="exam-card" data-category="final">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q4(a) &bull; 3 Marks</span>
+              <span class="topic-pill">FTC Part II + Optimization</span>
+            </div>
+            <div class="exam-prompt">
+              Let $\displaystyle F(x) = \int_0^x \frac{t - 3}{t^2 + 7}\,dt$ for $x \in (-\infty, \infty)$. Use the Fundamental Theorem of Calculus (Part II) to find the value of $x$ where $F$ attains its minimum value.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Compute $F'(x)$ by FTC Part II, solve $F'(x) = 0$ for the critical point, and use the First Derivative Test (sign change from negative to positive) to prove it is a global minimum.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Differentiate via FTC Part II</div>
+                Since $f(t) = \frac{t - 3}{t^2 + 7}$ is continuous for all $t \in \mathbb{R}$ ($t^2 + 7 \ge 7 &gt; 0$):
+                $$F'(x) = \frac{x - 3}{x^2 + 7}.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Locate critical point and apply First Derivative Test</div>
+                Setting $F'(x) = 0$ gives $x - 3 = 0 \implies x = 3$. Since $x^2 + 7 &gt; 0$ always, the sign of $F'(x)$ depends solely on $(x - 3)$:
+                <br />&bull; For $x &lt; 3$: $F'(x) &lt; 0$, so $F$ is strictly decreasing on $(-\infty, 3)$.
+                <br />&bull; For $x &gt; 3$: $F'(x) &gt; 0$, so $F$ is strictly increasing on $(3, \infty)$.
+                <br />Therefore, $F$ attains its <strong>absolute minimum value at $x = 3$</strong>.
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 5 -->
+          <article class="exam-card" data-category="final notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2025 Q1(c) &bull; 2 Marks</span>
+              <span class="topic-pill">Average Value &amp; MVT</span>
+            </div>
+            <div class="exam-prompt">
+              Find the average value of the function $f(x) = \sqrt{x}$ over the interval $[1, 4]$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Use $f_{\text{ave}} = \frac{1}{b-a}\int_a^b f(x)\,dx$ with $a = 1, b = 4$ and $\int x^{1/2}\,dx = \frac{2}{3}x^{3/2}$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Apply the Average Value Formula</div>
+                $$f_{\text{ave}} = \frac{1}{4 - 1}\int_1^4 x^{1/2}\,dx = \frac{1}{3}\left[\frac{2}{3}x^{3/2}\right]_1^4.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate via FTC Part I</div>
+                $$f_{\text{ave}} = \frac{2}{9}\left(4^{3/2} - 1^{3/2}\right) = \frac{2}{9}(8 - 1) = \frac{14}{9} \approx 1.5556.$$
+                <em>(Bonus: MVT point $x^*$ satisfies $\sqrt{x^*} = \frac{14}{9} \implies x^* = \frac{196}{81} \approx 2.4198 \in [1, 4]$.)</em>
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 6 -->
+          <article class="exam-card" data-category="final notes">
+            <div class="exam-meta">
+              <span class="exam-badge">Final 2024 Q1(d) &amp; Class Notes &bull; 2 Marks</span>
+              <span class="topic-pill">Total Area &amp; FTC Part I</span>
+            </div>
+            <div class="exam-prompt">
+              Find the <strong>total area</strong> between the curve $y = 1 - x^2$ and the $x$-axis over the interval $[0, 2]$.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> $1 - x^2 = 0$ at $x = 1 \in [0, 2]$. Split $\int_0^2 |1 - x^2|\,dx$ into $[0, 1]$ (positive) and $[1, 2]$ (negative).
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Find root and split the integral</div>
+                On $[0, 1]$, $1 - x^2 \ge 0$; on $[1, 2]$, $1 - x^2 \le 0$. Thus:
+                $$\text{Total Area} = \int_0^2 |1 - x^2|\,dx = \int_0^1 (1 - x^2)\,dx + \int_1^2 (x^2 - 1)\,dx.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Evaluate each piece via FTC Part I</div>
+                $$= \left[x - \frac{x^3}{3}\right]_0^1 + \left[\frac{x^3}{3} - x\right]_1^2 = \left(1 - \frac{1}{3}\right) + \left[\left(\frac{8}{3} - 2\right) - \left(\frac{1}{3} - 1\right)\right]$$
+                $$= \frac{2}{3} + \left(\frac{2}{3} + \frac{2}{3}\right) = 2.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 7 -->
+          <article class="exam-card" data-category="incourse notes">
+            <div class="exam-meta">
+              <span class="exam-badge">1st In-course 2023 Q3 &amp; Class Notes &bull; 6 Marks</span>
+              <span class="topic-pill">Total Area &amp; Curve Sketch</span>
+            </div>
+            <div class="exam-prompt">
+              Sketch the curve of $\displaystyle y = \frac{x^2 - 1}{x^2}$ and find the <strong>total area</strong> between the curve and the interval $\left[\frac{1}{2}, 2\right]$ on the $x$-axis.
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> Rewrite $y = 1 - \frac{1}{x^2}$. Notice it crosses the $x$-axis at $x = 1$: it is negative on $[\frac{1}{2}, 1)$ (from $y = -3$ up to $0$) and positive on $(1, 2]$ (from $0$ up to $\frac{3}{4}$).
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Step 1: Analyze &amp; sketch $y = 1 - x^{-2}$ on $[1/2, 2]$</div>
+                &bull; At $x = \frac{1}{2}$: $y = 1 - 4 = -3$ (below $x$-axis).<br />
+                &bull; Root at $x = 1$: $y = 0$.<br />
+                &bull; At $x = 2$: $y = 1 - \frac{1}{4} = \frac{3}{4}$ (above $x$-axis).<br />
+                Since $y' = \frac{2}{x^3} &gt; 0$, the curve strictly increases from $(\frac{1}{2}, -3)$ through $(1, 0)$ to $(2, \frac{3}{4})$.
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Step 2: Split Total Area at $x = 1$ and integrate</div>
+                $$\text{Total Area} = \int_{1/2}^{1} \left(\frac{1}{x^2} - 1\right)dx + \int_{1}^{2} \left(1 - \frac{1}{x^2}\right)dx$$
+                $$= \left[-\frac{1}{x} - x\right]_{1/2}^{1} + \left[x + \frac{1}{x}\right]_{1}^{2}$$
+                $$= \left[(-1 - 1) - \left(-2 - \frac{1}{2}\right)\right] + \left[\left(2 + \frac{1}{2}\right) - (1 + 1)\right] = \frac{1}{2} + \frac{1}{2} = 1.$$
+              </div>
+            </div>
+          </article>
+
+          <!-- Problem 8 -->
+          <article class="exam-card" data-category="incourse">
+            <div class="exam-meta">
+              <span class="exam-badge">1st In-course 2024 Q5(a) &amp; 2nd In-course 2022 Q1(a)</span>
+              <span class="topic-pill">Splitting &amp; Definite $u$-Sub</span>
+            </div>
+            <div class="exam-prompt">
+              Evaluate both definite integrals:<br />
+              <strong>(i)</strong> $\displaystyle \int_1^4 \frac{|2 - x|}{x}\,dx$ &nbsp;(1st In-course 2024 Q5a / Final 2024 Q2b)<br />
+              <strong>(ii)</strong> $\displaystyle \int_0^1 5x(1 - x^2)^{3/2}\,dx$ &nbsp;(2nd In-course 2022 Q1a)
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn btn-sm hint-toggle">Show Hint</button>
+              <button type="button" class="btn btn-sm btn-primary sol-toggle">Show Step-by-Step Solution</button>
+            </div>
+            <div class="hint-box">
+              <strong>Hint:</strong> For (i), split at $x = 2$ and watch the $\ln 2$ terms cancel! For (ii), let $u = 1 - x^2$ and convert limits $0 \to 1$ and $1 \to 0$.
+            </div>
+            <div class="solution-box">
+              <div class="sol-step">
+                <div class="sol-step-title">Part (i): $\int_1^4 \frac{|2 - x|}{x}\,dx = 1$</div>
+                Split at $x = 2$ (where $2 - x = 0$):
+                $$\int_1^2 \frac{2 - x}{x}\,dx + \int_2^4 \frac{x - 2}{x}\,dx = \int_1^2 \left(\frac{2}{x} - 1\right)dx + \int_2^4 \left(1 - \frac{2}{x}\right)dx$$
+                $$= \big[2\ln x - x\big]_1^2 + \big[x - 2\ln x\big]_2^4 = (2\ln 2 - 2 + 1) + (4 - 4\ln 2 - 2 + 2\ln 2)$$
+                $$= (2\ln 2 - 1) + (2 - 2\ln 2) = 1.$$
+              </div>
+              <div class="sol-step">
+                <div class="sol-step-title">Part (ii): $\int_0^1 5x(1 - x^2)^{3/2}\,dx = 1$</div>
+                Let $u = 1 - x^2 \implies du = -2x\,dx \implies x\,dx = -\frac{1}{2}du$.<br />
+                Convert limits: $x = 0 \implies u = 1$, and $x = 1 \implies u = 0$:
+                $$\int_1^0 5u^{3/2}\left(-\frac{1}{2}du\right) = \frac{5}{2}\int_0^1 u^{3/2}\,du = \frac{5}{2}\left[\frac{2}{5}u^{5/2}\right]_0^1 = 1 - 0 = 1.$$
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           SECTION 5: QUICK MASTERY CHECK (INTERACTIVE QUIZ)
+           ==================================================================== -->
+      <section class="section-block" id="section-quiz">
+        <div class="section-head">
+          <div>
+            <span class="section-tag">Section 5 &bull; Self-Assessment</span>
+            <h2>Quick Mastery Check</h2>
+          </div>
+          <p class="section-desc">
+            Check your command of FTC Part II, chain rule extensions, open intervals, MVT, and definite $u$-substitution.
+          </p>
+        </div>
+
+        <div class="quiz-topbar">
+          <div class="score-pill">
+            <span>Score:</span>
+            <span id="quizScore">0 / 5</span>
+          </div>
+          <button type="button" class="btn btn-sm" id="resetQuizBtn">&#8634; Reset Quiz</button>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+
+          <!-- Q1 -->
+          <div class="quiz-card" data-qid="q1" data-answer="b">
+            <div class="quiz-qnum">Question 1 &bull; FTC Part II with $x$ as the Lower Limit</div>
+            <div>If $\displaystyle F(x) = \int_x^5 \sqrt{t^2 + 16}\,dt$, what is the value of $F'(3)$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$5$</button>
+              <button type="button" class="quiz-opt" data-val="b">$-5$</button>
+              <button type="button" class="quiz-opt" data-val="c">$-\dfrac{3}{5}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\sqrt{41} - 5$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-card" data-qid="q2" data-answer="c">
+            <div class="quiz-qnum">Question 2 &bull; FTC Part II with Chain Rule ($h(x) = x^2$)</div>
+            <div>Compute $\displaystyle \frac{d}{dx}\int_1^{x^2} \cos(t^3)\,dt$:</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\cos(x^6)$</button>
+              <button type="button" class="quiz-opt" data-val="b">$2x\cos(x^3)$</button>
+              <button type="button" class="quiz-opt" data-val="c">$2x\cos(x^6)$</button>
+              <button type="button" class="quiz-opt" data-val="d">$-6x^5\sin(x^6)$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-card" data-qid="q3" data-answer="a">
+            <div class="quiz-qnum">Question 3 &bull; Maximal Open Interval of Antiderivative</div>
+            <div>Over what largest open interval does $\displaystyle F(x) = \int_1^x \frac{dt}{t^2 - 9}$ represent an antiderivative of $f(x) = \frac{1}{x^2 - 9}$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$(-3, 3)$</button>
+              <button type="button" class="quiz-opt" data-val="b">$(-\infty, \infty)$</button>
+              <button type="button" class="quiz-opt" data-val="c">$(1, 3)$</button>
+              <button type="button" class="quiz-opt" data-val="d">$(3, \infty)$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-card" data-qid="q4" data-answer="d">
+            <div class="quiz-qnum">Question 4 &bull; MVT Point $x^*$</div>
+            <div>For $f(x) = x^2$ on $[1, 4]$, the Mean Value Theorem for Integrals guarantees a point $x^* \in [1, 4]$ such that $\int_1^4 x^2\,dx = f(x^*)(4 - 1)$. What is $x^*$?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$2.5$</button>
+              <button type="button" class="quiz-opt" data-val="b">$7$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\pm\sqrt{7}$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\sqrt{7}$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-card" data-qid="q5" data-answer="b">
+            <div class="quiz-qnum">Question 5 &bull; Definite $u$-Substitution Limit Transformation</div>
+            <div>Applying the substitution $u = 1 - x^2$ to $\displaystyle \int_0^1 5x(1 - x^2)^{3/2}\,dx$ transforms it into which exact $u$-integral?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-opt" data-val="a">$\displaystyle -\frac{5}{2}\int_0^1 u^{3/2}\,du$</button>
+              <button type="button" class="quiz-opt" data-val="b">$\displaystyle \frac{5}{2}\int_0^1 u^{3/2}\,du$</button>
+              <button type="button" class="quiz-opt" data-val="c">$\displaystyle \frac{5}{2}\int_1^0 u^{3/2}\,du$</button>
+              <button type="button" class="quiz-opt" data-val="d">$\displaystyle 5\int_0^1 u^{3/2}\,du$</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX SAFE RENDER HELPER
+         ---------------------------------------------------------------------- */
+      function renderMath(target) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(target || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      /* ----------------------------------------------------------------------
+         2. NUMERICAL INTEGRATION (SIMPSON'S RULE) & ROOT FINDER
+         ---------------------------------------------------------------------- */
+      function simpson(fn, a, b, steps) {
+        if (Math.abs(b - a) < 1e-12) return 0;
+        const N = steps % 2 === 0 ? steps : steps + 1;
+        const h = (b - a) / N;
+        let sum = fn(a) + fn(b);
+        for (let i = 1; i < N; i++) {
+          sum += (i % 2 === 0 ? 2 : 4) * fn(a + i * h);
+        }
+        return (h / 3) * sum;
+      }
+
+      function findRoots(fn, a, b, samples) {
+        const roots = [];
+        const step = (b - a) / samples;
+        let prevX = a;
+        let prevY = fn(a);
+        if (Math.abs(prevY) < 1e-6) roots.push(a);
+
+        for (let i = 1; i <= samples; i++) {
+          const curX = a + i * step;
+          const curY = fn(curX);
+          if (Math.abs(curY) < 1e-7) {
+            if (roots.length === 0 || Math.abs(curX - roots[roots.length - 1]) > 1e-3) {
+              roots.push(curX);
+            }
+          } else if (prevY * curY < 0) {
+            // Bisection refinement
+            let lo = prevX, hi = curX, fLo = prevY;
+            for (let iter = 0; iter < 32; iter++) {
+              const mid = 0.5 * (lo + hi);
+              const fMid = fn(mid);
+              if (fLo * fMid <= 0) {
+                hi = mid;
+              } else {
+                lo = mid;
+                fLo = fMid;
+              }
+            }
+            const r = 0.5 * (lo + hi);
+            if (roots.length === 0 || Math.abs(r - roots[roots.length - 1]) > 1e-3) {
+              roots.push(r);
+            }
+          }
+          prevX = curX;
+          prevY = curY;
+        }
+        return roots;
+      }
+
+      /* ----------------------------------------------------------------------
+         3. THEME TOGGLE & CANVAS PALETTE
+         ---------------------------------------------------------------------- */
+      const rootEl = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const themeText = document.getElementById('themeText');
+
+      function getColors() {
+        const dark = rootEl.getAttribute('data-theme') === 'dark';
+        return {
+          bg: dark ? '#111827' : '#f8fafc',
+          grid: dark ? 'rgba(148, 163, 184, 0.14)' : 'rgba(15, 23, 42, 0.08)',
+          axis: dark ? '#94a3b8' : '#334155',
+          label: dark ? '#cbd5e1' : '#475569',
+          curve: dark ? '#818cf8' : '#4f46e5',
+          curve2: dark ? '#a5b4fc' : '#1e293b',
+          posFill: dark ? 'rgba(52, 211, 153, 0.30)' : 'rgba(16, 185, 129, 0.25)',
+          posStroke: dark ? '#34d399' : '#10b981',
+          negFill: dark ? 'rgba(251, 113, 133, 0.30)' : 'rgba(244, 63, 94, 0.24)',
+          negStroke: dark ? '#fb7185' : '#f43f5e',
+          amberFill: dark ? 'rgba(251, 191, 36, 0.22)' : 'rgba(245, 158, 11, 0.20)',
+          amberStroke: dark ? '#fbbf24' : '#d97706',
+          highlight: dark ? '#fbbf24' : '#f59e0b'
+        };
+      }
+
+      themeToggle.addEventListener('click', () => {
+        const next = rootEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        rootEl.setAttribute('data-theme', next);
+        themeIcon.innerHTML = next === 'dark' ? '&#9728;' : '&#9790;';
+        themeText.textContent = next === 'dark' ? 'Light' : 'Dark';
+        drawFTCLab();
+        drawMVTLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         4. SIDEBAR, SCROLLSPY & MASTERY PROGRESS BAR
+         ---------------------------------------------------------------------- */
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      const menuToggle = document.getElementById('menuToggle');
+
+      function setSidebar(open) {
+        sidebar.classList.toggle('open', open);
+        sidebarOverlay.classList.toggle('active', open);
+        menuToggle.setAttribute('aria-expanded', String(open));
+      }
+
+      menuToggle.addEventListener('click', () => setSidebar(!sidebar.classList.contains('open')));
+      sidebarOverlay.addEventListener('click', () => setSidebar(false));
+      document.querySelectorAll('.nav-link').forEach((l) => l.addEventListener('click', () => setSidebar(false)));
+
+      const progressState = {
+        lab1: false,
+        lab2: false,
+        theory: false,
+        vault: false,
+        q1: false,
+        q2: false,
+        q3: false,
+        q4: false,
+        q5: false
+      };
+
+      function updateProgressUI() {
+        const keys = Object.keys(progressState);
+        const done = keys.filter((k) => progressState[k]).length;
+        const pct = Math.round((done / keys.length) * 100);
+        document.getElementById('progressPct').textContent = pct + '%';
+        document.getElementById('progressFill').style.width = pct + '%';
+
+        const msgs = [
+          'Explore the FTC & MVT labs and take the quiz.',
+          'Great start! Try toggling Reversed Limits in Lab 1.',
+          'Solid progress! Step through the u-Sub widget or Exam Vault.',
+          'Almost there! Finish the Quick Mastery Check.',
+          'Lesson 3 Mastered! Module 1 complete.'
+        ];
+        const idx = pct === 100 ? 4 : pct >= 70 ? 3 : pct >= 40 ? 2 : pct > 0 ? 1 : 0;
+        document.getElementById('progressCaption').textContent = msgs[idx];
+
+        document.querySelector('[data-section="section-lab1"]').classList.toggle('done', progressState.lab1);
+        document.querySelector('[data-section="section-lab2"]').classList.toggle('done', progressState.lab2);
+        document.querySelector('[data-section="section-theory"]').classList.toggle('done', progressState.theory);
+        document.querySelector('[data-section="section-vault"]').classList.toggle('done', progressState.vault);
+        const allQuiz = ['q1', 'q2', 'q3', 'q4', 'q5'].every((q) => progressState[q]);
+        document.querySelector('[data-section="section-quiz"]').classList.toggle('done', allQuiz);
+      }
+
+      function markDone(key) {
+        if (!progressState[key]) {
+          progressState[key] = true;
+          updateProgressUI();
+        }
+      }
+
+      const sections = document.querySelectorAll('.section-block');
+      const navLinks = document.querySelectorAll('.nav-link');
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            navLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === id));
+            if (id === 'section-theory') markDone('theory');
+          }
+        });
+      }, { rootMargin: '-20% 0px -65% 0px' });
+      sections.forEach((s) => spy.observe(s));
+
+      /* ----------------------------------------------------------------------
+         5. HIDPI CANVAS & AXES UTILITIES
+         ---------------------------------------------------------------------- */
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(175, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function niceStep(range, ticks) {
+        const rough = Math.max(range, 1e-6) / ticks;
+        const p10 = Math.pow(10, Math.floor(Math.log10(rough)));
+        const norm = rough / p10;
+        const mult = norm > 5 ? 10 : norm > 2 ? 5 : norm > 1 ? 2 : 1;
+        return mult * p10;
+      }
+
+      function drawGridAxes(ctx, w, h, pad, xMin, xMax, yMin, yMax, colors) {
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = colors.bg;
+        ctx.fillRect(0, 0, w, h);
+
+        const xStep = niceStep(xMax - xMin, 6);
+        const yStep = niceStep(yMax - yMin, 4);
+        ctx.strokeStyle = colors.grid;
+        ctx.lineWidth = 1;
+        ctx.font = '500 11px "JetBrains Mono", monospace';
+        ctx.fillStyle = colors.label;
+
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let xv = Math.ceil(xMin / xStep) * xStep; xv <= xMax + 1e-9; xv += xStep) {
+          const px = toX(xv);
+          ctx.beginPath();
+          ctx.moveTo(px, pad.top);
+          ctx.lineTo(px, h - pad.bottom);
+          ctx.stroke();
+          const txt = Math.abs(xv) < 1e-9 ? '0' : Number(xv.toFixed(2)).toString();
+          ctx.fillText(txt, px, h - pad.bottom + 5);
+        }
+
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let yv = Math.ceil(yMin / yStep) * yStep; yv <= yMax + 1e-9; yv += yStep) {
+          const py = toY(yv);
+          ctx.beginPath();
+          ctx.moveTo(pad.left, py);
+          ctx.lineTo(w - pad.right, py);
+          ctx.stroke();
+          const txt = Math.abs(yv) < 1e-9 ? '0' : Number(yv.toFixed(2)).toString();
+          ctx.fillText(txt, pad.left - 7, py);
+        }
+
+        ctx.strokeStyle = colors.axis;
+        ctx.lineWidth = 1.5;
+        if (yMin <= 0 && yMax >= 0) {
+          const y0 = toY(0);
+          ctx.beginPath();
+          ctx.moveTo(pad.left, y0);
+          ctx.lineTo(w - pad.right, y0);
+          ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          const x0 = toX(0);
+          ctx.beginPath();
+          ctx.moveTo(x0, pad.top);
+          ctx.lineTo(x0, h - pad.bottom);
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = colors.grid;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(pad.left, pad.top, plotW, plotH);
+
+        return { toX, toY, plotW, plotH };
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 1: FTC PART II ACCUMULATOR LAB (DUAL-CANVAS)
+         ---------------------------------------------------------------------- */
+      const ftcPresets = [
+        {
+          name: 'Final 2025 Q1(d)',
+          a: 4,
+          dom: [0, 6],
+          defaultX: 4,
+          defaultSwap: false,
+          f: (t) => Math.sqrt(t * t + 9),
+          fp: (t) => t / Math.sqrt(t * t + 9),
+          fTex: '\\sqrt{t^2 + 9}',
+          noteTex: '<strong>Final 2025 Q1(d):</strong> At $x = 4$: $F(4) = 0$, $F\'(4) = 5$, and $F\'\'(4) = \\frac{4}{5} = 0.8$. Drag $x$ left of $4$ to see backward integration make $F(x) &lt; 0$!',
+          specialX: null
+        },
+        {
+          name: 'Final 2024 Q4(a)',
+          a: 0,
+          dom: [-2, 7],
+          defaultX: 3,
+          defaultSwap: false,
+          f: (t) => (t - 3) / (t * t + 7),
+          fp: (t) => (7 + 6 * t - t * t) / Math.pow(t * t + 7, 2),
+          fTex: '\\dfrac{t - 3}{t^2 + 7}',
+          noteTex: '<strong>Final 2024 Q4(a):</strong> Notice $f(t)$ crosses $0$ from negative to positive at $x = 3$. Therefore $F(x)$ has a horizontal tangent ($F\'(3) = 0$) and attains its <strong>global minimum</strong> at $x = 3$!',
+          specialX: { x: 3, label: 'Global Min (x=3)' }
+        },
+        {
+          name: 'Final 2024 Q1(d)',
+          a: 0,
+          dom: [0, 2.5],
+          defaultX: 1,
+          defaultSwap: false,
+          f: (t) => 1 - t * t,
+          fp: (t) => -2 * t,
+          fTex: '1 - t^2',
+          noteTex: '<strong>Final 2024 Q1(d):</strong> $F(x)$ increases on $[0, 1]$ up to its local maximum at $x = 1$ ($F(1) = \\frac{2}{3}$), then decreases for $x &gt; 1$ where $1 - t^2 &lt; 0$.',
+          specialX: { x: 1, label: 'Peak (x=1)' }
+        },
+        {
+          name: 'Final 2023 Q1(d)',
+          a: 0,
+          dom: [-1.1, 1.1],
+          defaultX: 0,
+          defaultSwap: true,
+          f: (t) => t / Math.cos(t),
+          fp: (t) => (1 / Math.cos(t)) * (1 + t * Math.tan(t)),
+          fTex: 't\\sec t',
+          noteTex: '<strong>Final 2023 Q1(d) Auto-Note:</strong> The exam asks for $F(x) = \\int_x^0 t\\sec t\\,dt$ (Reversed Limits!). With Swap enabled: $F(0) = 0$, $F\'(0) = 0$, and $F\'\'(0) = -1$.',
+          specialX: { x: 0, label: 'x = 0 (F\'\'=-1)' }
+        }
+      ];
+
+      const ftcState = {
+        idx: 0,
+        x: 4,
+        swapped: false,
+        playing: false,
+        rafId: null,
+        lastTs: 0
+      };
+
+      const ftcTopCanvas = document.getElementById('ftcTopCanvas');
+      const ftcBotCanvas = document.getElementById('ftcBotCanvas');
+      const ftcPresetSelect = document.getElementById('ftcPresetSelect');
+      const ftcXSlider = document.getElementById('ftcXSlider');
+      const ftcXDisplay = document.getElementById('ftcXDisplay');
+      const ftcPlayBtn = document.getElementById('ftcPlayBtn');
+      const swapLimitsCheck = document.getElementById('swapLimitsCheck');
+      const swapToggleBox = document.getElementById('swapToggleBox');
+
+      function computeF(preset, x, swapped) {
+        const raw = simpson(preset.f, preset.a, x, 80);
+        return swapped ? -raw : raw;
+      }
+
+      function syncFTCPreset() {
+        const p = ftcPresets[ftcState.idx];
+        ftcXSlider.min = p.dom[0];
+        ftcXSlider.max = p.dom[1];
+        ftcXSlider.step = ((p.dom[1] - p.dom[0]) / 250).toFixed(4);
+        ftcState.x = p.defaultX;
+        ftcState.swapped = p.defaultSwap;
+        ftcXSlider.value = p.defaultX;
+        swapLimitsCheck.checked = p.defaultSwap;
+        updateSwapUI();
+      }
+
+      function updateSwapUI() {
+        const p = ftcPresets[ftcState.idx];
+        swapToggleBox.classList.toggle('swapped', ftcState.swapped);
+        const titleEl = document.getElementById('swapTitleText');
+        titleEl.innerHTML = ftcState.swapped
+          ? `Reversed $\\int_x^{${p.a}} f(t)\\,dt$ (Exam Trap!)`
+          : `Standard $\\int_{${p.a}}^x f(t)\\,dt$`;
+        renderMath(titleEl);
+      }
+
+      function drawFTCLab() {
+        const p = ftcPresets[ftcState.idx];
+        const x = ftcState.x;
+        const sign = ftcState.swapped ? -1 : 1;
+        const [xMin, xMax] = p.dom;
+        const colors = getColors();
+
+        // Pre-sample f(t) and F(x) across domain for smooth scaling
+        const N = 160;
+        const xs = [];
+        const fVals = [];
+        const FVals = [];
+        let fMin = 0, fMax = 0, FMin = 0, FMax = 0;
+
+        for (let i = 0; i <= N; i++) {
+          const t = xMin + (i / N) * (xMax - xMin);
+          const fv = p.f(t);
+          const Fv = computeF(p, t, ftcState.swapped);
+          xs.push(t);
+          fVals.push(fv);
+          FVals.push(Fv);
+          if (fv < fMin) fMin = fv;
+          if (fv > fMax) fMax = fv;
+          if (Fv < FMin) FMin = Fv;
+          if (Fv > FMax) FMax = Fv;
+        }
+
+        const fPadY = Math.max(0.4, (fMax - fMin) * 0.18);
+        const FPadY = Math.max(0.4, (FMax - FMin) * 0.18);
+        const pad = { top: 18, right: 18, bottom: 26, left: 46 };
+
+        // ==================== TOP CANVAS: y = f(t) ====================
+        const top = setupCanvas(ftcTopCanvas);
+        const tMap = drawGridAxes(top.ctx, top.w, top.h, pad, xMin, xMax, fMin - fPadY, fMax + fPadY, colors);
+        const tY0 = tMap.toY(0);
+
+        // Shade area between a and x
+        const dirSign = (x >= p.a ? 1 : -1) * sign;
+        const shadeSteps = 120;
+        if (Math.abs(x - p.a) > 1e-4) {
+          for (let i = 0; i < shadeSteps; i++) {
+            const t1 = p.a + (i / shadeSteps) * (x - p.a);
+            const t2 = p.a + ((i + 1) / shadeSteps) * (x - p.a);
+            const y1 = p.f(t1);
+            const y2 = p.f(t2);
+            const contrib = ((y1 + y2) * 0.5) * dirSign;
+            top.ctx.fillStyle = contrib >= 0 ? colors.posFill : colors.negFill;
+            top.ctx.beginPath();
+            top.ctx.moveTo(tMap.toX(t1), tY0);
+            top.ctx.lineTo(tMap.toX(t1), tMap.toY(y1));
+            top.ctx.lineTo(tMap.toX(t2), tMap.toY(y2));
+            top.ctx.lineTo(tMap.toX(t2), tY0);
+            top.ctx.closePath();
+            top.ctx.fill();
+          }
+        }
+
+        // Curve y = f(t)
+        top.ctx.strokeStyle = colors.curve;
+        top.ctx.lineWidth = 2.5;
+        top.ctx.beginPath();
+        for (let i = 0; i <= N; i++) {
+          const px = tMap.toX(xs[i]);
+          const py = tMap.toY(fVals[i]);
+          if (i === 0) top.ctx.moveTo(px, py);
+          else top.ctx.lineTo(px, py);
+        }
+        top.ctx.stroke();
+
+        // Anchor line t = a
+        const pxA = tMap.toX(p.a);
+        top.ctx.strokeStyle = colors.axis;
+        top.ctx.lineWidth = 1.4;
+        top.ctx.setLineDash([4, 3]);
+        top.ctx.beginPath();
+        top.ctx.moveTo(pxA, pad.top);
+        top.ctx.lineTo(pxA, top.h - pad.bottom);
+        top.ctx.stroke();
+        top.ctx.setLineDash([]);
+
+        // Highlight slice at t = x
+        const pxX = tMap.toX(x);
+        const pyFx = tMap.toY(p.f(x));
+        top.ctx.strokeStyle = colors.amberStroke;
+        top.ctx.lineWidth = 2.4;
+        top.ctx.beginPath();
+        top.ctx.moveTo(pxX, tY0);
+        top.ctx.lineTo(pxX, pyFx);
+        top.ctx.stroke();
+
+        top.ctx.fillStyle = colors.highlight;
+        top.ctx.beginPath();
+        top.ctx.arc(pxX, pyFx, 5, 0, Math.PI * 2);
+        top.ctx.fill();
+
+        // Direction arrow on x-axis from lower limit to upper limit
+        const arrowStart = ftcState.swapped ? pxX : pxA;
+        const arrowEnd = ftcState.swapped ? pxA : pxX;
+        if (Math.abs(arrowEnd - arrowStart) > 14) {
+          const ay = tY0;
+          const aDir = arrowEnd > arrowStart ? 1 : -1;
+          top.ctx.strokeStyle = ftcState.swapped ? colors.negStroke : colors.posStroke;
+          top.ctx.fillStyle = ftcState.swapped ? colors.negStroke : colors.posStroke;
+          top.ctx.lineWidth = 2.6;
+          top.ctx.beginPath();
+          top.ctx.moveTo(arrowStart, ay);
+          top.ctx.lineTo(arrowEnd, ay);
+          top.ctx.stroke();
+
+          top.ctx.beginPath();
+          top.ctx.moveTo(arrowEnd, ay);
+          top.ctx.lineTo(arrowEnd - aDir * 8, ay - 4.5);
+          top.ctx.lineTo(arrowEnd - aDir * 8, ay + 4.5);
+          top.ctx.closePath();
+          top.ctx.fill();
+        }
+
+        // ==================== BOTTOM CANVAS: y = F(x) ====================
+        const bot = setupCanvas(ftcBotCanvas);
+        const bMap = drawGridAxes(bot.ctx, bot.w, bot.h, pad, xMin, xMax, FMin - FPadY, FMax + FPadY, colors);
+
+        // Plot F(x)
+        bot.ctx.strokeStyle = colors.curve2;
+        bot.ctx.lineWidth = 2.6;
+        bot.ctx.beginPath();
+        for (let i = 0; i <= N; i++) {
+          const px = bMap.toX(xs[i]);
+          const py = bMap.toY(FVals[i]);
+          if (i === 0) bot.ctx.moveTo(px, py);
+          else bot.ctx.lineTo(px, py);
+        }
+        bot.ctx.stroke();
+
+        // Special marker (e.g., global min at x=3 for Final 2024 Q4a)
+        if (p.specialX) {
+          const sx = p.specialX.x;
+          const sF = computeF(p, sx, ftcState.swapped);
+          const psx = bMap.toX(sx);
+          const psy = bMap.toY(sF);
+          bot.ctx.fillStyle = colors.posStroke;
+          bot.ctx.beginPath();
+          bot.ctx.arc(psx, psy, 5, 0, Math.PI * 2);
+          bot.ctx.fill();
+          bot.ctx.font = '700 10.5px "JetBrains Mono", monospace';
+          bot.ctx.textAlign = 'center';
+          bot.ctx.textBaseline = 'bottom';
+          bot.ctx.fillText(p.specialX.label, psx, Math.max(pad.top + 14, psy - 8));
+        }
+
+        // Vertical guide line at x
+        const bx = bMap.toX(x);
+        const curF = computeF(p, x, ftcState.swapped);
+        const curFp = sign * p.f(x);
+        const curFpp = sign * p.fp(x);
+        const by = bMap.toY(curF);
+
+        bot.ctx.strokeStyle = colors.amberStroke;
+        bot.ctx.lineWidth = 1.2;
+        bot.ctx.setLineDash([4, 3]);
+        bot.ctx.beginPath();
+        bot.ctx.moveTo(bx, pad.top);
+        bot.ctx.lineTo(bx, bot.h - pad.bottom);
+        bot.ctx.stroke();
+        bot.ctx.setLineDash([]);
+
+        // Tangent line at (x, F(x)) with slope F'(x)
+        const span = (xMax - xMin) * 0.14;
+        const tx1 = x - span;
+        const ty1 = curF + curFp * (tx1 - x);
+        const tx2 = x + span;
+        const ty2 = curF + curFp * (tx2 - x);
+
+        bot.ctx.save();
+        bot.ctx.beginPath();
+        bot.ctx.rect(pad.left, pad.top, bot.w - pad.left - pad.right, bot.h - pad.top - pad.bottom);
+        bot.ctx.clip();
+        bot.ctx.strokeStyle = colors.amberStroke;
+        bot.ctx.lineWidth = 2.6;
+        bot.ctx.beginPath();
+        bot.ctx.moveTo(bMap.toX(tx1), bMap.toY(ty1));
+        bot.ctx.lineTo(bMap.toX(tx2), bMap.toY(ty2));
+        bot.ctx.stroke();
+        bot.ctx.restore();
+
+        // Point (x, F(x))
+        bot.ctx.fillStyle = colors.highlight;
+        bot.ctx.strokeStyle = '#ffffff';
+        bot.ctx.lineWidth = 2;
+        bot.ctx.beginPath();
+        bot.ctx.arc(bx, by, 5.5, 0, Math.PI * 2);
+        bot.ctx.fill();
+        bot.ctx.stroke();
+
+        // ==================== UPDATE READOUTS & BADGES ====================
+        ftcXDisplay.textContent = `x = ${x.toFixed(2)}`;
+        document.getElementById('topCanvasBadge').textContent = ftcState.swapped
+          ? `Direction: x (${x.toFixed(2)}) \u2192 a (${p.a})`
+          : `Direction: a (${p.a}) \u2192 x (${x.toFixed(2)})`;
+        document.getElementById('botCanvasBadge').textContent = ftcState.swapped
+          ? `F(x) = \u222B_x^${p.a} f(t) dt`
+          : `F(x) = \u222B_${p.a}^x f(t) dt`;
+
+        document.getElementById('ftcReadX').textContent = x.toFixed(4);
+        document.getElementById('ftcReadXSub').textContent = `Anchor a = ${p.a}`;
+        document.getElementById('ftcReadF').textContent = curF.toFixed(4);
+        document.getElementById('ftcReadFp').textContent = curFp.toFixed(4);
+        document.getElementById('ftcReadFpSub').textContent = ftcState.swapped ? '= -f(x) (Flipped!)' : '= +f(x) (Tangent Slope)';
+        document.getElementById('ftcReadFpp').textContent = curFpp.toFixed(4);
+        document.getElementById('ftcReadFppSub').textContent = ftcState.swapped ? '= -f\'(x) (Flipped!)' : '= +f\'(x) (Concavity)';
+
+        const fpCard = document.getElementById('ftcReadFpCard');
+        fpCard.className = `metric-card ${Math.abs(curFp) < 0.03 ? 'amber' : curFp > 0 ? 'emerald' : 'rose'}`;
+
+        // Live status banner
+        const banner = document.getElementById('ftcStatusBanner');
+        const statusTxt = document.getElementById('ftcStatusText');
+        const concTxt = document.getElementById('ftcConcavityText');
+        if (Math.abs(curFp) < 0.035) {
+          banner.className = 'status-banner crit';
+          statusTxt.textContent = curFpp > 0 ? 'Critical Point / Local Minimum!' : curFpp < 0 ? 'Critical Point / Local Maximum!' : 'Critical Point (F\'(x) = 0)';
+        } else if (curFp > 0) {
+          banner.className = 'status-banner inc';
+          statusTxt.textContent = 'F is increasing (F\'(x) > 0)';
+        } else {
+          banner.className = 'status-banner dec';
+          statusTxt.textContent = 'F is decreasing (F\'(x) < 0)';
+        }
+        concTxt.textContent = curFpp > 0.01 ? 'Concave Up' : curFpp < -0.01 ? 'Concave Down' : 'Inflection';
+
+        const insightEl = document.getElementById('ftcInsightBox');
+        if (insightEl.dataset.renderedIdx !== `${ftcState.idx}`) {
+          insightEl.innerHTML = p.noteTex;
+          insightEl.dataset.renderedIdx = `${ftcState.idx}`;
+          renderMath(insightEl);
+        }
+      }
+
+      function stopFTCPlay() {
+        ftcState.playing = false;
+        if (ftcState.rafId) cancelAnimationFrame(ftcState.rafId);
+        ftcState.rafId = null;
+        ftcPlayBtn.innerHTML = '&#9654; Play / Sweep $x$';
+        renderMath(ftcPlayBtn);
+      }
+
+      function stepFTCPlay(ts) {
+        if (!ftcState.playing) return;
+        if (!ftcState.lastTs) ftcState.lastTs = ts;
+        const dt = Math.min(0.05, (ts - ftcState.lastTs) / 1000);
+        ftcState.lastTs = ts;
+
+        const p = ftcPresets[ftcState.idx];
+        const speed = (p.dom[1] - p.dom[0]) * 0.22;
+        ftcState.x += speed * dt;
+        if (ftcState.x >= p.dom[1]) {
+          ftcState.x = p.dom[0];
+        }
+        ftcXSlider.value = ftcState.x;
+        drawFTCLab();
+        ftcState.rafId = requestAnimationFrame(stepFTCPlay);
+      }
+
+      ftcPresetSelect.addEventListener('change', () => {
+        stopFTCPlay();
+        ftcState.idx = parseInt(ftcPresetSelect.value, 10);
+        syncFTCPreset();
+        markDone('lab1');
+        drawFTCLab();
+      });
+
+      ftcXSlider.addEventListener('input', () => {
+        stopFTCPlay();
+        ftcState.x = parseFloat(ftcXSlider.value);
+        markDone('lab1');
+        drawFTCLab();
+      });
+
+      swapLimitsCheck.addEventListener('change', () => {
+        ftcState.swapped = swapLimitsCheck.checked;
+        updateSwapUI();
+        markDone('lab1');
+        drawFTCLab();
+      });
+
+      document.getElementById('ftcJumpABtn').addEventListener('click', () => {
+        stopFTCPlay();
+        ftcState.x = ftcPresets[ftcState.idx].a;
+        ftcXSlider.value = ftcState.x;
+        markDone('lab1');
+        drawFTCLab();
+      });
+
+      ftcPlayBtn.addEventListener('click', () => {
+        markDone('lab1');
+        if (ftcState.playing) {
+          stopFTCPlay();
+        } else {
+          ftcState.playing = true;
+          ftcState.lastTs = 0;
+          ftcPlayBtn.textContent = '❚❚ Pause';
+          ftcState.rafId = requestAnimationFrame(stepFTCPlay);
+        }
+      });
+
+      /* ----------------------------------------------------------------------
+         7. SECTION 2: MVT FOR INTEGRALS & AVERAGE VALUE VISUALIZER
+         ---------------------------------------------------------------------- */
+      const mvtPresets = [
+        {
+          defA: 1, defB: 4,
+          dom: [0, 5],
+          yRange: [-0.3, 2.6],
+          f: (x) => Math.sqrt(Math.max(0, x)),
+          exactAveTex: '14/9 \\approx 1.5556',
+          noteHtml: '<strong>Final 2025 Q1(c):</strong> For $f(x) = \\sqrt{x}$ on $[1, 4]$, $f_{\\text{ave}} = \\frac{14}{9} \\approx 1.5556$ and $x^* = \\left(\\frac{14}{9}\\right)^2 = \\frac{196}{81} \\approx 2.4198$.'
+        },
+        {
+          defA: 1, defB: 4,
+          dom: [0, 4.5],
+          yRange: [-1, 21],
+          f: (x) => x * x,
+          exactAveTex: '7',
+          noteHtml: '<strong>Class Notes (Anton Ex. 9):</strong> For $f(x) = x^2$ on $[1, 4]$, $\\int_1^4 x^2\\,dx = 21$, so $f_{\\text{ave}} = \\frac{21}{3} = 7$ and $x^* = \\sqrt{7} \\approx 2.6458$.'
+        },
+        {
+          defA: 0, defB: Number(Math.PI.toFixed(2)),
+          dom: [0, 3.15],
+          yRange: [-0.2, 1.25],
+          f: (x) => Math.sin(x),
+          exactAveTex: '2/\\pi \\approx 0.6366',
+          noteHtml: '<strong>Trigonometric Symmetry:</strong> On $[0, \\pi]$, $f_{\\text{ave}} = \\frac{2}{\\pi} \\approx 0.6366$ intersects $\\sin x$ at <strong>two</strong> MVT points: $x_1^* \\approx 0.6901$ and $x_2^* = \\pi - x_1^* \\approx 2.4515$.'
+        },
+        {
+          defA: 0, defB: 2.5,
+          dom: [-0.5, 2.8],
+          yRange: [-0.5, 13],
+          f: (x) => x * x * x - 3 * x + 3,
+          exactAveTex: '3.6406',
+          noteHtml: '<strong>Non-monotonic Cubic:</strong> Even when $f(x) = x^3 - 3x + 3$ dips and rises, MVT guarantees at least one $x^* \\in [a, b]$ matching the amber equal-area rectangle!'
+        }
+      ];
+
+      const mvtState = {
+        idx: 0,
+        a: 1,
+        b: 4
+      };
+
+      const mvtCanvas = document.getElementById('mvtCanvas');
+      const mvtPresetSelect = document.getElementById('mvtPresetSelect');
+      const mvtASlider = document.getElementById('mvtASlider');
+      const mvtBSlider = document.getElementById('mvtBSlider');
+      const mvtADisplay = document.getElementById('mvtADisplay');
+      const mvtBDisplay = document.getElementById('mvtBDisplay');
+
+      function syncMVTSliders() {
+        const p = mvtPresets[mvtState.idx];
+        mvtASlider.min = p.dom[0];
+        mvtASlider.max = (p.dom[1] - 0.2).toFixed(2);
+        mvtBSlider.min = (p.dom[0] + 0.2).toFixed(2);
+        mvtBSlider.max = p.dom[1];
+        mvtState.a = p.defA;
+        mvtState.b = p.defB;
+        mvtASlider.value = p.defA;
+        mvtBSlider.value = p.defB;
+      }
+
+      function drawMVTLab() {
+        const p = mvtPresets[mvtState.idx];
+        const a = mvtState.a;
+        const b = mvtState.b;
+        const colors = getColors();
+        const { ctx, w, h } = setupCanvas(mvtCanvas);
+        const pad = { top: 20, right: 20, bottom: 30, left: 46 };
+        const xPad = (p.dom[1] - p.dom[0]) * 0.06;
+        const { toX, toY } = drawGridAxes(ctx, w, h, pad, p.dom[0] - xPad, p.dom[1] + xPad, p.yRange[0], p.yRange[1], colors);
+        const y0 = toY(0);
+
+        const integral = simpson(p.f, a, b, 120);
+        const width = b - a;
+        const fave = integral / width;
+        const xStars = findRoots((x) => p.f(x) - fave, a, b, 300);
+
+        // 1. Shaded area under f(x) over [a, b]
+        ctx.fillStyle = colors.posFill;
+        ctx.beginPath();
+        ctx.moveTo(toX(a), y0);
+        for (let i = 0; i <= 150; i++) {
+          const x = a + (i / 150) * width;
+          ctx.lineTo(toX(x), toY(p.f(x)));
+        }
+        ctx.lineTo(toX(b), y0);
+        ctx.closePath();
+        ctx.fill();
+
+        // 2. Translucent Amber Equal-Area Rectangle
+        const pxA = toX(a);
+        const pxB = toX(b);
+        const pyAve = toY(fave);
+        ctx.fillStyle = colors.amberFill;
+        ctx.strokeStyle = colors.amberStroke;
+        ctx.lineWidth = 2;
+        ctx.fillRect(pxA, Math.min(y0, pyAve), Math.max(1, pxB - pxA), Math.abs(pyAve - y0));
+        ctx.strokeRect(pxA, Math.min(y0, pyAve), Math.max(1, pxB - pxA), Math.abs(pyAve - y0));
+
+        // Dashed horizontal line y = f_ave across plot
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, pyAve);
+        ctx.lineTo(w - pad.right, pyAve);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Label f_ave
+        ctx.fillStyle = colors.amberStroke;
+        ctx.font = '700 11px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(`f_ave = ${fave.toFixed(3)}`, pad.left + 8, Math.max(pad.top + 14, pyAve - 4));
+
+        // 3. Plot y = f(x)
+        ctx.strokeStyle = colors.curve;
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        const curveN = 200;
+        for (let i = 0; i <= curveN; i++) {
+          const x = p.dom[0] + (i / curveN) * (p.dom[1] - p.dom[0]);
+          const y = p.f(x);
+          if (i === 0) ctx.moveTo(toX(x), toY(y));
+          else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+
+        // 4. Glowing marker dot(s) at x*
+        xStars.forEach((xs, idx) => {
+          const pxs = toX(xs);
+          const pys = toY(fave);
+          // Vertical drop guide
+          ctx.strokeStyle = colors.amberStroke;
+          ctx.lineWidth = 1.4;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          ctx.moveTo(pxs, y0);
+          ctx.lineTo(pxs, pys);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Outer glow
+          ctx.fillStyle = 'rgba(245, 158, 11, 0.32)';
+          ctx.beginPath();
+          ctx.arc(pxs, pys, 10, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Inner dot
+          ctx.fillStyle = colors.highlight;
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(pxs, pys, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = colors.axis;
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          const lbl = xStars.length > 1 ? `x*${idx + 1}=${xs.toFixed(2)}` : `x*=${xs.toFixed(2)}`;
+          ctx.fillText(lbl, pxs, Math.max(pad.top + 14, pys - 11));
+        });
+
+        // Update UI readouts
+        mvtADisplay.textContent = `a = ${a.toFixed(2)}`;
+        mvtBDisplay.textContent = `b = ${b.toFixed(2)}`;
+        document.getElementById('mvtReadInt').textContent = integral.toFixed(4);
+        document.getElementById('mvtReadWidth').textContent = width.toFixed(4);
+        document.getElementById('mvtReadInterval').textContent = `[${a.toFixed(2)}, ${b.toFixed(2)}]`;
+        document.getElementById('mvtReadAve').textContent = fave.toFixed(4);
+        document.getElementById('mvtReadRect').textContent = (fave * width).toFixed(4);
+
+        const isDefault = Math.abs(a - p.defA) < 0.02 && Math.abs(b - p.defB) < 0.02;
+        const aveSub = document.getElementById('mvtReadAveSub');
+        aveSub.innerHTML = isDefault ? `Exact: $${p.exactAveTex}$` : 'Dynamic interval';
+        renderMath(aveSub);
+
+        document.getElementById('mvtReadXstar').textContent = xStars.length
+          ? xStars.map((v) => v.toFixed(3)).join(', ')
+          : '—';
+        document.getElementById('mvtReadXstarSub').textContent = xStars.length > 1
+          ? `${xStars.length} points where f(x*) = f_ave`
+          : 'Point where f(x*) = f_ave';
+
+        const noteEl = document.getElementById('mvtNoteBox');
+        if (noteEl.dataset.renderedIdx !== `${mvtState.idx}`) {
+          noteEl.innerHTML = p.noteHtml;
+          noteEl.dataset.renderedIdx = `${mvtState.idx}`;
+          renderMath(noteEl);
+        }
+      }
+
+      mvtPresetSelect.addEventListener('change', () => {
+        mvtState.idx = parseInt(mvtPresetSelect.value, 10);
+        syncMVTSliders();
+        markDone('lab2');
+        drawMVTLab();
+      });
+
+      mvtASlider.addEventListener('input', () => {
+        let val = parseFloat(mvtASlider.value);
+        if (val >= mvtState.b - 0.15) {
+          val = Number((mvtState.b - 0.2).toFixed(2));
+          mvtASlider.value = val;
+        }
+        mvtState.a = val;
+        markDone('lab2');
+        drawMVTLab();
+      });
+
+      mvtBSlider.addEventListener('input', () => {
+        let val = parseFloat(mvtBSlider.value);
+        if (val <= mvtState.a + 0.15) {
+          val = Number((mvtState.a + 0.2).toFixed(2));
+          mvtBSlider.value = val;
+        }
+        mvtState.b = val;
+        markDone('lab2');
+        drawMVTLab();
+      });
+
+      document.getElementById('mvtResetBtn').addEventListener('click', () => {
+        syncMVTSliders();
+        markDone('lab2');
+        drawMVTLab();
+      });
+
+      /* ----------------------------------------------------------------------
+         8. SECTION 3: INTERACTIVE DEFINITE U-SUBSTITUTION STEPPER
+         ---------------------------------------------------------------------- */
+      const usubExamples = [
+        {
+          steps: [
+            { label: 'Step 1: Choose u and compute du', body: 'For $\\displaystyle \\int_0^1 5x(1 - x^2)^{3/2}\\,dx$, let $u = 1 - x^2$. Then $du = -2x\\,dx \\implies x\\,dx = -\\frac{1}{2}du$.' },
+            { label: 'Step 2: Convert the integration limits (x → u)', body: 'When $x = 0$, $u = 1 - 0^2 = 1$. When $x = 1$, $u = 1 - 1^2 = 0$. The limits flip from $[0, 1]$ to $[1, 0]$.' },
+            { label: 'Step 3: Substitute and flip the limits using the minus sign', body: '$$\\int_1^0 5u^{3/2}\\left(-\\frac{1}{2}du\\right) = \\frac{5}{2}\\int_0^1 u^{3/2}\\,du.$$' },
+            { label: 'Step 4: Evaluate via FTC Part I', body: '$$\\frac{5}{2}\\left[\\frac{2}{5}u^{5/2}\\right]_0^1 = \\left(1^{5/2} - 0^{5/2}\\right) = 1.$$' }
+          ]
+        },
+        {
+          steps: [
+            { label: 'Step 1: Locate the sign-change root of |2 - x|', body: 'Inside $[1, 4]$, $2 - x = 0$ at $x = 2$. On $[1, 2]$, $|2 - x| = 2 - x$; on $[2, 4]$, $|2 - x| = x - 2$.' },
+            { label: 'Step 2: Split the integral at x = 2', body: '$$\\int_1^4 \\frac{|2 - x|}{x}\\,dx = \\int_1^2 \\left(\\frac{2}{x} - 1\\right)dx + \\int_2^4 \\left(1 - \\frac{2}{x}\\right)dx.$$' },
+            { label: 'Step 3: Apply FTC Part I to both integrals', body: '$$\\big[2\\ln x - x\\big]_1^2 + \\big[x - 2\\ln x\\big]_2^4 = (2\\ln 2 - 2 + 1) + (4 - 2\\ln 4 - 2 + 2\\ln 2).$$' },
+            { label: 'Step 4: Simplify using ln(4) = 2 ln(2)', body: '$$= (2\\ln 2 - 1) + (2 - 4\\ln 2 + 2\\ln 2) = (2\\ln 2 - 1) + (2 - 2\\ln 2) = 1.$$' }
+          ]
+        },
+        {
+          steps: [
+            { label: 'Step 1: Set up the reflection substitution u = a - x', body: 'To prove $\\displaystyle \\int_0^a f(x)\\,dx = \\int_0^a f(a - x)\\,dx$ (Final 2023 Q2a), let $u = a - x$. Then $x = a - u$ and $dx = -du$.' },
+            { label: 'Step 2: Convert limits x → u', body: 'When $x = 0$, $u = a - 0 = a$. When $x = a$, $u = a - a = 0$.' },
+            { label: 'Step 3: Substitute and absorb the minus sign', body: '$$\\int_0^a f(x)\\,dx = \\int_a^0 f(a - u)(-du) = \\int_0^a f(a - u)\\,du.$$' },
+            { label: 'Step 4: Rename the dummy variable u → x', body: 'Since the definite integral does not depend on the dummy variable name: $$\\int_0^a f(x)\\,dx = \\int_0^a f(a - x)\\,dx. \\qquad \\blacksquare$$' }
+          ]
+        }
+      ];
+
+      let usubTab = 0;
+      let usubVisibleCount = 1;
+      const usubStepsWrap = document.getElementById('usubStepsWrap');
+      const usubCounter = document.getElementById('usubCounter');
+
+      function renderUSubWidget() {
+        const steps = usubExamples[usubTab].steps;
+        usubStepsWrap.innerHTML = steps.map((s, i) => `
+          <div class="usub-step ${i < usubVisibleCount ? 'visible' : ''}">
+            <div class="usub-step-label">${s.label}</div>
+            <div>${s.body}</div>
+          </div>
+        `).join('');
+        usubCounter.textContent = `Step ${usubVisibleCount} of ${steps.length}`;
+        renderMath(usubStepsWrap);
+      }
+
+      document.querySelectorAll('.tab-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+          btn.classList.add('active');
+          usubTab = parseInt(btn.dataset.usub, 10);
+          usubVisibleCount = 1;
+          markDone('theory');
+          renderUSubWidget();
+        });
+      });
+
+      document.getElementById('usubNextBtn').addEventListener('click', () => {
+        const max = usubExamples[usubTab].steps.length;
+        if (usubVisibleCount < max) usubVisibleCount++;
+        markDone('theory');
+        renderUSubWidget();
+      });
+
+      document.getElementById('usubPrevBtn').addEventListener('click', () => {
+        if (usubVisibleCount > 1) usubVisibleCount--;
+        renderUSubWidget();
+      });
+
+      document.getElementById('usubAllBtn').addEventListener('click', () => {
+        usubVisibleCount = usubExamples[usubTab].steps.length;
+        markDone('theory');
+        renderUSubWidget();
+      });
+
+      /* ----------------------------------------------------------------------
+         9. SECTION 4: ISRT PAST-EXAM VAULT FILTERS & TOGGLES
+         ---------------------------------------------------------------------- */
+      const filterTabs = document.querySelectorAll('.filter-tab');
+      const examCards = document.querySelectorAll('.exam-card');
+
+      filterTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          filterTabs.forEach((t) => t.classList.remove('active'));
+          tab.classList.add('active');
+          const f = tab.dataset.filter;
+          examCards.forEach((card) => {
+            const cats = card.dataset.category.split(' ');
+            card.classList.toggle('hidden', f !== 'all' && !cats.includes(f));
+          });
+        });
+      });
+
+      examCards.forEach((card) => {
+        const hintBtn = card.querySelector('.hint-toggle');
+        const hintBox = card.querySelector('.hint-box');
+        const solBtn = card.querySelector('.sol-toggle');
+        const solBox = card.querySelector('.solution-box');
+
+        hintBtn.addEventListener('click', () => {
+          const open = hintBox.classList.toggle('open');
+          hintBtn.textContent = open ? 'Hide Hint' : 'Show Hint';
+          if (open) renderMath(hintBox);
+        });
+
+        solBtn.addEventListener('click', () => {
+          const open = solBox.classList.toggle('open');
+          solBtn.textContent = open ? 'Hide Solution' : 'Show Step-by-Step Solution';
+          markDone('vault');
+          if (open) renderMath(solBox);
+        });
+      });
+
+      /* ----------------------------------------------------------------------
+         10. SECTION 5: QUICK MASTERY CHECK (5 MCQs)
+         ---------------------------------------------------------------------- */
+      const quizExplanations = {
+        q1: 'Since $x$ is the <strong>lower limit</strong>, $F(x) = -\\int_5^x \\sqrt{t^2+16}\\,dt$, so $F\'(x) = -\\sqrt{x^2+16}$ and $F\'(3) = -\\sqrt{9+16} = -5$.',
+        q2: 'By the FTC Part II Chain Rule, $\\frac{d}{dx}\\int_1^{h(x)} f(t)\\,dt = f(h(x))h\'(x) = \\cos((x^2)^3)\\cdot (2x) = 2x\\cos(x^6)$.',
+        q3: 'The integrand $\\frac{1}{t^2-9}$ has discontinuities at $t = -3$ and $t = 3$. The largest open interval containing the anchor $a = 1$ with no discontinuities is $(-3, 3)$.',
+        q4: '$\\int_1^4 x^2\\,dx = 21 = 3(x^*)^2 \\implies (x^*)^2 = 7$. Since $x^*$ must lie inside $[1, 4]$, we take the positive root $x^* = \\sqrt{7}$.',
+        q5: 'With $u = 1 - x^2$, $x\\,dx = -\\frac{1}{2}du$ and limits change $0 \\to 1$, $1 \\to 0$: $\\int_1^0 5u^{3/2}(-\\frac{1}{2}du) = \\frac{5}{2}\\int_0^1 u^{3/2}\\,du$.'
+      };
+
+      const quizResults = { q1: null, q2: null, q3: null, q4: null, q5: null };
+
+      function updateQuizScore() {
+        const correct = Object.values(quizResults).filter((v) => v === true).length;
+        document.getElementById('quizScore').textContent = `${correct} / 5`;
+      }
+
+      document.querySelectorAll('.quiz-card').forEach((card) => {
+        const qid = card.dataset.qid;
+        const ans = card.dataset.answer;
+        const opts = card.querySelectorAll('.quiz-opt');
+        const fb = card.querySelector('.quiz-feedback');
+
+        opts.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const ok = btn.dataset.val === ans;
+            opts.forEach((b) => {
+              b.disabled = true;
+              if (b.dataset.val === ans) b.classList.add('correct');
+            });
+            if (!ok) btn.classList.add('wrong');
+
+            quizResults[qid] = ok;
+            markDone(qid);
+            updateQuizScore();
+
+            fb.className = `quiz-feedback show ${ok ? 'ok' : 'err'}`;
+            fb.innerHTML = `<strong>${ok ? 'Correct!' : 'Not quite.'}</strong> ${quizExplanations[qid]}`;
+            renderMath(fb);
+          });
+        });
+      });
+
+      document.getElementById('resetQuizBtn').addEventListener('click', () => {
+        Object.keys(quizResults).forEach((k) => {
+          quizResults[k] = null;
+          progressState[k] = false;
+        });
+        document.querySelectorAll('.quiz-opt').forEach((b) => {
+          b.disabled = false;
+          b.classList.remove('correct', 'wrong');
+        });
+        document.querySelectorAll('.quiz-feedback').forEach((fb) => {
+          fb.className = 'quiz-feedback';
+          fb.innerHTML = '';
+        });
+        updateQuizScore();
+        updateProgressUI();
+      });
+
+      /* ----------------------------------------------------------------------
+         11. RESPONSIVE RESIZE OBSERVER & INITIALIZATION
+         ---------------------------------------------------------------------- */
+      const ro = new ResizeObserver(() => {
+        drawFTCLab();
+        drawMVTLab();
+      });
+      ro.observe(document.getElementById('ftcTopWrap'));
+      ro.observe(document.getElementById('ftcBotWrap'));
+      ro.observe(document.getElementById('mvtCanvasWrap'));
+
+      window.addEventListener('load', () => {
+        syncFTCPreset();
+        syncMVTSliders();
+        renderUSubWidget();
+        drawFTCLab();
+        drawMVTLab();
+        updateProgressUI();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

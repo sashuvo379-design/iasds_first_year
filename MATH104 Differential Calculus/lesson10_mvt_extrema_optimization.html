@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 10: Rolle's, MVT, Concavity, Extrema &amp; Optimization | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #4c1d95 0%, #2563eb 52%, #059669 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.86rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 10: MVT, Concavity &amp; Extrema</h2>
+      <p>Module 3 Finale &bull; Applications</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Theorems &amp; Derivative Tests</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 10.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">2nd Incourse 2019 &amp; 2025</span>
+      <span class="source-pill">Finals 2017, 2024 &amp; 2025</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 10 of 15</span>
+        <span class="hero-badge">Module 3 Finale &bull; High-Weight Exam Problems</span>
+        <span class="hero-badge">Interactive Web Lab</span>
+      </div>
+      <h1>Rolle's &amp; Mean Value Theorems, Concavity, Extrema &amp; Applied Optimization</h1>
+      <p>
+        Unlock the geometric power of $f'$ and $f''$. Match tangent lines parallel to secants in Rolle's &amp; MVT,
+        explore synced concavity and inflection points on the Gaussian curve $e^{-x^2/2}$, and interactively resize
+        cylinders inside cones and paper margins to find exact absolute extrema.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-mvt', this)">Rolle's &amp; MVT Parallel Tangent</button>
+          <button class="tab-btn" onclick="switchTab('tab-conc', this)">Synced $f, f', f''$ &amp; Concavity</button>
+          <button class="tab-btn" onclick="switchTab('tab-opt', this)">Applied Optimization Lab</button>
+        </div>
+
+        <!-- TAB 1: ROLLE & MVT -->
+        <div id="tab-mvt" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="mvtCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="mvtSelect">Choose Lecture / Exam Curve</label>
+                <select id="mvtSelect" onchange="setupMvtSlider()">
+                  <option value="ex4">Ex 4 (MVT): f(x) = &frac14;x&sup3; + 1 on [0, 2]</option>
+                  <option value="ex1">Ex 1 (Rolle): f(x) = x&sup2; - 5x + 4 on [1, 4]</option>
+                  <option value="inc19">2nd Incourse 2019 Q1: f(x) = x&sup3; - 4x on [-2, 1]</option>
+                  <option value="ex16">Ex 16 (Fails MVT!): f(x) = x^(2/3) on [-1, 8]</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Slide Point $x \in (a, b)$</span><span id="mvtXVal">1.00</span></label>
+                <input type="range" id="mvtSlider" min="0.1" max="1.9" step="0.02" value="1.0" oninput="drawMvtCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="snapMvtC()">Snap to Exact $c$</button>
+              </div>
+              <div class="readout-card" id="mvtReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: CONCAVITY & EXTREMA -->
+        <div id="tab-conc" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="concCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="concSelect">Choose Exam Function ($f, f', f''$)</label>
+                <select id="concSelect" onchange="setupConcSlider()">
+                  <option value="gauss">2nd Incourse 2025 Q2b: f(x) = e^(-x&sup2;/2)</option>
+                  <option value="final24">Year Final 2024 Q7b: f(x) = x&sup3; - 3x&sup2; + 1</option>
+                  <option value="final17">Year Final 2017 Q4b: f(x) = x + 2 sin(x) on [0, 2&pi;]</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Inspect Point $x_0$</span><span id="concXVal">0.00</span></label>
+                <input type="range" id="concSlider" min="-2.8" max="2.8" step="0.05" value="0" oninput="drawConcCanvas()" />
+              </div>
+              <div class="readout-card" id="concReadout"></div>
+              <p style="font-size: 0.79rem; color: var(--text-muted);">
+                <strong>Curves:</strong> <span style="color:#2563eb; font-weight:700;">Blue</span> = $f(x)$;
+                <span style="color:#7c3aed; font-weight:700;">Purple dashed</span> = $f'(x)$;
+                <span style="color:#059669; font-weight:700;">Green dotted</span> = $f''(x)$.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: APPLIED OPTIMIZATION -->
+        <div id="tab-opt" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="optCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="optSelect">Choose ISRT Optimization Problem</label>
+                <select id="optSelect" onchange="setupOptSlider()">
+                  <option value="cone_cyl">Final 2024 Q7(d): Max Cylinder in Cone (R=6, H=10)</option>
+                  <option value="page">2nd Incourse 2019 Q3: Min Paper Area (42 in&sup2; Print)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span id="optParamLabel">Cylinder Radius $r$ (in)</span><span id="optParamVal">3.00</span></label>
+                <input type="range" id="optSlider" min="0.4" max="5.6" step="0.1" value="3.0" oninput="drawOptCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="snapOptBest()">Snap to Optimal Solution</button>
+              </div>
+              <div class="readout-card" id="optReadout"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Theorems &amp; Derivative Tests (Lecture 10 + Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Rolle's Theorem (4.8.1), Mean Value Theorem (4.8.2) &amp; Consequences</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Theorem</th>
+                <th>Hypotheses (Must Check!)</th>
+                <th>Guaranteed Conclusion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Rolle's Theorem (4.8.1)</strong></td>
+                <td>Continuous on $[a, b]$, differentiable on $(a, b)$, and $f(a) = f(b) = 0$.</td>
+                <td>At least one $c \in (a, b)$ with <strong>$f'(c) = 0$</strong> (horizontal tangent).</td>
+              </tr>
+              <tr>
+                <td><strong>Mean Value Theorem (4.8.2)</strong></td>
+                <td>Continuous on $[a, b]$ and differentiable on $(a, b)$.</td>
+                <td>At least one $c \in (a, b)$ with <strong>$f'(c) = \dfrac{f(b) - f(a)}{b - a}$</strong> (tangent parallel to secant).</td>
+              </tr>
+              <tr>
+                <td><strong>Constant Difference (4.8.3)</strong></td>
+                <td>$f'(x) = g'(x)$ for all $x$ on an interval.</td>
+                <td>$f(x) = g(x) + k$ for some constant $k$ (vertical shift).</td>
+              </tr>
+              <tr>
+                <td><strong>Extreme Value Theorem</strong></td>
+                <td>$f$ is continuous on a <strong>closed, bounded</strong> interval $[a, b]$.</td>
+                <td>$f$ attains both an <strong>absolute maximum</strong> and an <strong>absolute minimum</strong> on $[a, b]$.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <strong>Classic Highway Speeding Application (Example 5):</strong>
+          If you travel $5\text{ mi}$ in $5\text{ min}$ ($\frac{1}{12}\text{ h}$), your average velocity is $60\text{ mi/h}$. Even if police clock you at $50\text{ mi/h}$ at the start and $55\text{ mi/h}$ at the end, the <strong>Mean Value Theorem</strong> guarantees your instantaneous velocity hit at least $60\text{ mi/h}$ somewhere in between!
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Critical vs. Stationary Points, Concavity &amp; Derivative Tests</h3>
+        <div class="callout note-bn">
+          <strong>Exam Favorite (Year Final 2017 Q1b): Critical Point vs. Stationary Point!</strong>
+          &bull; <strong>Critical Point:</strong> Any interior $x_0$ in the domain of $f$ where <em>either</em> $f'(x_0) = 0$ <strong>OR</strong> $f'(x_0)$ does not exist (e.g., a corner or cusp like $x^{2/3}$ at $x = 0$).<br />
+          &bull; <strong>Stationary Point:</strong> A critical point where specifically <strong>$f'(x_0) = 0$</strong> (horizontal tangent). Every stationary point is a critical point, but not every critical point is stationary!
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Sign Condition</th>
+                <th>Curve Behavior</th>
+                <th>Test / Classification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>$f'(x) > 0$ on $(a, b)$ &nbsp;/&nbsp; $f'(x) < 0$ on $(a, b)$</td>
+                <td><strong>Increasing</strong> on $[a, b]$ &nbsp;/&nbsp; <strong>Decreasing</strong> on $[a, b]$</td>
+                <td><strong>1st Derivative Test:</strong> $+ \to -$ gives Relative Max; $- \to +$ gives Relative Min.</td>
+              </tr>
+              <tr>
+                <td>$f''(x) > 0$ (open up — উপরের দিকে খোলা)</td>
+                <td><strong>Concave Up</strong> ($f'$ is increasing)</td>
+                <td><strong>2nd Derivative Test:</strong> $f'(c) = 0$ and $f''(c) > 0 \implies$ <strong>Relative Minimum</strong>.</td>
+              </tr>
+              <tr>
+                <td>$f''(x) < 0$ (open down — নিচের দিকে খোলা)</td>
+                <td><strong>Concave Down</strong> ($f'$ is decreasing)</td>
+                <td><strong>2nd Derivative Test:</strong> $f'(c) = 0$ and $f''(c) < 0 \implies$ <strong>Relative Maximum</strong>.</td>
+              </tr>
+              <tr>
+                <td>$f''$ changes sign across $x_0$ (with $f$ continuous)</td>
+                <td><strong>Inflection Point</strong> at $(x_0, f(x_0))$</td>
+                <td>Note: If $f''(c) = 0$ at a stationary point, 2nd Derivative Test is <em>inconclusive</em> (use 1st Deriv. Test).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Slides &amp; 2025 Exam)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: 2nd Incourse 2025 Q2(b) — 8 Marks! -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-red">2nd In-course 2025 Q2(b) (8 Marks!) &amp; Final 2025</span>
+            <h3 style="margin-top: 6px;">Example 1: Concavity &amp; Extrema of $f(x) = e^{-x^2/2}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Use $f'$ and $f''$ to determine where $f(x) = e^{-x^2/2}$ is concave up/down, locate inflection points, and use the Second Derivative Test to find relative extrema.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — First Derivative &amp; Stationary Point:</strong> $f'(x) = -x e^{-x^2/2}$. Since $e^{-x^2/2} > 0$ always, $f'(x) = 0 \implies x = 0$.</div>
+          <div class="step-item"><strong>Step 2 — Second Derivative (Product Rule):</strong> $f''(x) = (-1)e^{-x^2/2} + (-x)(-x e^{-x^2/2}) = (x^2 - 1)e^{-x^2/2} = (x - 1)(x + 1)e^{-x^2/2}$.</div>
+          <div class="step-item"><strong>Step 3 — Concavity &amp; Inflection Points:</strong> $f''(x) = 0 \implies x = \pm 1$. Testing regions: $(-\infty, -1) \implies (+)$ <strong>concave up</strong>; $(-1, 1) \implies (-)$ <strong>concave down</strong>; $(1, \infty) \implies (+)$ <strong>concave up</strong>. Inflection points at $(-1, e^{-1/2})$ and $(1, e^{-1/2})$.</div>
+          <div class="step-item"><strong>Step 4 — Second Derivative Test at $x = 0$:</strong> $f''(0) = (0 - 1)e^0 = -1 < 0$. Therefore, $f$ has a <strong>relative maximum</strong> at $x = 0$ with value $f(0) = \mathbf{1}$ (and no relative minimum).</div>
+        </div>
+      </div>
+
+      <!-- Example 2: MVT Failure (Exercise 15 & 16) -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 10 &bull; Exercises 15 &amp; 16</span>
+            <h3 style="margin-top: 6px;">Example 2: Why $f(x) = x^{2/3}$ on $[-1, 8]$ Does Not Contradict MVT</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Show there is no $c \in (-1, 8)$ with $f'(c) = \dfrac{f(8) - f(-1)}{8 - (-1)}$, and explain why this does not contradict the Mean Value Theorem.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Compute Average Slope:</strong> $f(8) = 8^{2/3} = 4$ and $f(-1) = (-1)^{2/3} = 1$, so $\dfrac{f(8) - f(-1)}{8 - (-1)} = \dfrac{4 - 1}{9} = \dfrac{1}{3}$.</div>
+          <div class="step-item"><strong>Step 2 — Solve $f'(c) = \frac{1}{3}$:</strong> $f'(x) = \dfrac{2}{3}x^{-1/3} = \dfrac{2}{3c^{1/3}} = \dfrac{1}{3} \implies c^{1/3} = 2 \implies c = 8$.</div>
+          <div class="step-item"><strong>Step 3 — Why No Contradiction:</strong> $c = 8$ is an endpoint, NOT in the open interval $(-1, 8)$. This does <strong>not</strong> contradict MVT because $f'(x) = \frac{2}{3x^{1/3}}$ is <strong>undefined at $x = 0 \in (-1, 8)$</strong> (a cusp), so the differentiability hypothesis fails!</div>
+        </div>
+      </div>
+
+      <!-- Example 3: Example 6 (Identity Proof via Constant Theorem) -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Lecture 10 &bull; Example 6 (Theorem 4.1.2c)</span>
+            <h3 style="margin-top: 6px;">Example 3: Prove $\sin^{-1} x + \cos^{-1} x = \dfrac{\pi}{2}$ on $[-1, 1]$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Use Theorem 4.1.2(c) ($f'(x) = 0 \implies f$ is constant) to prove the inverse trig identity.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Define $f(x)$ &amp; Differentiate:</strong> Let $f(x) = \sin^{-1} x + \cos^{-1} x$. On $(-1, 1)$: $f'(x) = \dfrac{1}{\sqrt{1 - x^2}} - \dfrac{1}{\sqrt{1 - x^2}} = 0$.</div>
+          <div class="step-item"><strong>Step 2 — Conclude $f$ is Constant:</strong> Since $f$ is continuous on $[-1, 1]$ and $f'(x) = 0$ on $(-1, 1)$, $f(x) = k$ for some constant $k$ on $[-1, 1]$.</div>
+          <div class="step-item"><strong>Step 3 — Evaluate at $x = 0$:</strong> $k = f(0) = \sin^{-1}(0) + \cos^{-1}(0) = 0 + \dfrac{\pi}{2} = \dfrac{\pi}{2}$. Thus $\sin^{-1} x + \cos^{-1} x = \dfrac{\pi}{2}$. $\blacksquare$</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Filtered MATH104 / AST-105)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: Year Final 2024 Q7(c) & Q7(d) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2024 &bull; Q7(c) &amp; Q7(d)</span>
+          <span class="pill pill-amber">2 + 4 = 6 Marks</span>
+        </div>
+        <p>
+          <strong>(c)</strong> Find all critical points of $f(x) = 3x^{5/3} - 15x^{2/3}$.<br />
+          <strong>(d)</strong> Find the radius and height of the right circular cylinder of <strong>largest volume</strong> that can be inscribed in a right circular cone with radius $6\text{ in}$ and height $10\text{ in}$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> In (c), factor $f'(x)$ and watch where $x^{-1/3}$ puts $x$ in the denominator ($x = 0$ is a critical point!). In (d), use similar triangles: $\dfrac{10 - h}{r} = \dfrac{10}{6} \implies h = 10 - \dfrac{5}{3}r$.
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Part (c):</strong><br />
+          $f'(x) = 5x^{2/3} - 10x^{-1/3} = \dfrac{5(x - 2)}{x^{1/3}}$.<br />
+          &bull; $f'(x) = 0 \implies x = 2$ (stationary point).<br />
+          &bull; $f'(x)$ undefined $\implies x = 0$ (in domain of $f$, cusp).<br />
+          <strong>Critical points:</strong> $x = 0$ and $x = 2$.<br /><br />
+          <strong>Part (d) (Inscribed Cylinder in Cone):</strong><br />
+          By similar triangles: $\dfrac{10 - h}{r} = \dfrac{10}{6} \implies h = 10 - \dfrac{5}{3}r$, with $r \in [0, 6]$.<br />
+          Volume: $V(r) = \pi r^2 h = \pi r^2\left(10 - \dfrac{5}{3}r\right) = 10\pi r^2 - \dfrac{5\pi}{3}r^3$.<br />
+          Differentiate: $V'(r) = 20\pi r - 5\pi r^2 = 5\pi r(4 - r) = 0 \implies r = 0$ or $\mathbf{r = 4\text{ in}}$.<br />
+          Check $V''(4) = 20\pi - 10\pi(4) = -20\pi < 0 \implies$ absolute max! Height: $h = 10 - \frac{5}{3}(4) = \mathbf{\dfrac{10}{3}\text{ in}}$. *(Explore this live in Tab 3!)*
+        </div>
+      </div>
+
+      <!-- Exam Q2: 2nd Incourse 2019 Q1 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">2nd In-course Exam 2019 &bull; Q1</span>
+          <span class="pill pill-amber">5 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Let $f(x) = x^3 - 4x$. (a) Find the secant line through $(-2, f(-2))$ and $(1, f(1))$. (b) Show there is only one $c \in (-2, 1)$ satisfying MVT for this secant line. (c) Find the tangent line at $(c, f(c))$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>(a) Secant Line:</strong> $f(-2) = (-2)^3 - 4(-2) = 0$, $f(1) = 1 - 4 = -3$.<br />
+          Slope $m_{\text{sec}} = \dfrac{-3 - 0}{1 - (-2)} = -1$. Equation: $y - 0 = -1(x + 2) \implies \mathbf{y = -x - 2}$.<br /><br />
+          <strong>(b) Unique $c \in (-2, 1)$:</strong> $f'(x) = 3x^2 - 4$. Setting $3c^2 - 4 = -1 \implies 3c^2 = 3 \implies c = \pm 1$. Since $c = +1$ is an endpoint, <strong>$c = -1$</strong> is the unique point in $(-2, 1)$.<br /><br />
+          <strong>(c) Parallel Tangent Line at $c = -1$:</strong> $f(-1) = (-1)^3 - 4(-1) = 3$, slope $= -1$.<br />
+          Equation: $y - 3 = -1(x + 1) \implies \mathbf{y = -x + 2}$ (parallel to $y = -x - 2$!).
+        </div>
+      </div>
+
+      <!-- Exam Q3: Year Final 2017 Q4(b) & Q4(c) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2017 &bull; Q4(b) &amp; Q4(c) (Also Ashraful's Notes)</span>
+          <span class="pill pill-amber">4 + 6 = 10 Marks</span>
+        </div>
+        <p>
+          <strong>(b)</strong> Given $f(x) = x + 2\sin x$ on $[0, 2\pi]$, find intervals of increase/decrease, concavity, and inflection points.<br />
+          <strong>(c)</strong> An antibiotic sells at $\$200/\text{unit}$. Cost is $C(x) = 500{,}000 + 80x + 0.003x^2$, max capacity $30{,}000$ units. How many units maximize profit?
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Part (b):</strong><br />
+          &bull; $f'(x) = 1 + 2\cos x = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3}, \frac{4\pi}{3}$. Increasing on $[0, \frac{2\pi}{3}]$ and $[\frac{4\pi}{3}, 2\pi]$; decreasing on $[\frac{2\pi}{3}, \frac{4\pi}{3}]$.<br />
+          &bull; $f''(x) = -2\sin x = 0 \implies x = \pi$ in $(0, 2\pi)$. Concave down on $(0, \pi)$ ($f'' < 0$); concave up on $(\pi, 2\pi)$ ($f'' > 0$). <strong>Inflection point:</strong> $(\pi, \pi)$.<br /><br />
+          <strong>Part (c) (Profit Maximization on $[0, 30{,}000]$):</strong><br />
+          Profit $P(x) = R(x) - C(x) = 200x - (500{,}000 + 80x + 0.003x^2) = 120x - 0.003x^2 - 500{,}000$.<br />
+          $P'(x) = 120 - 0.006x = 0 \implies x = \dfrac{120}{0.006} = \mathbf{20{,}000\text{ units}}$ (inside $[0, 30{,}000]$).<br />
+          Since $P''(x) = -0.006 < 0$ everywhere, $x = 20{,}000$ units gives the absolute maximum profit ($\$700{,}000$).
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawMvtCanvas();
+      drawConcCanvas();
+      drawOptCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-mvt') drawMvtCanvas();
+      if (id === 'tab-conc') drawConcCanvas();
+      if (id === 'tab-opt') drawOptCanvas();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    /* ================= CANVAS HELPERS ================= */
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        blueFill: dark ? 'rgba(59, 130, 246, 0.28)' : 'rgba(37, 99, 235, 0.22)',
+        purple: '#7c3aed',
+        green: '#059669',
+        greenFill: dark ? 'rgba(16, 185, 129, 0.25)' : 'rgba(5, 150, 105, 0.2)',
+        amber: '#d97706',
+        red: '#dc2626'
+      };
+    }
+
+    function drawAxes(ctx, w, h, xMin, xMax, yMin, yMax, xStep = 1, yStep = 1) {
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      ctx.strokeStyle = c.grid;
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+      }
+
+      ctx.strokeStyle = c.axis;
+      ctx.lineWidth = 1.8;
+      if (yMin <= 0 && yMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
+      }
+      if (xMin <= 0 && xMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+      }
+
+      ctx.fillStyle = c.text;
+      ctx.font = '11px Inter, sans-serif';
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        if (Math.abs(x) > 1e-6) ctx.fillText(Math.round(x * 10) / 10, toX(x) - 6, toY(0) + 14);
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        if (Math.abs(y) > 1e-6) ctx.fillText(Math.round(y * 10) / 10, toX(0) + 6, toY(y) + 4);
+      }
+      return { toX, toY };
+    }
+
+    function plotFn(ctx, fn, xMin, xMax, yMin, yMax, toX, toY, color, width = 2.8, dash = []) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.setLineDash(dash);
+      ctx.beginPath();
+      let started = false;
+      const dx = (xMax - xMin) / 500;
+      const span = yMax - yMin;
+      for (let x = xMin; x <= xMax; x += dx) {
+        const y = fn(x);
+        if (y !== null && isFinite(y) && y >= yMin - span && y <= yMax + span) {
+          if (!started) { ctx.moveTo(toX(x), toY(y)); started = true; }
+          else ctx.lineTo(toX(x), toY(y));
+        } else { started = false; }
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ================= TAB 1: ROLLE & MVT ================= */
+    const mvtPresets = {
+      ex4: {
+        a: 0, b: 2, exactC: 2 / Math.sqrt(3), hasC: true,
+        f: x => 0.25 * x*x*x + 1, df: x => 0.75 * x*x,
+        xMin: -0.6, xMax: 2.6, yMin: -0.2, yMax: 4.0, xStep: 0.5, yStep: 1,
+        note: 'Exact c = 2/√3 ≈ 1.155 (tangent parallel to secant slope 1).'
+      },
+      ex1: {
+        a: 1, b: 4, exactC: 2.5, hasC: true,
+        f: x => x*x - 5*x + 4, df: x => 2*x - 5,
+        xMin: 0, xMax: 5, yMin: -3, yMax: 4, xStep: 1, yStep: 1,
+        note: 'Rolle\'s Theorem: f(1) = f(4) = 0 ⇒ horizontal tangent at c = 5/2 = 2.5.'
+      },
+      inc19: {
+        a: -2, b: 1, exactC: -1, hasC: true,
+        f: x => x*x*x - 4*x, df: x => 3*x*x - 4,
+        xMin: -2.6, xMax: 2.0, yMin: -4.5, yMax: 4.5, xStep: 1, yStep: 1,
+        note: 'Unique c = -1 in (-2, 1) where tangent y = -x + 2 is parallel to secant y = -x - 2.'
+      },
+      ex16: {
+        a: -1, b: 8, exactC: 0, hasC: false,
+        f: x => Math.pow(Math.abs(x), 2/3), df: x => Math.abs(x) < 0.04 ? null : (2/3) * Math.sign(x) / Math.pow(Math.abs(x), 1/3),
+        xMin: -2, xMax: 9, yMin: -0.5, yMax: 5, xStep: 1, yStep: 1,
+        note: 'No c in (-1, 8)! Cusp at x = 0 violates MVT differentiability hypothesis.'
+      }
+    };
+
+    function setupMvtSlider() {
+      const P = mvtPresets[document.getElementById('mvtSelect').value];
+      const sl = document.getElementById('mvtSlider');
+      sl.min = P.a + 0.05; sl.max = P.b - 0.05; sl.step = 0.02;
+      sl.value = (P.a + P.b) / 2;
+      drawMvtCanvas();
+    }
+    function snapMvtC() {
+      const P = mvtPresets[document.getElementById('mvtSelect').value];
+      document.getElementById('mvtSlider').value = P.exactC;
+      drawMvtCanvas();
+    }
+
+    function drawMvtCanvas() {
+      const canvas = document.getElementById('mvtCanvas');
+      const ctx = canvas.getContext('2d');
+      const P = mvtPresets[document.getElementById('mvtSelect').value];
+      const x0 = parseFloat(document.getElementById('mvtSlider').value);
+      document.getElementById('mvtXVal').textContent = x0.toFixed(2);
+
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, P.xMin, P.xMax, P.yMin, P.yMax, P.xStep, P.yStep);
+      const c = getColors();
+
+      // Curve
+      plotFn(ctx, P.f, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.blue, 3);
+
+      // Secant line between a and b
+      const fa = P.f(P.a), fb = P.f(P.b);
+      const mSec = (fb - fa) / (P.b - P.a);
+      plotFn(ctx, x => fa + mSec * (x - P.a), P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.purple, 2.2, [6, 5]);
+
+      // Endpoints A and B
+      ctx.fillStyle = c.purple;
+      ctx.beginPath(); ctx.arc(toX(P.a), toY(fa), 5.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(toX(P.b), toY(fb), 5.5, 0, Math.PI*2); ctx.fill();
+
+      // Tangent at x0
+      const y0 = P.f(x0);
+      const mTan = P.df(x0);
+      let parallel = false;
+      if (mTan !== null) {
+        parallel = Math.abs(mTan - mSec) < 0.08;
+        plotFn(ctx, x => y0 + mTan * (x - x0), P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, parallel ? c.green : c.amber, 2.6);
+      }
+
+      ctx.fillStyle = parallel ? c.green : c.red;
+      ctx.beginPath(); ctx.arc(toX(x0), toY(y0), 6.5, 0, Math.PI*2); ctx.fill();
+
+      const matchBadge = mTan === null
+        ? '<span class="pill pill-red">f\'(0) Undefined (Cusp!)</span>'
+        : (parallel ? '<span class="pill pill-green">PARALLEL! f\'(c) = m_sec ✓</span>' : '<span class="pill pill-amber">Not parallel yet</span>');
+
+      document.getElementById('mvtReadout').innerHTML = `
+        <div class="readout-row"><span>Secant Slope [f(b)-f(a)]/(b-a):</span><strong style="color:var(--accent);">${mSec.toFixed(3)}</strong></div>
+        <div class="readout-row"><span>Tangent Slope f'(${x0.toFixed(2)}):</span><strong>${mTan === null ? 'Undefined' : mTan.toFixed(3)}</strong></div>
+        <div class="readout-row"><span>MVT Match:</span>${matchBadge}</div>
+        <div style="margin-top:6px; font-size:0.8rem; color:var(--text-muted);">${P.note}</div>
+      `;
+    }
+
+    /* ================= TAB 2: CONCAVITY & EXTREMA ================= */
+    const concPresets = {
+      gauss: {
+        f: x => Math.exp(-0.5*x*x),
+        df: x => -x * Math.exp(-0.5*x*x),
+        ddf: x => (x*x - 1) * Math.exp(-0.5*x*x),
+        xMin: -3.2, xMax: 3.2, yMin: -1.3, yMax: 1.4, xStep: 1, yStep: 0.5, initX: 0
+      },
+      final24: {
+        f: x => (x*x*x - 3*x*x + 1) / 3, // scaled for clean viewing
+        df: x => (3*x*x - 6*x) / 3,
+        ddf: x => (6*x - 6) / 3,
+        rawF: x => x*x*x - 3*x*x + 1, rawDf: x => 3*x*x - 6*x, rawDdf: x => 6*x - 6,
+        xMin: -1.5, xMax: 3.8, yMin: -3.5, yMax: 3.5, xStep: 1, yStep: 1, initX: 1
+      },
+      final17: {
+        f: x => x + 2*Math.sin(x),
+        df: x => 1 + 2*Math.cos(x),
+        ddf: x => -2*Math.sin(x),
+        xMin: 0, xMax: 6.3, yMin: -3, yMax: 7.5, xStep: 1, yStep: 2, initX: 3.14
+      }
+    };
+
+    function setupConcSlider() {
+      const P = concPresets[document.getElementById('concSelect').value];
+      const sl = document.getElementById('concSlider');
+      sl.min = P.xMin + 0.1; sl.max = P.xMax - 0.1; sl.step = 0.05; sl.value = P.initX;
+      drawConcCanvas();
+    }
+
+    function drawConcCanvas() {
+      const canvas = document.getElementById('concCanvas');
+      const ctx = canvas.getContext('2d');
+      const key = document.getElementById('concSelect').value;
+      const P = concPresets[key];
+      const x0 = parseFloat(document.getElementById('concSlider').value);
+      document.getElementById('concXVal').textContent = x0.toFixed(2);
+
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, P.xMin, P.xMax, P.yMin, P.yMax, P.xStep, P.yStep);
+      const c = getColors();
+
+      plotFn(ctx, P.f, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.blue, 3);
+      plotFn(ctx, P.df, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.purple, 2.2, [6, 5]);
+      plotFn(ctx, P.ddf, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.green, 2.2, [2, 4]);
+
+      ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = c.axis; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(toX(x0), 0); ctx.lineTo(toX(x0), canvas.height); ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = c.blue; ctx.beginPath(); ctx.arc(toX(x0), toY(P.f(x0)), 6, 0, Math.PI*2); ctx.fill();
+
+      const vF = P.rawF ? P.rawF(x0) : P.f(x0);
+      const vDf = P.rawDf ? P.rawDf(x0) : P.df(x0);
+      const vDdf = P.rawDdf ? P.rawDdf(x0) : P.ddf(x0);
+
+      const mono = Math.abs(vDf) < 0.08
+        ? '<span class="pill pill-amber">Stationary (f\' = 0)</span>'
+        : (vDf > 0 ? '<span class="pill pill-green">Increasing (f\' &gt; 0)</span>' : '<span class="pill pill-red">Decreasing (f\' &lt; 0)</span>');
+      const conc = Math.abs(vDdf) < 0.08
+        ? '<span class="pill pill-purple">Inflection Point (f\'\' = 0)</span>'
+        : (vDdf > 0 ? '<span class="pill pill-blue">Concave UP (f\'\' &gt; 0)</span>' : '<span class="pill pill-amber">Concave DOWN (f\'\' &lt; 0)</span>');
+
+      document.getElementById('concReadout').innerHTML = `
+        <div class="readout-row"><span>f(${x0.toFixed(2)}) = ${vF.toFixed(2)}:</span><span>f' = ${vDf.toFixed(2)}, f'' = ${vDdf.toFixed(2)}</span></div>
+        <div class="readout-row"><span>Slope Trend:</span>${mono}</div>
+        <div class="readout-row"><span>Concavity:</span>${conc}</div>
+      `;
+    }
+
+    /* ================= TAB 3: APPLIED OPTIMIZATION ================= */
+    function setupOptSlider() {
+      const mode = document.getElementById('optSelect').value;
+      const sl = document.getElementById('optSlider');
+      if (mode === 'cone_cyl') {
+        sl.min = 0.4; sl.max = 5.6; sl.step = 0.1; sl.value = 3.0;
+        document.getElementById('optParamLabel').textContent = 'Cylinder Radius r (in)';
+      } else {
+        sl.min = 2.0; sl.max = 16.0; sl.step = 0.2; sl.value = 5.0;
+        document.getElementById('optParamLabel').textContent = 'Print Width x (in)';
+      }
+      drawOptCanvas();
+    }
+    function snapOptBest() {
+      const mode = document.getElementById('optSelect').value;
+      document.getElementById('optSlider').value = (mode === 'cone_cyl') ? 4.0 : 7.94;
+      drawOptCanvas();
+    }
+
+    function drawOptCanvas() {
+      const canvas = document.getElementById('optCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('optSelect').value;
+      const val = parseFloat(document.getElementById('optSlider').value);
+      const c = getColors();
+
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (mode === 'cone_cyl') {
+        const r = val;
+        const h = 10 - (5 / 3) * r;
+        const vol = Math.PI * r * r * h;
+        const maxVol = Math.PI * 16 * (10 / 3); // ~167.55
+        document.getElementById('optParamVal').textContent = `${r.toFixed(1)} in`;
+
+        const cx = canvas.width / 2, botY = 320, topY = 40;
+        const pxY = (botY - topY) / 10; // 28 px/in
+        const pxX = 32; // px/in
+
+        // Inscribed cylinder cross-section
+        ctx.fillStyle = c.blueFill;
+        ctx.strokeStyle = c.blue; ctx.lineWidth = 2.6;
+        ctx.fillRect(cx - r * pxX, botY - h * pxY, 2 * r * pxX, h * pxY);
+        ctx.strokeRect(cx - r * pxX, botY - h * pxY, 2 * r * pxX, h * pxY);
+
+        // Outer Cone triangle (R=6, H=10)
+        ctx.strokeStyle = c.text; ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx, topY);
+        ctx.lineTo(cx - 6 * pxX, botY);
+        ctx.lineTo(cx + 6 * pxX, botY);
+        ctx.closePath();
+        ctx.stroke();
+
+        ctx.fillStyle = c.text; ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText(`Cone: R = 6 in, H = 10 in`, 24, 34);
+        ctx.fillStyle = c.blue;
+        ctx.fillText(`r = ${r.toFixed(1)} in, h = ${h.toFixed(2)} in`, cx - 55, botY - (h * pxY) / 2);
+
+        const isOpt = Math.abs(r - 4.0) < 0.08;
+        document.getElementById('optReadout').innerHTML = `
+          <div class="readout-row"><span>Cylinder Dimensions:</span><strong>r = ${r.toFixed(1)} in, h = ${h.toFixed(2)} in</strong></div>
+          <div class="readout-row"><span>Volume V = πr²(10 - 5r/3):</span><span class="pill ${isOpt ? 'pill-green' : 'pill-blue'}">${vol.toFixed(2)} in³</span></div>
+          <div class="readout-row"><span>Optimal Peak (r = 4, h = 10/3):</span><strong>${maxVol.toFixed(2)} in³ (160π/3)</strong></div>
+        `;
+      } else {
+        const x = val;
+        const y = 42 / x;
+        const totW = x + 3;
+        const totH = y + 2;
+        const area = totW * totH;
+        const minArea = (Math.sqrt(63) + 3) * (42 / Math.sqrt(63) + 2);
+        document.getElementById('optParamVal').textContent = `${x.toFixed(1)} in`;
+
+        const scale = 15;
+        const pw = totW * scale, ph = totH * scale;
+        const ox = (canvas.width - pw) / 2, oy = (canvas.height - ph) / 2;
+
+        // Outer paper
+        ctx.fillStyle = c.grid;
+        ctx.strokeStyle = c.text; ctx.lineWidth = 2.5;
+        ctx.fillRect(ox, oy, pw, ph);
+        ctx.strokeRect(ox, oy, pw, ph);
+
+        // Inner print area (left margin 1, right 2, top/bottom 1)
+        ctx.fillStyle = c.greenFill;
+        ctx.strokeStyle = c.green; ctx.lineWidth = 2.2;
+        ctx.fillRect(ox + 1 * scale, oy + 1 * scale, x * scale, y * scale);
+        ctx.strokeRect(ox + 1 * scale, oy + 1 * scale, x * scale, y * scale);
+
+        ctx.fillStyle = c.text; ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText(`Print Area = 42 in² (${x.toFixed(1)} × ${y.toFixed(1)})`, 24, 30);
+
+        const isOpt = Math.abs(x - Math.sqrt(63)) < 0.25;
+        document.getElementById('optReadout').innerHTML = `
+          <div class="readout-row"><span>Page Size (x+3) × (42/x+2):</span><strong>${totW.toFixed(2)} × ${totH.toFixed(2)} in</strong></div>
+          <div class="readout-row"><span>Total Paper Area:</span><span class="pill ${isOpt ? 'pill-green' : 'pill-amber'}">${area.toFixed(2)} in²</span></div>
+          <div class="readout-row"><span>Minimum at x = √63 ≈ 7.94:</span><strong>${minArea.toFixed(2)} in²</strong></div>
+        `;
+      }
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. For f(x) = x² - 5x + 4 on [1, 4], what value of c satisfies Rolle\'s Theorem? (Lecture 10 Ex 1)',
+        opts: ['c = 2', 'c = 5/2', 'c = 3', 'c = 1'],
+        ans: 1,
+        exp: 'f\'(x) = 2x - 5 = 0 ⇒ c = 5/2 = 2.5, which lies inside (1, 4).'
+      },
+      {
+        q: '2. Why does f(x) = x^(2/3) on [-1, 8] NOT contradict the Mean Value Theorem? (Exercise 16)',
+        opts: [
+          'It is discontinuous at x = 0',
+          'f\'(0) does not exist (cusp inside (-1, 8))',
+          'f(-1) ≠ f(8)',
+          'The interval is too wide'
+        ],
+        ans: 1,
+        exp: 'Although continuous on [-1, 8], f\'(x) = 2/(3x^(1/3)) is undefined at x = 0 ∈ (-1, 8), violating differentiability.'
+      },
+      {
+        q: '3. For f(x) = e^(-x²/2), where are the inflection points and the relative maximum? (2nd Incourse 2025 Q2b)',
+        opts: [
+          'Inflection at x = 0; Max at x = ±1',
+          'Inflection at x = ±1; Relative Max at x = 0 (value 1)',
+          'Inflection at x = ±2; Relative Min at x = 0',
+          'No inflection points'
+        ],
+        ans: 1,
+        exp: 'f\'(x) = -xe^(-x²/2) = 0 at x = 0 (f\'\'(0) = -1 < 0 ⇒ relative max 1); f\'\'(x) = (x² - 1)e^(-x²/2) changes sign at x = ±1.'
+      },
+      {
+        q: '4. What are ALL the critical points of f(x) = 3x^(5/3) - 15x^(2/3)? (Year Final 2024 Q7c)',
+        opts: ['x = 2 only', 'x = 0 only', 'x = 0 and x = 2', 'x = -2 and x = 2'],
+        ans: 2,
+        exp: 'f\'(x) = 5(x - 2) / x^(1/3) is zero at x = 2 AND undefined at x = 0 (which is in the domain of f).'
+      },
+      {
+        q: '5. A right circular cylinder of largest volume is inscribed in a cone of radius 6 in and height 10 in. What is its optimal radius r? (Final 2024 Q7d)',
+        opts: ['r = 3 in', 'r = 4 in', 'r = 2 in', 'r = 5 in'],
+        ans: 1,
+        exp: 'V(r) = πr²(10 - 5r/3) ⇒ V\'(r) = 5πr(4 - r) = 0 ⇒ r = 4 in (and h = 10/3 in).'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      setupMvtSlider();
+      setupConcSlider();
+      setupOptSlider();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

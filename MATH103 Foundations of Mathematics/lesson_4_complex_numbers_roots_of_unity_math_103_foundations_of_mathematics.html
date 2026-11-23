@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 4: Complex Numbers &amp; Roots of Unity | MATH 103 — Foundations of Mathematics</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Persist Theme Before First Paint -->
+  <script>
+    if (
+      localStorage.getItem('math103-theme') === 'dark' ||
+      (!('math103-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100 transition-colors duration-200">
+
+  <!-- ==================== TOP STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Mobile Sidebar Toggle + Brand -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              MATH 103 · Foundations of Mathematics (ISRT, DU)
+            </p>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+              Lesson 4: Complex Numbers &amp; Roots of Unity
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Lesson Pill + Progress + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/70">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Group A · Lesson 4 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+        </div>
+
+        <button
+          id="theme-toggle"
+          type="button"
+          aria-label="Toggle light or dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <svg class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 sm:w-80 lg:w-72 xl:w-80 bg-white dark:bg-slate-900 lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-2">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white text-sm">MATH 103 · Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Course Header & Live Lesson Progress Card -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <div class="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Group A: Basic Algebra</div>
+            <div class="text-xs font-bold text-slate-900 dark:text-white mt-0.5">MATH 103 — Foundations of Mathematics</div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson 4 Progress</span>
+              <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="sidebar-progress-detail" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+              0/6 sections · 0/3 labs · 0/5 quiz
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. In-Page Table of Contents (with Scroll-Spy) -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-sm">
+            <li><a href="#sec-1" data-spy="sec-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">01</span> Conjugates &amp; Field Props</a></li>
+            <li><a href="#sec-2" data-spy="sec-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">02</span> Argand, Modulus &amp; Polar</a></li>
+            <li><a href="#lab-argand" data-spy="lab-argand" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 1: Argand Plane</a></li>
+            <li><a href="#sec-3" data-spy="sec-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">03</span> Triangle Ineq. &amp; Loci</a></li>
+            <li><a href="#sec-4" data-spy="sec-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">04</span> Square Roots in $\mathbb{C}$</a></li>
+            <li><a href="#lab-sqrt-locus" data-spy="lab-sqrt-locus" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 2: $\sqrt{z}$ &amp; Locus Plotter</a></li>
+            <li><a href="#sec-5" data-spy="sec-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">05</span> De Moivre's Theorem</a></li>
+            <li><a href="#sec-6" data-spy="sec-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">06</span> Cube Roots of Unity ($\omega$)</a></li>
+            <li><a href="#lab-unity" data-spy="lab-unity" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 3: Unity &amp; $\omega^n$</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" data-spy="exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault (6)</a>
+            </li>
+            <li>
+              <a href="#quick-quiz" data-spy="quick-quiz" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-1">Module 1 · Group A: Basic Algebra</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L01</span><span class="truncate">Real Numbers &amp; Divisibility</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L02</span><span class="truncate">Congruences &amp; Diophantine</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-2 min-w-0"><span class="font-mono font-bold">L03</span><span class="truncate">Inequalities &amp; Series</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <span class="font-mono">L04</span>
+                <span class="truncate">Complex Numbers &amp; Unity</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L05</span><span class="truncate">Theory of Equations</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L06</span><span class="truncate">Gamma &amp; Beta Functions</span></div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Module 2 · Group B: Differential Equations</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L07</span><span class="truncate">Fundamentals &amp; Formation</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L08</span><span class="truncate">Separable &amp; Homogeneous</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L09</span><span class="truncate">Exact, IF &amp; Bernoulli DEs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L10</span><span class="truncate">Higher-Order Linear DEs</span></div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Module 3 · Group C: Discrete Mathematics</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L11</span><span class="truncate">Logic &amp; Counting Principles</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L12</span><span class="truncate">Recurrences &amp; Gen. Funcs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L13</span><span class="truncate">Graph Theory &amp; Dijkstra</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L14</span><span class="truncate">Game Theory &amp; Minimax</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT ==================== -->
+    <main class="flex-1 min-w-0 space-y-10 pb-20">
+
+      <!-- ORIENTATION HERO HEADER -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              Group A: Basic Algebra
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              Lesson 4 of 14
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              ⏱ Est. Study Time: ~50 mins
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+            Lesson 4: Complex Numbers &amp; Roots of Unity
+          </h2>
+
+          <p class="mt-3 text-sm sm:text-base text-indigo-100 leading-relaxed">
+            Explore the algebraic field $\mathbb{C}$, geometric operations on the Argand plane, modulus–argument polar form, triangle inequality &amp; Apollonius loci, the complete complex square root theorem, De Moivre's theorem, and cube roots of unity ($1, \omega, \omega^2$).
+          </p>
+
+          <div class="mt-5 p-3.5 rounded-2xl bg-white/10 border border-white/15 text-xs sm:text-sm text-indigo-100">
+            <strong class="text-white">Prerequisites:</strong> Lessons 1–3 (Real Number Field, Algebraic Proofs, Basic Trigonometry &amp; Inequalities).
+          </div>
+
+          <!-- Connected Sources Badges -->
+          <div class="mt-4 flex flex-wrap items-center gap-1.5 text-[11px]">
+            <span class="font-bold uppercase tracking-wider text-indigo-200 mr-1">Connected Sources:</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 font-mono">Complex Number.pdf (Rownak Jahan Tamanna)</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 font-mono">ISRT 2nd Incourse 2024</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 font-mono">ISRT Final 2019 / 2020 / 2024 / 2025</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 1: COMPLEX NUMBERS, CONJUGATES & FIELD PROPERTIES           -->
+      <!-- =================================================================== -->
+      <section id="sec-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 01</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Complex Numbers, Conjugates &amp; Field Properties
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-1"
+            onclick="toggleSectionRead('sec-1')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Definition 1.1 · Complex Number &amp; Imaginary Unit</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            The <strong>imaginary unit</strong> is defined by $i = \sqrt{-1}$ (so $i^2 = -1$). A <strong>complex number</strong> $z \in \mathbb{C}$ is an expression of the form:
+            $$z = a + bi \qquad (a, b \in \mathbb{R})$$
+            where $a = \operatorname{Re}(z)$ is the <strong>real part</strong> and $b = \operatorname{Im}(z)$ is the <strong>imaginary part</strong>. Every real number $a = a + 0i$ is a complex number, so $\mathbb{R} \subset \mathbb{C}$.
+          </p>
+        </div>
+
+        <!-- Complex Arithmetic & Multiplicative Inverse -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Complex Arithmetic ($z_1 = a+bi,\; z_2 = c+di$)</h4>
+            <ul class="space-y-1.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              <li><strong>Addition/Subtraction:</strong> $(a \pm c) + (b \pm d)i$</li>
+              <li><strong>Multiplication:</strong> $(ac - bd) + (ad + bc)i$</li>
+              <li><strong>Multiplicative Inverse ($z \neq 0$):</strong> $$(a+bi)^{-1} = \frac{1}{a+bi} = \frac{a - bi}{a^2 + b^2}$$</li>
+              <li><strong>Division:</strong> $\dfrac{z_1}{z_2} = \dfrac{z_1 \bar{z}_2}{z_2 \bar{z}_2} = \dfrac{(ac+bd) + (bc-ad)i}{c^2 + d^2}$</li>
+            </ul>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Complex Conjugate ($\bar{z} = a - bi$)</h4>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              The <strong>complex conjugate</strong> of $z = a + bi$ is $\bar{z} = a - bi$ (obtained by reflecting across the real axis). Core identities:
+            </p>
+            <div class="grid grid-cols-1 gap-1.5 text-xs sm:text-sm font-medium text-indigo-700 dark:text-indigo-300 bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+              <div>• $z + \bar{z} = 2a = 2\operatorname{Re}(z)$</div>
+              <div>• $z - \bar{z} = 2bi = 2i\operatorname{Im}(z)$</div>
+              <div>• $z \cdot \bar{z} = a^2 + b^2 = |z|^2 \ge 0$ &nbsp;and&nbsp; $\overline{\bar{z}} = z$</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsible Proof: Conjugate Properties -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-conj')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 1.2 · Algebraic Properties of Conjugates</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Prove that $\overline{z + w} = \bar{z} + \bar{w}$, $\overline{zw} = \bar{z}\bar{w}$, and $\overline{z / w} = \bar{z} / \bar{w}$ ($w \neq 0$).
+              </p>
+            </div>
+            <span id="icon-proof-conj" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-conj" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <p>Let $z = a + bi$ and $w = c + di$ with $a, b, c, d \in \mathbb{R}$, so $\bar{z} = a - bi$ and $\bar{w} = c - di$.</p>
+            <p><strong>1. Sum:</strong> $\overline{z + w} = \overline{(a+c) + (b+d)i} = (a+c) - (b+d)i = (a - bi) + (c - di) = \bar{z} + \bar{w}$.</p>
+            <p><strong>2. Product:</strong> $\overline{zw} = \overline{(ac - bd) + (ad + bc)i} = (ac - bd) - (ad + bc)i$. Meanwhile, $\bar{z}\bar{w} = (a-bi)(c-di) = (ac - bd) - (ad + bc)i$. Thus $\overline{zw} = \bar{z}\bar{w}$.</p>
+            <p><strong>3. Quotient ($w \neq 0$):</strong> Let $q = z/w$, so $z = qw$. Taking conjugates via property (2) gives $\bar{z} = \overline{qw} = \bar{q}\bar{w}$. Dividing by $\bar{w} \neq 0$ yields $\bar{q} = \bar{z}/\bar{w}$, i.e., $\overline{z/w} = \bar{z}/\bar{w}$. $\blacksquare$</p>
+          </div>
+        </div>
+
+        <!-- 9 Field Properties Summary Grid -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">The 9 Field Properties of $(\mathbb{C}, +, \times)$ (RJT Slides)</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs sm:text-sm">
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F1.</span> <strong>Additive Closure:</strong> $z_1 + z_2 \in \mathbb{C}$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F2.</span> <strong>Multiplicative Closure:</strong> $z_1 z_2 \in \mathbb{C}$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F3.</span> <strong>Commutativity:</strong> $z_1+z_2=z_2+z_1$, $z_1z_2=z_2z_1$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F4.</span> <strong>Associativity:</strong> $(z_1+z_2)+z_3 = z_1+(z_2+z_3)$ &amp; same for $\times$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F5.</span> <strong>Distributivity:</strong> $z_1(z_2+z_3) = z_1z_2 + z_1z_3$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F6.</span> <strong>Additive Identity:</strong> $z + 0 = 0 + z = z$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F7.</span> <strong>Multiplicative Identity:</strong> $z \cdot 1 = 1 \cdot z = z$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F8.</span> <strong>Additive Inverse:</strong> $\exists (-z) \in \mathbb{C}$ s.t. $z + (-z) = 0$</div>
+            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800"><span class="font-mono font-bold text-indigo-500">F9.</span> <strong>Multiplicative Inverse:</strong> $\forall z \neq 0,\; z \cdot z^{-1} = 1$</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 2: ARGAND PLANE, MODULUS & POLAR FORM                       -->
+      <!-- =================================================================== -->
+      <section id="sec-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 02</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Argand Plane, Modulus &amp; Polar Form
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-2"
+            onclick="toggleSectionRead('sec-2')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          On the <strong>Argand Plane</strong> (complex plane), every complex number $z = a + bi$ corresponds uniquely to the point $P(a, b)$ (and its conjugate $\bar{z} = a - bi$ is its reflection $(a, -b)$ across the horizontal real axis).
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/70 space-y-2">
+            <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Modulus ($r = |z|$)</h4>
+            <p class="text-sm text-slate-700 dark:text-slate-200">
+              The Euclidean distance from the origin $O(0,0)$ to $P(a, b)$:
+              $$r = |z| = \sqrt{a^2 + b^2} \ge 0$$
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-violet-50/70 dark:bg-violet-950/35 border border-violet-200 dark:border-violet-900/70 space-y-2">
+            <h4 class="font-bold text-violet-900 dark:text-violet-200 text-sm uppercase tracking-wider">Argument / Amplitude ($\theta = \arg(z)$)</h4>
+            <p class="text-sm text-slate-700 dark:text-slate-200">
+              The directed angle from the positive real axis to ray $OP$. The <strong>Principal Argument</strong> $\operatorname{Arg}(z)$ lies in:
+              $$-\pi < \theta \le \pi \qquad (-180^\circ < \theta \le 180^\circ)$$
+            </p>
+          </div>
+        </div>
+
+        <!-- ISRT EXAM TRAP CALLOUT: 4-QUADRANT ARGUMENT TABLE -->
+        <div class="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">⚠️</span>
+            <h4 class="font-bold text-rose-900 dark:text-rose-200 text-sm uppercase tracking-wider">ISRT Exam Trap: Never Blindly Use $\tan^{-1}(b/a)$!</h4>
+          </div>
+          <p class="text-xs sm:text-sm text-rose-900/90 dark:text-rose-200/90 leading-relaxed">
+            A calculator's $\tan^{-1}(b/a)$ only outputs angles in $(-\pi/2, \pi/2)$ (Quadrants I &amp; IV). Always compute the acute reference angle $\alpha = \tan^{-1}\!\left(\left|\frac{b}{a}\right|\right)$ first, then apply the quadrant correction:
+          </p>
+          <div class="rounded-xl bg-white dark:bg-slate-900 border border-rose-200 dark:border-rose-900 overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-rose-100/80 dark:bg-rose-950/60 text-rose-900 dark:text-rose-200 font-semibold">
+                <tr>
+                  <th class="px-4 py-2.5">Quadrant</th>
+                  <th class="px-4 py-2.5">Signs of $(a, b)$</th>
+                  <th class="px-4 py-2.5">Principal Argument $\theta \in (-\pi, \pi]$</th>
+                  <th class="px-4 py-2.5">Example</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr>
+                  <td class="px-4 py-2 font-bold text-indigo-600 dark:text-indigo-400">Q1</td>
+                  <td class="px-4 py-2 font-mono">$a > 0,\; b > 0$</td>
+                  <td class="px-4 py-2 font-semibold">$\theta = \alpha$</td>
+                  <td class="px-4 py-2 font-mono text-xs">$1 + i \implies \pi/4$</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2 font-bold text-indigo-600 dark:text-indigo-400">Q2</td>
+                  <td class="px-4 py-2 font-mono">$a < 0,\; b > 0$</td>
+                  <td class="px-4 py-2 font-semibold">$\theta = \pi - \alpha$</td>
+                  <td class="px-4 py-2 font-mono text-xs">$-1 + i \implies 3\pi/4$</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2 font-bold text-rose-600 dark:text-rose-400">Q3</td>
+                  <td class="px-4 py-2 font-mono">$a < 0,\; b < 0$</td>
+                  <td class="px-4 py-2 font-semibold">$\theta = -(\pi - \alpha) = \alpha - \pi$</td>
+                  <td class="px-4 py-2 font-mono text-xs">$-1 - i \implies -3\pi/4$</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2 font-bold text-indigo-600 dark:text-indigo-400">Q4</td>
+                  <td class="px-4 py-2 font-mono">$a > 0,\; b < 0$</td>
+                  <td class="px-4 py-2 font-semibold">$\theta = -\alpha$</td>
+                  <td class="px-4 py-2 font-mono text-xs">$3 - 2i \implies -\tan^{-1}(2/3)$</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Polar Form & Argument Laws Collapsible Proof -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Polar &amp; Exponential Form</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-300">
+            Since $a = r\cos\theta$ and $b = r\sin\theta$, any nonzero complex number $z = a + bi$ can be written as:
+            $$z = r(\cos\theta + i\sin\theta) = re^{i\theta}$$
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-arg-laws')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 2.1 · Argument Product &amp; Quotient Rules</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Prove $\arg(z_1 z_2) = \arg(z_1) + \arg(z_2)$ and $\arg(z_1 / z_2) = \arg(z_1) - \arg(z_2)$ (up to multiples of $2\pi$).
+              </p>
+            </div>
+            <span id="icon-proof-arg-laws" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-arg-laws" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <p>Write $z_1 = r_1(\cos\theta_1 + i\sin\theta_1)$ and $z_2 = r_2(\cos\theta_2 + i\sin\theta_2)$.</p>
+            <p><strong>1. Product:</strong> Expanding $z_1 z_2$ gives:
+            $$z_1 z_2 = r_1 r_2\big[(\cos\theta_1\cos\theta_2 - \sin\theta_1\sin\theta_2) + i(\sin\theta_1\cos\theta_2 + \cos\theta_1\sin\theta_2)\big] = r_1 r_2\big[\cos(\theta_1+\theta_2) + i\sin(\theta_1+\theta_2)\big]$$
+            Hence $|z_1 z_2| = r_1 r_2$ and $\arg(z_1 z_2) = \theta_1 + \theta_2 = \arg(z_1) + \arg(z_2)$.</p>
+            <p><strong>2. Quotient ($z_2 \neq 0$):</strong> Multiplying numerator and denominator by $(\cos\theta_2 - i\sin\theta_2)$:
+            $$\frac{z_1}{z_2} = \frac{r_1}{r_2}\frac{(\cos\theta_1+i\sin\theta_1)(\cos\theta_2-i\sin\theta_2)}{\cos^2\theta_2 + \sin^2\theta_2} = \frac{r_1}{r_2}\big[\cos(\theta_1-\theta_2) + i\sin(\theta_1-\theta_2)\big]$$
+            Hence $\arg(z_1 / z_2) = \theta_1 - \theta_2 = \arg(z_1) - \arg(z_2)$. $\blacksquare$</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 1: INTERACTIVE ARGAND PLANE & OPERATIONS LAB                    -->
+      <!-- =================================================================== -->
+      <section id="lab-argand" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Interactive Argand Plane &amp; Operations Lab</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Drag the blue ($z_1$) and amber ($z_2$) handles directly on the plane, or use sliders &amp; exam presets.</p>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setArgandPreset(3, -2, 1, -2, 'div')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">ISRT '24: (3-2i)/(1-2i)</button>
+            <button type="button" onclick="setArgandPreset(1, 1.73, 1, 1, 'mul')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">1+i√3 × (1+i)</button>
+            <button type="button" onclick="setArgandPreset(2, 1, -1, 2, 'add')" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Parallelogram Law</button>
+          </div>
+        </div>
+
+        <!-- Operation Mode Toggles -->
+        <div class="flex flex-wrap gap-2">
+          <button type="button" data-op="add" onclick="setArgandOp('add')" class="arg-op-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Addition ($z_1 + z_2$)</button>
+          <button type="button" data-op="sub" onclick="setArgandOp('sub')" class="arg-op-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Subtraction ($z_1 - z_2$)</button>
+          <button type="button" data-op="mul" onclick="setArgandOp('mul')" class="arg-op-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Multiplication ($z_1 z_2$)</button>
+          <button type="button" data-op="div" onclick="setArgandOp('div')" class="arg-op-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Division ($z_1 / z_2$)</button>
+          <button type="button" data-op="conj" onclick="setArgandOp('conj')" class="arg-op-btn px-3.5 py-2 rounded-xl text-xs font-bold transition">Conjugate ($\bar{z}_1$)</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Left: Interactive SVG Plane -->
+          <div class="lg:col-span-7 p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+            <svg id="argand-svg" viewBox="0 0 420 420" class="w-full max-w-[420px] h-auto touch-none select-none cursor-crosshair"></svg>
+          </div>
+
+          <!-- Right: Sliders & Live Readouts -->
+          <div class="lg:col-span-5 space-y-4">
+            <!-- z1 & z2 Sliders -->
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-xs">
+              <div class="font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex justify-between">
+                <span>$z_1 = a_1 + b_1 i$ (Blue)</span>
+                <span id="arg-z1-quad" class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 font-mono">Q4</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between mb-1"><span>Re($z_1$)</span><span id="arg-a1-val" class="font-mono font-bold">3.0</span></div>
+                  <input id="arg-a1" type="range" min="-5.5" max="5.5" step="0.25" value="3" oninput="syncArgandFromSliders()" class="w-full accent-indigo-600" />
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1"><span>Im($z_1$)</span><span id="arg-b1-val" class="font-mono font-bold">-2.0</span></div>
+                  <input id="arg-b1" type="range" min="-5.5" max="5.5" step="0.25" value="-2" oninput="syncArgandFromSliders()" class="w-full accent-indigo-600" />
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-slate-100 dark:border-slate-800 font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex justify-between">
+                <span>$z_2 = a_2 + b_2 i$ (Amber)</span>
+                <span id="arg-z2-quad" class="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/60 font-mono">Q4</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between mb-1"><span>Re($z_2$)</span><span id="arg-a2-val" class="font-mono font-bold">1.0</span></div>
+                  <input id="arg-a2" type="range" min="-5.5" max="5.5" step="0.25" value="1" oninput="syncArgandFromSliders()" class="w-full accent-amber-500" />
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1"><span>Im($z_2$)</span><span id="arg-b2-val" class="font-mono font-bold">-2.0</span></div>
+                  <input id="arg-b2" type="range" min="-5.5" max="5.5" step="0.25" value="-2" oninput="syncArgandFromSliders()" class="w-full accent-amber-500" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Readout Card -->
+            <div id="argand-readout" class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs font-mono"></div>
+
+            <!-- Live Triangle Inequality Check -->
+            <div id="argand-triangle" class="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/35 border border-emerald-200 dark:border-emerald-800 text-xs font-mono text-emerald-900 dark:text-emerald-200"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 3: MODULUS THEOREMS, TRIANGLE INEQUALITY & LOCI             -->
+      <!-- =================================================================== -->
+      <section id="sec-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 03</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Modulus Theorems, Triangle Inequality &amp; Complex Loci
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-3"
+            onclick="toggleSectionRead('sec-3')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <!-- Collapsible Proof: Modulus & Triangle Inequalities -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-triangle')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 3.1 · Product Modulus &amp; Triangle Inequalities</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                (i) $|z_1 z_2| = |z_1||z_2|$, &nbsp;(ii) $|z_1 + z_2| \le |z_1| + |z_2|$, &nbsp;(iii) $|z_1 - z_2| \ge \big||z_1| - |z_2|\big|$.
+              </p>
+            </div>
+            <span id="icon-proof-triangle" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proofs</span>
+          </button>
+          <div id="proof-triangle" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <p><strong>(i) Product Modulus:</strong> Using $|w|^2 = w\bar{w}$, we have $|z_1 z_2|^2 = (z_1 z_2)\overline{(z_1 z_2)} = (z_1 \bar{z}_1)(z_2 \bar{z}_2) = |z_1|^2 |z_2|^2$. Taking non-negative square roots yields $|z_1 z_2| = |z_1||z_2|$.</p>
+            <p><strong>(ii) Triangle Inequality:</strong> Expand $|z_1 + z_2|^2$:
+            $$|z_1 + z_2|^2 = (z_1 + z_2)(\bar{z}_1 + \bar{z}_2) = |z_1|^2 + (z_1\bar{z}_2 + \bar{z}_1 z_2) + |z_2|^2 = |z_1|^2 + 2\operatorname{Re}(z_1\bar{z}_2) + |z_2|^2$$
+            Since $\operatorname{Re}(w) \le |w|$ for any $w \in \mathbb{C}$, we have $\operatorname{Re}(z_1 \bar{z}_2) \le |z_1 \bar{z}_2| = |z_1||\bar{z}_2| = |z_1||z_2|$. Thus:
+            $$|z_1 + z_2|^2 \le |z_1|^2 + 2|z_1||z_2| + |z_2|^2 = (|z_1| + |z_2|)^2 \implies |z_1 + z_2| \le |z_1| + |z_2|$$</p>
+            <p><strong>(iii) Reverse Triangle Inequality:</strong> Write $z_1 = (z_1 - z_2) + z_2$. By (ii), $|z_1| \le |z_1 - z_2| + |z_2| \implies |z_1 - z_2| \ge |z_1| - |z_2|$. Swapping $z_1, z_2$ gives $|z_1 - z_2| \ge |z_2| - |z_1|$. Combining both gives $|z_1 - z_2| \ge \big||z_1| - |z_2|\big|$. $\blacksquare$</p>
+          </div>
+        </div>
+
+        <!-- Collapsible Proof: Parallelogram Law -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-parallelogram')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 3.2 · Parallelogram Law (RJT Example 5)</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                $|z_1 + z_2|^2 + |z_1 - z_2|^2 = 2\big(|z_1|^2 + |z_2|^2\big)$
+              </p>
+            </div>
+            <span id="icon-proof-parallelogram" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-parallelogram" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+            <p>Using $|w|^2 = w\bar{w}$:</p>
+            <p>$|z_1 + z_2|^2 = (z_1 + z_2)(\bar{z}_1 + \bar{z}_2) = |z_1|^2 + z_1\bar{z}_2 + \bar{z}_1 z_2 + |z_2|^2$</p>
+            <p>$|z_1 - z_2|^2 = (z_1 - z_2)(\bar{z}_1 - \bar{z}_2) = |z_1|^2 - z_1\bar{z}_2 - \bar{z}_1 z_2 + |z_2|^2$</p>
+            <p>Adding the two equations cancels the cross-terms $\pm(z_1\bar{z}_2 + \bar{z}_1 z_2)$, leaving $|z_1 + z_2|^2 + |z_1 - z_2|^2 = 2(|z_1|^2 + |z_2|^2)$. $\blacksquare$</p>
+          </div>
+        </div>
+
+        <!-- Complex Loci Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">CIRCLE</div>
+            <div class="font-bold text-slate-900 dark:text-white">$|z - z_0| = R$</div>
+            <p class="text-xs text-slate-600 dark:text-slate-400">All points at distance $R$ from center $z_0 = (x_0, y_0)$.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">PERPENDICULAR BISECTOR</div>
+            <div class="font-bold text-slate-900 dark:text-white">$|z - z_1| = |z - z_2|$</div>
+            <p class="text-xs text-slate-600 dark:text-slate-400">Straight line equidistant from $z_1$ and $z_2$ (when $k = m$).</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-violet-600 dark:text-violet-400">APOLLONIUS CIRCLE (RJT Ex. 6)</div>
+            <div class="font-bold text-slate-900 dark:text-white">$k|z - z_1| = m|z - z_2|\; (k \neq m)$</div>
+            <p class="text-xs text-slate-600 dark:text-slate-400">Example: $3|z-1| = 2|z-2| \implies 5(x^2+y^2) = 2x + 7$.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 4: SQUARE ROOTS OF COMPLEX NUMBERS                          -->
+      <!-- =================================================================== -->
+      <section id="sec-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 04</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">ISRT 6-Mark Favorite (2019, 2023)</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1.5">
+              Square Roots of Complex Numbers
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-4"
+            onclick="toggleSectionRead('sec-4')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/70 space-y-2.5">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Theorem 4.1 · Closure Under Square Roots</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            The square root of any complex number $z = a + ib$ ($a, b \in \mathbb{R}$) is also a complex number $x + iy$ ($x, y \in \mathbb{R}$), given explicitly by:
+          </p>
+          <div class="py-3 px-4 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900 text-center overflow-x-auto">
+            $$\sqrt{a \pm ib} = \pm \frac{1}{\sqrt{2}}\left[\sqrt{\sqrt{a^2+b^2}+a} \;\pm\; i\sqrt{\sqrt{a^2+b^2}-a}\right]$$
+          </div>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            <strong>Sign-Matching Rule ($2xy = b$):</strong> If $b > 0$, then $x$ and $y$ have the <strong>same sign</strong> ($+$ with $+$, $-$ with $-$). If $b < 0$, then $x$ and $y$ have <strong>opposite signs</strong> ($+$ with $-$, $-$ with $+$).
+          </p>
+        </div>
+
+        <!-- Collapsible Complete 6-Mark Proof -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleCollapsible('proof-sqrt')"
+            class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          >
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Complete Exam-Ready Algebraic Proof</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Step-by-step derivation of $\sqrt{a + ib} = x + iy$ (with real $x, y$).
+              </p>
+            </div>
+            <span id="icon-proof-sqrt" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-sqrt" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <p><strong>Step 1:</strong> Suppose $\sqrt{a + ib} = x + iy$ where $x, y \in \mathbb{R}$. Squaring both sides gives $a + ib = (x^2 - y^2) + i(2xy)$.</p>
+            <p><strong>Step 2:</strong> Equating real and imaginary parts:
+            $$x^2 - y^2 = a \quad \text{(1)}, \qquad 2xy = b \quad \text{(2)}$$</p>
+            <p><strong>Step 3:</strong> Use the identity $(x^2 + y^2)^2 = (x^2 - y^2)^2 + (2xy)^2 = a^2 + b^2$. Since $x^2 + y^2 \ge 0$, taking the positive square root yields:
+            $$x^2 + y^2 = \sqrt{a^2 + b^2} \quad \text{(3)}$$</p>
+            <p><strong>Step 4:</strong> Add (3) and (1), and subtract (1) from (3):
+            $$2x^2 = \sqrt{a^2 + b^2} + a \implies x = \pm\sqrt{\frac{\sqrt{a^2+b^2}+a}{2}}, \qquad 2y^2 = \sqrt{a^2 + b^2} - a \implies y = \pm\sqrt{\frac{\sqrt{a^2+b^2}-a}{2}}$$
+            Since $\sqrt{a^2+b^2} \ge |a|$, both expressions inside the radicals are $\ge 0$, proving $x, y \in \mathbb{R}$!</p>
+            <p><strong>Step 5 (Pairing Signs):</strong> From (2), $2xy = b$. If $b > 0$, $x$ and $y$ share the same sign; if $b < 0$, $x$ and $y$ have opposite signs. Thus $\sqrt{a \pm ib} = \pm\frac{1}{\sqrt{2}}\left[\sqrt{\sqrt{a^2+b^2}+a} \pm i\sqrt{\sqrt{a^2+b^2}-a}\right] \in \mathbb{C}$. $\blacksquare$</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 2: COMPLEX SQUARE ROOT & APOLLONIUS LOCUS EXPLORER              -->
+      <!-- =================================================================== -->
+      <section id="lab-sqrt-locus" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Complex Square Root &amp; Apollonius Locus Explorer</h3>
+          </div>
+
+          <div class="inline-flex p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800">
+            <button type="button" id="tab-sqrt" onclick="switchLab2Tab('sqrt')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs">
+              Tab A: Square Root ($\sqrt{a+bi}$)
+            </button>
+            <button type="button" id="tab-locus" onclick="switchLab2Tab('locus')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-400">
+              Tab B: Locus Plotter
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB A: SQUARE ROOT SOLVER -->
+        <div id="panel-sqrt" class="space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Presets:</span>
+            <button type="button" onclick="setSqrtPreset(3, 4)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">3 + 4i</button>
+            <button type="button" onclick="setSqrtPreset(5, -12)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">5 - 12i</button>
+            <button type="button" onclick="setSqrtPreset(0, 1)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">i (0 + 1i)</button>
+            <button type="button" onclick="setSqrtPreset(-7, 24)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">-7 + 24i</button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div class="lg:col-span-7 space-y-4">
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 items-end p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                <div>
+                  <label for="sqrt-a" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Real part $a$</label>
+                  <input id="sqrt-a" type="number" step="1" value="3" oninput="runSqrtLab(true)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label for="sqrt-b" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Imaginary part $b$</label>
+                  <input id="sqrt-b" type="number" step="1" value="4" oninput="runSqrtLab(true)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+                </div>
+                <button type="button" onclick="runSqrtLab(true)" class="col-span-2 sm:col-span-1 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition">
+                  Compute $\sqrt{z}$
+                </button>
+              </div>
+
+              <div id="sqrt-steps" class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs sm:text-sm"></div>
+            </div>
+
+            <div class="lg:col-span-5 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+              <div class="w-full flex justify-between text-xs mb-2 text-slate-500 dark:text-slate-400">
+                <span class="font-semibold">Plot of $z$ &amp; Roots $\pm(x+iy)$</span>
+                <span class="font-mono text-emerald-600 dark:text-emerald-400">180° apart</span>
+              </div>
+              <svg id="sqrt-svg" viewBox="0 0 320 320" class="w-full max-w-[300px] h-auto"></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: APOLLONIUS LOCUS PLOTTER -->
+        <div id="panel-locus" class="hidden space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Presets:</span>
+            <button type="button" onclick="setLocusPreset(3, 2, 1, 2)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">RJT Ex. 6: 3|z-1| = 2|z-2|</button>
+            <button type="button" onclick="setLocusPreset(2, 2, -2, 2)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Perpendicular Bisector (k=m)</button>
+            <button type="button" onclick="setLocusPreset(1, 2, -1, 2)" class="px-2.5 py-1 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">|z+1| = 2|z-2|</button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div class="lg:col-span-6 space-y-4">
+              <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-4 text-xs">
+                <div>
+                  <div class="flex justify-between mb-1"><span>Weight $k$</span><span id="loc-k-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">3</span></div>
+                  <input id="loc-k" type="range" min="1" max="5" step="1" value="3" oninput="runLocusLab(true)" class="w-full accent-indigo-600" />
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1"><span>Weight $m$</span><span id="loc-m-val" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">2</span></div>
+                  <input id="loc-m" type="range" min="1" max="5" step="1" value="2" oninput="runLocusLab(true)" class="w-full accent-emerald-600" />
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1"><span>Focus $a_1$</span><span id="loc-a1-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">1</span></div>
+                  <input id="loc-a1" type="range" min="-3" max="3" step="1" value="1" oninput="runLocusLab(true)" class="w-full accent-indigo-600" />
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1"><span>Focus $a_2$</span><span id="loc-a2-val" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">2</span></div>
+                  <input id="loc-a2" type="range" min="-3" max="3" step="1" value="2" oninput="runLocusLab(true)" class="w-full accent-emerald-600" />
+                </div>
+              </div>
+
+              <div id="locus-eq-box" class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs sm:text-sm"></div>
+            </div>
+
+            <div class="lg:col-span-6 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+              <div class="w-full flex justify-between text-xs mb-2 text-slate-500 dark:text-slate-400">
+                <span class="font-semibold">Live Locus Plot ($k|z - a_1| = m|z - a_2|$)</span>
+                <span id="locus-type-badge" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">Circle</span>
+              </div>
+              <svg id="locus-svg" viewBox="0 0 340 300" class="w-full max-w-[340px] h-auto"></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 5: DE MOIVRE'S THEOREM & POWERS OF COMPLEX NUMBERS          -->
+      <!-- =================================================================== -->
+      <section id="sec-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 05</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              De Moivre's Theorem &amp; Powers of Complex Numbers
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-5"
+            onclick="toggleSectionRead('sec-5')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Theorem 5.1 · De Moivre's Theorem</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            For every integer $n \in \mathbb{Z}$ and every real angle $\theta$:
+            $$(\cos\theta + i\sin\theta)^n = \cos(n\theta) + i\sin(n\theta)$$
+            More generally, for $z = r(\cos\theta + i\sin\theta) = re^{i\theta}$, we have $z^n = r^n\big[\cos(n\theta) + i\sin(n\theta)\big] = r^n e^{in\theta}$.
+          </p>
+          <p class="text-xs text-slate-600 dark:text-slate-400">
+            <strong>Geometric Interpretation:</strong> Raising $z$ to the $n$-th power scales its distance from the origin to $r^n$ and rotates its ray counterclockwise by angle $n\theta$.
+          </p>
+        </div>
+
+        <!-- Worked Example: RJT Exercise 7 -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 class="font-bold text-slate-900 dark:text-white text-sm">Worked Example (RJT Exercise 7): Powers of $\rho = \dfrac{1}{\sqrt{2}} + \dfrac{1}{\sqrt{2}}i$</h4>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">Unit Circle Rotation</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+            First convert $\rho$ to polar form: $r = \sqrt{\left(\frac{1}{\sqrt{2}}\right)^2 + \left(\frac{1}{\sqrt{2}}\right)^2} = 1$, and $\theta = \tan^{-1}(1) = \frac{\pi}{4}$ (Q1). Thus $\rho = \cos\frac{\pi}{4} + i\sin\frac{\pi}{4} = e^{i\pi/4}$.
+          </p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div class="text-slate-500">$\rho^2 = e^{i\pi/2}$</div>
+              <div class="font-bold text-indigo-600 dark:text-indigo-400 mt-1">$= i$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div class="text-slate-500">$\rho^3 = e^{i3\pi/4}$</div>
+              <div class="font-bold text-indigo-600 dark:text-indigo-400 mt-1">$= -\frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}}i$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+              <div class="text-slate-500">$\rho^4 = e^{i\pi}$</div>
+              <div class="font-bold text-indigo-600 dark:text-indigo-400 mt-1">$= -1$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+              <div class="text-emerald-700 dark:text-emerald-300">$\rho^{25} = (\rho^8)^3 \cdot \rho$</div>
+              <div class="font-bold text-emerald-700 dark:text-emerald-300 mt-1">$= 1^3 \cdot \rho = \rho$</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 6: CUBE ROOTS OF UNITY (1, w, w^2) & ALGEBRAIC IDENTITIES   -->
+      <!-- =================================================================== -->
+      <section id="sec-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 06</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">ISRT Final 2020, 2024, 2025</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1.5">
+              Cube Roots of Unity ($1, \omega, \omega^2$) &amp; Algebraic Identities
+            </h3>
+          </div>
+          <button
+            type="button"
+            data-section="sec-6"
+            onclick="toggleSectionRead('sec-6')"
+            class="section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+          >
+            <span class="check-icon">○</span> Mark as Read
+          </button>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          Solving $x^3 = 1 \iff x^3 - 1 = 0 \iff (x - 1)(x^2 + x + 1) = 0$ gives three cube roots of unity, forming the vertices of an <strong>equilateral triangle</strong> inscribed in the unit circle $|z| = 1$:
+          $$x = 1, \qquad \omega = \frac{-1 + i\sqrt{3}}{2} = e^{i 2\pi/3}, \qquad \omega^2 = \frac{-1 - i\sqrt{3}}{2} = e^{i 4\pi/3} = e^{-i 2\pi/3}$$
+        </p>
+
+        <!-- Core Identities Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 text-center">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">CUBIC CYCLE</div>
+            <div class="font-bold text-base">$\omega^3 = 1$</div>
+            <p class="text-xs text-slate-500 mt-1">$\omega^{3k+r} = \omega^r$</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-violet-50/70 dark:bg-violet-950/35 border border-violet-200 dark:border-violet-900/60 text-center">
+            <div class="text-xs font-mono font-bold text-violet-600 dark:text-violet-400 mb-1">ZERO SUM</div>
+            <div class="font-bold text-base">$1 + \omega + \omega^2 = 0$</div>
+            <p class="text-xs text-slate-500 mt-1">Any 3 consecutive powers sum to $0$</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 text-center">
+            <div class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 mb-1">CONJUGATE PAIR</div>
+            <div class="font-bold text-base">$\bar{\omega} = \omega^2 = \omega^{-1}$</div>
+            <p class="text-xs text-slate-500 mt-1">Each imaginary root is the square of the other</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 text-center">
+            <div class="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 mb-1">FACTORIZATION TRICK</div>
+            <div class="font-bold text-xs sm:text-sm pt-0.5">$p^3 + q^3 = (p+q)(p+q\omega)(p+q\omega^2)$</div>
+            <p class="text-xs text-slate-500 mt-1">Key to ISRT 2020/2024/2025!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 3: CUBE ROOTS OF UNITY & POWERS (w^n) VISUALIZER                -->
+      <!-- =================================================================== -->
+      <section id="lab-unity" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-6">
+        <div>
+          <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03
+          </span>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Cube Roots of Unity &amp; Powers ($\omega^n$) Visualizer</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Left: Unit Circle SVG + Power Stepper -->
+          <div class="lg:col-span-6 p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Unit Circle &amp; Equilateral Triangle</span>
+              <span id="unity-power-badge" class="px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-mono font-bold">ω⁵ = ω²</span>
+            </div>
+
+            <svg id="unity-svg" viewBox="0 0 300 300" class="w-full max-w-[270px] h-auto mx-auto block"></svg>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                <label for="unity-n">Power Stepper $n$ (0 to 30)</label>
+                <span id="unity-n-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">n = 5</span>
+              </div>
+              <input id="unity-n" type="range" min="0" max="30" value="5" oninput="updateUnityLab(true)" class="w-full accent-indigo-600 cursor-pointer" />
+            </div>
+
+            <div id="unity-reduction" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-xs text-slate-700 dark:text-slate-300 text-center"></div>
+          </div>
+
+          <!-- Right: Live ISRT Identity Verifier -->
+          <div class="lg:col-span-6 p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020, 2024 &amp; 2025 Live Verifier</span>
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm mt-1.5">
+                $(a + b\omega + c\omega^2)^3 + (a + b\omega^2 + c\omega)^3 = 27abc$ &nbsp;(when $a+b+c=0$)
+              </h4>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div>
+                <div class="flex justify-between mb-1"><span>Slider $a$</span><span id="id-a-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">2</span></div>
+                <input id="id-a" type="range" min="-5" max="5" step="1" value="2" oninput="updateIdentityVerifier(true)" class="w-full accent-indigo-600" />
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span>Slider $b$</span><span id="id-b-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">3</span></div>
+                <input id="id-b" type="range" min="-5" max="5" step="1" value="3" oninput="updateIdentityVerifier(true)" class="w-full accent-indigo-600" />
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex justify-between font-mono">
+                <span>Auto-enforced $c = -(a + b)$:</span>
+                <strong id="id-c-val" class="text-emerald-600 dark:text-emerald-400">-5</strong>
+              </div>
+            </div>
+
+            <div id="identity-result" class="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1.5 font-mono text-xs text-emerald-900 dark:text-emerald-200"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT (6 AUTHENTIC WORKED PROBLEMS)                  -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Past Papers &amp; RJT Lecture Slides</span>
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 4)</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Try solving each problem on paper first, then reveal the Hint or Full Step-by-Step Solution.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Vault 1 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2024 · AST 103, Q2</span>
+              <span class="text-xs font-mono text-slate-400">[1 + 2 + 2 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. Consider an Argand diagram showing point $P(3, -2)$ in Quadrant IV. (a) Represent point $P$ as a complex number $z$. (b) Find the modulus and principal argument of $z$. (c) Divide $z$ by $(1 - 2i)$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> $P(3, -2)$ lies in Q4, so $\theta = -\tan^{-1}(2/3)$. For division, multiply numerator and denominator by the conjugate $(1 + 2i)$.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>(a)</strong> $z = 3 - 2i$.</p>
+              <p><strong>(b)</strong> Modulus: $|z| = \sqrt{3^2 + (-2)^2} = \sqrt{9 + 4} = \sqrt{13}$. Since $(3, -2)$ is in Quadrant IV, the principal argument is $\theta = -\tan^{-1}\!\left(\frac{2}{3}\right) \approx -0.5880\text{ rad} \approx -33.69^\circ$.</p>
+              <p><strong>(c)</strong> Multiply top and bottom by $\overline{1 - 2i} = 1 + 2i$:
+              $$\frac{3 - 2i}{1 - 2i} = \frac{(3 - 2i)(1 + 2i)}{1^2 + (-2)^2} = \frac{3 + 6i - 2i - 4i^2}{1 + 4} = \frac{7 + 4i}{5} = \mathbf{\frac{7}{5} + \frac{4}{5}i}$$</p>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020, 2024 &amp; 2025 · MATH 103, Q2</span>
+              <span class="text-xs font-mono text-slate-400">[2 + 4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. Define modulus and argument of a complex number. If $a + b + c = 0$ and $\omega$ is an imaginary cube root of unity, prove that $(a + b\omega + c\omega^2)^3 + (a + b\omega^2 + c\omega)^3 = 27abc$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Set $p = a + b\omega + c\omega^2$ and $q = a + b\omega^2 + c\omega$. Factor $p^3 + q^3 = (p+q)(p+q\omega)(p+q\omega^2)$ and use $1 + \omega + \omega^2 = 0$ together with $a + b + c = 0$!
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Definitions:</strong> For $z = x + iy$, modulus is $|z| = \sqrt{x^2 + y^2}$ and argument is the angle $\theta$ that the ray from $(0,0)$ to $(x,y)$ makes with the positive real axis.</p>
+              <p><strong>Proof:</strong> Let $p = a + b\omega + c\omega^2$ and $q = a + b\omega^2 + c\omega$. Recall $p^3 + q^3 = (p+q)(p+q\omega)(p+q\omega^2)$.</p>
+              <p>• $p + q = 2a + (b+c)(\omega + \omega^2) = 2a - (b+c) = 2a - (-a) = 3a$ (since $\omega+\omega^2 = -1$ and $b+c = -a$).</p>
+              <p>• $p + q\omega = a(1+\omega) + b(\omega+\omega^3) + c(\omega^2+\omega^2) = a(-\omega^2) + b(\omega+1) + 2c\omega^2 = -a\omega^2 - b\omega^2 + 2c\omega^2 = \omega^2(2c - a - b) = 3c\omega^2$.</p>
+              <p>• $p + q\omega^2 = a(1+\omega^2) + 2b\omega + c(\omega^2+\omega^4) = -a\omega + 2b\omega - c\omega = \omega(2b - a - c) = 3b\omega$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Multiplying all three factors: $p^3 + q^3 = (3a)(3c\omega^2)(3b\omega) = 27abc\omega^3 = 27abc$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2019 (AST 104, Q3a) &amp; 2023 (MATH 103, Q4d)</span>
+              <span class="text-xs font-mono text-slate-400">[3–6 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. Define complex conjugate. Show that the square root of a complex number is also a complex number.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Set $\sqrt{a+ib} = x+iy$, square both sides to get $x^2-y^2=a$ and $2xy=b$, find $x^2+y^2=\sqrt{a^2+b^2}$, and show $x, y \in \mathbb{R}$.
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Complex Conjugate:</strong> For $z = a + ib$ ($a,b \in \mathbb{R}$), its conjugate is $\bar{z} = a - ib$.</p>
+              <p><strong>Proof:</strong> Let $\sqrt{a+ib} = x + iy$. Squaring gives $x^2 - y^2 = a$ and $2xy = b$. Then $(x^2+y^2)^2 = (x^2-y^2)^2 + 4x^2y^2 = a^2 + b^2 \implies x^2+y^2 = \sqrt{a^2+b^2}$.</p>
+              <p>Solving yields $x = \pm\sqrt{\frac{\sqrt{a^2+b^2}+a}{2}}$ and $y = \pm\sqrt{\frac{\sqrt{a^2+b^2}-a}{2}}$. Since $\sqrt{a^2+b^2} \ge |a|$, both $x$ and $y$ are real numbers (with signs matched according to $2xy = b$). Hence $\sqrt{a+ib} = x + iy \in \mathbb{C}$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">RJT Lecture Slides · Example 5</span>
+              <span class="text-xs font-mono text-slate-400">[Core Proof]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. Prove the Parallelogram Law for any two complex numbers $z_1, z_2 \in \mathbb{C}$: $|z_1 + z_2|^2 + |z_1 - z_2|^2 = 2(|z_1|^2 + |z_2|^2)$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Expand both $|z_1 + z_2|^2 = (z_1+z_2)(\bar{z}_1+\bar{z}_2)$ and $|z_1 - z_2|^2 = (z_1-z_2)(\bar{z}_1-\bar{z}_2)$, then add them.
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>$|z_1 + z_2|^2 + |z_1 - z_2|^2 = (z_1 + z_2)(\bar{z}_1 + \bar{z}_2) + (z_1 - z_2)(\bar{z}_1 - \bar{z}_2)$</p>
+              <p>$= (z_1\bar{z}_1 + z_1\bar{z}_2 + z_2\bar{z}_1 + z_2\bar{z}_2) + (z_1\bar{z}_1 - z_1\bar{z}_2 - z_2\bar{z}_1 + z_2\bar{z}_2)$</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">$= 2z_1\bar{z}_1 + 2z_2\bar{z}_2 = 2(|z_1|^2 + |z_2|^2)$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">RJT Lecture Slides · Example 6</span>
+              <span class="text-xs font-mono text-slate-400">[Complex Locus]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. If $z = x + iy$ and $3|z - 1| = 2|z - 2|$, prove that $5(x^2 + y^2) = 2x + 7$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Substitute $z = x + iy$, square both sides to remove the square roots, and collect like terms.
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Substituting $z = x + iy$: $3|(x - 1) + iy| = 2|(x - 2) + iy|$.</p>
+              <p>Squaring both sides: $9\big[(x - 1)^2 + y^2\big] = 4\big[(x - 2)^2 + y^2\big]$.</p>
+              <p>Expanding: $9(x^2 - 2x + 1 + y^2) = 4(x^2 - 4x + 4 + y^2) \implies 9x^2 - 18x + 9 + 9y^2 = 4x^2 - 16x + 16 + 4y^2$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Rearranging terms: $5x^2 + 5y^2 = 2x + 7 \implies 5(x^2 + y^2) = 2x + 7$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">RJT Lecture Slides · Example 7 &amp; Exercise 7</span>
+              <span class="text-xs font-mono text-slate-400">[Polar &amp; De Moivre]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. (a) Express $1 + i\sqrt{3}$ in polar form $r(\cos\theta + i\sin\theta)$. &nbsp;(b) For $\rho = \dfrac{1}{\sqrt{2}} + \dfrac{1}{\sqrt{2}}i$, compute $\rho^2, \rho^3, \rho^4$, and $\rho^{25}$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> In (a), $r = \sqrt{1+3}=2$ and $\theta = \pi/3$. In (b), $\rho = e^{i\pi/4}$, so $\rho^8 = e^{i2\pi} = 1$, making $\rho^{25} = (\rho^8)^3 \rho$.
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>(a)</strong> For $1 + i\sqrt{3}$ (Q1): $r = \sqrt{1^2 + (\sqrt{3})^2} = 2$ and $\theta = \tan^{-1}(\sqrt{3}) = \frac{\pi}{3}$. Thus $1 + i\sqrt{3} = \mathbf{2\left(\cos\frac{\pi}{3} + i\sin\frac{\pi}{3}\right)}$.</p>
+              <p><strong>(b)</strong> $\rho = \cos\frac{\pi}{4} + i\sin\frac{\pi}{4}$. By De Moivre's Theorem:</p>
+              <p>• $\rho^2 = \cos\frac{\pi}{2} + i\sin\frac{\pi}{2} = \mathbf{i}$ &nbsp;|&nbsp; • $\rho^3 = \cos\frac{3\pi}{4} + i\sin\frac{3\pi}{4} = \mathbf{-\frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}}i}$ &nbsp;|&nbsp; • $\rho^4 = \cos\pi + i\sin\pi = \mathbf{-1}$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">• $\rho^{25} = \cos\frac{25\pi}{4} + i\sin\frac{25\pi}{4} = \cos\left(6\pi + \frac{\pi}{4}\right) + i\sin\left(6\pi + \frac{\pi}{4}\right) = \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}}i = \rho$.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- INTERACTIVE QUICK-CHECK QUIZ (5 EXAM-STYLE MCQS)                    -->
+      <!-- =================================================================== -->
+      <section id="quick-quiz" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Self-Assessment</span>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <p>MATH 103: Foundations of Mathematics · ISRT, University of Dhaka (Lesson 4 of 14)</p>
+        <p>Next up: <strong>Lesson 5 — Theory of Equations</strong></p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX RENDERING & COMPLEX MATH HELPERS
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function fmtComplex(a, b, digits = 2) {
+      const ra = Math.abs(a) < 1e-9 ? 0 : a;
+      const rb = Math.abs(b) < 1e-9 ? 0 : b;
+      const sign = rb >= 0 ? '+' : '−';
+      return `${ra.toFixed(digits)} ${sign} ${Math.abs(rb).toFixed(digits)}i`;
+    }
+
+    function getQuadrant(a, b) {
+      if (Math.abs(a) < 1e-9 && Math.abs(b) < 1e-9) return 'Origin';
+      if (Math.abs(b) < 1e-9) return a > 0 ? '+Real Axis' : '−Real Axis';
+      if (Math.abs(a) < 1e-9) return b > 0 ? '+Imag Axis' : '−Imag Axis';
+      if (a > 0 && b > 0) return 'Q1';
+      if (a < 0 && b > 0) return 'Q2';
+      if (a < 0 && b < 0) return 'Q3';
+      return 'Q4';
+    }
+
+    /* =========================================================================
+       2. THEME, SIDEBAR & SCROLL-SPY
+       ========================================================================= */
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('math103-theme', isDark ? 'dark' : 'light');
+      drawArgandSVG();
+      runSqrtLab(false);
+      runLocusLab(false);
+      updateUnityLab(false);
+    });
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', openSidebar);
+    document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      document.getElementById('roadmap-list').classList.toggle('hidden');
+      document.getElementById('roadmap-chevron').classList.toggle('rotate-180');
+    }
+
+    function initScrollSpy() {
+      const spyTargets = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link[data-spy]');
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              tocLinks.forEach((link) => {
+                if (link.dataset.spy === id) {
+                  link.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                } else {
+                  link.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-20% 0px -65% 0px', threshold: 0 }
+      );
+      spyTargets.forEach((sec) => observer.observe(sec));
+    }
+
+    /* =========================================================================
+       3. COLLAPSIBLES & PROGRESS TRACKING (6 SECTIONS + 3 LABS + 5 QUIZ)
+       ========================================================================= */
+    function toggleCollapsible(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById('icon-' + id);
+      const isHidden = el.classList.toggle('hidden');
+      if (icon) icon.textContent = isHidden ? 'Show Proof' : 'Hide Proof';
+      if (!isHidden) renderMath(el);
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    const readSections = new Set();
+    const usedLabs = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function markLabUsed(labId) {
+      if (!usedLabs.has(labId)) {
+        usedLabs.add(labId);
+        updateOverallProgress();
+      }
+    }
+
+    function toggleSectionRead(secId) {
+      if (readSections.has(secId)) readSections.delete(secId);
+      else readSections.add(secId);
+      updateSectionButtons();
+      updateOverallProgress();
+    }
+
+    function updateSectionButtons() {
+      document.querySelectorAll('.section-read-btn').forEach((btn) => {
+        const secId = btn.dataset.section;
+        if (readSections.has(secId)) {
+          btn.className = 'section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white border border-emerald-600 hover:bg-emerald-700 transition flex items-center gap-1.5';
+          btn.innerHTML = '<span class="check-icon">✓</span> Completed';
+        } else {
+          btn.className = 'section-read-btn px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5';
+          btn.innerHTML = '<span class="check-icon">○</span> Mark as Read';
+        }
+      });
+    }
+
+    function updateOverallProgress() {
+      const total = 6 + 3 + 5; // 6 sections + 3 labs + 5 quiz questions
+      const done = readSections.size + usedLabs.size + quizAnsweredCount;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('header-progress-text').textContent = pct + '%';
+      document.getElementById('sidebar-progress-pct').textContent = pct + '%';
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${readSections.size}/6 sections · ${usedLabs.size}/3 labs · ${quizAnsweredCount}/5 quiz`;
+    }
+
+    /* =========================================================================
+       4. LAB 1: INTERACTIVE ARGAND PLANE & OPERATIONS LAB
+       ========================================================================= */
+    const argState = {
+      a1: 3, b1: -2,
+      a2: 1, b2: -2,
+      op: 'div',
+      dragging: null
+    };
+
+    const ARG_SIZE = 420;
+    const ARG_RANGE = 6; // -6 to 6
+    const ARG_CENTER = ARG_SIZE / 2;
+    const ARG_SCALE = (ARG_SIZE - 40) / (ARG_RANGE * 2);
+
+    function toSvgX(x) { return ARG_CENTER + x * ARG_SCALE; }
+    function toSvgY(y) { return ARG_CENTER - y * ARG_SCALE; }
+    function fromSvgX(px) { return (px - ARG_CENTER) / ARG_SCALE; }
+    function fromSvgY(py) { return (ARG_CENTER - py) / ARG_SCALE; }
+
+    function setArgandPreset(a1, b1, a2, b2, op) {
+      argState.a1 = a1; argState.b1 = b1;
+      argState.a2 = a2; argState.b2 = b2;
+      argState.op = op;
+      syncSlidersFromArgand();
+      updateArgandButtons();
+      drawArgandSVG();
+      markLabUsed('lab-argand');
+    }
+
+    function setArgandOp(op) {
+      argState.op = op;
+      updateArgandButtons();
+      drawArgandSVG();
+      markLabUsed('lab-argand');
+    }
+
+    function updateArgandButtons() {
+      document.querySelectorAll('.arg-op-btn').forEach((btn) => {
+        const active = btn.dataset.op === argState.op;
+        btn.className = active
+          ? 'arg-op-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition'
+          : 'arg-op-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition';
+      });
+    }
+
+    function syncSlidersFromArgand() {
+      document.getElementById('arg-a1').value = argState.a1;
+      document.getElementById('arg-b1').value = argState.b1;
+      document.getElementById('arg-a2').value = argState.a2;
+      document.getElementById('arg-b2').value = argState.b2;
+    }
+
+    function syncArgandFromSliders() {
+      argState.a1 = parseFloat(document.getElementById('arg-a1').value);
+      argState.b1 = parseFloat(document.getElementById('arg-b1').value);
+      argState.a2 = parseFloat(document.getElementById('arg-a2').value);
+      argState.b2 = parseFloat(document.getElementById('arg-b2').value);
+      drawArgandSVG();
+      markLabUsed('lab-argand');
+    }
+
+    function drawArgandSVG() {
+      const svg = document.getElementById('argand-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridCol = isDark ? '#1e293b' : '#e2e8f0';
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+      const lblCol = isDark ? '#94a3b8' : '#64748b';
+
+      const { a1, b1, a2, b2, op } = argState;
+
+      // Update slider value labels & quadrants
+      document.getElementById('arg-a1-val').textContent = a1.toFixed(2);
+      document.getElementById('arg-b1-val').textContent = b1.toFixed(2);
+      document.getElementById('arg-a2-val').textContent = a2.toFixed(2);
+      document.getElementById('arg-b2-val').textContent = b2.toFixed(2);
+      document.getElementById('arg-z1-quad').textContent = getQuadrant(a1, b1);
+      document.getElementById('arg-z2-quad').textContent = getQuadrant(a2, b2);
+
+      // Compute Result
+      let ra = 0, rb = 0, opLabel = '';
+      if (op === 'add') {
+        ra = a1 + a2; rb = b1 + b2; opLabel = 'z₁ + z₂';
+      } else if (op === 'sub') {
+        ra = a1 - a2; rb = b1 - b2; opLabel = 'z₁ − z₂';
+      } else if (op === 'mul') {
+        ra = a1 * a2 - b1 * b2; rb = a1 * b2 + b1 * a2; opLabel = 'z₁ · z₂';
+      } else if (op === 'div') {
+        const denom = a2 * a2 + b2 * b2;
+        if (denom > 1e-9) {
+          ra = (a1 * a2 + b1 * b2) / denom;
+          rb = (b1 * a2 - a1 * b2) / denom;
+        }
+        opLabel = 'z₁ / z₂';
+      } else {
+        ra = a1; rb = -b1; opLabel = 'z̄₁';
+      }
+
+      const r1 = Math.hypot(a1, b1);
+      const t1 = Math.atan2(b1, a1);
+      const r2 = Math.hypot(a2, b2);
+      const t2 = Math.atan2(b2, a2);
+      const rr = Math.hypot(ra, rb);
+      const tr = Math.atan2(rb, ra);
+
+      let html = '';
+      // Grid lines
+      for (let i = -ARG_RANGE; i <= ARG_RANGE; i++) {
+        const x = toSvgX(i);
+        const y = toSvgY(i);
+        html += `<line x1="${x}" y1="20" x2="${x}" y2="${ARG_SIZE - 20}" stroke="${gridCol}" stroke-width="1" />`;
+        html += `<line x1="20" y1="${y}" x2="${ARG_SIZE - 20}" y2="${y}" stroke="${gridCol}" stroke-width="1" />`;
+        if (i !== 0 && i % 2 === 0) {
+          html += `<text x="${x}" y="${ARG_CENTER + 14}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="${lblCol}">${i}</text>`;
+          html += `<text x="${ARG_CENTER - 10}" y="${y + 3}" text-anchor="end" font-family="JetBrains Mono" font-size="10" fill="${lblCol}">${i}i</text>`;
+        }
+      }
+
+      // Main Axes
+      html += `
+        <line x1="15" y1="${ARG_CENTER}" x2="${ARG_SIZE - 15}" y2="${ARG_CENTER}" stroke="${axisCol}" stroke-width="1.8" />
+        <line x1="${ARG_CENTER}" y1="15" x2="${ARG_CENTER}" y2="${ARG_SIZE - 15}" stroke="${axisCol}" stroke-width="1.8" />
+        <text x="${ARG_SIZE - 18}" y="${ARG_CENTER - 7}" text-anchor="end" font-family="Inter" font-size="11" font-weight="700" fill="${lblCol}">Re</text>
+        <text x="${ARG_CENTER + 8}" y="24" font-family="Inter" font-size="11" font-weight="700" fill="${lblCol}">Im</text>
+      `;
+
+      // Parallelogram dashed lines for addition
+      if (op === 'add') {
+        html += `
+          <line x1="${toSvgX(a1)}" y1="${toSvgY(b1)}" x2="${toSvgX(ra)}" y2="${toSvgY(rb)}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" />
+          <line x1="${toSvgX(a2)}" y1="${toSvgY(b2)}" x2="${toSvgX(ra)}" y2="${toSvgY(rb)}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" />
+        `;
+      }
+      // Conjugate mirror line
+      if (op === 'conj') {
+        html += `<line x1="${toSvgX(a1)}" y1="${toSvgY(b1)}" x2="${toSvgX(ra)}" y2="${toSvgY(rb)}" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.8" />`;
+      }
+
+      // Angle arcs for multiplication
+      if (op === 'mul' && r1 > 0.2 && r2 > 0.2) {
+        const arc = (radius, angle, color) => {
+          const ex = ARG_CENTER + radius * Math.cos(-angle);
+          const ey = ARG_CENTER + radius * Math.sin(-angle);
+          const large = Math.abs(angle) > Math.PI ? 1 : 0;
+          const sweep = angle >= 0 ? 0 : 1;
+          return `<path d="M ${ARG_CENTER + radius} ${ARG_CENTER} A ${radius} ${radius} 0 ${large} ${sweep} ${ex} ${ey}" fill="none" stroke="${color}" stroke-width="2" opacity="0.75" />`;
+        };
+        html += arc(26, t1, '#4f46e5');
+        html += arc(34, t2, '#f59e0b');
+        html += arc(42, tr, '#10b981');
+      }
+
+      // Vector Helper
+      const drawVec = (x, y, color, label, dashed = false) => {
+        const clampedX = Math.max(-ARG_RANGE, Math.min(ARG_RANGE, x));
+        const clampedY = Math.max(-ARG_RANGE, Math.min(ARG_RANGE, y));
+        const sx = toSvgX(clampedX);
+        const sy = toSvgY(clampedY);
+        return `
+          <line x1="${ARG_CENTER}" y1="${ARG_CENTER}" x2="${sx}" y2="${sy}" stroke="${color}" stroke-width="2.8" ${dashed ? 'stroke-dasharray="5 3"' : ''} stroke-linecap="round" />
+          <circle cx="${sx}" cy="${sy}" r="6.5" fill="${color}" stroke="${isDark ? '#020617' : '#ffffff'}" stroke-width="2" />
+          <text x="${sx + 9}" y="${sy - 8}" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="${color}">${label}</text>
+        `;
+      };
+
+      // Draw z1, z2 (unless conj), and result
+      html += drawVec(a1, b1, '#4f46e5', 'z₁');
+      if (op !== 'conj') html += drawVec(a2, b2, '#f59e0b', 'z₂');
+      html += drawVec(ra, rb, '#10b981', opLabel);
+
+      svg.innerHTML = html;
+
+      // Update Readout Card
+      const deg = (rad) => (rad * 180 / Math.PI).toFixed(1) + '°';
+      document.getElementById('argand-readout').innerHTML = `
+        <div class="flex justify-between text-indigo-600 dark:text-indigo-400">
+          <span>z₁ = ${fmtComplex(a1, b1)}</span>
+          <span>r=${r1.toFixed(2)}, θ=${deg(t1)}</span>
+        </div>
+        ${op !== 'conj' ? `<div class="flex justify-between text-amber-600 dark:text-amber-400">
+          <span>z₂ = ${fmtComplex(a2, b2)}</span>
+          <span>r=${r2.toFixed(2)}, θ=${deg(t2)}</span>
+        </div>` : ''}
+        <div class="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1">
+          <div class="flex justify-between text-emerald-700 dark:text-emerald-400 font-bold text-xs sm:text-sm">
+            <span>${opLabel} = ${fmtComplex(ra, rb)}</span>
+            <span>[${getQuadrant(ra, rb)}]</span>
+          </div>
+          <div class="text-slate-600 dark:text-slate-400">
+            Polar: r = <strong>${rr.toFixed(3)}</strong>, θ = <strong>${tr.toFixed(3)} rad</strong> (${deg(tr)})
+          </div>
+        </div>
+      `;
+
+      // Triangle Inequality Check
+      const sumMag = Math.hypot(a1 + a2, b1 + b2);
+      const sumOfMags = r1 + r2;
+      document.getElementById('argand-triangle').innerHTML = `
+        <strong>Triangle Inequality:</strong> |z₁ + z₂| = ${sumMag.toFixed(3)} ≤ |z₁| + |z₂| = ${r1.toFixed(2)} + ${r2.toFixed(2)} = <strong>${sumOfMags.toFixed(3)}</strong> ✓
+      `;
+    }
+
+    // Pointer Dragging for z1 and z2 on Argand SVG
+    (function setupArgandDrag() {
+      const svg = document.getElementById('argand-svg');
+      function getSvgCoords(e) {
+        const rect = svg.getBoundingClientRect();
+        const px = ((e.clientX - rect.left) / rect.width) * ARG_SIZE;
+        const py = ((e.clientY - rect.top) / rect.height) * ARG_SIZE;
+        return { x: fromSvgX(px), y: fromSvgY(py) };
+      }
+
+      svg.addEventListener('pointerdown', (e) => {
+        const pt = getSvgCoords(e);
+        const d1 = Math.hypot(pt.x - argState.a1, pt.y - argState.b1);
+        const d2 = argState.op === 'conj' ? 999 : Math.hypot(pt.x - argState.a2, pt.y - argState.b2);
+        if (d1 < 0.85 && d1 <= d2) {
+          argState.dragging = 'z1';
+          svg.setPointerCapture(e.pointerId);
+        } else if (d2 < 0.85) {
+          argState.dragging = 'z2';
+          svg.setPointerCapture(e.pointerId);
+        }
+      });
+
+      svg.addEventListener('pointermove', (e) => {
+        if (!argState.dragging) return;
+        const pt = getSvgCoords(e);
+        const snap = (v) => Math.max(-5.5, Math.min(5.5, Math.round(v * 4) / 4));
+        if (argState.dragging === 'z1') {
+          argState.a1 = snap(pt.x);
+          argState.b1 = snap(pt.y);
+        } else {
+          argState.a2 = snap(pt.x);
+          argState.b2 = snap(pt.y);
+        }
+        syncSlidersFromArgand();
+        drawArgandSVG();
+        markLabUsed('lab-argand');
+      });
+
+      svg.addEventListener('pointerup', () => { argState.dragging = null; });
+      svg.addEventListener('pointercancel', () => { argState.dragging = null; });
+    })();
+
+    /* =========================================================================
+       5. LAB 2: SQUARE ROOT SOLVER & APOLLONIUS LOCUS PLOTTER
+       ========================================================================= */
+    function switchLab2Tab(tab) {
+      const tSqrt = document.getElementById('tab-sqrt');
+      const tLoc = document.getElementById('tab-locus');
+      const pSqrt = document.getElementById('panel-sqrt');
+      const pLoc = document.getElementById('panel-locus');
+      if (tab === 'sqrt') {
+        tSqrt.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs';
+        tLoc.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-400';
+        pSqrt.classList.remove('hidden');
+        pLoc.classList.add('hidden');
+        runSqrtLab(true);
+      } else {
+        tLoc.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs';
+        tSqrt.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-400';
+        pLoc.classList.remove('hidden');
+        pSqrt.classList.add('hidden');
+        runLocusLab(true);
+      }
+    }
+
+    function setSqrtPreset(a, b) {
+      document.getElementById('sqrt-a').value = a;
+      document.getElementById('sqrt-b').value = b;
+      runSqrtLab(true);
+    }
+
+    function runSqrtLab(userTriggered) {
+      const a = parseFloat(document.getElementById('sqrt-a').value) || 0;
+      const b = parseFloat(document.getElementById('sqrt-b').value) || 0;
+      if (userTriggered) markLabUsed('lab-sqrt-locus');
+
+      const r = Math.hypot(a, b);
+      const xMag = Math.sqrt(Math.max(0, (r + a) / 2));
+      const yMag = Math.sqrt(Math.max(0, (r - a) / 2));
+      const ySigned = b < 0 ? -yMag : yMag;
+
+      const signRule = b > 0
+        ? '$2xy = ' + b + ' > 0 \\implies x$ and $y$ have the <strong>same sign</strong>.'
+        : (b < 0
+          ? '$2xy = ' + b + ' < 0 \\implies x$ and $y$ have <strong>opposite signs</strong>.'
+          : '$2xy = 0 \\implies$ purely real or purely imaginary root.');
+
+      const stepsEl = document.getElementById('sqrt-steps');
+      stepsEl.innerHTML = `
+        <div class="font-bold text-indigo-600 dark:text-indigo-400 uppercase text-xs">Step-by-Step Algebraic Derivation</div>
+        <p><strong>1. Equations:</strong> $x^2 - y^2 = ${a}$ and $2xy = ${b}$.</p>
+        <p><strong>2. Modulus:</strong> $x^2 + y^2 = |z| = \\sqrt{${a}^2 + (${b})^2} = ${r.toFixed(4)}$.</p>
+        <p><strong>3. Magnitudes:</strong> $|x| = \\sqrt{\\frac{${r.toFixed(2)} + (${a})}{2}} = ${xMag.toFixed(4)}$, &nbsp;$|y| = \\sqrt{\\frac{${r.toFixed(2)} - (${a})}{2}} = ${yMag.toFixed(4)}$.</p>
+        <p><strong>4. Sign Rule:</strong> ${signRule}</p>
+        <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 font-mono font-bold text-emerald-800 dark:text-emerald-200">
+          Roots: ±(${fmtComplex(xMag, ySigned, 3)})
+        </div>
+      `;
+      renderMath(stepsEl);
+
+      // Draw SVG Plot
+      const svg = document.getElementById('sqrt-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#475569' : '#cbd5e1';
+      const maxCoord = Math.max(4, Math.abs(a), Math.abs(b), Math.hypot(xMag, ySigned)) * 1.25;
+      const cx = 160, cy = 160, scale = 135 / maxCoord;
+      const sx = (v) => cx + v * scale;
+      const sy = (v) => cy - v * scale;
+
+      svg.innerHTML = `
+        <line x1="15" y1="${cy}" x2="305" y2="${cy}" stroke="${axisCol}" stroke-width="1.5" />
+        <line x1="${cx}" y1="15" x2="${cx}" y2="305" stroke="${axisCol}" stroke-width="1.5" />
+        <circle cx="${cx}" cy="${cy}" r="${Math.hypot(xMag, ySigned) * scale}" fill="none" stroke="#10b981" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.6" />
+        <!-- z vector -->
+        <line x1="${cx}" y1="${cy}" x2="${sx(a)}" y2="${sy(b)}" stroke="#4f46e5" stroke-width="2.5" />
+        <circle cx="${sx(a)}" cy="${sy(b)}" r="5.5" fill="#4f46e5" />
+        <text x="${sx(a) + 8}" y="${sy(b) - 6}" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#4f46e5">z</text>
+        <!-- +root -->
+        <line x1="${cx}" y1="${cy}" x2="${sx(xMag)}" y2="${sy(ySigned)}" stroke="#10b981" stroke-width="2.5" />
+        <circle cx="${sx(xMag)}" cy="${sy(ySigned)}" r="5.5" fill="#10b981" />
+        <text x="${sx(xMag) + 8}" y="${sy(ySigned) - 6}" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#10b981">+√z</text>
+        <!-- -root -->
+        <line x1="${cx}" y1="${cy}" x2="${sx(-xMag)}" y2="${sy(-ySigned)}" stroke="#f59e0b" stroke-width="2.5" />
+        <circle cx="${sx(-xMag)}" cy="${sy(-ySigned)}" r="5.5" fill="#f59e0b" />
+        <text x="${sx(-xMag) + 8}" y="${sy(-ySigned) + 14}" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#f59e0b">−√z</text>
+      `;
+    }
+
+    function setLocusPreset(k, m, a1, a2) {
+      document.getElementById('loc-k').value = k;
+      document.getElementById('loc-m').value = m;
+      document.getElementById('loc-a1').value = a1;
+      document.getElementById('loc-a2').value = a2;
+      runLocusLab(true);
+    }
+
+    function runLocusLab(userTriggered) {
+      const k = parseInt(document.getElementById('loc-k').value, 10);
+      const m = parseInt(document.getElementById('loc-m').value, 10);
+      const a1 = parseInt(document.getElementById('loc-a1').value, 10);
+      const a2 = parseInt(document.getElementById('loc-a2').value, 10);
+      if (userTriggered) markLabUsed('lab-sqrt-locus');
+
+      document.getElementById('loc-k-val').textContent = k;
+      document.getElementById('loc-m-val').textContent = m;
+      document.getElementById('loc-a1-val').textContent = a1;
+      document.getElementById('loc-a2-val').textContent = a2;
+
+      // k^2((x-a1)^2 + y^2) = m^2((x-a2)^2 + y^2)
+      // (k^2 - m^2)(x^2 + y^2) + (-2 k^2 a1 + 2 m^2 a2) x + (k^2 a1^2 - m^2 a2^2) = 0
+      const A = k * k - m * m;
+      const D = -2 * k * k * a1 + 2 * m * m * a2;
+      const F = k * k * a1 * a1 - m * m * a2 * a2;
+
+      const eqBox = document.getElementById('locus-eq-box');
+      const badge = document.getElementById('locus-type-badge');
+      const svg = document.getElementById('locus-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#475569' : '#cbd5e1';
+      const gridCol = isDark ? '#1e293b' : '#e2e8f0';
+
+      const cx = 170, cy = 150, scale = 32;
+      const sx = (v) => cx + v * scale;
+      const sy = (v) => cy - v * scale;
+
+      let shapeSVG = '';
+      if (a1 === a2) {
+        badge.textContent = 'Degenerate Point';
+        eqBox.innerHTML = `<p>Both foci coincide at $z = ${a1}$, collapsing the locus to the single point $(${a1}, 0)$ (or all of $\\mathbb{C}$ if $k=m$).</p>`;
+      } else if (A === 0) {
+        // Perpendicular bisector: x = (a1 + a2)/2
+        const midX = (a1 + a2) / 2;
+        badge.textContent = 'Perpendicular Bisector';
+        eqBox.innerHTML = `
+          <div class="font-bold text-emerald-600 dark:text-emerald-400 uppercase text-xs">Perpendicular Bisector ($k = m$)</div>
+          <p>$$${k}|z - (${a1})| = ${m}|z - (${a2})| \\implies x = ${midX.toFixed(2)}$$</p>
+          <p class="text-xs text-slate-500">Vertical line bisecting the segment from $(${a1}, 0)$ to $(${a2}, 0)$.</p>
+        `;
+        shapeSVG = `<line x1="${sx(midX)}" y1="15" x2="${sx(midX)}" y2="285" stroke="#10b981" stroke-width="3" />`;
+      } else {
+        // Apollonius circle
+        const h = -D / (2 * A);
+        const radSq = h * h - F / A;
+        const R = Math.sqrt(Math.max(0, radSq));
+        badge.textContent = 'Apollonius Circle';
+        const signD = D >= 0 ? `+ ${D}` : `- ${Math.abs(D)}`;
+        const signF = F >= 0 ? `+ ${F}` : `- ${Math.abs(F)}`;
+        eqBox.innerHTML = `
+          <div class="font-bold text-indigo-600 dark:text-indigo-400 uppercase text-xs">Apollonius Circle ($k \\neq m$)</div>
+          <p>$$${A}(x^2 + y^2) ${signD}x ${signF} = 0$$</p>
+          <p class="font-mono text-xs text-slate-700 dark:text-slate-300">Center: (${h.toFixed(2)}, 0) &nbsp;|&nbsp; Radius: R = ${R.toFixed(2)}</p>
+        `;
+        shapeSVG = `<circle cx="${sx(h)}" cy="${cy}" r="${R * scale}" fill="#6366f1" fill-opacity="0.12" stroke="#6366f1" stroke-width="2.8" />`;
+      }
+      renderMath(eqBox);
+
+      let grid = '';
+      for (let i = -5; i <= 5; i++) {
+        grid += `<line x1="${sx(i)}" y1="10" x2="${sx(i)}" y2="290" stroke="${gridCol}" stroke-width="1" />`;
+      }
+      for (let j = -4; j <= 4; j++) {
+        grid += `<line x1="10" y1="${sy(j)}" x2="330" y2="${sy(j)}" stroke="${gridCol}" stroke-width="1" />`;
+      }
+
+      svg.innerHTML = `
+        ${grid}
+        <line x1="10" y1="${cy}" x2="330" y2="${cy}" stroke="${axisCol}" stroke-width="1.5" />
+        <line x1="${cx}" y1="10" x2="${cx}" y2="290" stroke="${axisCol}" stroke-width="1.5" />
+        ${shapeSVG}
+        <circle cx="${sx(a1)}" cy="${cy}" r="5" fill="#4f46e5" />
+        <text x="${sx(a1)}" y="${cy - 10}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#4f46e5">a₁=${a1}</text>
+        <circle cx="${sx(a2)}" cy="${cy}" r="5" fill="#10b981" />
+        <text x="${sx(a2)}" y="${cy + 16}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#10b981">a₂=${a2}</text>
+      `;
+    }
+
+    /* =========================================================================
+       6. LAB 3: CUBE ROOTS OF UNITY & POWERS (w^n) + ISRT IDENTITY VERIFIER
+       ========================================================================= */
+    function updateUnityLab(userTriggered) {
+      const n = parseInt(document.getElementById('unity-n').value, 10) || 0;
+      if (userTriggered) markLabUsed('lab-unity');
+
+      const q = Math.floor(n / 3);
+      const r = n % 3;
+      const rootNames = ['1', 'ω', 'ω²'];
+      const rootCoords = [
+        { x: 1, y: 0, label: '1' },
+        { x: -0.5, y: Math.sqrt(3) / 2, label: 'ω' },
+        { x: -0.5, y: -Math.sqrt(3) / 2, label: 'ω²' }
+      ];
+
+      document.getElementById('unity-n-val').textContent = `n = ${n}`;
+      document.getElementById('unity-power-badge').textContent = `ω^${n} = ${rootNames[r]}`;
+      document.getElementById('unity-reduction').textContent =
+        `n = 3(${q}) + ${r}  ⇒  ω^${n} = (ω³)^${q} · ω^${r} = 1 · ${rootNames[r]} = ${rootNames[r]}`;
+
+      const svg = document.getElementById('unity-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#475569' : '#cbd5e1';
+      const cx = 150, cy = 150, R = 102;
+      const pts = rootCoords.map((p) => ({
+        sx: cx + p.x * R,
+        sy: cy - p.y * R,
+        label: p.label
+      }));
+
+      const activePt = pts[r];
+
+      svg.innerHTML = `
+        <line x1="20" y1="${cy}" x2="280" y2="${cy}" stroke="${axisCol}" stroke-width="1.2" />
+        <line x1="${cx}" y1="20" x2="${cx}" y2="280" stroke="${axisCol}" stroke-width="1.2" />
+        <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${axisCol}" stroke-width="1.8" stroke-dasharray="4 4" />
+        <!-- Equilateral triangle -->
+        <polygon points="${pts.map((p) => `${p.sx},${p.sy}`).join(' ')}" fill="#6366f1" fill-opacity="0.12" stroke="#6366f1" stroke-width="2" />
+        <!-- Active vector -->
+        <line x1="${cx}" y1="${cy}" x2="${activePt.sx}" y2="${activePt.sy}" stroke="#10b981" stroke-width="3.5" stroke-linecap="round" />
+        <!-- Root vertices -->
+        ${pts.map((p, idx) => `
+          <circle cx="${p.sx}" cy="${p.sy}" r="${idx === r ? 8 : 5.5}" fill="${idx === r ? '#10b981' : '#4f46e5'}" stroke="${isDark ? '#020617' : '#ffffff'}" stroke-width="2" />
+          <text x="${p.sx + (idx === 0 ? 15 : -16)}" y="${p.sy + (idx === 2 ? 16 : -10)}" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="800" fill="${idx === r ? '#10b981' : (isDark ? '#e2e8f0' : '#1e293b')}">${p.label}</text>
+        `).join('')}
+      `;
+    }
+
+    function cMul(u, v) { return { re: u.re * v.re - u.im * v.im, im: u.re * v.im + u.im * v.re }; }
+    function cCube(u) { return cMul(cMul(u, u), u); }
+
+    function updateIdentityVerifier(userTriggered) {
+      const a = parseInt(document.getElementById('id-a').value, 10);
+      const b = parseInt(document.getElementById('id-b').value, 10);
+      const c = -(a + b);
+      if (userTriggered) markLabUsed('lab-unity');
+
+      document.getElementById('id-a-val').textContent = a;
+      document.getElementById('id-b-val').textContent = b;
+      document.getElementById('id-c-val').textContent = c;
+
+      const wRe = -0.5, wIm = Math.sqrt(3) / 2;
+      const p = { re: a + b * wRe + c * wRe, im: b * wIm - c * wIm };
+      const q = { re: a + b * wRe + c * wRe, im: -b * wIm + c * wIm };
+      const p3 = cCube(p);
+      const q3 = cCube(q);
+      const lhsRe = p3.re + q3.re;
+      const lhsIm = p3.im + q3.im;
+      const rhs = 27 * a * b * c;
+
+      document.getElementById('identity-result').innerHTML = `
+        <div>a + b + c = ${a} + (${b}) + (${c}) = 0</div>
+        <div>LHS = (a+bω+cω²)³ + (a+bω²+cω)³ = <strong>${Math.round(lhsRe)} + ${Math.abs(lhsIm).toFixed(4)}i</strong></div>
+        <div>RHS = 27abc = 27(${a})(${b})(${c}) = <strong>${rhs}</strong></div>
+        <div class="pt-1 font-sans font-bold text-emerald-700 dark:text-emerald-300">✓ Exact Match: LHS = RHS = ${rhs}!</div>
+      `;
+    }
+
+    /* =========================================================================
+       7. QUICK-CHECK INTERACTIVE QUIZ (5 EXAM-STYLE MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. What is the principal argument $\\operatorname{Arg}(z) \\in (-\\pi, \\pi]$ of $z = -1 - i$?',
+        options: [
+          '$\\dfrac{\\pi}{4}$',
+          '$\\dfrac{3\\pi}{4}$',
+          '$-\\dfrac{3\\pi}{4}$',
+          '$-\\dfrac{\\pi}{4}$'
+        ],
+        answer: 2,
+        explanation: 'Since $a = -1 < 0$ and $b = -1 < 0$, $z$ lies in Quadrant III! With reference angle $\\alpha = \\tan^{-1}(1) = \\pi/4$, the Q3 formula gives $\\theta = -(\\pi - \\pi/4) = -3\\pi/4$.'
+      },
+      {
+        q: '2. Compute the quotient $\\dfrac{3 - 2i}{1 - 2i}$ (ISRT 2nd Incourse 2024):',
+        options: [
+          '$\\dfrac{7}{5} + \\dfrac{4}{5}i$',
+          '$\\dfrac{7}{5} - \\dfrac{4}{5}i$',
+          '$-\\dfrac{1}{5} + \\dfrac{4}{5}i$',
+          '$\\dfrac{1}{5} + \\dfrac{8}{5}i$'
+        ],
+        answer: 0,
+        explanation: 'Multiplying numerator and denominator by $(1+2i)$ gives $\\frac{(3-2i)(1+2i)}{1^2+(-2)^2} = \\frac{3+6i-2i+4}{5} = \\frac{7}{5} + \\frac{4}{5}i$.'
+      },
+      {
+        q: '3. If $\\omega$ is an imaginary cube root of unity, evaluate $(1 + \\omega - \\omega^2)^3$:',
+        options: [
+          '$8$',
+          '$-8$',
+          '$1$',
+          '$-1$'
+        ],
+        answer: 1,
+        explanation: 'Using $1 + \\omega + \\omega^2 = 0 \\implies 1 + \\omega = -\\omega^2$. Thus $(1 + \\omega - \\omega^2)^3 = (-2\\omega^2)^3 = -8\\omega^6 = -8(\\omega^3)^2 = -8$.'
+      },
+      {
+        q: '4. Simplify $\\omega^{100} + \\omega^{101} + \\omega^{102}$ where $\\omega$ is an imaginary cube root of unity:',
+        options: [
+          '$3$',
+          '$1$',
+          '$\\omega$',
+          '$0$'
+        ],
+        answer: 3,
+        explanation: 'Factor out $\\omega^{100}$: $\\omega^{100}(1 + \\omega + \\omega^2) = \\omega^{100} \\cdot 0 = 0$. Any three consecutive powers of $\\omega$ sum to $0$.'
+      },
+      {
+        q: '5. What is the geometric locus of all complex numbers $z$ satisfying $|z - 2i| = |z + 4|$?',
+        options: [
+          'A circle centered at $(0, 2)$ with radius $4$',
+          'The perpendicular bisector of the segment joining $(0, 2)$ and $(-4, 0)$',
+          'An Apollonius circle around $(-4, 0)$',
+          'A parabola with focus $(0, 2)$'
+        ],
+        answer: 1,
+        explanation: 'Rewriting as $|z - (0 + 2i)| = |z - (-4 + 0i)|$ means $z$ is equidistant from $(0, 2)$ and $(-4, 0)$, which defines their perpendicular bisector.'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       8. INITIALIZATION
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      updateArgandButtons();
+      drawArgandSVG();
+      runSqrtLab(false);
+      runLocusLab(false);
+      updateUnityLab(false);
+      updateIdentityVerifier(false);
+      renderQuiz();
+      updateOverallProgress();
+      initScrollSpy();
+
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 13: Graph Theory &amp; Shortest-Path Algorithms — MATH 103 (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Inter, Merriweather & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Merriweather:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX v0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Merriweather', 'Georgia', 'Cambria', 'serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Academic Editorial CSS Variables (Light & Dark Modes) -->
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --indigo: #4f46e5;
+      --emerald: #059669;
+      --amber: #d97706;
+      --rose: #e11d48;
+    }
+    html.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #1e293b;
+      --indigo: #818cf8;
+      --emerald: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+  </style>
+
+  <!-- Persist Theme Before First Paint (Default: Light Mode) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('math103_theme');
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body class="bg-[#f8fafc] text-[#0f172a] dark:bg-[#0b1120] dark:text-[#f1f5f9] font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100 transition-colors duration-200">
+
+  <!-- ==================== TOP STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-[#111827]/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Mobile Sidebar Toggle + Brand -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-emerald-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              MATH 103 · Foundations of Mathematics · ISRT, DU
+            </p>
+            <h1 class="text-sm sm:text-base font-serif font-bold text-slate-900 dark:text-white truncate">
+              Lesson 13: Graph Theory &amp; Shortest-Path Algorithms
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Module Badge + Progress Pill + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/70">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Group C · Lesson 13 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0 / 14 (0%)</span>
+        </div>
+
+        <button
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle light or dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <svg class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR (280px desktop) ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 lg:w-[280px] bg-white dark:bg-[#111827] lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white text-sm">MATH 103 · Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Course Header, Theme Toggle & Lesson 13 Progress Card -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <div class="text-xs font-serif font-bold text-slate-900 dark:text-white">MATH 103 · Foundations of Mathematics</div>
+              <div class="text-[11px] font-medium text-indigo-600 dark:text-indigo-400 mt-0.5">ISRT, University of Dhaka</div>
+            </div>
+            <button
+              type="button"
+              onclick="toggleTheme()"
+              title="Toggle Light / Dark Mode"
+              class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-indigo-500 transition shrink-0"
+            >
+              <svg class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+              </svg>
+              <svg class="w-4 h-4 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson 13 Progress</span>
+              <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0 / 14 (0%)</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="sidebar-progress-detail" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+              0/6 sections · 0/3 labs · 0/5 quiz
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. Scroll-Spy In-Page Table of Contents -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-xs sm:text-sm">
+            <li><a href="#sec-13-1" data-spy="sec-13-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">13.1</span> Fundamentals &amp; Degrees</a></li>
+            <li><a href="#sec-13-2" data-spy="sec-13-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">13.2</span> Walks, Paths &amp; Trees</a></li>
+            <li><a href="#sec-13-3" data-spy="sec-13-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">13.3</span> Eulerian Paths &amp; Circuits</a></li>
+            <li><a href="#sec-13-4" data-spy="sec-13-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">13.4</span> Hamiltonian, Dirac &amp; Ore</a></li>
+            <li><a href="#lab-1" data-spy="lab-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 1: Graph Builder &amp; Analyzer</a></li>
+            <li><a href="#sec-13-5" data-spy="sec-13-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">13.5</span> Greedy Algorithms</a></li>
+            <li><a href="#lab-3" data-spy="lab-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 3: Greedy &amp; Kruskal MST</a></li>
+            <li><a href="#sec-13-6" data-spy="sec-13-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">13.6</span> Dijkstra's Algorithm</a></li>
+            <li><a href="#lab-2" data-spy="lab-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 2: Dijkstra Animator</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" data-spy="exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault (6)</a>
+            </li>
+            <li>
+              <a href="#quiz-section" data-spy="quiz-section" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-1">Module 1 · Group A (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L01</span><span class="truncate">Real Numbers &amp; Divisibility</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L02</span><span class="truncate">Congruences &amp; Diophantine</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L03</span><span class="truncate">Inequalities &amp; Series</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L04</span><span class="truncate">Complex Numbers &amp; Unity</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L05</span><span class="truncate">Theory of Equations</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L06</span><span class="truncate">Gamma &amp; Beta Functions</span></div><span class="shrink-0 font-bold">✓</span></div>
+            </div>
+
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-2">Module 2 · Group B (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L07</span><span class="truncate">Fundamentals &amp; Formation</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L08</span><span class="truncate">Separable &amp; Homogeneous</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L09</span><span class="truncate">Exact, IF &amp; Bernoulli DEs</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L10</span><span class="truncate">Higher-Order Linear DEs</span></div><span class="shrink-0 font-bold">✓</span></div>
+            </div>
+
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-2">Module 3 · Group C: Discrete Math &amp; Games</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L11</span><span class="truncate">Logic &amp; Counting Principles</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L12</span><span class="truncate">Recurrences &amp; Gen. Functions</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <span class="font-mono">L13</span>
+                <span class="truncate">Graph Theory &amp; Shortest-Path</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono">L14</span><span class="truncate">Game Theory</span></div>
+                <span class="text-[10px] uppercase font-mono">Next</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT ==================== -->
+    <main class="flex-1 min-w-0 max-w-[960px] mx-auto w-full space-y-10 pb-20">
+
+      <!-- HERO ORIENTATION HEADER -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              Module 3 — Group C: Discrete Mathematics
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              ⏱ Est. Time: 60–75 min
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30">
+              ★ Exam Weight: High (Final + 2nd Incourse)
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20 font-mono">
+              Sources: Bóna Ch. 9, 10, 17 · ISRT 2024–2025
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight leading-tight">
+            Lesson 13: Graph Theory &amp; Shortest-Path Algorithms
+          </h2>
+
+          <p class="text-sm sm:text-base text-indigo-100 leading-relaxed max-w-3xl">
+            Graph theory bridges <strong>structural mathematics</strong>—how vertex degrees govern Eulerian trails, Hamiltonian circuits (Dirac's &amp; Ore's theorems), and trees—with <strong>algorithmic optimization</strong>, where Greedy strategies power Kruskal's Minimum Spanning Tree and Dijkstra's Shortest-Path Algorithm.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-1">
+            <a href="#lab-1" class="px-4 py-2.5 rounded-xl bg-white text-indigo-700 font-bold text-xs sm:text-sm shadow-sm hover:bg-indigo-50 transition inline-flex items-center gap-2">
+              <span>🕸️</span> Interactive Graph Builder
+            </a>
+            <a href="#lab-2" class="px-4 py-2.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/35 text-emerald-50 border border-emerald-300/40 font-semibold text-xs sm:text-sm transition inline-flex items-center gap-2">
+              <span>🧭</span> Dijkstra Animator
+            </a>
+            <a href="#exam-vault" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 font-semibold text-xs sm:text-sm transition inline-flex items-center gap-2">
+              <span>🏛️</span> Past-Exam Vault (6)
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 13.1: GRAPH FUNDAMENTALS, DEGREES & GRAPH TYPES             -->
+      <!-- =================================================================== -->
+      <section id="sec-13-1" data-track-sec="sec-13-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 13.1</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Graph Fundamentals, Degrees &amp; Graph Types
+            </h3>
+          </div>
+          <span id="badge-sec-13-1" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <!-- Formal Definition Box -->
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-600 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Definition 13.1 · Graph, Adjacency, Incidence &amp; Degree</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            A <strong>graph</strong> $G = (V, E)$ consists of a finite nonempty set of <strong>vertices</strong> (nodes) $V$ with $|V| = n$ and a set of <strong>edges</strong> $E$ with $|E| = m$, where each edge connects one or two vertices (its <em>endpoints</em>).
+          </p>
+          <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+            <li><strong>Adjacency &amp; Incidence:</strong> Two vertices $u, v$ joined by an edge $e = \{u, v\}$ are <em>adjacent</em> (neighbors), and $e$ is <em>incident</em> to both $u$ and $v$.</li>
+            <li><strong>Degree $\deg(v)$:</strong> In an undirected graph, $\deg(v)$ is the number of edges incident to $v$ (each self-loop contributes $2$).</li>
+            <li><strong>Directed Degrees:</strong> In a digraph, $\deg^-(v)$ (<strong>in-degree</strong>) counts incoming arcs and $\deg^+(v)$ (<strong>out-degree</strong>) counts outgoing arcs, with $\sum \deg^-(v) = \sum \deg^+(v) = |E|$.</li>
+          </ul>
+        </div>
+
+        <!-- Theorem: Handshaking Lemma + Collapsible Proof -->
+        <div class="rounded-2xl border border-emerald-200 dark:border-emerald-900/70 border-l-4 border-l-emerald-600 overflow-hidden">
+          <details class="group">
+            <summary class="px-5 py-4 bg-emerald-50/70 dark:bg-emerald-950/35 flex items-center justify-between cursor-pointer hover:bg-emerald-100/60 dark:hover:bg-emerald-950/50 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">Theorem 13.1 · Handshaking Lemma &amp; Parity Corollary</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white mt-0.5">
+                  $\displaystyle\sum_{v \in V} \deg(v) = 2|E|$, and every undirected graph has an <strong>even number of odd-degree vertices</strong>.
+                </p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 shrink-0 group-open:hidden">Show Proof</span>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 hidden group-open:inline">Hide Proof</span>
+            </summary>
+            <div class="px-5 py-4 bg-white dark:bg-[#111827] border-t border-emerald-100 dark:border-emerald-900/60 space-y-2.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p><strong>Proof of Handshaking Lemma:</strong> Every edge $e = \{u, v\} \in E$ has two endpoints and therefore contributes $+1$ to $\deg(u)$ and $+1$ to $\deg(v)$ (or $+2$ to $\deg(u)$ if $e$ is a self-loop). Summing degrees over all $v \in V$ counts each edge exactly twice, giving $\sum_{v \in V} \deg(v) = 2|E|$.</p>
+              <p><strong>Proof of Corollary:</strong> Partition $V$ into even-degree vertices $V_{\text{even}}$ and odd-degree vertices $V_{\text{odd}}$:
+              $$\sum_{v \in V_{\text{even}}} \deg(v) + \sum_{v \in V_{\text{odd}}} \deg(v) = 2|E|$$
+              Since $2|E|$ is even and every term in the first sum is even, $\sum_{v \in V_{\text{odd}}} \deg(v)$ must also be even. A sum of odd integers is even if and only if there are an <strong>even number</strong> of terms. Thus $|V_{\text{odd}}|$ is even! $\blacksquare$</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Responsive Table of Graph Types -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Classification of Graph Types</h4>
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+                <tr>
+                  <th class="px-4 py-3">Graph Type</th>
+                  <th class="px-4 py-3">Edges / Constraints</th>
+                  <th class="px-4 py-3">Key Property / Formula</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr><td class="px-4 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">Simple Graph</td><td class="px-4 py-2.5">Undirected, no loops, no multiple edges</td><td class="px-4 py-2.5">Max edges $\binom{n}{2} = \frac{n(n-1)}{2}$</td></tr>
+                <tr><td class="px-4 py-2.5 font-bold">Multigraph</td><td class="px-4 py-2.5">Parallel (multiple) edges allowed; no loops</td><td class="px-4 py-2.5">Models multiple roads/routes between two cities</td></tr>
+                <tr><td class="px-4 py-2.5 font-bold">Pseudograph</td><td class="px-4 py-2.5">Both parallel edges and self-loops allowed</td><td class="px-4 py-2.5">Each loop adds $2$ to vertex degree</td></tr>
+                <tr><td class="px-4 py-2.5 font-bold">Digraph (Directed)</td><td class="px-4 py-2.5">Ordered pairs $(u, v)$ (one-way arcs)</td><td class="px-4 py-2.5">$\sum \deg^-(v) = \sum \deg^+(v) = |E|$</td></tr>
+                <tr><td class="px-4 py-2.5 font-bold">Weighted Graph</td><td class="px-4 py-2.5">Each edge $e$ carries a numeric weight $w(e)$</td><td class="px-4 py-2.5">Used in Dijkstra's shortest path &amp; Kruskal's MST</td></tr>
+                <tr><td class="px-4 py-2.5 font-bold text-emerald-600 dark:text-emerald-400">Complete ($K_n$)</td><td class="px-4 py-2.5">Simple graph where every pair is adjacent</td><td class="px-4 py-2.5">$|E| = \binom{n}{2}$, every $\deg(v) = n - 1$</td></tr>
+                <tr><td class="px-4 py-2.5 font-bold">Bipartite ($K_{m,n}$)</td><td class="px-4 py-2.5">$V = X \cup Y$ disjoint; edges only between $X$ and $Y$</td><td class="px-4 py-2.5">Contains no odd cycles; $K_{m,n}$ has $mn$ edges</td></tr>
+                <tr><td class="px-4 py-2.5 font-bold">Planar Graph</td><td class="px-4 py-2.5">Can be drawn in the plane with no edge crossings</td><td class="px-4 py-2.5">Euler's Formula: $V - E + F = 2$ ($K_5, K_{3,3}$ non-planar)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Adjacency Matrix & Bona Theorem 10.16 -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 text-sm">
+          <div class="text-xs font-mono font-bold uppercase text-indigo-600 dark:text-indigo-400">Adjacency Matrix $A_G$ &amp; Bóna Theorem 10.16</div>
+          <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+            For a graph on vertices $\{v_1, \dots, v_n\}$, the $n \times n$ <strong>adjacency matrix</strong> $A_G$ has entry $(A_G)_{ij}$ equal to the number of edges joining $v_i$ and $v_j$ ($0$ or $1$ for simple graphs; symmetric for undirected graphs).<br/>
+            <strong>Bóna Theorem 10.16:</strong> For every positive integer $k$, the $(i, j)$-th entry of the matrix power $(A_G)^k$ equals the exact <strong>number of walks of length $k$</strong> from $v_i$ to $v_j$.
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 13.2: WALKS, TRAILS, PATHS, CYCLES, CIRCUITS & TREES        -->
+      <!-- =================================================================== -->
+      <section id="sec-13-2" data-track-sec="sec-13-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 13.2</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2024 Q1(3) &amp; Final 2025 Q1(5)</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Walks, Trails, Paths, Cycles, Circuits &amp; Trees
+            </h3>
+          </div>
+          <span id="badge-sec-13-2" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <!-- High-Yield Comparison Table -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-3.5 py-3">Concept</th>
+                <th class="px-3.5 py-3">Repeated Edges?</th>
+                <th class="px-3.5 py-3">Repeated Vertices?</th>
+                <th class="px-3.5 py-3">Open / Closed</th>
+                <th class="px-3.5 py-3">Example Sequence</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="px-3.5 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">Walk</td>
+                <td class="px-3.5 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">Allowed</td>
+                <td class="px-3.5 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">Allowed</td>
+                <td class="px-3.5 py-2.5">Open or Closed</td>
+                <td class="px-3.5 py-2.5 font-mono text-xs">$A \to B \to C \to B \to D$</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">Trail</td>
+                <td class="px-3.5 py-2.5 text-rose-600 dark:text-rose-400 font-semibold">NO</td>
+                <td class="px-3.5 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">Allowed</td>
+                <td class="px-3.5 py-2.5">Open (usually)</td>
+                <td class="px-3.5 py-2.5 font-mono text-xs">$A \to B \to C \to D \to B \to E$</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 font-bold text-emerald-600 dark:text-emerald-400">Path</td>
+                <td class="px-3.5 py-2.5 text-rose-600 dark:text-rose-400 font-semibold">NO</td>
+                <td class="px-3.5 py-2.5 text-rose-600 dark:text-rose-400 font-semibold">NO</td>
+                <td class="px-3.5 py-2.5">Open</td>
+                <td class="px-3.5 py-2.5 font-mono text-xs">$A \to B \to C \to D$</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 font-bold">Closed Walk</td>
+                <td class="px-3.5 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">Allowed</td>
+                <td class="px-3.5 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">Allowed</td>
+                <td class="px-3.5 py-2.5">Closed ($v_0 = v_k$)</td>
+                <td class="px-3.5 py-2.5 font-mono text-xs">$A \to B \to A \to C \to A$</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 font-bold">Circuit</td>
+                <td class="px-3.5 py-2.5 text-rose-600 dark:text-rose-400 font-semibold">NO</td>
+                <td class="px-3.5 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">Allowed</td>
+                <td class="px-3.5 py-2.5">Closed ($k \ge 1$)</td>
+                <td class="px-3.5 py-2.5 font-mono text-xs">$A \to B \to C \to B \to D \to A$</td>
+              </tr>
+              <tr>
+                <td class="px-3.5 py-2.5 font-bold text-emerald-600 dark:text-emerald-400">Cycle</td>
+                <td class="px-3.5 py-2.5 text-rose-600 dark:text-rose-400 font-semibold">NO</td>
+                <td class="px-3.5 py-2.5 text-rose-600 dark:text-rose-400 font-semibold">NO (except start = end)</td>
+                <td class="px-3.5 py-2.5">Closed ($k \ge 3$ simple)</td>
+                <td class="px-3.5 py-2.5 font-mono text-xs">$A \to B \to C \to D \to A$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Trees, Forests & Spanning Trees -->
+        <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/70 space-y-3 text-sm">
+          <h4 class="font-bold text-emerald-900 dark:text-emerald-200 text-sm uppercase tracking-wider">Trees, Forests &amp; Spanning Trees</h4>
+          <p class="text-slate-700 dark:text-slate-200 leading-relaxed">
+            A <strong>tree</strong> $T$ is a <strong>connected, acyclic</strong> undirected graph (a disjoint union of trees is a <strong>forest</strong>). For any graph $T$ with $n$ vertices, the following 4 statements are <em>logically equivalent</em>:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm">
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900"><strong>1. Edge Count:</strong> $T$ is connected and has exactly $|E| = n - 1$ edges.</div>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900"><strong>2. Unique Paths:</strong> Every pair of distinct vertices is joined by a <em>unique</em> path.</div>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900"><strong>3. Minimally Connected:</strong> Removing any single edge disconnects $T$.</div>
+            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900"><strong>4. Maximally Acyclic:</strong> Adding any new edge creates exactly one cycle.</div>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 pt-1">
+            <strong>Spanning Tree:</strong> A subgraph $T = (V, E')$ of a connected graph $G = (V, E)$ that includes <em>all</em> $n$ vertices of $G$ and is a tree (hence has $n - 1$ edges).
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 13.3: EULERIAN PATHS & CIRCUITS                             -->
+      <!-- =================================================================== -->
+      <section id="sec-13-3" data-track-sec="sec-13-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 13.3</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Eulerian Paths &amp; Circuits (Edge-Covering Traversals)
+            </h3>
+          </div>
+          <span id="badge-sec-13-3" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          An <strong>Eulerian trail (Euler path)</strong> visits every <strong>edge</strong> of $G$ exactly once. An <strong>Eulerian circuit</strong> is a closed Eulerian trail (starts and ends at the same vertex).
+        </p>
+
+        <!-- Euler's Theorem 3-Case Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-emerald-50/75 dark:bg-emerald-950/35 border border-emerald-300 dark:border-emerald-800 space-y-1.5">
+            <div class="font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase text-xs">0 Odd-Degree Vertices</div>
+            <p class="font-bold text-slate-900 dark:text-white">Eulerian Circuit EXISTS ✓</p>
+            <p class="text-slate-600 dark:text-slate-300">Every vertex has even degree (in a connected graph). Can start/end at any vertex.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-50/75 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800 space-y-1.5">
+            <div class="font-mono font-bold text-amber-700 dark:text-amber-400 uppercase text-xs">Exactly 2 Odd Vertices</div>
+            <p class="font-bold text-slate-900 dark:text-white">Eulerian Path ONLY (No Circuit)</p>
+            <p class="text-slate-600 dark:text-slate-300">Must start at one odd-degree vertex and finish at the other odd-degree vertex.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-50/75 dark:bg-rose-950/35 border border-rose-300 dark:border-rose-800 space-y-1.5">
+            <div class="font-mono font-bold text-rose-700 dark:text-rose-400 uppercase text-xs">&gt; 2 Odd Vertices (4, 6, …)</div>
+            <p class="font-bold text-slate-900 dark:text-white">NEITHER Exists ✕</p>
+            <p class="text-slate-600 dark:text-slate-300">No Eulerian path and no Eulerian circuit (e.g., Königsberg bridges with 4 odd vertices).</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase text-xs">Directed Eulerian Circuit (Bóna Theorem 9.6)</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              A weakly connected directed graph has a directed Eulerian circuit if and only if it is <strong>balanced</strong>: $\deg^+(v) = \deg^-(v)$ for every vertex $v \in V$ (which also implies strong connectivity).
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800/70 space-y-1.5">
+            <div class="font-mono font-bold text-amber-800 dark:text-amber-300 uppercase text-xs">ISRT 2nd Incourse 2025 Spotlight · Q1(1), Q1(3), Q6</div>
+            <p class="text-amber-950/90 dark:text-amber-100/90 leading-relaxed">
+              Two MCQs directly tested <strong>0 odd vertices</strong> (Euler circuit) and <strong>2 odd vertices</strong> (Euler path, no circuit), while Q6 gave a 5-vertex graph and asked for all degrees + Euler path justification!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 13.4: HAMILTONIAN PATHS, CIRCUITS, DIRAC'S & ORE'S THEOREMS -->
+      <!-- =================================================================== -->
+      <section id="sec-13-4" data-track-sec="sec-13-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 13.4</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Hamiltonian Paths, Circuits, Dirac's &amp; Ore's Theorems
+            </h3>
+          </div>
+          <span id="badge-sec-13-4" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          A <strong>Hamiltonian path</strong> visits every <strong>vertex</strong> of $G$ exactly once. A <strong>Hamiltonian circuit (cycle)</strong> is a closed cycle visiting every vertex once and returning to the start.
+        </p>
+
+        <!-- Eulerian vs. Hamiltonian Comparison Table (ISRT Final 2024 Q7a & 2025 Q7(3)) -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-4 py-3">Criterion</th>
+                <th class="px-4 py-3 text-indigo-600 dark:text-indigo-400">Eulerian Path / Circuit</th>
+                <th class="px-4 py-3 text-emerald-600 dark:text-emerald-400">Hamiltonian Path / Circuit</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr><td class="px-4 py-2.5 font-semibold">Must Visit Once</td><td class="px-4 py-2.5">Every <strong>EDGE</strong> exactly once</td><td class="px-4 py-2.5">Every <strong>VERTEX</strong> exactly once</td></tr>
+              <tr><td class="px-4 py-2.5 font-semibold">Vertices / Edges Skipped?</td><td class="px-4 py-2.5">Vertices may repeat; NO edge skipped</td><td class="px-4 py-2.5">Edges may be skipped; NO vertex repeated</td></tr>
+              <tr><td class="px-4 py-2.5 font-semibold">Necessary &amp; Sufficient Test?</td><td class="px-4 py-2.5 text-emerald-600 dark:text-emerald-400 font-semibold">YES! (Simple odd-degree count)</td><td class="px-4 py-2.5 text-rose-600 dark:text-rose-400 font-semibold">NO known simple iff test (NP-complete)</td></tr>
+              <tr><td class="px-4 py-2.5 font-semibold">Classic Example</td><td class="px-4 py-2.5">House graph has Euler path ($C \to D$)</td><td class="px-4 py-2.5">Cycle $C_5$ has Hamiltonian circuit</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Dirac & Ore Theorem Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border-l-4 border-indigo-600 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 13.2 · Dirac's Theorem (1952)</div>
+            <p class="text-slate-700 dark:text-slate-200 leading-relaxed">
+              Let $G$ be a simple graph with $n \ge 3$ vertices. If every vertex satisfies:
+              $$\deg(v) \ge \frac{n}{2} \qquad (\forall v \in V)$$
+              then $G$ has a <strong>Hamiltonian circuit</strong>.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/35 border-l-4 border-emerald-600 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">Theorem 13.3 · Ore's Theorem (1960)</div>
+            <p class="text-slate-700 dark:text-slate-200 leading-relaxed">
+              Let $G$ be a simple graph with $n \ge 3$ vertices. If for every pair of <strong>non-adjacent</strong> vertices $u, v$:
+              $$\deg(u) + \deg(v) \ge n$$
+              then $G$ has a <strong>Hamiltonian circuit</strong>. (Strictly stronger than Dirac!)
+            </p>
+          </div>
+        </div>
+
+        <!-- CRITICAL ISRT EXAM TRAP CALLOUT -->
+        <div class="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border-2 border-rose-300 dark:border-rose-800 space-y-2.5 text-xs sm:text-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🚨</span>
+            <h4 class="font-extrabold text-rose-900 dark:text-rose-200 uppercase tracking-wider">CRITICAL ISRT EXAM TRAP: Dirac &amp; Ore Are SUFFICIENT, NOT NECESSARY!</h4>
+          </div>
+          <p class="text-rose-900/90 dark:text-rose-200/90 leading-relaxed">
+            If a graph <strong>fails</strong> Dirac's or Ore's condition, you <strong>CANNOT</strong> conclude that it has no Hamiltonian circuit! Example: the 5-cycle $C_5$ has $n = 5$ and $\deg(v) = 2 < 2.5$ (fails Dirac) and non-adjacent sum $2 + 2 = 4 < 5$ (fails Ore)—yet $C_5$ <em>itself</em> is a Hamiltonian circuit!
+          </p>
+          <p class="text-rose-900/90 dark:text-rose-200/90 leading-relaxed">
+            <strong>How to DISPROVE a Hamiltonian circuit (Necessary Conditions):</strong> A graph <em>cannot</em> have a Hamiltonian circuit if it is (1) <strong>disconnected</strong>, (2) has any vertex of <strong>degree $\le 1$</strong>, (3) is a <strong>tree with $n \ge 3$</strong>, or (4) has a <strong>cut-vertex</strong> (whose removal disconnects the graph).
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 1: INTERACTIVE GRAPH BUILDER & EULER / DIRAC / ORE ANALYZER     -->
+      <!-- =================================================================== -->
+      <section id="lab-1" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Interactive Graph Builder &amp; Euler / Dirac / Ore Analyzer</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" id="l1-mode-add" onclick="setGraphMode('add')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition">✚ Add / Connect Mode</button>
+            <button type="button" id="l1-mode-del" onclick="setGraphMode('del')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition">✕ Delete Node</button>
+            <button type="button" onclick="clearGraph()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition">Clear Graph</button>
+          </div>
+        </div>
+
+        <!-- 5 One-Click Presets -->
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="loadGraphPreset('c5')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">1. C₅ Cycle (Fails Dirac/Ore!)</button>
+          <button type="button" onclick="loadGraphPreset('k5')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">2. Complete K₅</button>
+          <button type="button" onclick="loadGraphPreset('house')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition">3. House Graph (ISRT '25 Q6)</button>
+          <button type="button" onclick="loadGraphPreset('oreOnly')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">4. Ore-Only (Fails Dirac, Passes Ore)</button>
+          <button type="button" onclick="loadGraphPreset('tree5')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">5. Tree (5 Nodes)</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Interactive SVG Canvas -->
+          <div class="lg:col-span-7 p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <span id="l1-hint">Click empty space to add node (A–J). Click 2 nodes to toggle an edge.</span>
+              <span class="font-mono"><span class="text-emerald-600 dark:text-emerald-400 font-bold">● Even</span> &nbsp;<span class="text-amber-600 dark:text-amber-400 font-bold">● Odd</span></span>
+            </div>
+            <svg id="l1-svg" viewBox="0 0 600 340" class="w-full h-auto rounded-xl bg-slate-50/70 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 cursor-crosshair select-none touch-none"></svg>
+          </div>
+
+          <!-- Live Analysis Dashboard -->
+          <div id="l1-dashboard" class="lg:col-span-5 space-y-3 text-xs sm:text-sm"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 13.5: GREEDY ALGORITHMS — PRINCIPLES, PROS & PITFALLS       -->
+      <!-- =================================================================== -->
+      <section id="sec-13-5" data-track-sec="sec-13-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 13.5</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2025 Q1(5) &amp; Q7</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Greedy Algorithms — Principles, Pros &amp; Pitfalls
+            </h3>
+          </div>
+          <span id="badge-sec-13-5" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          A <strong>greedy algorithm</strong> constructs a solution step by step, always selecting the option that looks <strong>locally optimal</strong> at the current step, in the hope that a sequence of locally best choices leads to a globally optimal solution.
+        </p>
+
+        <!-- 4 Core Properties -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">1. Locally Optimal</div>
+            <p class="text-slate-600 dark:text-slate-300">Picks the immediate best choice at each decision step.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">2. No Backtracking</div>
+            <p class="text-slate-600 dark:text-slate-300">Once a choice is made, it is irrevocable—never revised later.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">3. Top-Down</div>
+            <p class="text-slate-600 dark:text-slate-300">Reduces the problem iteratively into one smaller subproblem.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 mb-1">4. Fast &amp; Simple</div>
+            <p class="text-slate-600 dark:text-slate-300">Easy to design and runs in low polynomial time.</p>
+          </div>
+        </div>
+
+        <!-- Where Greedy Succeeds vs Fails -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 space-y-2">
+            <div class="font-bold text-emerald-800 dark:text-emerald-300 uppercase text-xs tracking-wider">✓ Where Greedy Succeeds (Optimal)</div>
+            <ul class="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300">
+              <li><strong>Kruskal's &amp; Prim's Algorithms</strong> (Minimum Spanning Tree)</li>
+              <li><strong>Dijkstra's Algorithm</strong> (Shortest path with $w(e) \ge 0$)</li>
+              <li><strong>Canonical Coin Change</strong> (e.g., $\{1, 5, 10, 25\}$ cents)</li>
+              <li><strong>Activity Selection &amp; Huffman Coding</strong></li>
+            </ul>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-rose-50/80 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 space-y-2">
+            <div class="font-bold text-rose-800 dark:text-rose-300 uppercase text-xs tracking-wider">✕ Main Disadvantage: Does NOT Always Give Global Optimum</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              <strong>Coin Change Counterexample (ISRT 2025 Q7):</strong> Coins $\{1, 3, 4\}$, target $6$.<br/>
+              • <strong>Greedy:</strong> Picks $4$, then $1$, then $1$ ($4 + 1 + 1 = \mathbf{3\text{ coins}}$).<br/>
+              • <strong>True Optimal:</strong> $3 + 3 = \mathbf{2\text{ coins}}$!
+            </p>
+            <p class="text-xs text-rose-800 dark:text-rose-300">Also fails in Dijkstra's algorithm when edges have <strong>negative weights</strong>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 3: GREEDY ALGORITHM LAB — COIN CHANGE & KRUSKAL'S MST           -->
+      <!-- =================================================================== -->
+      <section id="lab-3" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Greedy Algorithm Lab — Coin Change &amp; Kruskal's MST</h3>
+          </div>
+
+          <div class="inline-flex p-1 rounded-xl bg-slate-200/80 dark:bg-slate-800">
+            <button type="button" id="tab-l3-coin" onclick="switchLab3Tab('coin')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-[#111827] text-indigo-600 dark:text-indigo-400 shadow-xs">
+              Tab A: Coin Change (ISRT '25 Q7)
+            </button>
+            <button type="button" id="tab-l3-mst" onclick="switchLab3Tab('mst')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-400">
+              Tab B: Kruskal's Greedy MST
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB A: COIN CHANGE -->
+        <div id="panel-l3-coin" class="space-y-4">
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-cp="0" onclick="setCoinPreset(0)" class="cp-btn px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition">{1, 3, 4} (Fails at 6!)</button>
+            <button type="button" data-cp="1" onclick="setCoinPreset(1)" class="cp-btn px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition">{1, 5, 7} (Fails at 10!)</button>
+            <button type="button" data-cp="2" onclick="setCoinPreset(2)" class="cp-btn px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition">{1, 5, 10, 25} (Canonical)</button>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex-1">
+              <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                <label for="coin-target">Target Amount (1 to 30)</label>
+                <span id="coin-target-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">Target = 6</span>
+              </div>
+              <input id="coin-target" type="range" min="1" max="30" step="1" value="6" oninput="updateCoinLab(true)" class="w-full accent-indigo-600 cursor-pointer" />
+            </div>
+            <span id="coin-verdict-badge" class="px-3.5 py-1.5 rounded-full text-xs font-mono font-extrabold shrink-0 text-center"></span>
+          </div>
+
+          <div id="coin-compare" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- TAB B: KRUSKAL'S GREEDY MST STEPPER -->
+        <div id="panel-l3-mst" class="hidden space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="stepKruskal(-1)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">← Step Back</button>
+              <button type="button" onclick="stepKruskal(1)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition">Step Forward →</button>
+              <button type="button" id="mst-play-btn" onclick="toggleKruskalPlay()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">▶ Auto-Run</button>
+              <button type="button" onclick="resetKruskal()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 transition">↺ Reset</button>
+            </div>
+            <div id="mst-stats" class="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-400"></div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
+              <svg id="mst-svg" viewBox="0 0 500 300" class="w-full h-auto"></svg>
+            </div>
+            <div id="mst-edge-list" class="lg:col-span-5 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-1.5 text-xs font-mono"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 13.6: DIJKSTRA'S SHORTEST-PATH ALGORITHM                    -->
+      <!-- =================================================================== -->
+      <section id="sec-13-6" data-track-sec="sec-13-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 13.6 · Bóna Ch. 17 &amp; ISRT 2nd Incourse 2025 Q5</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Dijkstra's Shortest-Path Algorithm
+            </h3>
+          </div>
+          <span id="badge-sec-13-6" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          Given a weighted graph $G = (V, E, w)$ with <strong>non-negative edge weights $w(e) \ge 0$</strong> and a source vertex $s \in V$, Dijkstra's greedy algorithm finds the shortest path distance $d(v)$ from $s$ to every reachable vertex $v$ using a settled set $S$ and predecessor array $\text{prev}(v)$.
+        </p>
+
+        <!-- 4-Step Algorithm Box -->
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-3 text-sm">
+          <div class="text-xs font-mono font-bold uppercase text-indigo-700 dark:text-indigo-300">Dijkstra's 4-Step Algorithm</div>
+          <ol class="list-decimal pl-5 space-y-2 text-slate-700 dark:text-slate-200">
+            <li><strong>Initialize:</strong> Set $d(s) = 0$, $d(v) = \infty$ for all $v \neq s$, $\text{prev}(v) = \text{null}$, and settled set $S = \emptyset$.</li>
+            <li><strong>Greedy Selection:</strong> Choose an unsettled vertex $u \notin S$ with the <strong>minimum tentative distance $d(u)$</strong>, and add $u$ to $S$ (its distance is now finalized).</li>
+            <li><strong>Edge Relaxation:</strong> For every unsettled neighbor $v \notin S$ of $u$, test whether going through $u$ improves $d(v)$:
+            $$d(v) \leftarrow \min\!\big(d(v),\; d(u) + w(u, v)\big)$$
+            If $d(u) + w(u, v) < d(v)$, update $d(v)$ and set $\text{prev}(v) \leftarrow u$.</li>
+            <li><strong>Terminate &amp; Reconstruct (Bóna Theorem 17.16):</strong> Repeat Steps 2–3 until $S = V$ (or target $t \in S$). Trace $\text{prev}(t)$ backward to $s$ to recover the exact shortest path.</li>
+          </ol>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 text-xs sm:text-sm text-rose-900 dark:text-rose-200">
+          <strong>Why Negative Weights Break Dijkstra:</strong> Once Dijkstra moves $u$ into $S$, it assumes no future path can lower $d(u)$ (valid when all remaining edges add $\ge 0$). A negative-weight edge discovered later can create a shorter path into an already-settled vertex, which Dijkstra ignores! (See Lab 2 Preset 3 below.)
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 2: DIJKSTRA'S SHORTEST-PATH STEP-BY-STEP ANIMATOR               -->
+      <!-- =================================================================== -->
+      <section id="lab-2" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Dijkstra's Shortest-Path Step-by-Step Animator</h3>
+          </div>
+          <span id="l2-step-badge" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">Step 0</span>
+        </div>
+
+        <!-- Presets & Source/Target Selectors -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 items-end">
+          <div class="md:col-span-6">
+            <label for="dijk-preset" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Weighted Graph Preset</label>
+            <select id="dijk-preset" onchange="onDijkPresetChange()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="0">1. ISRT 2025 Exam Style (A → D, 6 vertices)</option>
+              <option value="1">2. City Network (S → T, 6 vertices)</option>
+              <option value="2">3. Negative-Weight Trap (Directed — Why Dijkstra Fails!)</option>
+            </select>
+          </div>
+          <div id="dijk-st-wrap" class="md:col-span-6 grid grid-cols-2 gap-3">
+            <div>
+              <label for="dijk-src" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Source $s$</label>
+              <select id="dijk-src" onchange="rebuildDijkstra(true)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm"></select>
+            </div>
+            <div>
+              <label for="dijk-dst" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Target $t$</label>
+              <select id="dijk-dst" onchange="rebuildDijkstra(true)" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Playback Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="stepDijk(-1)" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">← Step Back</button>
+            <button type="button" onclick="stepDijk(1)" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition">Step Forward →</button>
+            <button type="button" id="dijk-play-btn" onclick="toggleDijkPlay()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition">▶ Play</button>
+            <button type="button" onclick="resetDijk()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 transition">↺ Reset</button>
+          </div>
+          <div id="dijk-log" class="text-xs font-medium text-slate-700 dark:text-slate-300"></div>
+        </div>
+
+        <!-- SVG Graph -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2">
+          <div class="flex flex-wrap justify-between items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <span>Distance badges $d(v)$ shown above each node</span>
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span> Active Pivot $u$</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Settled ($S$)</span>
+              <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-amber-500"></span> Relaxing Edge</span>
+            </div>
+          </div>
+          <svg id="dijk-svg" viewBox="0 0 600 320" class="w-full h-auto"></svg>
+        </div>
+
+        <!-- Final Result Banner + Live ISRT Exam Iteration Table -->
+        <div id="dijk-result-banner" class="hidden p-4 rounded-2xl text-xs sm:text-sm font-semibold"></div>
+
+        <div class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 overflow-x-auto">
+          <table class="w-full text-center font-mono text-xs sm:text-sm">
+            <thead id="dijk-thead" class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-sans"></thead>
+            <tbody id="dijk-tbody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT (6 AUTHENTIC WORKED PROBLEMS)                  -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Past Papers (2024–2025)</span>
+          <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 13)</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Attempt each question on paper first, then reveal the Hint or Full Step-by-Step Solution independently.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Vault 1 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2024 Q1(3) &amp; Final 2025 Q1(5)</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. Define walk, trail, path, and tree with examples; clearly differentiate between a path and a trail.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Focus on what can repeat: Walk (edges &amp; vertices may repeat) → Trail (no repeated edges, vertices may repeat) → Path (neither edges nor vertices repeat). Tree = connected + acyclic.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p><strong>Walk:</strong> Any alternating sequence of adjacent vertices and edges (both may repeat), e.g., $A \to B \to C \to B \to D$.</p>
+              <p><strong>Trail:</strong> A walk with <strong>no repeated edges</strong> (vertices may repeat), e.g., $A \to B \to C \to D \to B \to E$.</p>
+              <p><strong>Path:</strong> A trail with <strong>no repeated vertices</strong> (and hence no repeated edges), e.g., $A \to B \to C \to D$.</p>
+              <p><strong>Key Difference:</strong> Every path is a trail, but a trail is NOT necessarily a path because a trail may revisit a vertex via distinct edges.</p>
+              <p><strong>Tree:</strong> A connected undirected graph containing no cycles (with $n - 1$ edges), e.g., a 4-vertex star $K_{1,3}$ or line $A-B-C-D$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2024 Q7(a) &amp; Final 2025 Q7(3)</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. Differentiate between a Hamiltonian path and an Eulerian path with suitable examples.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Contrast Edge-coverage vs. Vertex-coverage, repetition rules, existence criteria (odd degrees vs. no simple iff test), and give concrete examples.
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p><strong>1. Coverage:</strong> An <strong>Eulerian path</strong> traverses every <em>edge</em> exactly once (vertices may repeat); a <strong>Hamiltonian path</strong> visits every <em>vertex</em> exactly once (edges may be skipped).</p>
+              <p><strong>2. Existence Criterion:</strong> A connected graph has an Eulerian path iff it has $0$ or $2$ vertices of odd degree; no simple necessary-and-sufficient condition is known for Hamiltonian paths.</p>
+              <p><strong>3. Examples:</strong> In the House graph ($AB, BC, CD, DA, CE, DE$), $C \to D \to E \to C \to B \to A \to D$ is an Eulerian path (revisits $C, D$), while $A \to B \to C \to E \to D$ is a Hamiltonian path (skips edge $CD$). $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2024 · Q7(b)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. State Dirac's and Ore's theorems. Test the 5-vertex cycle $C_5$ against both theorems and explain whether you can decide if it has a Hamiltonian circuit.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> In $C_5$, $n = 5$ and every vertex has degree $2$. Both theorems fail—emphasize that they are <em>sufficient, not necessary</em>, and directly exhibit the cycle $A \to B \to C \to D \to E \to A$!
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Dirac's Theorem:</strong> Simple graph with $n \ge 3$ and $\deg(v) \ge n/2$ for all $v \implies$ Hamiltonian circuit.</p>
+              <p><strong>Ore's Theorem:</strong> Simple graph with $n \ge 3$ and $\deg(u) + \deg(v) \ge n$ for all non-adjacent $u, v \implies$ Hamiltonian circuit.</p>
+              <p><strong>Test on $C_5$:</strong> Here $n = 5$ and $\deg(v) = 2$ for every vertex. Since $2 < 5/2 = 2.5$, <strong>Dirac fails</strong>. For any non-adjacent pair, $2 + 2 = 4 < 5$, so <strong>Ore fails</strong>.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Conclusion: Because Dirac's and Ore's conditions are <em>sufficient, not necessary</em>, their failure is inconclusive. By direct inspection, $A \to B \to C \to D \to E \to A$ IS a Hamiltonian circuit! $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2025 · Q6</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. Consider the 5-vertex House Graph on $\{A, B, C, D, E\}$ with edges $\{AB, BC, CD, DA, CE, DE\}$. Find the degree of each vertex, verify the Handshaking Lemma, and justify whether it has an Euler path or Euler circuit.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Count incident edges for each vertex; sum them to compare with $2|E| = 12$; count how many vertices have odd degree.
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Degrees:</strong> $\deg(A) = 2,\; \deg(B) = 2,\; \deg(C) = 3,\; \deg(D) = 3,\; \deg(E) = 2$.</p>
+              <p><strong>Handshaking Lemma:</strong> $\sum \deg(v) = 2 + 2 + 3 + 3 + 2 = 12 = 2 \times 6 = 2|E|$ ✓</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Euler Verdict: The graph is connected and has <strong>exactly 2 vertices of odd degree</strong> ($C$ and $D$). Therefore it has an <strong>Euler path</strong> (e.g., $C \to D \to E \to C \to B \to A \to D$) starting at $C$ and ending at $D$, but <strong>no Euler circuit</strong>. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2025 · Q5</span>
+              <span class="text-xs font-mono text-slate-400">[5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. Apply Dijkstra's Algorithm to find the shortest path from $A$ to $D$ on the weighted graph with edges $AB(4), AC(2), BC(1), BD(5), BE(2), CE(8), CF(10), ED(1), FD(2)$ (matching Lab 2 Preset 1).
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Settle vertices in order $A(0) \to C(2) \to B(3) \to E(5) \to D(6)$. Notice $C \to B$ lowers $d(B)$ from $4$ to $3$, and $E \to D$ lowers $d(D)$ from $8$ to $6$!
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <div class="overflow-x-auto">
+                <table class="w-full text-center font-mono text-xs border border-slate-200 dark:border-slate-700">
+                  <thead class="bg-slate-200/70 dark:bg-slate-800">
+                    <tr><th class="p-1.5">Step</th><th class="p-1.5">Pick $u$</th><th class="p-1.5">A</th><th class="p-1.5">B</th><th class="p-1.5">C</th><th class="p-1.5">D</th><th class="p-1.5">E</th><th class="p-1.5">F</th></tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                    <tr><td class="p-1.5">0</td><td class="p-1.5">—</td><td>0</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td></tr>
+                    <tr><td class="p-1.5">1</td><td class="p-1.5 font-bold">A</td><td>0*</td><td>4</td><td>2</td><td>∞</td><td>∞</td><td>∞</td></tr>
+                    <tr><td class="p-1.5">2</td><td class="p-1.5 font-bold">C</td><td>0*</td><td>3</td><td>2*</td><td>∞</td><td>10</td><td>12</td></tr>
+                    <tr><td class="p-1.5">3</td><td class="p-1.5 font-bold">B</td><td>0*</td><td>3*</td><td>2*</td><td>8</td><td>5</td><td>12</td></tr>
+                    <tr><td class="p-1.5">4</td><td class="p-1.5 font-bold">E</td><td>0*</td><td>3*</td><td>2*</td><td>6</td><td>5*</td><td>12</td></tr>
+                    <tr class="bg-emerald-50 dark:bg-emerald-950/40 font-bold"><td class="p-1.5">5</td><td class="p-1.5">D</td><td>0*</td><td>3*</td><td>2*</td><td>6*</td><td>5*</td><td>8</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Shortest Path: $A \to C \to B \to E \to D$ with total weight $2 + 1 + 2 + 1 = \mathbf{6}$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2025 Q7 &amp; Final 2024 Q7(3)</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. Define a greedy algorithm with an example and explain one disadvantage using a suitable counterexample.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Define locally optimal step-by-step selection without backtracking; cite Kruskal's MST or Dijkstra ($w \ge 0$) as an example; give the $\{1, 3, 4\}$ coin-change counterexample for target $6$.
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Definition:</strong> A greedy algorithm solves an optimization problem by making the locally best (most immediate) choice at each step without reconsidering past choices.</p>
+              <p><strong>Example:</strong> <em>Kruskal's Algorithm</em> builds a Minimum Spanning Tree by repeatedly adding the smallest-weight edge that does not create a cycle.</p>
+              <p><strong>Disadvantage &amp; Counterexample:</strong> Greedy algorithms are <em>not guaranteed to find the global optimum</em>. For making change of $6$ units using coins $\{1, 3, 4\}$, the greedy strategy picks $4 + 1 + 1$ (<strong>3 coins</strong>), whereas the true optimal solution is $3 + 3$ (<strong>2 coins</strong>). $\blacksquare$</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- QUICK-CHECK INTERACTIVE QUIZ (5 AUTO-GRADED MCQS)                   -->
+      <!-- =================================================================== -->
+      <section id="quiz-section" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Self-Assessment</span>
+            <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+        <a href="math103_lesson12.html" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 hover:border-indigo-500 text-slate-700 dark:text-slate-200 font-semibold transition flex items-center justify-center gap-2">
+          <span>←</span> Lesson 12: Recurrence Relations &amp; Generating Functions
+        </a>
+        <a href="math103_lesson14.html" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-xs transition flex items-center justify-center gap-2">
+          Lesson 14: Game Theory <span>→</span>
+        </a>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX RENDERING HELPER
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    /* =========================================================================
+       2. THEME, SIDEBAR, VAULT & PROGRESS TRACKING (14 MILESTONES)
+       ========================================================================= */
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('math103_theme', isDark ? 'dark' : 'light');
+      renderGraphLab(false);
+      renderDijkFrame();
+      renderKruskal();
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', openSidebar);
+    document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      document.getElementById('roadmap-list').classList.toggle('hidden');
+      document.getElementById('roadmap-chevron').classList.toggle('rotate-180');
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    const viewedSections = new Set();
+    const exploredLabs = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function markLabExplored(labId) {
+      if (!exploredLabs.has(labId)) {
+        exploredLabs.add(labId);
+        updateOverallProgress();
+      }
+    }
+
+    function updateOverallProgress() {
+      const total = 14; // 6 sections + 3 labs + 5 quiz questions
+      const done = viewedSections.size + exploredLabs.size + quizAnsweredCount;
+      const pct = Math.round((done / total) * 100);
+      const label = `${done} / ${total} (${pct}%)`;
+      document.getElementById('header-progress-text').textContent = label;
+      document.getElementById('sidebar-progress-pct').textContent = label;
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${viewedSections.size}/6 sections · ${exploredLabs.size}/3 labs · ${quizAnsweredCount}/5 quiz`;
+    }
+
+    function initObservers() {
+      const spyTargets = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link[data-spy]');
+      const spyObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              tocLinks.forEach((link) => {
+                if (link.dataset.spy === id) {
+                  link.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                } else {
+                  link.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
+      );
+      spyTargets.forEach((sec) => spyObs.observe(sec));
+
+      const secObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const secId = entry.target.dataset.trackSec;
+              if (secId && !viewedSections.has(secId)) {
+                viewedSections.add(secId);
+                const badge = document.getElementById('badge-' + secId);
+                if (badge) {
+                  badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300';
+                  badge.textContent = '✓ Viewed';
+                }
+                updateOverallProgress();
+              }
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      document.querySelectorAll('section[data-track-sec]').forEach((s) => secObs.observe(s));
+    }
+
+    /* =========================================================================
+       3. LAB 1: INTERACTIVE GRAPH BUILDER & EULER / DIRAC / ORE ANALYZER
+       ========================================================================= */
+    const gState = {
+      nodes: [], // { id: 'A', x, y }
+      edges: [], // [uId, vId]
+      mode: 'add',
+      selectedNode: null
+    };
+
+    const NODE_LABELS = 'ABCDEFGHIJ'.split('');
+
+    function setGraphMode(m) {
+      gState.mode = m;
+      gState.selectedNode = null;
+      const bAdd = document.getElementById('l1-mode-add');
+      const bDel = document.getElementById('l1-mode-del');
+      const hint = document.getElementById('l1-hint');
+      if (m === 'add') {
+        bAdd.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition';
+        bDel.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition';
+        hint.textContent = 'Click empty space to add node (A–J). Click 2 nodes to toggle an edge.';
+      } else {
+        bDel.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-600 text-white shadow-xs transition';
+        bAdd.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition';
+        hint.textContent = 'Click any vertex to delete it and all its incident edges.';
+      }
+      renderGraphLab(true);
+    }
+
+    function clearGraph() {
+      gState.nodes = [];
+      gState.edges = [];
+      gState.selectedNode = null;
+      renderGraphLab(true);
+    }
+
+    function loadGraphPreset(key, userTriggered = true) {
+      gState.selectedNode = null;
+      if (key === 'c5') {
+        gState.nodes = [
+          { id: 'A', x: 300, y: 55 }, { id: 'B', x: 455, y: 150 },
+          { id: 'C', x: 395, y: 285 }, { id: 'D', x: 205, y: 285 }, { id: 'E', x: 145, y: 150 }
+        ];
+        gState.edges = [['A','B'],['B','C'],['C','D'],['D','E'],['E','A']];
+      } else if (key === 'k5') {
+        gState.nodes = [
+          { id: 'A', x: 300, y: 55 }, { id: 'B', x: 455, y: 150 },
+          { id: 'C', x: 395, y: 285 }, { id: 'D', x: 205, y: 285 }, { id: 'E', x: 145, y: 150 }
+        ];
+        gState.edges = [
+          ['A','B'],['A','C'],['A','D'],['A','E'],
+          ['B','C'],['B','D'],['B','E'],['C','D'],['C','E'],['D','E']
+        ];
+      } else if (key === 'house') {
+        gState.nodes = [
+          { id: 'A', x: 190, y: 275 }, { id: 'B', x: 410, y: 275 },
+          { id: 'C', x: 410, y: 155 }, { id: 'D', x: 190, y: 155 }, { id: 'E', x: 300, y: 55 }
+        ];
+        gState.edges = [['A','B'],['B','C'],['C','D'],['D','A'],['C','E'],['D','E']];
+      } else if (key === 'oreOnly') {
+        // deg(A)=2, deg(B)=4, deg(C)=4, deg(D)=3, deg(E)=3 -> Dirac fails (2 < 2.5), Ore passes (non-adj AD=5, AE=5 >= 5)
+        gState.nodes = [
+          { id: 'A', x: 110, y: 170 }, { id: 'B', x: 255, y: 70 },
+          { id: 'C', x: 255, y: 270 }, { id: 'D', x: 450, y: 95 }, { id: 'E', x: 450, y: 245 }
+        ];
+        gState.edges = [['A','B'],['A','C'],['B','C'],['B','D'],['B','E'],['C','D'],['C','E'],['D','E']];
+      } else if (key === 'tree5') {
+        gState.nodes = [
+          { id: 'A', x: 300, y: 60 }, { id: 'B', x: 185, y: 165 },
+          { id: 'C', x: 415, y: 165 }, { id: 'D', x: 120, y: 275 }, { id: 'E', x: 250, y: 275 }
+        ];
+        gState.edges = [['A','B'],['A','C'],['B','D'],['B','E']];
+      }
+      renderGraphLab(userTriggered);
+    }
+
+    function isEdge(u, v) {
+      return gState.edges.some(([a, b]) => (a === u && b === v) || (a === v && b === u));
+    }
+
+    function toggleEdge(u, v) {
+      if (u === v) return;
+      const idx = gState.edges.findIndex(([a, b]) => (a === u && b === v) || (a === v && b === u));
+      if (idx >= 0) gState.edges.splice(idx, 1);
+      else gState.edges.push([u, v]);
+    }
+
+    document.getElementById('l1-svg').addEventListener('pointerdown', (e) => {
+      const svg = e.currentTarget;
+      const rect = svg.getBoundingClientRect();
+      const px = ((e.clientX - rect.left) / rect.width) * 600;
+      const py = ((e.clientY - rect.top) / rect.height) * 340;
+
+      // Check if user clicked an existing node
+      const hit = gState.nodes.find((nd) => Math.hypot(nd.x - px, nd.y - py) <= 24);
+      if (hit) {
+        if (gState.mode === 'del') {
+          gState.nodes = gState.nodes.filter((nd) => nd.id !== hit.id);
+          gState.edges = gState.edges.filter(([a, b]) => a !== hit.id && b !== hit.id);
+          gState.selectedNode = null;
+        } else {
+          if (!gState.selectedNode) {
+            gState.selectedNode = hit.id;
+          } else if (gState.selectedNode === hit.id) {
+            gState.selectedNode = null;
+          } else {
+            toggleEdge(gState.selectedNode, hit.id);
+            gState.selectedNode = null;
+          }
+        }
+        renderGraphLab(true);
+        return;
+      }
+
+      // Otherwise in Add mode, add a new node if < 10 nodes
+      if (gState.mode === 'add') {
+        gState.selectedNode = null;
+        const used = new Set(gState.nodes.map((nd) => nd.id));
+        const nextId = NODE_LABELS.find((ch) => !used.has(ch));
+        if (nextId) {
+          gState.nodes.push({
+            id: nextId,
+            x: Math.max(28, Math.min(572, Math.round(px))),
+            y: Math.max(28, Math.min(312, Math.round(py)))
+          });
+          renderGraphLab(true);
+        }
+      }
+    });
+
+    function analyzeGraph() {
+      const n = gState.nodes.length;
+      const m = gState.edges.length;
+      const deg = {};
+      const adj = {};
+      gState.nodes.forEach((nd) => { deg[nd.id] = 0; adj[nd.id] = []; });
+      gState.edges.forEach(([u, v]) => {
+        if (deg[u] !== undefined && deg[v] !== undefined) {
+          deg[u]++; deg[v]++;
+          adj[u].push(v); adj[v].push(u);
+        }
+      });
+
+      const sumDeg = Object.values(deg).reduce((a, b) => a + b, 0);
+      const oddNodes = gState.nodes.filter((nd) => deg[nd.id] % 2 === 1).map((nd) => nd.id);
+
+      // BFS connectivity
+      let connected = n > 0;
+      if (n > 1) {
+        const vis = new Set([gState.nodes[0].id]);
+        const q = [gState.nodes[0].id];
+        while (q.length) {
+          const cur = q.shift();
+          for (const nb of adj[cur]) {
+            if (!vis.has(nb)) { vis.add(nb); q.push(nb); }
+          }
+        }
+        connected = vis.size === n;
+      }
+
+      // Euler Verdict
+      let eulerStatus = 'Neither', eulerColor = 'rose', eulerDetail = '';
+      if (n === 0 || m === 0) {
+        eulerStatus = 'Trivial / Empty'; eulerColor = 'slate'; eulerDetail = 'Add vertices and edges to analyze.';
+      } else if (!connected) {
+        eulerStatus = 'Neither (Disconnected)'; eulerColor = 'rose'; eulerDetail = 'Graph must be connected to have an Euler path or circuit.';
+      } else if (oddNodes.length === 0) {
+        eulerStatus = 'Euler Circuit ✓'; eulerColor = 'emerald'; eulerDetail = '0 odd-degree vertices — closed Eulerian circuit exists!';
+      } else if (oddNodes.length === 2) {
+        eulerStatus = 'Euler Path ONLY'; eulerColor = 'amber'; eulerDetail = `Exactly 2 odd vertices (${oddNodes[0]}, ${oddNodes[1]}): path starts at ${oddNodes[0]} and ends at ${oddNodes[1]}.`;
+      } else {
+        eulerStatus = 'Neither Exists ✕'; eulerColor = 'rose'; eulerDetail = `${oddNodes.length} odd-degree vertices (> 2) — no Euler path or circuit.`;
+      }
+
+      // Dirac Check (n >= 3, min deg >= n/2)
+      const minDeg = n > 0 ? Math.min(...Object.values(deg)) : 0;
+      const diracPass = n >= 3 && minDeg >= n / 2;
+
+      // Ore Check (n >= 3, all non-adjacent u,v have deg(u)+deg(v) >= n)
+      let orePass = n >= 3;
+      let minNonAdjSum = Infinity;
+      let failPair = null;
+      if (n >= 3) {
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            const u = gState.nodes[i].id, v = gState.nodes[j].id;
+            if (!isEdge(u, v)) {
+              const s = deg[u] + deg[v];
+              if (s < minNonAdjSum) { minNonAdjSum = s; failPair = [u, v, s]; }
+              if (s < n) orePass = false;
+            }
+          }
+        }
+      }
+
+      return { n, m, deg, sumDeg, oddNodes, connected, eulerStatus, eulerColor, eulerDetail, minDeg, diracPass, orePass, minNonAdjSum, failPair };
+    }
+
+    function renderGraphLab(userTriggered) {
+      if (userTriggered) markLabExplored('lab-1');
+      const info = analyzeGraph();
+      const svg = document.getElementById('l1-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const edgeCol = isDark ? '#64748b' : '#94a3b8';
+
+      const nodeMap = {};
+      gState.nodes.forEach((nd) => { nodeMap[nd.id] = nd; });
+
+      let html = '';
+      gState.edges.forEach(([u, v]) => {
+        const nu = nodeMap[u], nv = nodeMap[v];
+        if (nu && nv) {
+          html += `<line x1="${nu.x}" y1="${nu.y}" x2="${nv.x}" y2="${nv.y}" stroke="${edgeCol}" stroke-width="2.6" />`;
+        }
+      });
+
+      gState.nodes.forEach((nd) => {
+        const d = info.deg[nd.id];
+        const isOdd = d % 2 === 1;
+        const isSel = gState.selectedNode === nd.id;
+        const fill = isSel ? '#4f46e5' : (isOdd ? '#d97706' : '#059669');
+        html += `
+          <g class="cursor-pointer">
+            ${isSel ? `<circle cx="${nd.x}" cy="${nd.y}" r="25" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-dasharray="4 3" />` : ''}
+            <circle cx="${nd.x}" cy="${nd.y}" r="19" fill="${fill}" stroke="${isDark ? '#0b1120' : '#ffffff'}" stroke-width="2.5" />
+            <text x="${nd.x}" y="${nd.y + 4}" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="800" fill="#ffffff">${nd.id}</text>
+            <text x="${nd.x}" y="${nd.y - 24}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="${isDark ? '#cbd5e1' : '#334155'}">d=${d}</text>
+          </g>
+        `;
+      });
+
+      if (gState.nodes.length === 0) {
+        html = `<text x="300" y="175" text-anchor="middle" font-family="Inter" font-size="13" fill="${isDark ? '#64748b' : '#94a3b8'}">Canvas empty — click anywhere to add vertex A, or choose a preset above.</text>`;
+      }
+      svg.innerHTML = html;
+
+      // Render Analysis Dashboard
+      const eulerStyles = {
+        emerald: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200',
+        amber: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200',
+        rose: 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200',
+        slate: 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+      };
+
+      const degBadges = gState.nodes.map((nd) => {
+        const d = info.deg[nd.id];
+        const cls = d % 2 === 1
+          ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 border-amber-300 dark:border-amber-700'
+          : 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700';
+        return `<span class="px-2 py-0.5 rounded-lg border font-mono text-xs font-bold">${nd.id}:${d}</span>`.replace('border', `border ${cls}`);
+      }).join('');
+
+      const oreText = info.n < 3
+        ? 'Requires $n \\ge 3$.'
+        : (info.minNonAdjSum === Infinity
+            ? `Complete graph (no non-adjacent pairs) → <strong>PASS ✓</strong>`
+            : (info.orePass
+                ? `Min non-adj sum = <strong>${info.minNonAdjSum} ≥ ${info.n}</strong> → <strong>PASS ✓</strong>`
+                : `Fails at (${info.failPair[0]}, ${info.failPair[1]}): ${info.failPair[2]} < ${info.n} → <strong>FAIL</strong>`));
+
+      const dash = document.getElementById('l1-dashboard');
+      dash.innerHTML = `
+        <div class="grid grid-cols-3 gap-2 font-mono text-center text-xs">
+          <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
+            <div class="text-slate-500 font-sans">|V| / |E|</div>
+            <div class="font-extrabold text-sm text-indigo-600 dark:text-indigo-400">${info.n} / ${info.m}</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
+            <div class="text-slate-500 font-sans">∑deg = 2|E|</div>
+            <div class="font-extrabold text-sm text-emerald-600 dark:text-emerald-400">${info.sumDeg} = ${2 * info.m} ✓</div>
+          </div>
+          <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
+            <div class="text-slate-500 font-sans">Connected</div>
+            <div class="font-extrabold text-sm ${info.connected ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${info.connected ? 'Yes' : 'No'}</div>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-1.5">
+          <div class="text-[11px] font-bold uppercase text-slate-500">Vertex Degrees (Odd Count: ${info.oddNodes.length})</div>
+          <div class="flex flex-wrap gap-1.5">${degBadges || '<span class="text-xs text-slate-400">None</span>'}</div>
+        </div>
+
+        <div class="p-3.5 rounded-xl border ${eulerStyles[info.eulerColor]} space-y-1">
+          <div class="font-bold text-xs uppercase tracking-wider">Euler Verdict: ${info.eulerStatus}</div>
+          <div class="text-xs">${info.eulerDetail}</div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+          <div class="p-3 rounded-xl border ${info.diracPass ? 'bg-emerald-50 dark:bg-emerald-950/35 border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-[#111827] border-slate-200 dark:border-slate-800'}">
+            <div class="font-bold uppercase text-[11px] text-indigo-600 dark:text-indigo-400">Dirac Check ($\ge n/2$)</div>
+            <div class="mt-1">${info.n < 3 ? 'Need n ≥ 3' : `min deg = ${info.minDeg} vs ${(info.n / 2).toFixed(1)} → <strong>${info.diracPass ? 'PASS ✓' : 'FAIL'}</strong>`}</div>
+          </div>
+          <div class="p-3 rounded-xl border ${info.orePass ? 'bg-emerald-50 dark:bg-emerald-950/35 border-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-[#111827] border-slate-200 dark:border-slate-800'}">
+            <div class="font-bold uppercase text-[11px] text-emerald-600 dark:text-emerald-400">Ore Check ($\ge n$)</div>
+            <div class="mt-1">${oreText}</div>
+          </div>
+        </div>
+
+        ${(!info.diracPass && !info.orePass && info.n >= 3) ? `
+          <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-900 dark:text-amber-200">
+            <strong>Reminder:</strong> Failing Dirac &amp; Ore is <em>inconclusive</em>—the graph may still be Hamiltonian (like $C_5$)!
+          </div>
+        ` : ''}
+      `;
+      renderMath(dash);
+    }
+
+    /* =========================================================================
+       4. LAB 2: DIJKSTRA'S SHORTEST-PATH STEP-BY-STEP ANIMATOR
+       ========================================================================= */
+    const dijkPresets = [
+      {
+        name: 'ISRT 2025 Exam Style',
+        directed: false,
+        defSrc: 'A', defDst: 'D',
+        nodes: [
+          { id: 'A', x: 75,  y: 165 }, { id: 'B', x: 225, y: 75  },
+          { id: 'C', x: 225, y: 255 }, { id: 'E', x: 390, y: 95  },
+          { id: 'F', x: 390, y: 245 }, { id: 'D', x: 525, y: 165 }
+        ],
+        edges: [
+          ['A','B',4], ['A','C',2], ['B','C',1], ['B','D',5],
+          ['B','E',2], ['C','E',8], ['C','F',10], ['E','D',1], ['F','D',2]
+        ]
+      },
+      {
+        name: 'City Network',
+        directed: false,
+        defSrc: 'S', defDst: 'T',
+        nodes: [
+          { id: 'S', x: 70,  y: 165 }, { id: 'A', x: 220, y: 75  },
+          { id: 'B', x: 220, y: 255 }, { id: 'C', x: 390, y: 80  },
+          { id: 'D', x: 390, y: 250 }, { id: 'T', x: 530, y: 165 }
+        ],
+        edges: [
+          ['S','A',7], ['S','B',2], ['A','B',3], ['A','C',4],
+          ['B','C',8], ['B','D',4], ['C','D',1], ['C','T',2], ['D','T',6]
+        ]
+      },
+      {
+        name: 'Negative-Weight Trap',
+        directed: true,
+        defSrc: 'A', defDst: 'D',
+        nodes: [
+          { id: 'A', x: 90,  y: 165 }, { id: 'B', x: 295, y: 75  },
+          { id: 'C', x: 295, y: 255 }, { id: 'D', x: 510, y: 165 }
+        ],
+        edges: [
+          ['A','B',2], ['A','C',5], ['C','B',-4], ['B','D',1]
+        ]
+      }
+    ];
+
+    const dijkState = {
+      presetIdx: 0,
+      src: 'A', dst: 'D',
+      frames: [],
+      step: 0,
+      timer: null
+    };
+
+    function populateDijkSelectors() {
+      const p = dijkPresets[dijkState.presetIdx];
+      const srcSel = document.getElementById('dijk-src');
+      const dstSel = document.getElementById('dijk-dst');
+      const wrap = document.getElementById('dijk-st-wrap');
+      const opts = p.nodes.map((nd) => `<option value="${nd.id}">${nd.id}</option>`).join('');
+      srcSel.innerHTML = opts;
+      dstSel.innerHTML = opts;
+      srcSel.value = p.defSrc;
+      dstSel.value = p.defDst;
+      srcSel.disabled = p.directed;
+      dstSel.disabled = p.directed;
+      wrap.classList.toggle('opacity-60', p.directed);
+    }
+
+    function onDijkPresetChange() {
+      stopDijkPlay();
+      dijkState.presetIdx = parseInt(document.getElementById('dijk-preset').value, 10);
+      populateDijkSelectors();
+      rebuildDijkstra(true);
+    }
+
+    function computeDijkstraFrames(preset, src, dst) {
+      const ids = preset.nodes.map((n) => n.id);
+      const dist = {};
+      const prev = {};
+      ids.forEach((id) => { dist[id] = Infinity; prev[id] = null; });
+      dist[src] = 0;
+
+      const settled = [];
+      const frames = [{
+        settled: [],
+        pivot: null,
+        relaxedEdges: [],
+        missedNegEdge: null,
+        dist: { ...dist },
+        prev: { ...prev },
+        log: `Initialized: d(${src}) = 0, all other vertices = ∞.`
+      }];
+
+      while (settled.length < ids.length) {
+        let u = null, best = Infinity;
+        for (const id of ids) {
+          if (!settled.includes(id) && dist[id] < best) {
+            best = dist[id]; u = id;
+          }
+        }
+        if (u === null) break;
+        settled.push(u);
+
+        const relaxed = [];
+        let missedNeg = null;
+        for (const [a, b, w] of preset.edges) {
+          let v = null;
+          if (a === u) v = b;
+          else if (!preset.directed && b === u) v = a;
+          if (!v) continue;
+
+          if (settled.includes(v)) {
+            if (dist[u] + w < dist[v]) {
+              missedNeg = { from: u, to: v, w, alt: dist[u] + w, cur: dist[v] };
+            }
+          } else {
+            const alt = dist[u] + w;
+            if (alt < dist[v]) {
+              dist[v] = alt;
+              prev[v] = u;
+              relaxed.push([u, v]);
+            }
+          }
+        }
+
+        let msg = `Settled ${u} (d=${dist[u]}).`;
+        if (relaxed.length) msg += ` Relaxed: ${relaxed.map(([x, y]) => `${x}→${y}`).join(', ')}.`;
+        if (missedNeg) msg += ` ⚠ MISSED negative edge ${missedNeg.from}→${missedNeg.to} (${missedNeg.alt} < ${missedNeg.cur}, ${missedNeg.to} already settled!)`;
+
+        frames.push({
+          settled: [...settled],
+          pivot: u,
+          relaxedEdges: relaxed,
+          missedNegEdge: missedNeg,
+          dist: { ...dist },
+          prev: { ...prev },
+          log: msg
+        });
+      }
+      return frames;
+    }
+
+    function rebuildDijkstra(userTriggered) {
+      stopDijkPlay();
+      if (userTriggered) markLabExplored('lab-2');
+      const p = dijkPresets[dijkState.presetIdx];
+      dijkState.src = document.getElementById('dijk-src').value || p.defSrc;
+      dijkState.dst = document.getElementById('dijk-dst').value || p.defDst;
+      dijkState.frames = computeDijkstraFrames(p, dijkState.src, dijkState.dst);
+      dijkState.step = 0;
+      renderDijkFrame();
+    }
+
+    function stepDijk(delta) {
+      markLabExplored('lab-2');
+      dijkState.step = Math.max(0, Math.min(dijkState.frames.length - 1, dijkState.step + delta));
+      renderDijkFrame();
+    }
+
+    function resetDijk() {
+      stopDijkPlay();
+      dijkState.step = 0;
+      renderDijkFrame();
+    }
+
+    function stopDijkPlay() {
+      if (dijkState.timer) { clearInterval(dijkState.timer); dijkState.timer = null; }
+      const btn = document.getElementById('dijk-play-btn');
+      if (btn) btn.textContent = '▶ Play';
+    }
+
+    function toggleDijkPlay() {
+      markLabExplored('lab-2');
+      if (dijkState.timer) {
+        stopDijkPlay();
+        return;
+      }
+      if (dijkState.step >= dijkState.frames.length - 1) dijkState.step = 0;
+      document.getElementById('dijk-play-btn').textContent = '⏸ Pause';
+      dijkState.timer = setInterval(() => {
+        if (dijkState.step < dijkState.frames.length - 1) {
+          dijkState.step++;
+          renderDijkFrame();
+        } else {
+          stopDijkPlay();
+        }
+      }, 1050);
+    }
+
+    function reconstructPath(prev, src, dst) {
+      const path = [];
+      let cur = dst, guard = 0;
+      while (cur && guard < 20) {
+        path.unshift(cur);
+        if (cur === src) return path;
+        cur = prev[cur];
+        guard++;
+      }
+      return [];
+    }
+
+    function renderDijkFrame() {
+      const p = dijkPresets[dijkState.presetIdx];
+      const f = dijkState.frames[dijkState.step];
+      if (!f) return;
+      const isLast = dijkState.step === dijkState.frames.length - 1;
+
+      document.getElementById('l2-step-badge').textContent = `Step ${dijkState.step} of ${dijkState.frames.length - 1}`;
+      document.getElementById('dijk-log').textContent = f.log;
+
+      const finalPath = isLast ? reconstructPath(f.prev, dijkState.src, dijkState.dst) : [];
+      const pathEdgeSet = new Set();
+      for (let i = 0; i < finalPath.length - 1; i++) {
+        pathEdgeSet.add(`${finalPath[i]}-${finalPath[i + 1]}`);
+        if (!p.directed) pathEdgeSet.add(`${finalPath[i + 1]}-${finalPath[i]}`);
+      }
+
+      const svg = document.getElementById('dijk-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const baseEdge = isDark ? '#475569' : '#cbd5e1';
+      const weightBg = isDark ? '#0f172a' : '#ffffff';
+      const weightTxt = isDark ? '#e2e8f0' : '#1e293b';
+
+      const nodeMap = {};
+      p.nodes.forEach((nd) => { nodeMap[nd.id] = nd; });
+
+      let html = `
+        <defs>
+          <marker id="arrow-gray" viewBox="0 0 10 10" refX="26" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="${baseEdge}" />
+          </marker>
+          <marker id="arrow-rose" viewBox="0 0 10 10" refX="26" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#e11d48" />
+          </marker>
+          <marker id="arrow-emerald" viewBox="0 0 10 10" refX="26" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
+          </marker>
+        </defs>
+      `;
+
+      // Draw Edges
+      p.edges.forEach(([u, v, w]) => {
+        const nu = nodeMap[u], nv = nodeMap[v];
+        const isRelax = f.relaxedEdges.some(([a, b]) => (a === u && b === v) || (!p.directed && a === v && b === u));
+        const isMissed = f.missedNegEdge && f.missedNegEdge.from === u && f.missedNegEdge.to === v;
+        const isPath = pathEdgeSet.has(`${u}-${v}`);
+
+        let col = baseEdge, sw = 2.4, marker = p.directed ? 'url(#arrow-gray)' : '';
+        if (isMissed) { col = '#e11d48'; sw = 4; marker = p.directed ? 'url(#arrow-rose)' : ''; }
+        else if (isPath) { col = '#059669'; sw = 4.2; marker = p.directed ? 'url(#arrow-emerald)' : ''; }
+        else if (isRelax) { col = '#d97706'; sw = 3.8; }
+
+        const mx = (nu.x + nv.x) / 2;
+        const my = (nu.y + nv.y) / 2;
+        html += `
+          <line x1="${nu.x}" y1="${nu.y}" x2="${nv.x}" y2="${nv.y}" stroke="${col}" stroke-width="${sw}" ${isMissed ? 'stroke-dasharray="6 3"' : ''} ${marker ? `marker-end="${marker}"` : ''} />
+          <rect x="${mx - 14}" y="${my - 10}" width="28" height="20" rx="6" fill="${weightBg}" stroke="${w < 0 ? '#e11d48' : col}" stroke-width="1.3" />
+          <text x="${mx}" y="${my + 4}" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="800" fill="${w < 0 ? '#e11d48' : weightTxt}">${w}</text>
+        `;
+      });
+
+      // Draw Nodes + Distance Badges
+      p.nodes.forEach((nd) => {
+        const isPivot = f.pivot === nd.id;
+        const isSettled = f.settled.includes(nd.id);
+        const fill = isPivot ? '#4f46e5' : (isSettled ? '#059669' : (isDark ? '#334155' : '#64748b'));
+        const dVal = f.dist[nd.id] === Infinity ? '∞' : f.dist[nd.id];
+
+        html += `
+          <g>
+            ${isPivot ? `<circle cx="${nd.x}" cy="${nd.y}" r="26" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-dasharray="4 3" />` : ''}
+            <circle cx="${nd.x}" cy="${nd.y}" r="19" fill="${fill}" stroke="${isDark ? '#111827' : '#ffffff'}" stroke-width="2.5" />
+            <text x="${nd.x}" y="${nd.y + 5}" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="800" fill="#ffffff">${nd.id}</text>
+            <rect x="${nd.x - 20}" y="${nd.y - 43}" width="40" height="18" rx="6" fill="${isSettled ? (isDark ? '#064e3b' : '#d1fae5') : (isDark ? '#1e293b' : '#f1f5f9')}" stroke="${isSettled ? '#059669' : '#94a3b8'}" stroke-width="1" />
+            <text x="${nd.x}" y="${nd.y - 30}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="800" fill="${isSettled ? (isDark ? '#6ee7b7' : '#047857') : (isDark ? '#cbd5e1' : '#334155')}">d=${dVal}</text>
+          </g>
+        `;
+      });
+
+      svg.innerHTML = html;
+
+      // Render Exam Iteration Table up to current step
+      const ids = p.nodes.map((nd) => nd.id);
+      document.getElementById('dijk-thead').innerHTML = `
+        <tr>
+          <th class="px-2.5 py-2">Step</th>
+          <th class="px-2.5 py-2">Settled $S$</th>
+          <th class="px-2.5 py-2">Pick $u$</th>
+          ${ids.map((id) => `<th class="px-2.5 py-2">d(${id})</th>`).join('')}
+        </tr>
+      `;
+      document.getElementById('dijk-tbody').innerHTML = dijkState.frames.slice(0, dijkState.step + 1).map((fr, idx) => `
+        <tr class="${idx === dijkState.step ? 'bg-indigo-50/70 dark:bg-indigo-950/40 font-bold' : ''}">
+          <td class="px-2.5 py-2 text-slate-500">${idx}</td>
+          <td class="px-2.5 py-2">{${fr.settled.join(', ')}}</td>
+          <td class="px-2.5 py-2 text-indigo-600 dark:text-indigo-400 font-bold">${fr.pivot || '—'}</td>
+          ${ids.map((id) => {
+            const val = fr.dist[id] === Infinity ? '∞' : fr.dist[id];
+            const settledMark = fr.settled.includes(id) ? '*' : '';
+            return `<td class="px-2.5 py-2 ${settledMark ? 'text-emerald-600 dark:text-emerald-400 font-bold' : ''}">${val}${settledMark}</td>`;
+          }).join('')}
+        </tr>
+      `).join('');
+
+      // Result Banner on final step
+      const banner = document.getElementById('dijk-result-banner');
+      if (isLast) {
+        banner.classList.remove('hidden');
+        if (dijkState.presetIdx === 2) {
+          banner.className = 'p-4 rounded-2xl text-xs sm:text-sm font-semibold bg-rose-50 dark:bg-rose-950/45 border border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200';
+          banner.innerHTML = `🚨 <strong>DIJKSTRA FAILED DUE TO NEGATIVE WEIGHT!</strong> Dijkstra returned <span class="font-mono">A → B → D (cost = 3)</span> because B was settled too early. The true shortest path is <span class="font-mono">A → C → B → D (cost = 5 − 4 + 1 = 2)</span>!`;
+        } else {
+          banner.className = 'p-4 rounded-2xl text-xs sm:text-sm font-semibold bg-emerald-50 dark:bg-emerald-950/45 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200';
+          banner.innerHTML = `✓ <strong>Optimal Shortest Path (${dijkState.src} → ${dijkState.dst}):</strong> <span class="font-mono font-bold">${finalPath.join(' → ')}</span> &nbsp;|&nbsp; Total Weight = <span class="font-mono font-extrabold text-base">${f.dist[dijkState.dst]}</span>`;
+        }
+      } else {
+        banner.classList.add('hidden');
+      }
+      renderMath(document.getElementById('dijk-thead'));
+    }
+
+    /* =========================================================================
+       5. LAB 3: COIN CHANGE (GREEDY VS DP) & KRUSKAL'S GREEDY MST
+       ========================================================================= */
+    const coinPresets = [
+      { coins: [1, 3, 4], defTarget: 6, label: '{1, 3, 4}' },
+      { coins: [1, 5, 7], defTarget: 10, label: '{1, 5, 7}' },
+      { coins: [1, 5, 10, 25], defTarget: 28, label: '{1, 5, 10, 25}' }
+    ];
+    let activeCoinIdx = 0;
+
+    function switchLab3Tab(tab) {
+      const tC = document.getElementById('tab-l3-coin');
+      const tM = document.getElementById('tab-l3-mst');
+      const pC = document.getElementById('panel-l3-coin');
+      const pM = document.getElementById('panel-l3-mst');
+      if (tab === 'coin') {
+        tC.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-[#111827] text-indigo-600 dark:text-indigo-400 shadow-xs';
+        tM.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-400';
+        pC.classList.remove('hidden'); pM.classList.add('hidden');
+        updateCoinLab(true);
+      } else {
+        tM.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-white dark:bg-[#111827] text-indigo-600 dark:text-indigo-400 shadow-xs';
+        tC.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-600 dark:text-slate-400';
+        pM.classList.remove('hidden'); pC.classList.add('hidden');
+        renderKruskal();
+        markLabExplored('lab-3');
+      }
+    }
+
+    function setCoinPreset(idx, userTriggered = true) {
+      activeCoinIdx = idx;
+      document.getElementById('coin-target').value = coinPresets[idx].defTarget;
+      document.querySelectorAll('.cp-btn').forEach((btn) => {
+        const active = parseInt(btn.dataset.cp, 10) === idx;
+        btn.className = active
+          ? 'cp-btn px-3 py-1.5 rounded-xl text-xs font-mono font-semibold bg-indigo-600 text-white shadow-xs transition'
+          : 'cp-btn px-3 py-1.5 rounded-xl text-xs font-mono font-semibold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition';
+      });
+      updateCoinLab(userTriggered);
+    }
+
+    function solveGreedyCoins(coins, target) {
+      const sorted = [...coins].sort((a, b) => b - a);
+      const used = [];
+      let rem = target;
+      for (const c of sorted) {
+        while (rem >= c) { used.push(c); rem -= c; }
+      }
+      return used;
+    }
+
+    function solveDPCoins(coins, target) {
+      const dp = Array(target + 1).fill(Infinity);
+      const pick = Array(target + 1).fill(-1);
+      dp[0] = 0;
+      for (let a = 1; a <= target; a++) {
+        for (const c of coins) {
+          if (a >= c && dp[a - c] + 1 < dp[a]) {
+            dp[a] = dp[a - c] + 1;
+            pick[a] = c;
+          }
+        }
+      }
+      const used = [];
+      let cur = target;
+      while (cur > 0 && pick[cur] !== -1) {
+        used.push(pick[cur]);
+        cur -= pick[cur];
+      }
+      return used.sort((a, b) => b - a);
+    }
+
+    function updateCoinLab(userTriggered) {
+      if (userTriggered) markLabExplored('lab-3');
+      const target = parseInt(document.getElementById('coin-target').value, 10);
+      document.getElementById('coin-target-val').textContent = `Target = ${target}`;
+      const coins = coinPresets[activeCoinIdx].coins;
+
+      const greedy = solveGreedyCoins(coins, target);
+      const optimal = solveDPCoins(coins, target);
+      const isOptimal = greedy.length === optimal.length;
+
+      const badge = document.getElementById('coin-verdict-badge');
+      if (isOptimal) {
+        badge.className = 'px-3.5 py-1.5 rounded-full text-xs font-mono font-extrabold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700';
+        badge.textContent = `✓ GREEDY OPTIMAL (${greedy.length} coins)`;
+      } else {
+        badge.className = 'px-3.5 py-1.5 rounded-full text-xs font-mono font-extrabold bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-700 animate-pulse';
+        badge.textContent = `✕ GREEDY SUBOPTIMAL! (${greedy.length} vs ${optimal.length})`;
+      }
+
+      const renderCoins = (arr, colorCls) => arr.map((c) => `<span class="inline-flex items-center justify-center w-9 h-9 rounded-full font-mono text-xs font-extrabold border-2 ${colorCls}">${c}</span>`).join('');
+
+      document.getElementById('coin-compare').innerHTML = `
+        <div class="p-5 rounded-2xl bg-white dark:bg-[#111827] border-2 ${isOptimal ? 'border-emerald-300 dark:border-emerald-800' : 'border-rose-400 dark:border-rose-700'} space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase text-slate-500">Greedy Strategy</span>
+            <span class="font-mono text-sm font-extrabold ${isOptimal ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${greedy.length} coin${greedy.length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="flex flex-wrap gap-2">${renderCoins(greedy, isOptimal ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-500 text-emerald-800 dark:text-emerald-200' : 'bg-rose-50 dark:bg-rose-950/50 border-rose-500 text-rose-800 dark:text-rose-200')}</div>
+          <div class="font-mono text-xs text-slate-500">${greedy.join(' + ')} = ${target}</div>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-white dark:bg-[#111827] border-2 border-indigo-300 dark:border-indigo-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">True Optimal (DP)</span>
+            <span class="font-mono text-sm font-extrabold text-indigo-600 dark:text-indigo-400">${optimal.length} coin${optimal.length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="flex flex-wrap gap-2">${renderCoins(optimal, 'bg-indigo-50 dark:bg-indigo-950/50 border-indigo-500 text-indigo-800 dark:text-indigo-200')}</div>
+          <div class="font-mono text-xs text-slate-500">${optimal.join(' + ')} = ${target}</div>
+        </div>
+      `;
+    }
+
+    // Kruskal's MST (6 vertices, 9 sorted edges)
+    const mstNodes = [
+      { id: 'A', x: 75, y: 150 }, { id: 'B', x: 195, y: 55 }, { id: 'C', x: 195, y: 245 },
+      { id: 'D', x: 345, y: 55 }, { id: 'E', x: 345, y: 245 }, { id: 'F', x: 445, y: 150 }
+    ];
+    const mstEdgesSorted = [
+      ['B','C',1], ['D','F',2], ['A','C',3], ['B','D',4],
+      ['C','E',5], ['A','B',6], ['D','E',7], ['E','F',8], ['B','E',9]
+    ];
+    let mstStep = 0; // 0..9
+    let mstTimer = null;
+
+    function computeKruskalHistory() {
+      const parent = {};
+      mstNodes.forEach((n) => { parent[n.id] = n.id; });
+      const find = (x) => parent[x] === x ? x : (parent[x] = find(parent[x]));
+
+      const decisions = [];
+      for (const [u, v, w] of mstEdgesSorted) {
+        const ru = find(u), rv = find(v);
+        if (ru !== rv) {
+          parent[ru] = rv;
+          decisions.push({ u, v, w, status: 'ACCEPTED' });
+        } else {
+          decisions.push({ u, v, w, status: 'REJECTED' });
+        }
+      }
+      return decisions;
+    }
+    const kruskalHistory = computeKruskalHistory();
+
+    function stepKruskal(delta) {
+      markLabExplored('lab-3');
+      mstStep = Math.max(0, Math.min(kruskalHistory.length, mstStep + delta));
+      renderKruskal();
+    }
+
+    function resetKruskal() {
+      stopKruskalPlay();
+      mstStep = 0;
+      renderKruskal();
+    }
+
+    function stopKruskalPlay() {
+      if (mstTimer) { clearInterval(mstTimer); mstTimer = null; }
+      const btn = document.getElementById('mst-play-btn');
+      if (btn) btn.textContent = '▶ Auto-Run';
+    }
+
+    function toggleKruskalPlay() {
+      markLabExplored('lab-3');
+      if (mstTimer) { stopKruskalPlay(); return; }
+      if (mstStep >= kruskalHistory.length) mstStep = 0;
+      document.getElementById('mst-play-btn').textContent = '⏸ Pause';
+      mstTimer = setInterval(() => {
+        if (mstStep < kruskalHistory.length) {
+          mstStep++;
+          renderKruskal();
+        } else {
+          stopKruskalPlay();
+        }
+      }, 850);
+    }
+
+    function renderKruskal() {
+      const svg = document.getElementById('mst-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const baseCol = isDark ? '#334155' : '#cbd5e1';
+      const wBg = isDark ? '#0f172a' : '#ffffff';
+      const wTxt = isDark ? '#e2e8f0' : '#1e293b';
+
+      const nodeMap = {};
+      mstNodes.forEach((n) => { nodeMap[n.id] = n; });
+
+      let acceptedCount = 0, totalWeight = 0;
+      let html = '';
+
+      kruskalHistory.forEach((e, idx) => {
+        const nu = nodeMap[e.u], nv = nodeMap[e.v];
+        const processed = idx < mstStep;
+        const isCurrent = idx === mstStep - 1;
+        let col = baseCol, sw = 2.2, dash = '';
+
+        if (processed) {
+          if (e.status === 'ACCEPTED') {
+            col = '#059669'; sw = 4; acceptedCount++; totalWeight += e.w;
+          } else {
+            col = isCurrent ? '#e11d48' : baseCol;
+            sw = isCurrent ? 3.5 : 1.5;
+            dash = 'stroke-dasharray="5 4"';
+          }
+        }
+
+        const mx = (nu.x + nv.x) / 2, my = (nu.y + nv.y) / 2;
+        html += `
+          <line x1="${nu.x}" y1="${nu.y}" x2="${nv.x}" y2="${nv.y}" stroke="${col}" stroke-width="${sw}" ${dash} />
+          <rect x="${mx - 11}" y="${my - 9}" width="22" height="18" rx="5" fill="${wBg}" stroke="${col}" stroke-width="1.2" />
+          <text x="${mx}" y="${my + 4}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="800" fill="${wTxt}">${e.w}</text>
+        `;
+      });
+
+      mstNodes.forEach((nd) => {
+        html += `
+          <circle cx="${nd.x}" cy="${nd.y}" r="18" fill="#4f46e5" stroke="${isDark ? '#111827' : '#ffffff'}" stroke-width="2.5" />
+          <text x="${nd.x}" y="${nd.y + 4}" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="800" fill="#ffffff">${nd.id}</text>
+        `;
+      });
+      svg.innerHTML = html;
+
+      document.getElementById('mst-stats').textContent = `MST Edges: ${acceptedCount} / 5  |  Total Weight: ${totalWeight}`;
+
+      document.getElementById('mst-edge-list').innerHTML = `
+        <div class="font-sans text-xs font-bold uppercase text-slate-500 mb-2">Sorted Edges (Weight Ascending)</div>
+        ${kruskalHistory.map((e, idx) => {
+          const done = idx < mstStep;
+          const badge = !done
+            ? '<span class="text-slate-400">Pending</span>'
+            : (e.status === 'ACCEPTED'
+                ? '<span class="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold">ACCEPTED ✓</span>'
+                : '<span class="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300 font-bold">REJECTED (Cycle)</span>');
+          return `
+            <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg ${idx === mstStep - 1 ? 'bg-indigo-50 dark:bg-indigo-950/50 ring-1 ring-indigo-400' : 'bg-slate-50 dark:bg-slate-900/60'}">
+              <span>${e.u}–${e.v} (w=${e.w})</span>
+              ${badge}
+            </div>
+          `;
+        }).join('')}
+      `;
+    }
+
+    /* =========================================================================
+       6. QUICK-CHECK INTERACTIVE QUIZ (5 AUTO-GRADED MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. How many vertices of odd degree must a connected graph have to contain an <strong>Euler circuit</strong>? (ISRT 2nd Incourse 2025 Q1.1)',
+        options: ['$0$', '$1$', '$2$', '$4$'],
+        answer: 0,
+        explanation: 'By Euler\'s Theorem, a connected graph has an Euler circuit if and only if every vertex has even degree — i.e., $0$ vertices of odd degree.'
+      },
+      {
+        q: '2. A connected graph has <strong>exactly two vertices of odd degree</strong>. Which statement is correct? (ISRT 2nd Incourse 2025 Q1.3)',
+        options: [
+          'The graph has an Euler circuit',
+          'The graph has an Euler path but no Euler circuit',
+          'The graph has no Euler path',
+          'The graph is guaranteed to be Hamiltonian'
+        ],
+        answer: 1,
+        explanation: 'Exactly $2$ odd-degree vertices means an Euler path exists (starting at one odd vertex and ending at the other), but no closed Euler circuit exists.'
+      },
+      {
+        q: '3. Which of the following simple graphs (with $n \\ge 3$ vertices) is <strong>guaranteed</strong> to have a Hamiltonian circuit? (ISRT 2nd Incourse 2025 Q1.2)',
+        options: [
+          'A graph with two vertices of degree $1$',
+          'A graph where every vertex has degree $\\ge n/2$',
+          'A disconnected graph',
+          'A tree with more than two vertices'
+        ],
+        answer: 1,
+        explanation: 'By Dirac\'s Theorem, any simple graph on $n \\ge 3$ vertices with $\\deg(v) \\ge n/2$ for every vertex is guaranteed to have a Hamiltonian circuit.'
+      },
+      {
+        q: '4. Which of the following is <strong>NOT</strong> a property of greedy algorithms? (ISRT 2nd Incourse 2025 Q1.5)',
+        options: [
+          'They make a locally optimal choice at each step',
+          'They do not backtrack or revise earlier choices',
+          'They always produce globally optimal solutions for every problem',
+          'They are typically fast and straightforward to implement'
+        ],
+        answer: 2,
+        explanation: 'Greedy algorithms do NOT always produce globally optimal solutions (e.g., Coin Change with $\\{1, 3, 4\\}$ for target $6$, or Dijkstra with negative edge weights).'
+      },
+      {
+        q: '5. A simple connected graph on $n = 6$ vertices fails <strong>both</strong> Dirac\'s and Ore\'s theorems. What can we conclude?',
+        options: [
+          'The graph definitely has NO Hamiltonian circuit',
+          'The graph has an Euler circuit instead',
+          'We cannot conclude either way; it may still have a Hamiltonian circuit',
+          'The graph must be a tree'
+        ],
+        answer: 2,
+        explanation: 'Dirac\'s and Ore\'s theorems provide SUFFICIENT conditions, NOT necessary ones! For instance, the 6-cycle $C_6$ fails both ($\\deg = 2 < 3$, sum $= 4 < 6$) yet is Hamiltonian.'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#111827] hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       7. INITIALIZATION ON DOMCONTENTLOADED
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadGraphPreset('house', false);
+      populateDijkSelectors();
+      rebuildDijkstra(false);
+      setCoinPreset(0, false);
+      renderKruskal();
+      renderQuiz();
+      updateOverallProgress();
+      initObservers();
+
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 3: Numerical Descriptive Measures & Proofs Vault</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff; font-weight: 800; font-size: 15px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 48%, #2563eb 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.75;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .btn-primary {
+      padding: 8px 15px; border-radius: 9px; border: none;
+      background: var(--primary); color: #fff; font-weight: 700; font-size: 13.5px;
+      cursor: pointer; transition: background 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .input-field, textarea.input-field {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+    .mini-input {
+      width: 90px; padding: 6px 9px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 17px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    /* Accordion */
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 3</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L3</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 3 Progress</span>
+          <span id="progress-text">0 / 6</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Measures of Center (AM, GM, HM...)</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Dispersion, CV &amp; Chebyshev</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Position, Rank/Depth &amp; Box-Plots</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Interactive Box-Plot &amp; Outlier Lab</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Proofs &amp; Derivations Vault (9)</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 2 of 4 • 1st &amp; 2nd Incourse Core</span>
+          <span class="badge">Lesson 3 of 12</span>
+          <span class="badge">⏱ Est. Study Time: 75 mins</span>
+        </div>
+        <h1>Numerical Descriptive Measures, Box-Plots &amp; Proofs</h1>
+        <p class="subtitle">
+          Master every summary measure in AST 101—AM, GM, HM, trimmed/weighted means, variance, CV, Chebyshev's theorem, fractional ranking &amp; depth, modified box-plots, and all 9 high-yield proofs from Prottasha's &amp; Mihad's notes.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L3 Slides + Mihad + Prottasha</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 16–22</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2017–2025</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Measures of Central Tendency (Location)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p>Measures of central tendency identify the center or most typical value of a distribution. Choosing the right average depends on the <strong>scale of measurement</strong>, <strong>presence of outliers</strong>, and <strong>mathematical context</strong> (rates vs. growth vs. counts).</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag">Arithmetic Mean (AM)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              Ungrouped: x̄ = (Σx) / n<br>
+              Grouped: x̄ = (Σm·f) / n<br>
+              Weighted: x̄<sub>w</sub> = (Σw·x) / Σw
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0">Uses every value, unique, least sampling variability. <strong>Weakness:</strong> Sensitive to outliers; cannot be computed for open-ended classes.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Geometric Mean (GM)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              GM = (x<sub>1</sub>·x<sub>2</sub>···x<sub>n</sub>)<sup>1/n</sup><br>
+              log(GM) = (1/n) Σ log(x<sub>i</sub>)
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0">Best for <strong>compounding growth rates, percentages, ratios, and index numbers</strong> (e.g., GDP growth, inflation). Requires all values &gt; 0.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Harmonic Mean (HM)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              HM = n / Σ(1 / x<sub>i</sub>)<br>
+              Grouped: HM = N / Σ(f<sub>i</sub> / m<sub>i</sub>)
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0">Best for <strong>averaging rates/speeds over equal distances</strong> (e.g., Dhaka to Sylhet in 4 equal quarters — 1st Incourse 2025 Q9).</p>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag amber">Median (Q<sub>2</sub>)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              Grouped:<br>
+              Me = L + [(N/2 − f<sub>c</sub>) / f<sub>m</sub>] × c
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0">Middle value of ordered data. <strong>Resistant to outliers</strong> and usable on open-ended distributions &amp; ordinal data.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag">Mode</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              Grouped (Equal Width):<br>
+              Mo = L<sub>mod</sub> + [Δ<sub>1</sub> / (Δ<sub>1</sub> + Δ<sub>2</sub>)] × c
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0">Most frequent value. Here <span class="mono">Δ<sub>1</sub> = f<sub>1</sub> − f<sub>0</sub></span> and <span class="mono">Δ<sub>2</sub> = f<sub>1</sub> − f<sub>2</sub></span>. Valid even for nominal data; may not be unique.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">k% Trimmed Mean</span>
+            <p style="font-size:13.5px; margin-bottom:0">Sort data, drop <strong>k% from EACH end</strong> (total dropped = 2k%), and average the remaining middle values. Eliminates tail outliers while keeping more information than the median.</p>
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <strong class="callout-title">Mean, Median &amp; Mode Order by Distribution Shape (1st Incourse 2025 Q7)</strong>
+          <ul style="margin-bottom:0">
+            <li><strong>Symmetric (Bell-shaped):</strong> <span class="mono">Mean = Median = Mode</span></li>
+            <li><strong>Positively (Right) Skewed:</strong> <span class="mono">Mode &lt; Median &lt; Mean</span> (right-tail outliers pull the Mean up)</li>
+            <li><strong>Negatively (Left) Skewed:</strong> <span class="mono">Mean &lt; Median &lt; Mode</span> (left-tail outliers pull the Mean down)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02</div>
+            <h2>Measures of Dispersion, CV, Empirical Rule &amp; Chebyshev</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>Two datasets can share the exact same mean (e.g., 40 years) yet have completely different spreads. Dispersion measures quantify how tightly or widely observations cluster around the center.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Measure</th><th>Formula</th><th>Origin &amp; Scale Effect</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Range</strong></td><td><span class="mono">Max − Min</span></td><td>Independent of origin; depends on scale</td></tr>
+              <tr><td><strong>Mean Absolute Deviation (MAD)</strong></td><td><span class="mono">(1/n) Σ |x<sub>i</sub> − x̄|</span></td><td>Independent of origin; depends on scale</td></tr>
+              <tr><td><strong>Population Variance (σ²)</strong></td><td><span class="mono">Σ(x<sub>i</sub> − μ)² / N</span></td><td>Independent of origin; multiplied by <span class="mono">c²</span></td></tr>
+              <tr><td><strong>Sample Variance (s²)</strong></td><td><span class="mono">Σ(x<sub>i</sub> − x̄)² / (n − 1) = [Σx² − (Σx)²/n] / (n − 1)</span></td><td>Independent of origin; multiplied by <span class="mono">c²</span></td></tr>
+              <tr><td><strong>Standard Deviation (s or σ)</strong></td><td><span class="mono">√(Variance)</span></td><td>Independent of origin; multiplied by <span class="mono">|c|</span></td></tr>
+              <tr><td><strong>Coefficient of Variation (CV)</strong></td><td><span class="mono">CV = (s / x̄) × 100%</span></td><td><strong>Unit-free</strong> relative spread (compares different units/means)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout trap">
+          <strong class="callout-title">Exam Favorite: Linear Transformation Rule (1st Incourse 2025 Q3)</strong>
+          If every score <span class="mono">x</span> is transformed via <span class="mono">y = a + b·x</span> (e.g., dividing marks by 4 and adding 4 bonus points: <span class="mono">y = 4 + 0.25x</span>):<br>
+          <strong>New Mean:</strong> <span class="mono">ȳ = a + b·x̄</span> (affected by BOTH origin <em>a</em> and scale <em>b</em>) &nbsp;|&nbsp;
+          <strong>New SD:</strong> <span class="mono">s<sub>y</sub> = |b| · s<sub>x</sub></span> (affected ONLY by scale <em>b</em>, NOT by adding/subtracting <em>a</em>!).
+        </div>
+
+        <h3>Chebyshev's Theorem vs. Empirical Rule (Interactive Calculator)</h3>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag purple">Chebyshev's Theorem (ANY Shape)</span>
+            <p style="font-size:14px">For <strong>any</strong> distribution (skewed, bimodal, unknown) and any <span class="mono">k &gt; 1</span>, <strong>at least <span class="mono">(1 − 1/k²)</span></strong> of observations lie within <span class="mono">μ ± kσ</span>.</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:0"><em>Milestones:</em> k = 1.5 → ≥55.6% | k = 2 → ≥75% | k = 2.5 → ≥84% | k = 3 → ≥88.9%.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Empirical Rule (Bell-Shaped ONLY)</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>μ ± 1σ:</strong> ≈ <strong>68%</strong> (16% in each tail!)</li>
+              <li><strong>μ ± 2σ:</strong> ≈ <strong>95%</strong> (2.5% in each tail!)</li>
+              <li><strong>μ ± 3σ:</strong> ≈ <strong>99.7%</strong> (0.15% in each tail!)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="lab-panel">
+          <h4 style="margin-top:0">Live Chebyshev &amp; Z-Score Calculator <span class="exam-badge">Pre-loaded: 1st Incourse 2025 Q8</span></h4>
+          <div class="control-row">
+            <label>Mean (μ): <input class="mini-input" type="number" id="ch-mu" value="75" oninput="calcCheb()"></label>
+            <label>SD (σ): <input class="mini-input" type="number" id="ch-sd" value="10" oninput="calcCheb()"></label>
+            <label>Lower Bound: <input class="mini-input" type="number" id="ch-lo" value="60" oninput="calcCheb()"></label>
+            <label>Upper Bound: <input class="mini-input" type="number" id="ch-hi" value="90" oninput="calcCheb()"></label>
+          </div>
+          <div id="ch-out" class="formula-box" style="margin-bottom:0"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Measures of Position, Fractional Rank, Depth &amp; Modified Box-Plots</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Quartiles, Deciles, Percentiles &amp; Z-Score</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>Quartiles:</strong> Divide ordered data into 4 parts (<span class="mono">Q<sub>1</sub> = P<sub>25</sub>, Q<sub>2</sub> = Me, Q<sub>3</sub> = P<sub>75</sub></span>). <strong>IQR = Q<sub>3</sub> − Q<sub>1</sub></strong>.</li>
+              <li><strong>k-th q-Quantile:</strong> <span class="mono">[k(n + 1) / q]<sup>th</sup></span> ordered value (q = 4 for quartiles, 10 for deciles, 100 for percentiles).</li>
+              <li><strong>Grouped Decile / Percentile:</strong> <span class="mono">D<sub>x</sub> = L + [(xn/10 − cf)/f]·c</span> &nbsp;|&nbsp; <span class="mono">P<sub>x</sub> = L + [(xn/100 − cf)/f]·c</span>.</li>
+              <li><strong>Standard Score (z-score):</strong> <span class="mono">z = (x − x̄) / s</span>. Tells how many SDs a value lies above/below the mean (used to compare scores across exams like STA101 vs Math257 — Final 2024 Q5d).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Rank, Fractional Ranking &amp; Depth</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>Rank (R):</strong> Position of a value when data are sorted in ascending order (1 to <em>n</em>).</li>
+              <li><strong>Fractional Ranking (for ties):</strong> Tied values all receive the <strong>average</strong> of the positions they occupy (e.g., if four 24s occupy positions 10, 11, 12, 13, each gets rank <span class="mono">(10+11+12+13)/4 = 11.5</span>).</li>
+              <li><strong>Depth of a data point:</strong> Distance from the <em>nearest</em> extreme (min or max):<br>
+                <span class="mono">Depth = min(Rank, n + 1 − Rank)</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>5-Number Summary, 7-Number Summary &amp; Modified Box-Plot Rules</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Summaries &amp; Fences</h4>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>5-Number Summary:</strong> <span class="mono">(Min, Q<sub>1</sub>, Median, Q<sub>3</sub>, Max)</span></li>
+              <li><strong>7-Number Summary:</strong> <span class="mono">(Min, P<sub>10</sub>, Q<sub>1</sub>, Median, Q<sub>3</sub>, P<sub>90</sub>, Max)</span> (or 2nd/9th deciles/octiles depending on convention; ISRT 2nd Incourse 2022 uses <span class="mono">Min, D<sub>1</sub>, Q<sub>1</sub>, Q<sub>2</sub>, Q<sub>3</sub>, D<sub>9</sub>, Max</span>).</li>
+              <li><strong>Lower Inner Fence (LIF):</strong> <span class="mono">Q<sub>1</sub> − 1.5 × IQR</span></li>
+              <li><strong>Upper Inner Fence (UIF):</strong> <span class="mono">Q<sub>3</sub> + 1.5 × IQR</span></li>
+              <li><strong>Lower / Upper Outer Fences:</strong> <span class="mono">Q<sub>1</sub> − 3 × IQR</span> and <span class="mono">Q<sub>3</sub> + 3 × IQR</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Adjacent Values &amp; Outlier Classification</h4>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>Lower Adjacent Value:</strong> Smallest <em>actual</em> observation <span class="mono">≥ LIF</span>.</li>
+              <li><strong>Upper Adjacent Value:</strong> Largest <em>actual</em> observation <span class="mono">≤ UIF</span>.</li>
+              <li><strong>Whiskers</strong> extend from the box (<span class="mono">Q<sub>1</sub>, Q<sub>3</sub></span>) to the <strong>adjacent values</strong> (NOT to the fences!).</li>
+              <li><strong>Mild Outlier:</strong> Outside inner fences, inside outer fences (marked <span class="mono">○</span> or <span class="mono">*</span>).</li>
+              <li><strong>Extreme Outlier:</strong> Outside outer fences (marked <span class="mono">★</span>).</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: INTERACTIVE SANDBOX -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • Interactive Sandbox</div>
+            <h2>Live Box-Plot, Outlier, Summary &amp; Rank/Depth Lab</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <p>Load any slide or ISRT exam dataset (or type your own numbers). Try adding a large outlier like <strong>250</strong> to watch how the <strong>Mean</strong> and <strong>SD</strong> jump while the <strong>Median</strong> and <strong>IQR</strong> stay rock-solid!</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Presets:</strong>
+            <button class="tab-btn active" onclick="loadDataPreset('incomes', this)">Slide: 12 Incomes</button>
+            <button class="tab-btn" onclick="loadDataPreset('inc22', this)">2nd Incourse 2022 Q2(c)</button>
+            <button class="tab-btn" onclick="loadDataPreset('inc25_depth', this)">1st Incourse 2025 Q4 (Rank/Depth)</button>
+            <button class="tab-btn" onclick="loadDataPreset('inc25_mcq10', this)">1st Incourse 2025 MCQ #10</button>
+          </div>
+          <textarea id="data-input" class="input-field" rows="2" oninput="runStatsLab()"></textarea>
+          <div class="control-row" style="margin-top:8px">
+            <button class="btn-primary" onclick="appendOutlier(250)">+ Inject Outlier (250)</button>
+            <button class="btn-ghost" style="flex:0 0 auto" onclick="loadDataPreset(lastPreset, null)">↺ Restore Preset</button>
+            <span id="shape-verdict" style="font-size:13.5px; font-weight:700; margin-left:auto"></span>
+          </div>
+
+          <div class="metric-grid" id="metrics-grid"></div>
+
+          <div class="lab-panel">
+            <h4 style="margin-top:0">Live Modified Box-and-Whisker Plot</h4>
+            <svg id="boxplot-svg" viewBox="0 0 760 175" width="100%" style="height:auto"></svg>
+            <div id="fence-summary" style="font-size:13.5px; margin-top:8px; color:var(--text-muted)"></div>
+          </div>
+
+          <details style="margin-top:14px">
+            <summary>Show Full Sorted Table with Fractional Ranks &amp; Depths (Click to expand)</summary>
+            <div class="details-body">
+              <div class="table-wrap" style="margin:0">
+                <table>
+                  <thead><tr><th>Sorted Value (x)</th><th>Raw Position(s)</th><th>Fractional Rank</th><th>Depth = min(R, n+1−R)</th><th>Z-Score</th></tr></thead>
+                  <tbody id="rank-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- SECTION 5: PROOFS VAULT -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Prottasha &amp; Mihad Notes</div>
+            <h2>Proofs &amp; Derivations Vault (9 Core Theorems)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <p>Every theorem below is directly from <strong>Prottasha's Proof Notes</strong>, <strong>Mihad's Class Notes</strong>, and past ISRT Final Exams. Try deriving each proof on paper before clicking to reveal the steps.</p>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 1</span> Sum of deviations from the Arithmetic Mean is zero: Σ(x<sub>i</sub> − x̄) = 0</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Given x̄ = (1/n) Σx<sub>i</sub>  ⇒  Σx<sub>i</sub> = n·x̄</div>
+            <div class="proof-step">Σ(x<sub>i</sub> − x̄) = Σx<sub>i</sub> − Σx̄ = n·x̄ − n·x̄ = 0.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 2</span> Sum of squared deviations is minimized about the Mean: Σ(x<sub>i</sub> − x̄)² &lt; Σ(x<sub>i</sub> − a)² (a ≠ x̄)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Add &amp; subtract x̄ inside the square:<br>Σ(x<sub>i</sub> − a)² = Σ[(x<sub>i</sub> − x̄) + (x̄ − a)]²</div>
+            <div class="proof-step">= Σ(x<sub>i</sub> − x̄)² + 2(x̄ − a) Σ(x<sub>i</sub> − x̄) + Σ(x̄ − a)²</div>
+            <div class="proof-step">Since Σ(x<sub>i</sub> − x̄) = 0, the middle term vanishes:<br>Σ(x<sub>i</sub> − a)² = Σ(x<sub>i</sub> − x̄)² + n(x̄ − a)²</div>
+            <div class="proof-step">Because a ≠ x̄, n(x̄ − a)² &gt; 0 strictly  ⇒  Σ(x<sub>i</sub> − x̄)² &lt; Σ(x<sub>i</sub> − a)².  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 3</span> Mean &amp; Median of the first n natural numbers (1, 2, ..., n) are both (n + 1) / 2</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Mean: x̄ = (1 + 2 + ... + n) / n = [n(n + 1) / 2] / n = (n + 1) / 2.</div>
+            <div class="proof-step">Median (n odd): The ((n + 1)/2)<sup>th</sup> term is directly (n + 1) / 2.</div>
+            <div class="proof-step">Median (n even): Average of (n/2)<sup>th</sup> and (n/2 + 1)<sup>th</sup> terms = [(n/2) + (n/2 + 1)] / 2 = (n + 1) / 2.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 4</span> Variance of the first n natural numbers is (n² − 1) / 12</span></summary>
+          <div class="details-body">
+            <div class="proof-step">σ² = (1/n) Σx² − (x̄)² = [n(n + 1)(2n + 1) / (6n)] − [(n + 1) / 2]²</div>
+            <div class="proof-step">= [(n + 1)(2n + 1) / 6] − [(n + 1)² / 4]</div>
+            <div class="proof-step">= (n + 1) · [2(2n + 1) − 3(n + 1)] / 12 = (n + 1)(4n + 2 − 3n − 3) / 12 = (n + 1)(n − 1) / 12 = (n² − 1) / 12.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 5</span> Origin &amp; Scale Effect on Mean (x̄ = c·d̄ + a) and Standard Deviation (s<sub>x</sub> = |c|·s<sub>d</sub>)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Let d<sub>i</sub> = (x<sub>i</sub> − a) / c, where a = origin shift and c = scale factor (c ≠ 0). Then x<sub>i</sub> = a + c·d<sub>i</sub>.</div>
+            <div class="proof-step"><strong>Mean:</strong> x̄ = (1/n) Σ(a + c·d<sub>i</sub>) = (na)/n + c·(Σd<sub>i</sub> / n) = a + c·d̄.  ⇒ Depends on BOTH origin and scale.</div>
+            <div class="proof-step"><strong>SD:</strong> x<sub>i</sub> − x̄ = (a + c·d<sub>i</sub>) − (a + c·d̄) = c(d<sub>i</sub> − d̄). Notice 'a' cancels out!<br>
+            s<sub>x</sub> = √[ Σ(x<sub>i</sub> − x̄)² / (n − 1) ] = √[ c² · Σ(d<sub>i</sub> − d̄)² / (n − 1) ] = |c| · s<sub>d</sub>.  ⇒ Depends ONLY on scale, NOT on origin. [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 6</span> <span class="exam-badge">Final 2024 Q5(b) [5 Marks]</span> Prove AM ≥ GM ≥ HM and AM × HM = GM² (for a, b &gt; 0)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Let a, b &gt; 0. Then AM = (a + b)/2, GM = √(ab), HM = 2 / (1/a + 1/b) = 2ab / (a + b).</div>
+            <div class="proof-step"><strong>Part 1 (AM ≥ GM):</strong> Since (a − b)² ≥ 0 ⇒ (a + b)² − 4ab ≥ 0 ⇒ (a + b)² ≥ 4ab ⇒ (a + b)/2 ≥ √(ab) ⇒ AM ≥ GM.</div>
+            <div class="proof-step"><strong>Part 2 (GM ≥ HM):</strong> Since (1/a − 1/b)² ≥ 0 ⇒ (1/a + 1/b)² ≥ 4/(ab) ⇒ (1/a + 1/b) ≥ 2/√(ab) ⇒ √(ab) ≥ 2 / (1/a + 1/b) ⇒ GM ≥ HM. Hence AM ≥ GM ≥ HM.</div>
+            <div class="proof-step"><strong>Identity:</strong> AM × HM = [(a + b)/2] × [2ab / (a + b)] = ab = (√(ab))² = GM².  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 7</span> Computational (Shortcut) Variance Formula: s² = [Σx² − (Σx)²/n] / (n − 1)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Σ(x<sub>i</sub> − x̄)² = Σ(x<sub>i</sub>² − 2x̄·x<sub>i</sub> + x̄²) = Σx<sub>i</sub>² − 2x̄ Σx<sub>i</sub> + n·x̄²</div>
+            <div class="proof-step">Since Σx<sub>i</sub> = n·x̄: = Σx<sub>i</sub>² − 2n·x̄² + n·x̄² = Σx<sub>i</sub>² − n·x̄² = Σx<sub>i</sub>² − n·(Σx<sub>i</sub> / n)² = Σx<sub>i</sub>² − (Σx<sub>i</sub>)² / n.</div>
+            <div class="proof-step">Dividing both sides by (n − 1) gives s² = [Σx<sub>i</sub>² − (Σx<sub>i</sub>)² / n] / (n − 1).  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 8</span> <span class="exam-badge">Final 2024 Q4(d) [4 Marks]</span> Geometric Proof of Grouped Mode Formula from a Histogram</span></summary>
+          <div class="details-body">
+            <div style="text-align:center; margin-bottom:10px">
+              <svg viewBox="0 0 380 170" width="360" height="160" style="background:var(--surface); border:1px solid var(--border); border-radius:8px">
+                <!-- Pre-modal bar -->
+                <rect x="40" y="95" width="90" height="55" fill="rgba(148,163,184,0.25)" stroke="#64748b" stroke-width="1.5"/>
+                <!-- Modal bar -->
+                <rect x="130" y="25" width="110" height="125" fill="rgba(37,99,235,0.22)" stroke="#2563eb" stroke-width="2"/>
+                <!-- Post-modal bar -->
+                <rect x="240" y="75" width="90" height="75" fill="rgba(148,163,184,0.25)" stroke="#64748b" stroke-width="1.5"/>
+                <!-- Cross lines -->
+                <line x1="130" y1="25" x2="240" y2="75" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="4 2"/>
+                <line x1="240" y1="25" x2="130" y2="95" stroke="#dc2626" stroke-width="1.8" stroke-dasharray="4 2"/>
+                <!-- Intersection P (approx x=194.2, y=54.2) -->
+                <circle cx="194" cy="54" r="4" fill="#dc2626"/>
+                <line x1="194" y1="54" x2="194" y2="150" stroke="#059669" stroke-width="2"/>
+                <text x="123" y="24" font-size="11" font-weight="700" fill="currentColor">A</text>
+                <text x="244" y="24" font-size="11" font-weight="700" fill="currentColor">B</text>
+                <text x="120" y="98" font-size="11" font-weight="700" fill="currentColor">C</text>
+                <text x="245" y="78" font-size="11" font-weight="700" fill="currentColor">D</text>
+                <text x="198" y="49" font-size="11" font-weight="700" fill="#dc2626">P</text>
+                <text x="130" y="164" text-anchor="middle" font-size="10.5" fill="currentColor">L<tspan dy="2" font-size="8">mod</tspan></text>
+                <text x="194" y="164" text-anchor="middle" font-size="10.5" font-weight="700" fill="#059669">Mode</text>
+                <text x="240" y="164" text-anchor="middle" font-size="10.5" fill="currentColor">L+c</text>
+                <text x="108" y="64" font-size="10.5" font-weight="700" fill="#2563eb">Δ₁</text>
+                <text x="248" y="54" font-size="10.5" font-weight="700" fill="#2563eb">Δ₂</text>
+              </svg>
+            </div>
+            <div class="proof-step">In the modal bar of width c, let AC = f<sub>1</sub> − f<sub>0</sub> = Δ<sub>1</sub> and BD = f<sub>1</sub> − f<sub>2</sub> = Δ<sub>2</sub>. Draw diagonals AD and BC intersecting at P; drop a perpendicular from P to the x-axis at distance x from L<sub>mod</sub> (and c − x from L<sub>mod</sub> + c).</div>
+            <div class="proof-step">Triangles △PAC and △PBD are similar (∠PAC = ∠PDB, ∠PCA = ∠PBD, vertical angles at P):<br>
+            (Horizontal altitude of △PAC) / (Horizontal altitude of △PBD) = AC / BD  ⇒  x / (c − x) = Δ<sub>1</sub> / Δ<sub>2</sub></div>
+            <div class="proof-step">Cross-multiply: Δ<sub>2</sub>·x = Δ<sub>1</sub>(c − x) ⇒ x(Δ<sub>1</sub> + Δ<sub>2</sub>) = Δ<sub>1</sub>·c ⇒ x = [Δ<sub>1</sub> / (Δ<sub>1</sub> + Δ<sub>2</sub>)] · c.</div>
+            <div class="proof-step">Therefore, Mode = L<sub>mod</sub> + x = L<sub>mod</sub> + [Δ<sub>1</sub> / (Δ<sub>1</sub> + Δ<sub>2</sub>)] · c.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 9</span> <span class="exam-badge">1st Incourse 2023 Q4(a)</span> For two numbers X<sub>1</sub>, X<sub>2</sub>, Population SD = Half the Range</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Mean μ = (X<sub>1</sub> + X<sub>2</sub>) / 2.  Deviations: X<sub>1</sub> − μ = (X<sub>1</sub> − X<sub>2</sub>)/2,  X<sub>2</sub> − μ = −(X<sub>1</sub> − X<sub>2</sub>)/2.</div>
+            <div class="proof-step">σ² = [(X<sub>1</sub> − μ)² + (X<sub>2</sub> − μ)²] / 2 = [ (X<sub>1</sub> − X<sub>2</sub>)²/4 + (X<sub>1</sub> − X<sub>2</sub>)²/4 ] / 2 = (X<sub>1</sub> − X<sub>2</sub>)² / 4.</div>
+            <div class="proof-step">Taking square root: σ = |X<sub>1</sub> − X<sub>2</sub>| / 2 = Range / 2.  [Proved]</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 6: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2017–2025)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Verbatim 1st Incourse 2025 Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Problems &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2025 • Q3 [2 Marks]</span> Linear Transformation of Marks (Divide by 4, Add 4)</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> Original marks (out of 100) have Mean = 73.5 and SD = 16.75. Tutor converts them to 'out of 25' by dividing by 4, then adds a bonus of 4 to each mark. Find the new Mean and SD.</p>
+            <p><strong>Worked Solution:</strong> Let <span class="mono">Y = (X / 4) + 4 = 0.25·X + 4</span>.</p>
+            <ul>
+              <li><strong>New Mean:</strong> <span class="mono">Ȳ = 0.25(73.5) + 4 = 18.375 + 4 = 22.375</span>.</li>
+              <li><strong>New SD:</strong> Adding 4 shifts origin only (no effect on SD); dividing by 4 scales SD: <span class="mono">s<sub>Y</sub> = |0.25| × 16.75 = 4.1875</span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2025 • Q4 [3 Marks]</span> Fractional Rank &amp; Depth of 13 and 24</span></summary>
+          <div class="details-body">
+            <p><strong>Data (n = 15):</strong> 1, 13, 22, 24, 7, 5, 37, 24, 42, 24, 13, 12, 3, 24, 23.</p>
+            <p><strong>Worked Solution:</strong> Sort in ascending order:<br>
+            <span class="mono">1(1), 3(2), 5(3), 7(4), 12(5), 13(6), 13(7), 22(8), 23(9), 24(10), 24(11), 24(12), 24(13), 37(14), 42(15)</span></p>
+            <ul>
+              <li><strong>For 13:</strong> Occupies positions 6 and 7 → <strong>Fractional Rank = (6 + 7)/2 = 6.5</strong>. Depth = <span class="mono">min(6.5, 16 − 6.5) = min(6.5, 9.5) = 6.5</span>.</li>
+              <li><strong>For 24:</strong> Occupies positions 10, 11, 12, 13 → <strong>Fractional Rank = (10+11+12+13)/4 = 11.5</strong>. Depth = <span class="mono">min(11.5, 16 − 11.5) = min(11.5, 4.5) = 4.5</span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2025 • Q5 [4 Marks]</span> Adjacent Values, Fences &amp; Outliers from 5-Number Summary</span></summary>
+          <div class="details-body">
+            <p><strong>Given (n = 50):</strong> Min = 9.7, Q<sub>1</sub> = 19.675, Q<sub>2</sub> = 23.275, Q<sub>3</sub> = 25.85, Max = 36.3.</p>
+            <p><strong>Worked Solution:</strong></p>
+            <ul>
+              <li><strong>IQR</strong> = 25.85 − 19.675 = <strong>6.175</strong>; &nbsp; <span class="mono">1.5 × IQR = 9.2625</span>; &nbsp; <span class="mono">3 × IQR = 18.525</span>.</li>
+              <li><strong>Inner Fences:</strong> LIF = <span class="mono">19.675 − 9.2625 = 10.4125</span>; &nbsp; UIF = <span class="mono">25.85 + 9.2625 = 35.1125</span>.</li>
+              <li><strong>Outer Fences:</strong> LOF = <span class="mono">19.675 − 18.525 = 1.15</span>; &nbsp; UOF = <span class="mono">25.85 + 18.525 = 44.375</span>.</li>
+              <li><strong>Comment on Outliers:</strong> Since Min = 9.7 &lt; LIF (10.4125) and Max = 36.3 &gt; UIF (35.1125), <strong>both 9.7 and 36.3 are potential mild outliers</strong> (neither exceeds the outer fences). Because individual interior points are not listed, whiskers are bounded by the inner fences (10.4125 and 35.1125) as limits for the adjacent values.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2025 • Q8 &amp; Q9 [6 Marks]</span> Chebyshev's Theorem &amp; Harmonic Mean Average Speed</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>Q8 (Chebyshev, Mean = 75, Variance = 100 ⇒ σ = 10, Interval (60, 90)):</strong><br>
+                Distance from mean = <span class="mono">90 − 75 = 75 − 60 = 15</span> ⇒ <span class="mono">k = 15 / 10 = 1.5</span>.<br>
+                Minimum proportion = <span class="mono">1 − 1/k² = 1 − 1/(1.5)² = 1 − 4/9 = 5/9 ≈ 0.5556 (55.56%)</span>.
+              </li>
+              <li><strong>Q9 (Dhaka to Sylhet, 4 equal quarters at 45, 75, 80, 50 km/hr):</strong><br>
+                Equal distances ⇒ use <strong>Harmonic Mean</strong>:<br>
+                <span class="mono">HM = 4 / (1/45 + 1/75 + 1/80 + 1/50) = 4 / (0.02222 + 0.01333 + 0.01250 + 0.02000) = 4 / 0.068056 ≈ 58.78 km/hr</span>.
+              </li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2024 • Q13 &amp; Final 2024 • Q5(d)</span> Missing Values via AM/GM &amp; Z-Score Comparison</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>1st Incourse 2024 Q13 (Data: 1, x, 27, 3, y; AM = 8, GM = 3):</strong><br>
+                From AM: <span class="mono">(1 + x + 27 + 3 + y) / 5 = 8 ⇒ 31 + x + y = 40 ⇒ x + y = 9</span>.<br>
+                From GM: <span class="mono">(1 · x · 27 · 3 · y)<sup>1/5</sup> = 3 ⇒ 81xy = 3<sup>5</sup> = 243 ⇒ xy = 3</span>.<br>
+                Solve <span class="mono">t² − 9t + 3 = 0 ⇒ t = (9 ± √(81 − 12)) / 2 = (9 ± √69) / 2 ≈ 8.653 and 0.347</span>.
+              </li>
+              <li><strong>Final 2024 Q5(d) (Sarah's Exams):</strong><br>
+                STA101: <span class="mono">z = (87 − 77) / 10 = +1.00</span>.<br>
+                Math257: <span class="mono">z = (75 − 65) / 8 = +1.25</span>.<br>
+                Since <span class="mono">1.25 &gt; 1.00</span>, Sarah performed <strong>better in Math257</strong> relative to her classmates.
+              </li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l3_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l3_theme') || localStorage.getItem('ast101_l2_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l3_done') || '[]');
+    function syncProgress() {
+      const total = 6;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l3_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l3_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Chebyshev Calculator ----------
+    function calcCheb() {
+      const mu = parseFloat(document.getElementById('ch-mu').value);
+      const sd = parseFloat(document.getElementById('ch-sd').value);
+      const lo = parseFloat(document.getElementById('ch-lo').value);
+      const hi = parseFloat(document.getElementById('ch-hi').value);
+      const out = document.getElementById('ch-out');
+      if ([mu, sd, lo, hi].some(isNaN) || sd <= 0 || hi <= lo) {
+        out.textContent = "Enter valid numbers with SD > 0 and Upper > Lower.";
+        return;
+      }
+      const d1 = Math.abs(mu - lo), d2 = Math.abs(hi - mu);
+      const k1 = d1 / sd, k2 = d2 / sd;
+      if (Math.abs(d1 - d2) > 0.001) {
+        out.innerHTML = `Interval (${lo}, ${hi}) is not symmetric around μ = ${mu} (z<sub>low</sub> = ${((lo-mu)/sd).toFixed(2)}, z<sub>high</sub> = ${((hi-mu)/sd).toFixed(2)}). Chebyshev's symmetric formula requires equal distance kσ on both sides.`;
+        return;
+      }
+      const k = k1;
+      const cheb = k > 1 ? (1 - 1 / (k * k)) * 100 : 0;
+      out.innerHTML = `k = |${hi} − ${mu}| / ${sd} = <strong>${k.toFixed(3)}</strong><br>
+        Chebyshev Minimum (any shape): 1 − 1/${k.toFixed(2)}² = <strong>${cheb.toFixed(2)}%</strong>` +
+        (Math.abs(k - 1) < 0.01 ? `<br>Empirical Rule (bell-shaped): ≈ <strong>68%</strong>` :
+         Math.abs(k - 2) < 0.01 ? `<br>Empirical Rule (bell-shaped): ≈ <strong>95%</strong>` :
+         Math.abs(k - 3) < 0.01 ? `<br>Empirical Rule (bell-shaped): ≈ <strong>99.7%</strong>` : '');
+    }
+    calcCheb();
+
+    // ---------- Interactive Box-Plot, Outlier & Rank/Depth Lab ----------
+    const dataPresets = {
+      incomes: "75, 69, 84, 112, 74, 104, 81, 90, 94, 144, 79, 98",
+      inc22: "17, 0, 16.5, 7.5, 21.5, 16.5, 20.5, 9.5, 23, 13.5",
+      inc25_depth: "1, 13, 22, 24, 7, 5, 37, 24, 42, 24, 13, 12, 3, 24, 23",
+      inc25_mcq10: "0.0, 0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.6, 0.8, 22.5"
+    };
+    let lastPreset = 'incomes';
+
+    function loadDataPreset(key, btn) {
+      lastPreset = key;
+      if (btn) {
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      document.getElementById('data-input').value = dataPresets[key];
+      runStatsLab();
+    }
+
+    function appendOutlier(val) {
+      const ta = document.getElementById('data-input');
+      ta.value = ta.value.trim() + ", " + val;
+      runStatsLab();
+    }
+
+    function medianOf(arr) {
+      const m = arr.length;
+      if (!m) return NaN;
+      return m % 2 === 1 ? arr[(m - 1) / 2] : (arr[m / 2 - 1] + arr[m / 2]) / 2;
+    }
+
+    function runStatsLab() {
+      const raw = document.getElementById('data-input').value;
+      const arr = raw.split(/[\s,;]+/).map(Number).filter(x => !isNaN(x) && isFinite(x)).sort((a, b) => a - b);
+      const n = arr.length;
+      if (n < 4) {
+        document.getElementById('metrics-grid').innerHTML = '<div class="metric-tile"><span>Status</span><strong>Need ≥ 4 values</strong></div>';
+        document.getElementById('boxplot-svg').innerHTML = '';
+        return;
+      }
+
+      const sum = arr.reduce((a, b) => a + b, 0);
+      const mean = sum / n;
+      const med = medianOf(arr);
+      const lowerHalf = arr.slice(0, Math.floor(n / 2));
+      const upperHalf = arr.slice(Math.ceil(n / 2));
+      const q1 = medianOf(lowerHalf);
+      const q3 = medianOf(upperHalf);
+      const iqr = q3 - q1;
+
+      const s2 = arr.reduce((s, x) => s + (x - mean) ** 2, 0) / (n - 1);
+      const sd = Math.sqrt(s2);
+      const cv = mean !== 0 ? (sd / Math.abs(mean)) * 100 : NaN;
+
+      // 10% trimmed mean
+      const trimK = Math.floor(n * 0.1);
+      const trimmedArr = trimK > 0 && n - 2 * trimK > 0 ? arr.slice(trimK, n - trimK) : arr;
+      const trimMean = trimmedArr.reduce((a, b) => a + b, 0) / trimmedArr.length;
+
+      // GM & HM (only if all > 0)
+      const allPos = arr.every(x => x > 0);
+      const gm = allPos ? Math.exp(arr.reduce((s, x) => s + Math.log(x), 0) / n) : NaN;
+      const hm = allPos ? n / arr.reduce((s, x) => s + 1 / x, 0) : NaN;
+
+      // Fences & Outliers
+      const lif = q1 - 1.5 * iqr, uif = q3 + 1.5 * iqr;
+      const lof = q1 - 3 * iqr, uof = q3 + 3 * iqr;
+      const inside = arr.filter(x => x >= lif && x <= uif);
+      const adjLow = inside.length ? inside[0] : q1;
+      const adjHigh = inside.length ? inside[inside.length - 1] : q3;
+      const mildOut = arr.filter(x => (x < lif && x >= lof) || (x > uif && x <= uof));
+      const extOut = arr.filter(x => x < lof || x > uof);
+
+      // Shape verdict
+      const diff = mean - med;
+      const shapeTxt = Math.abs(diff) < 0.08 * sd ? "≈ Symmetric" : diff > 0 ? "Right-Skewed (Mean > Median)" : "Left-Skewed (Mean < Median)";
+      document.getElementById('shape-verdict').textContent = `Shape: ${shapeTxt}`;
+
+      const fmt = v => isNaN(v) ? 'N/A' : Number(v.toFixed(3));
+      const metrics = [
+        ["n", n], ["Mean (x̄)", fmt(mean)], ["Median (Q₂)", fmt(med)], ["10% Trimmed", fmt(trimMean)],
+        ["Sample SD (s)", fmt(sd)], ["CV (%)", isNaN(cv) ? 'N/A' : cv.toFixed(1) + '%'],
+        ["Q₁ / Q₃", `${fmt(q1)} / ${fmt(q3)}`], ["IQR", fmt(iqr)],
+        ["GM", fmt(gm)], ["HM", fmt(hm)]
+      ];
+      document.getElementById('metrics-grid').innerHTML = metrics.map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+      document.getElementById('fence-summary').innerHTML = `
+        <strong>Inner Fences:</strong> [${fmt(lif)}, ${fmt(uif)}] &nbsp;|&nbsp;
+        <strong>Adjacent Values:</strong> [${fmt(adjLow)}, ${fmt(adjHigh)}] &nbsp;|&nbsp;
+        <strong>Mild Outliers (○):</strong> ${mildOut.length ? mildOut.join(', ') : 'None'} &nbsp;|&nbsp;
+        <strong>Extreme Outliers (★):</strong> ${extOut.length ? extOut.join(', ') : 'None'}
+      `;
+
+      // Draw SVG Modified Boxplot
+      const svg = document.getElementById('boxplot-svg');
+      const W = 760, H = 175, padL = 42, padR = 42;
+      const minV = Math.min(arr[0], lif), maxV = Math.max(arr[n - 1], uif);
+      const span = (maxV - minV) || 1;
+      const sx = v => padL + ((v - minV) / span) * (W - padL - padR);
+      const midY = 76, boxH = 44;
+
+      let out = `<line x1="${padL}" y1="138" x2="${W-padR}" y2="138" stroke="currentColor" opacity="0.4"/>`;
+      for (let i = 0; i <= 5; i++) {
+        const tv = minV + (span * i) / 5;
+        const tx = sx(tv);
+        out += `<line x1="${tx}" y1="134" x2="${tx}" y2="142" stroke="currentColor" opacity="0.5"/>`;
+        out += `<text x="${tx}" y="156" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.8">${Number(tv.toFixed(1))}</text>`;
+      }
+
+      // Inner fences dashed lines
+      [lif, uif].forEach((f, idx) => {
+        if (f >= minV && f <= maxV) {
+          out += `<line x1="${sx(f)}" y1="26" x2="${sx(f)}" y2="128" stroke="#d97706" stroke-dasharray="4 3" stroke-width="1.5"/>`;
+          out += `<text x="${sx(f)}" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="#d97706">${idx===0?'LIF':'UIF'} (${Number(f.toFixed(1))})</text>`;
+        }
+      });
+
+      // Whiskers
+      out += `<line x1="${sx(adjLow)}" y1="${midY}" x2="${sx(q1)}" y2="${midY}" stroke="#2563eb" stroke-width="2.5"/>`;
+      out += `<line x1="${sx(q3)}" y1="${midY}" x2="${sx(adjHigh)}" y2="${midY}" stroke="#2563eb" stroke-width="2.5"/>`;
+      out += `<line x1="${sx(adjLow)}" y1="${midY-12}" x2="${sx(adjLow)}" y2="${midY+12}" stroke="#2563eb" stroke-width="2.5"/>`;
+      out += `<line x1="${sx(adjHigh)}" y1="${midY-12}" x2="${sx(adjHigh)}" y2="${midY+12}" stroke="#2563eb" stroke-width="2.5"/>`;
+
+      // Box
+      out += `<rect x="${sx(q1)}" y="${midY-boxH/2}" width="${Math.max(2, sx(q3)-sx(q1))}" height="${boxH}" fill="rgba(37,99,235,0.2)" stroke="#2563eb" stroke-width="2.5" rx="4"/>`;
+      // Median line
+      out += `<line x1="${sx(med)}" y1="${midY-boxH/2}" x2="${sx(med)}" y2="${midY+boxH/2}" stroke="#7c3aed" stroke-width="3.2"/>`;
+      // Mean diamond
+      const mx = sx(mean);
+      out += `<polygon points="${mx},${midY-6} ${mx+6},${midY} ${mx},${midY+6} ${mx-6},${midY}" fill="#059669"/>`;
+      out += `<text x="${mx}" y="${midY+36}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#059669">x̄=${Number(mean.toFixed(2))}</text>`;
+
+      // Outliers
+      mildOut.forEach(o => {
+        out += `<circle cx="${sx(o)}" cy="${midY}" r="5" fill="none" stroke="#dc2626" stroke-width="2.2"/>`;
+        out += `<text x="${sx(o)}" y="${midY-11}" text-anchor="middle" font-size="10" font-weight="700" fill="#dc2626">${o}</text>`;
+      });
+      extOut.forEach(o => {
+        out += `<text x="${sx(o)}" y="${midY+5}" text-anchor="middle" font-size="16" font-weight="800" fill="#dc2626">★</text>`;
+        out += `<text x="${sx(o)}" y="${midY-12}" text-anchor="middle" font-size="10" font-weight="700" fill="#dc2626">${o}</text>`;
+      });
+      svg.innerHTML = out;
+
+      // Fractional Rank & Depth Table
+      const groups = [];
+      let i = 0;
+      while (i < n) {
+        let j = i;
+        while (j + 1 < n && arr[j + 1] === arr[i]) j++;
+        const rawPos = i === j ? `${i + 1}` : `${i + 1}..${j + 1}`;
+        const fracRank = (i + 1 + j + 1) / 2;
+        const depth = Math.min(fracRank, n + 1 - fracRank);
+        const z = sd > 0 ? (arr[i] - mean) / sd : 0;
+        groups.push(`<tr><td><strong>${arr[i]}</strong>${j > i ? ` <span class="mono">×${j-i+1}</span>` : ''}</td><td>${rawPos}</td><td><strong>${fracRank}</strong></td><td><strong>${depth}</strong></td><td>${z.toFixed(2)}</td></tr>`);
+        i = j + 1;
+      }
+      document.getElementById('rank-table-body').innerHTML = groups.join('');
+    }
+    loadDataPreset('incomes', document.querySelector('#sec-4 .tab-btn'));
+
+    // ---------- Past Exam MCQ Arena (Verbatim 1st Incourse 2025) ----------
+    const mcqData = [
+      {
+        tag: "1st Incourse 2025 • MCQ #2",
+        q: "The mean of a distribution is 3 and the variance is 36. What is the value of the coefficient of variation (CV)?",
+        opts: ["50%", "8.33%", "200%", "1200%"],
+        ans: 2,
+        exp: "SD = √36 = 6. Therefore CV = (SD / Mean) × 100% = (6 / 3) × 100% = 200%."
+      },
+      {
+        tag: "1st Incourse 2025 • MCQ #3",
+        q: "The standard deviation is affected by the change of:",
+        opts: ["Origin but not scale", "Scale but not origin", "Both origin and scale", "None"],
+        ans: 1,
+        exp: "Adding/subtracting a constant (origin) leaves SD unchanged; multiplying/dividing by c scales SD by |c|."
+      },
+      {
+        tag: "1st Incourse 2025 • MCQ #7",
+        q: "Heights of students have a bell shape with mean 65 inches, and 16% are taller than 67 inches. What percentage are shorter than 63 inches?",
+        opts: ["16%", "32%", "13.5%", "2.5%"],
+        ans: 0,
+        exp: "By symmetry of a bell-shaped curve: 67 is +2 inches above 65, and 63 is −2 inches below 65 (both 1 SD away). Thus P(X < 63) = P(X > 67) = 16%."
+      },
+      {
+        tag: "1st Incourse 2025 • MCQ #8",
+        q: "Student grades have mean 10 and variance s². If the Z-score of grade 6 is −2, then s equals:",
+        opts: ["2", "-2", "0.5", "-0.5"],
+        ans: 0,
+        exp: "z = (x − x̄)/s ⇒ −2 = (6 − 10)/s = −4/s ⇒ s = 2 (standard deviation is always non-negative)."
+      },
+      {
+        tag: "1st Incourse 2025 • MCQ #9",
+        q: "If the five-number summary of some data is (10, 12, 20, 22, 25), what percentage of measurements falls between 12 and 22?",
+        opts: ["25%", "50%", "75%", "At least 75%"],
+        ans: 1,
+        exp: "12 is Q₁ (25th percentile) and 22 is Q₃ (75th percentile), so the middle 50% of observations lie between Q₁ and Q₃."
+      },
+      {
+        tag: "1st Incourse 2025 • MCQ #10",
+        q: "Choose the best measure of center for the data: 0.0, 0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.6, 0.8, 22.5",
+        opts: ["Median = 0.25", "Arithmetic Mean = 2.5", "Mode = 0.1", "None of the above"],
+        ans: 0,
+        exp: "The extreme outlier 22.5 inflates the arithmetic mean to 2.5 (larger than 9 of the 10 values!). The Median = (0.2 + 0.3)/2 = 0.25 accurately represents the center."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

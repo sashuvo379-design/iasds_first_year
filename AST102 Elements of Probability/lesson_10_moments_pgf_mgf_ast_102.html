@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 10: Moments, PGF &amp; MGF — AST 102 (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Playfair Display, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ivory: '#FAFAF7',
+            ink: '#1A1D24',
+            slateMuted: '#4B5563',
+            tealDeep: '#0F766E',
+            tealSoft: '#CCFBF1',
+            amberWarm: '#D97706',
+            amberSoft: '#FEF3C7',
+            roseTrap: '#BE123C',
+            roseSoft: '#FFE4E6',
+            borderSubtle: '#E5E7EB',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX via jsDelivr CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #FAFAF7;
+      color: #1A1D24;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    h1, h2, .font-editorial {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Prevent display math overflow on small screens */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #0F766E;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+    }
+
+    /* Custom details/summary arrow rotation */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] > summary .details-chevron {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-[#CCFBF1] selection:text-[#0F766E]">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVIGATION BAR & LIVE SCROLL PROGRESS BAR                  -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] shadow-sm">
+    <div class="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam-Weight Badges -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-[#4B5563]">
+          <span class="inline-flex items-center gap-1.5 font-bold text-[#1A1D24]">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+            AST 102 · Module 3
+          </span>
+          <span class="text-slate-300">→</span>
+          <span class="text-[#0F766E] font-semibold">Lesson 10 of 14</span>
+        </nav>
+
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#CCFBF1] text-[#0F766E] border border-teal-200">
+            2nd Incourse
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF3C7] text-[#D97706] border border-amber-200">
+            Year Final — High Weight
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Section Quick-Jump Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#0F766E] hover:bg-[#CCFBF1]/50 transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#0F766E] hover:bg-[#CCFBF1]/50 transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#0F766E] hover:bg-[#CCFBF1]/50 transition-colors">Proofs</a>
+        <a href="#exams" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#D97706] hover:bg-[#FEF3C7]/70 transition-colors">Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#4B5563] hover:text-[#0F766E] hover:bg-[#CCFBF1]/50 transition-colors">Quiz</a>
+      </nav>
+    </div>
+
+    <!-- Live Scroll Progress Bar Along Bottom Edge -->
+    <div class="w-full h-[3px] bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-[#0F766E] via-teal-500 to-[#D97706] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO BANNER & INTERACTIVE LEARNING OBJECTIVES                         -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-[#1A1D24] via-[#134E4A] to-[#0F766E] text-white py-12 sm:py-16 border-b border-teal-950">
+    <div class="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#CCFBF1]">Module 3 Finale · Lesson 10 of 14</span>
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-200">~45 min study</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+            Lesson 10: Moments, PGF &amp; MGF
+          </h1>
+
+          <p class="text-teal-50/90 text-base sm:text-lg leading-relaxed">
+            Raw &amp; central moments, Probability Generating Functions (PGF), Moment Generating Functions (MGF), Cumulant Generating Functions (CGF), and the Uniqueness &amp; Reproductive properties.
+          </p>
+
+          <div class="text-xs text-teal-100/80 bg-black/20 rounded-xl px-3.5 py-2.5 border border-white/10 leading-relaxed">
+            <strong class="text-white">Sources:</strong> <span class="font-mono">AST102_2nd-incourse_bySadid.pdf</span> · Sheldon Ross Ch. 7.7 · ISRT 2nd Incourse (2024–2025) &amp; Year Final (2018–2025).
+          </div>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D97706] hover:bg-amber-500 text-white font-semibold text-sm shadow-lg shadow-black/25 transition-all">
+              Launch 4-Tab Workbench
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="#exams" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+              ISRT Exam Vault (2018–2025)
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive 5-Item Learning Objectives Checklist -->
+        <div class="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-5 sm:p-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#CCFBF1]">Learning Objectives</span>
+            <span id="objCounter" class="font-mono text-xs font-bold text-amber-200">0 / 5 Checked</span>
+          </div>
+          <ul id="objectivesList" class="space-y-2 text-xs sm:text-sm text-teal-50">
+            <li>
+              <button type="button" class="obj-item w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span>Convert between raw moments $\mu'_r$ and central moments $\mu_r$, and interpret skewness $\gamma_1$ &amp; excess kurtosis $\gamma_2$.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-item w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span>Normalize a PGF via $P_X(1)=1$, extract probabilities $p_k$, and compute $E[X]$ &amp; $V(X)$ using derivatives at $t=1$.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-item w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span>Derive MGFs $M_X(t) = E[e^{tX}]$ and extract raw moments via $\mu'_r = M_X^{(r)}(0)$ or series coefficients.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-item w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span>Use the CGF $K_X(t) = \ln M_X(t)$ to extract cumulants $\kappa_1, \kappa_2, \kappa_3, \kappa_4$ and prove Normal shape ($\gamma_1=\gamma_2=0$).</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-item w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span>Apply $M_{a+bX}(t) = e^{at}M_X(bt)$ and the Uniqueness Theorem to test reproductive properties of independent sums &amp; differences.</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: CORE CONCEPTS & INTUITION                                -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 01 • Core Theory</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1A1D24] mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">Moments, PGF, MGF, CGF &amp; Uniqueness Theorem</p>
+      </div>
+
+      <!-- CARD 1: RAW VS CENTRAL MOMENTS & SHAPE -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1A1D24] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#CCFBF1] text-[#0F766E] font-mono text-xs font-bold inline-flex items-center justify-center">01</span>
+            Raw Moments ($\mu'_r$) vs. Central Moments ($\mu_r$) &amp; Shape
+          </h3>
+          <span class="text-xs font-semibold text-[#4B5563]">Origin vs. Mean · Skewness &amp; Kurtosis</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-1.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">$r$-th Raw Moment (About Origin)</div>
+            <div class="text-center py-1">$$\mu'_r = E[X^r], \qquad \mu'_1 = E[X] = \mu$$</div>
+            <p class="text-xs text-[#4B5563]">Captures location and powers of $X$ directly; easiest to compute from $M_X(t)$.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-1.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#D97706]">$r$-th Central Moment (About Mean)</div>
+            <div class="text-center py-1">$$\mu_r = E\big[(X - \mu)^r\big], \qquad \mu_1 = 0,\;\; \mu_2 = \sigma^2$$</div>
+            <p class="text-xs text-[#4B5563]">Origin-free descriptors of spread ($\mu_2$), asymmetry ($\mu_3$), and tail weight ($\mu_4$).</p>
+          </div>
+        </div>
+
+        <!-- Exact Raw -> Central Conversion Formulas -->
+        <div class="p-4 rounded-xl bg-[#CCFBF1]/35 border border-teal-200 space-y-2 text-xs sm:text-sm">
+          <div class="font-bold text-[#0F766E] uppercase tracking-wider text-[11px]">Essential Raw → Central Conversion Formulas</div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[#1A1D24]">
+            <div class="bg-white rounded-xl p-3 border border-teal-100">
+              $$\mu_1 = 0, \qquad \mu_2 = \mu'_2 - (\mu'_1)^2$$
+            </div>
+            <div class="bg-white rounded-xl p-3 border border-teal-100">
+              $$\mu_3 = \mu'_3 - 3\mu'_2\mu'_1 + 2(\mu'_1)^3$$
+            </div>
+            <div class="bg-white rounded-xl p-3 border border-teal-100 md:col-span-2">
+              $$\mu_4 = \mu'_4 - 4\mu'_3\mu'_1 + 6\mu'_2(\mu'_1)^2 - 3(\mu'_1)^4$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Shape Coefficients -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-xl bg-white border border-[#E5E7EB] space-y-1.5">
+            <div class="font-bold text-[#1A1D24]">Skewness ($\gamma_1$)</div>
+            <div class="text-center py-1">$$\gamma_1 = \frac{\mu_3}{\sigma^3} = \frac{\mu_3}{\mu_2^{3/2}}$$</div>
+            <p class="text-xs text-[#4B5563]">$\gamma_1 = 0$: Symmetric · $\gamma_1 > 0$: Right (positively) skewed · $\gamma_1 < 0$: Left (negatively) skewed.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-white border border-[#E5E7EB] space-y-1.5">
+            <div class="font-bold text-[#1A1D24]">Excess Kurtosis ($\gamma_2$)</div>
+            <div class="text-center py-1">$$\gamma_2 = \frac{\mu_4}{\sigma^4} - 3 = \frac{\mu_4}{\mu_2^2} - 3$$</div>
+            <p class="text-xs text-[#4B5563]"><strong>Mesokurtic</strong> ($\gamma_2 = 0$, Normal) · <strong>Leptokurtic</strong> ($\gamma_2 > 0$, heavy-tailed) · <strong>Platykurtic</strong> ($\gamma_2 < 0$, light-tailed).</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2: GENERATING FUNCTIONS & THE PGF -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1A1D24] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#CCFBF1] text-[#0F766E] font-mono text-xs font-bold inline-flex items-center justify-center">02</span>
+            Generating Functions &amp; The PGF ($P_X(t)$)
+          </h3>
+          <span class="text-xs font-semibold text-[#4B5563]">Non-Negative Integer RVs · 2nd Inc. 2025 Q2</span>
+        </div>
+
+        <p class="text-sm text-[#4B5563] leading-relaxed">
+          For a discrete random variable $X \in \{0, 1, 2, \dots\}$, its <strong>Probability Generating Function (PGF)</strong> packs the entire probability distribution into a single power series in $t$:
+        </p>
+
+        <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-center">
+          $$P_X(t) = E[t^X] = \sum_{x=0}^{\infty} p_x\,t^x = p_0 + p_1 t + p_2 t^2 + p_3 t^3 + \dots$$
+        </div>
+
+        <p class="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
+          <strong>Why "Probability Generating"?</strong> Because expanding $P_X(t)$ in powers of $t$ directly <em>generates</em> every probability $p_k = P(X=k)$ as the coefficient of $t^k$—equivalently recoverable by differentiating at $t=0$:
+          $P(X = k) = \dfrac{P_X^{(k)}(0)}{k!}$.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-[#CCFBF1]/40 border border-teal-200">
+            <div class="font-bold text-[#0F766E] uppercase text-[11px] mb-1">1. Normalization</div>
+            <div class="font-semibold text-[#1A1D24]">$P_X(1) = \sum p_x = 1$</div>
+            <p class="text-[#4B5563] mt-1">Used to solve for unknown constants $k$.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+            <div class="font-bold text-[#0F766E] uppercase text-[11px] mb-1">2. Mean at $t=1$</div>
+            <div class="font-semibold text-[#1A1D24]">$P'_X(1) = E[X]$</div>
+            <p class="text-[#4B5563] mt-1">First derivative evaluated at $t=1$.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+            <div class="font-bold text-[#D97706] uppercase text-[11px] mb-1">3. Factorial Moment</div>
+            <div class="font-semibold text-[#1A1D24]">$P''_X(1) = E[X(X-1)]$</div>
+            <p class="text-[#4B5563] mt-1">Gives $V(X) = P''_X(1) + P'_X(1) - [P'_X(1)]^2$.</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FEF3C7]/60 border border-amber-200">
+            <div class="font-bold text-[#D97706] uppercase text-[11px] mb-1">4. Independent Sums</div>
+            <div class="font-semibold text-[#1A1D24]">$P_{X+Y}(t) = P_X(t)P_Y(t)$</div>
+            <p class="text-[#4B5563] mt-1">Multiplies PGFs of independent RVs.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3: MGF & CGF -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1A1D24] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#CCFBF1] text-[#0F766E] font-mono text-xs font-bold inline-flex items-center justify-center">03</span>
+            Moment Generating Function ($M_X(t)$) &amp; Cumulant Generating Function ($K_X(t)$)
+          </h3>
+          <span class="text-xs font-semibold text-[#4B5563]">Discrete &amp; Continuous · Ross Ch. 7.7</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <!-- MGF -->
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-2.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Moment Generating Function (MGF)</div>
+            <div class="text-center">
+              $$M_X(t) = E[e^{tX}] = 1 + \mu'_1 t + \frac{\mu'_2}{2!}t^2 + \frac{\mu'_3}{3!}t^3 + \dots$$
+            </div>
+            <ul class="space-y-1.5 text-xs text-[#4B5563] list-disc list-inside">
+              <li>Defined on an open interval $(-h, h)$ around $t = 0$.</li>
+              <li><strong>Moment Extraction:</strong> $\mu'_r = E[X^r] = M_X^{(r)}(0)$.</li>
+              <li><strong>Linear Scaling:</strong> $M_{a+bX}(t) = e^{at} M_X(bt)$.</li>
+              <li><strong>Independent Sums:</strong> $M_{X+Y}(t) = M_X(t)M_Y(t)$.</li>
+              <li><strong>Uniqueness Theorem:</strong> If $M_X(t) = M_Y(t)$ near $0$, then $X$ and $Y$ have the exact same distribution.</li>
+            </ul>
+          </div>
+
+          <!-- CGF -->
+          <div class="p-4 rounded-xl bg-[#FEF3C7]/45 border border-amber-200 space-y-2.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#D97706]">Cumulant Generating Function (CGF)</div>
+            <div class="text-center">
+              $$K_X(t) = \ln M_X(t), \qquad \kappa_r = \left.\frac{d^r}{dt^r}K_X(t)\right|_{t=0}$$
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono text-[#1A1D24]">
+              <div class="bg-white p-2 rounded-lg border border-amber-200 text-center">$\kappa_1 = \mu$</div>
+              <div class="bg-white p-2 rounded-lg border border-amber-200 text-center">$\kappa_2 = \sigma^2 = \mu_2$</div>
+              <div class="bg-white p-2 rounded-lg border border-amber-200 text-center">$\kappa_3 = \mu_3$</div>
+              <div class="bg-white p-2 rounded-lg border border-amber-200 text-center">$\kappa_4 = \mu_4 - 3\sigma^4$</div>
+            </div>
+            <p class="text-xs text-[#4B5563] leading-relaxed">
+              <strong>Direct Shape Shortcut:</strong> $\gamma_1 = \dfrac{\kappa_3}{\kappa_2^{3/2}}$ and $\gamma_2 = \dfrac{\kappa_4}{\kappa_2^2}$! Taking $\ln$ turns exponential MGFs (like Normal &amp; Poisson) into simple polynomials.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ROSE EXAM-TRAP SPOTLIGHT BOX -->
+      <div class="rounded-2xl border-2 border-[#BE123C]/40 bg-[#FFE4E6]/65 p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#BE123C] text-white font-extrabold text-sm shadow-xs">!</span>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#BE123C]">ISRT Exam Trap Spotlight</span>
+            <h3 class="text-lg font-bold text-[#1A1D24]">Two Classic Mistakes That Cost Easy Marks</h3>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 1: Evaluating at $t = 1$ vs. $t = 0$!</div>
+            <p class="text-[#4B5563] leading-relaxed">
+              <strong>PGF</strong> moments are evaluated at <strong>$t = 1$</strong>, and $P''_X(1)$ gives the <em>factorial moment</em> $E[X(X-1)]$, <strong>NOT</strong> $E[X^2]$! Forgetting to add $+P'_X(1)$ in $V(X) = P''_X(1) + P'_X(1) - [P'_X(1)]^2$ is the #1 PGF error. By contrast, <strong>MGF &amp; CGF</strong> derivatives are evaluated at <strong>$t = 0$</strong>.
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 2: $X_1 - X_2$ is NOT Binomial!</div>
+            <p class="text-[#4B5563] leading-relaxed">
+              Even if $X_1 \sim \text{Bin}(n_1, p)$ and $X_2 \sim \text{Bin}(n_2, p)$ are independent,
+              $M_{X_1 - X_2}(t) = (q + pe^t)^{n_1}(q + pe^{-t})^{n_2}$, which cannot collapse into $(q + pe^t)^N$. Moreover, $X_1 - X_2$ can take <strong>negative values</strong> $\{-n_2, \dots, n_1\}$, whereas a Binomial RV is strictly non-negative!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK REFERENCE TABLE: COMMON GENERATING FUNCTIONS -->
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#1A1D24] text-white flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold">Quick Reference: Common Generating Functions</h3>
+          <span class="text-xs text-teal-200">PGF · MGF · CGF Side-by-Side</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-[#FAFAF7] border-b border-[#E5E7EB] text-[#4B5563] uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4 font-bold">Distribution</th>
+                <th class="py-3.5 px-4 font-bold text-[#0F766E]">PGF $P_X(t)$</th>
+                <th class="py-3.5 px-4 font-bold text-[#1A1D24]">MGF $M_X(t)$</th>
+                <th class="py-3.5 px-4 font-bold text-[#D97706]">CGF $K_X(t) = \ln M_X(t)$</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-[#1A1D24]">
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Bernoulli$(p)$</td>
+                <td class="py-3 px-4">$q + pt$</td>
+                <td class="py-3 px-4">$q + pe^t$</td>
+                <td class="py-3 px-4">$\ln(q + pe^t)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Binomial$(n, p)$</td>
+                <td class="py-3 px-4">$(q + pt)^n$</td>
+                <td class="py-3 px-4">$(q + pe^t)^n$</td>
+                <td class="py-3 px-4">$n\ln(q + pe^t)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Poisson$(\lambda)$</td>
+                <td class="py-3 px-4">$e^{\lambda(t - 1)}$</td>
+                <td class="py-3 px-4">$e^{\lambda(e^t - 1)}$</td>
+                <td class="py-3 px-4">$\lambda(e^t - 1)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Geometric$(p)$ <span class="text-[10px] text-[#4B5563]">($x=1,2,\dots$)</span></td>
+                <td class="py-3 px-4">$\dfrac{pt}{1 - qt}$ <span class="text-[10px] text-[#4B5563]">($|qt|&lt;1$)</span></td>
+                <td class="py-3 px-4">$\dfrac{pe^t}{1 - qe^t}$ <span class="text-[10px] text-[#4B5563]">($t &lt; -\ln q$)</span></td>
+                <td class="py-3 px-4">$\ln p + t - \ln(1 - qe^t)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Exponential$(\lambda)$</td>
+                <td class="py-3 px-4 text-[#4B5563] italic">N/A (Continuous)</td>
+                <td class="py-3 px-4">$\dfrac{\lambda}{\lambda - t}$ <span class="text-[10px] text-[#BE123C] font-semibold">($t &lt; \lambda$)</span></td>
+                <td class="py-3 px-4">$-\ln\!\left(1 - \dfrac{t}{\lambda}\right)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Normal$(\mu, \sigma^2)$</td>
+                <td class="py-3 px-4 text-[#4B5563] italic">N/A (Continuous)</td>
+                <td class="py-3 px-4">$e^{\mu t + \frac{1}{2}\sigma^2 t^2}$</td>
+                <td class="py-3 px-4">$\mu t + \frac{1}{2}\sigma^2 t^2$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: 4-TAB INTERACTIVE GENERATING FUNCTIONS WORKBENCH         -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 02 • Hands-On Studio</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1A1D24] mt-1">4-Tab Interactive Generating Functions Workbench</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">High-DPI Canvas visualizers with live KaTeX algebra</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <!-- Tab Strip -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-[#E5E7EB] bg-[#FAFAF7] p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="pgf" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#0F766E] text-white shadow-sm">
+            1. PGF Polynomial Expander
+          </button>
+          <button type="button" role="tab" data-tab="mgf" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#4B5563] hover:bg-slate-200/70">
+            2. MGF &amp; CGF Curve Explorer
+          </button>
+          <button type="button" role="tab" data-tab="repro" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#4B5563] hover:bg-slate-200/70">
+            3. Linear Combo &amp; Reproductive Lab
+          </button>
+          <button type="button" role="tab" data-tab="moments" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#4B5563] hover:bg-slate-200/70">
+            4. Raw ↔ Central Moments &amp; Shape
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: PGF POLYNOMIAL EXPANDER & MOMENT EXTRACTOR               -->
+        <!-- =============================================================== -->
+        <div id="tab-pgf" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1A1D24]">PGF Polynomial Expander &amp; Moment Extractor</h3>
+              <p class="text-xs sm:text-sm text-[#4B5563]">Load an ISRT exam preset or edit weights $(c_0, c_1, c_2, c_3)$ and exponent $m \in \{1, 2\}$. <strong>Click any PMF bar</strong> to highlight its matching $p_x t^x$ term!</p>
+            </div>
+            <!-- 4 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-pgfpreset="inc2025" class="pgf-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">ISRT 2nd Inc. 2025 Q2(b): $k(3+t+2t^2)^2$</button>
+              <button type="button" data-pgfpreset="keira" class="pgf-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Year Final 2025 Q6(b): Keira + Hassan</button>
+              <button type="button" data-pgfpreset="die" class="pgf-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Fair 6-Sided Die</button>
+              <button type="button" data-pgfpreset="binom4" class="pgf-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Binomial$(4, 0.4)$</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left: Custom Polynomial Editor & Derivative Readout -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-3 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold uppercase tracking-wider text-[#4B5563]">Custom $k(c_0 + c_1 t + c_2 t^2 + c_3 t^3)^m$</span>
+                  <div class="inline-flex rounded-lg bg-white border border-[#E5E7EB] p-0.5">
+                    <button type="button" data-pm="1" class="pgf-m-btn px-2.5 py-1 rounded-md font-bold text-[#4B5563]">$m=1$</button>
+                    <button type="button" data-pm="2" class="pgf-m-btn px-2.5 py-1 rounded-md font-bold bg-[#0F766E] text-white">$m=2$</button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                  <label class="block text-center">
+                    <span class="font-mono font-bold text-[#4B5563] block mb-1">$c_0$</span>
+                    <input id="pgfC0" type="number" min="0" max="20" step="0.5" value="3" class="pgf-in w-full text-center px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                  </label>
+                  <label class="block text-center">
+                    <span class="font-mono font-bold text-[#4B5563] block mb-1">$c_1$</span>
+                    <input id="pgfC1" type="number" min="0" max="20" step="0.5" value="1" class="pgf-in w-full text-center px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                  </label>
+                  <label class="block text-center">
+                    <span class="font-mono font-bold text-[#4B5563] block mb-1">$c_2$</span>
+                    <input id="pgfC2" type="number" min="0" max="20" step="0.5" value="2" class="pgf-in w-full text-center px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                  </label>
+                  <label class="block text-center">
+                    <span class="font-mono font-bold text-[#4B5563] block mb-1">$c_3$</span>
+                    <input id="pgfC3" type="number" min="0" max="20" step="0.5" value="0" class="pgf-in w-full text-center px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                  </label>
+                </div>
+                <div id="pgfNormBadge" class="p-2.5 rounded-xl bg-[#CCFBF1]/50 border border-teal-200 font-mono text-xs text-[#0F766E] font-bold">
+                  P(1) = 1 ⇒ k = 1 / (3+1+2)² = 1/36
+                </div>
+              </div>
+
+              <!-- Live Step-by-Step Derivative Readout -->
+              <div class="p-4 rounded-2xl bg-[#1A1D24] text-white space-y-2.5 text-xs sm:text-sm">
+                <div class="text-[11px] uppercase tracking-wider text-teal-300 font-bold">Live Derivative Moments at $t = 1$</div>
+                <div class="grid grid-cols-3 gap-2 text-center font-mono">
+                  <div class="p-2.5 rounded-xl bg-white/10">
+                    <div class="text-[10px] text-slate-300">$P'_X(1) = E[X]$</div>
+                    <div id="pgfOutMean" class="text-base font-extrabold text-white mt-0.5">1.6667</div>
+                  </div>
+                  <div class="p-2.5 rounded-xl bg-white/10">
+                    <div class="text-[10px] text-amber-200">$P''_X(1)$</div>
+                    <div id="pgfOutFact2" class="text-base font-extrabold text-amber-300 mt-0.5">2.7222</div>
+                  </div>
+                  <div class="p-2.5 rounded-xl bg-[#0F766E]/60 border border-teal-400/40">
+                    <div class="text-[10px] text-teal-100">$V(X)$</div>
+                    <div id="pgfOutVar" class="text-base font-extrabold text-white mt-0.5">1.6111</div>
+                  </div>
+                </div>
+                <div id="pgfDerivFormula" class="font-mono text-[11px] text-slate-300 pt-1 border-t border-slate-700 leading-relaxed"></div>
+              </div>
+            </div>
+
+            <!-- Right: Expanded Polynomial Chips + Clickable PMF Bar Chart -->
+            <div class="lg:col-span-7 space-y-4">
+              <div class="p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold uppercase tracking-wider text-[#4B5563]">Expanded PGF Terms $P_X(t) = \sum p_x t^x$</span>
+                  <span id="pgfSelectedNote" class="font-mono text-[11px] font-bold text-[#D97706]">Click a term or bar to inspect</span>
+                </div>
+                <div id="pgfTermsWrap" class="flex flex-wrap items-center gap-1.5"></div>
+              </div>
+
+              <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold uppercase tracking-wider text-[#0F766E]">PMF Bar Chart (Click Any Bar to Highlight Term)</span>
+                  <span class="text-[11px] text-[#4B5563]">Dashed Amber = $E[X]$</span>
+                </div>
+                <div id="pgfCanvasWrap" class="w-full">
+                  <canvas id="pgfCanvas" class="cursor-pointer" aria-label="Interactive PMF bar chart from PGF"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: MGF & CGF CURVE EXPLORER                                 -->
+        <!-- =============================================================== -->
+        <div id="tab-mgf" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1A1D24]">MGF &amp; CGF Curve Explorer ($M_X(t)$ vs. Taylor Approximation)</h3>
+              <p class="text-xs sm:text-sm text-[#4B5563]">Compare $M_X(t)$ and $K_X(t) = \ln M_X(t)$, overlay the tangent &amp; 3rd-order Maclaurin polynomial, and inspect all cumulants.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-mdist="normal" class="mgf-dist-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">Normal$(\mu,\sigma^2)$</button>
+              <button type="button" data-mdist="poisson" class="mgf-dist-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Poisson$(\lambda)$</button>
+              <button type="button" data-mdist="binomial" class="mgf-dist-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Binomial$(n,p)$</button>
+              <button type="button" data-mdist="exp" class="mgf-dist-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#BE123C] transition-all">Exponential$(\lambda)$</button>
+            </div>
+          </div>
+
+          <!-- Parameter Sliders & Overlays -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB]">
+            <div id="mgfSlidersWrap" class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            <div class="lg:col-span-5 flex flex-col gap-2 text-xs">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-[#E5E7EB] cursor-pointer">
+                <input id="mgfToggleTangent" type="checkbox" checked class="w-4 h-4 accent-[#D97706]" />
+                <span class="font-semibold text-[#1A1D24]">Overlay Tangent at $t=0$ (Slope = $E[X]$)</span>
+              </label>
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-[#E5E7EB] cursor-pointer">
+                <input id="mgfToggleTaylor" type="checkbox" checked class="w-4 h-4 accent-[#BE123C]" />
+                <span class="font-semibold text-[#1A1D24]">Overlay 3rd-Order Maclaurin Polynomial</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Dual Canvases: MGF Left, CGF Right -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#0F766E]">1. MGF $M_X(t) = E[e^{tX}]$</span>
+                <span id="mgfDomainTag" class="font-mono text-[11px] font-bold text-[#4B5563]">Domain: all $t \in \mathbb{R}$</span>
+              </div>
+              <div id="mgfCanvasWrap" class="w-full">
+                <canvas id="mgfCanvas" aria-label="Moment generating function plot"></canvas>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#D97706]">2. CGF $K_X(t) = \ln M_X(t)$</span>
+                <span class="text-[11px] text-[#4B5563]">Quadratic for Normal!</span>
+              </div>
+              <div id="cgfCanvasWrap" class="w-full">
+                <canvas id="cgfCanvas" aria-label="Cumulant generating function plot"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Metrics Strip -->
+          <div class="p-4 rounded-2xl bg-[#1A1D24] text-white space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-2.5">
+              <div id="mgfActiveFormula" class="text-xs sm:text-sm text-teal-200 overflow-x-auto"></div>
+              <span id="mgfShapeVerdict" class="px-3 py-1 rounded-full bg-[#0F766E] text-white text-xs font-bold">Symmetric &amp; Mesokurtic</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-center font-mono text-xs">
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-slate-300">$\mu'_1$</div><div id="mOutM1" class="font-bold mt-0.5">0.00</div></div>
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-slate-300">$\mu'_2$</div><div id="mOutM2" class="font-bold mt-0.5">1.00</div></div>
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-teal-200">$\kappa_1$</div><div id="mOutK1" class="font-bold mt-0.5">0.00</div></div>
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-teal-200">$\kappa_2$</div><div id="mOutK2" class="font-bold mt-0.5">1.00</div></div>
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-amber-200">$\kappa_3$</div><div id="mOutK3" class="font-bold mt-0.5">0.00</div></div>
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-amber-200">$\kappa_4$</div><div id="mOutK4" class="font-bold mt-0.5">0.00</div></div>
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-rose-200">$\gamma_1$</div><div id="mOutG1" class="font-bold mt-0.5">0.00</div></div>
+              <div class="p-2 rounded-xl bg-white/10"><div class="text-[10px] text-rose-200">$\gamma_2$</div><div id="mOutG2" class="font-bold mt-0.5">0.00</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: LINEAR COMBINATION & REPRODUCTIVE PROPERTY LAB           -->
+        <!-- =============================================================== -->
+        <div id="tab-repro" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1A1D24]">Linear Combination &amp; Reproductive Property Lab ($Z = aX + bY + c$)</h3>
+              <p class="text-xs sm:text-sm text-[#4B5563]">Test $M_Z(t) = e^{ct} M_X(at) M_Y(bt)$ for independent $X, Y$ and see when $Z$ preserves the distribution family.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-rpreset="inc2025q3" class="repro-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">1. ISRT 2nd Inc. 2025 Q3 ($3X-3Y+4$)</button>
+              <button type="button" data-rpreset="binomSumDiff" class="repro-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">2. Year Final 2024 Q6(c): Bin $X_1 \pm X_2$</button>
+              <button type="button" data-rpreset="normals" class="repro-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">3. Independent Normals ($aX+bY+c$)</button>
+              <button type="button" data-rpreset="poissons" class="repro-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">4. Independent Poissons ($X_1 \pm X_2$)</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left Controls -->
+            <div id="reproControlsWrap" class="lg:col-span-5 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-4 text-xs"></div>
+
+            <!-- Right Derivation & Verdict -->
+            <div class="lg:col-span-7 space-y-4">
+              <div id="reproVerdictBanner" class="p-4 rounded-2xl border-2 flex items-center justify-between gap-3"></div>
+              <div id="reproDerivationBox" class="p-5 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs text-xs sm:text-sm space-y-3 leading-relaxed overflow-x-auto"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: RAW <-> CENTRAL MOMENTS & SHAPE CALCULATOR               -->
+        <!-- =============================================================== -->
+        <div id="tab-moments" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1A1D24]">Raw ↔ Central Moments &amp; Shape Calculator</h3>
+              <p class="text-xs sm:text-sm text-[#4B5563]">Enter raw moments $\mu'_1, \mu'_2, \mu'_3, \mu'_4$ to compute central moments, skewness, excess kurtosis, and visualize the distribution shape.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-mopreset="quiz" class="mom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">ISRT Quiz Marks (12, 164, 2448, 39200)</button>
+              <button type="button" data-mopreset="stdnorm" class="mom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Standard Normal (0, 1, 0, 3)</button>
+              <button type="button" data-mopreset="exp1" class="mom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Exponential(1) (1, 2, 6, 24)</button>
+              <button type="button" data-mopreset="heavy" class="mom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Symmetric Heavy-Tailed (0, 1, 0, 6)</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Left Inputs -->
+            <div class="lg:col-span-5 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-3 text-xs">
+              <div class="font-bold uppercase tracking-wider text-[#4B5563]">Raw Moments About Origin</div>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="block">
+                  <span class="font-bold text-[#1A1D24] block mb-1">$\mu'_1 = E[X]$</span>
+                  <input id="momM1" type="number" step="0.5" value="12" class="mom-in w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                </label>
+                <label class="block">
+                  <span class="font-bold text-[#1A1D24] block mb-1">$\mu'_2 = E[X^2]$</span>
+                  <input id="momM2" type="number" step="1" value="164" class="mom-in w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                </label>
+                <label class="block">
+                  <span class="font-bold text-[#1A1D24] block mb-1">$\mu'_3 = E[X^3]$</span>
+                  <input id="momM3" type="number" step="1" value="2448" class="mom-in w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                </label>
+                <label class="block">
+                  <span class="font-bold text-[#1A1D24] block mb-1">$\mu'_4 = E[X^4]$</span>
+                  <input id="momM4" type="number" step="10" value="39200" class="mom-in w-full px-3 py-2 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                </label>
+              </div>
+
+              <div id="momWarningBox" class="hidden p-3 rounded-xl bg-[#FFE4E6] border border-[#BE123C]/40 text-[#BE123C] text-xs font-bold"></div>
+
+              <div id="momMesoNote" class="p-3.5 rounded-xl bg-[#FEF3C7]/70 border border-amber-200 text-amber-950 text-xs leading-relaxed"></div>
+            </div>
+
+            <!-- Right Metrics & Stylized Shape Curve -->
+            <div class="lg:col-span-7 space-y-4">
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-center font-mono">
+                <div class="p-3 rounded-xl bg-[#CCFBF1]/45 border border-teal-200">
+                  <div class="text-[11px] font-sans font-bold text-[#0F766E]">$\mu_2 = \sigma^2$</div>
+                  <div id="momOutMu2" class="text-lg font-extrabold text-[#1A1D24] mt-0.5">20.00</div>
+                </div>
+                <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+                  <div class="text-[11px] font-sans font-bold text-[#4B5563]">$\sigma = \sqrt{\mu_2}$</div>
+                  <div id="momOutSd" class="text-lg font-extrabold text-[#1A1D24] mt-0.5">4.472</div>
+                </div>
+                <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+                  <div class="text-[11px] font-sans font-bold text-[#4B5563]">$\mu_3$</div>
+                  <div id="momOutMu3" class="text-lg font-extrabold text-[#1A1D24] mt-0.5">0.00</div>
+                </div>
+                <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+                  <div class="text-[11px] font-sans font-bold text-[#4B5563]">$\mu_4$</div>
+                  <div id="momOutMu4" class="text-lg font-extrabold text-[#1A1D24] mt-0.5">1184.00</div>
+                </div>
+                <div class="p-3 rounded-xl bg-[#FEF3C7]/60 border border-amber-200">
+                  <div class="text-[11px] font-sans font-bold text-[#D97706]">Skewness $\gamma_1$</div>
+                  <div id="momOutG1" class="text-lg font-extrabold text-[#1A1D24] mt-0.5">0.000</div>
+                </div>
+                <div class="p-3 rounded-xl bg-[#1A1D24] text-white">
+                  <div class="text-[11px] font-sans font-bold text-teal-300">Excess Kurt. $\gamma_2$</div>
+                  <div id="momOutG2" class="text-lg font-extrabold text-white mt-0.5">-0.040</div>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span class="font-bold uppercase tracking-wider text-[#4B5563]">Stylized Shape Sketch vs. Normal Reference (Dashed)</span>
+                  <span id="momShapeTag" class="px-2.5 py-0.5 rounded-full bg-[#CCFBF1] text-[#0F766E] font-bold text-[11px]">Symmetric · Mesokurtic</span>
+                </div>
+                <div id="momCanvasWrap" class="w-full">
+                  <canvas id="momCanvas" aria-label="Stylized distribution shape sketch"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: COLLAPSIBLE PROOFS & DERIVATIONS DRAWER (<details>)      -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 03 • Exam Proofs</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1A1D24] mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">5 core AST 102 generating-function &amp; moment proofs</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <details class="group bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#CCFBF1] text-[#0F766E] text-[11px] font-bold mb-1">Proof 1 · ISRT 2nd Incourse 2025 Q2(a)</span>
+              <div class="font-bold text-[#1A1D24] text-sm sm:text-base">Mean &amp; Variance from PGF: $E[X] = P'_X(1)$ and $V(X) = P''_X(1) + P'_X(1) - [P'_X(1)]^2$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Start with $P_X(t) = \sum_{x=0}^{\infty} p_x t^x$. Differentiate term-by-term with respect to $t$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1A1D24]">
+              $$P'_X(t) = \sum_{x=1}^{\infty} x\,p_x t^{x-1} \implies P'_X(1) = \sum_{x=1}^{\infty} x\,p_x (1)^{x-1} = E[X]$$
+            </div>
+            <p>Differentiate a second time and evaluate at $t = 1$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1A1D24]">
+              $$P''_X(t) = \sum_{x=2}^{\infty} x(x-1)\,p_x t^{x-2} \implies P''_X(1) = \sum_{x=2}^{\infty} x(x-1)\,p_x = E[X(X-1)] = E[X^2] - E[X]$$
+            </div>
+            <p>Therefore $E[X^2] = P''_X(1) + E[X] = P''_X(1) + P'_X(1)$. Substituting into $V(X) = E[X^2] - (E[X])^2$:</p>
+            <div class="bg-[#CCFBF1]/45 p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$V(X) = P''_X(1) + P'_X(1) - \big[P'_X(1)\big]^2 \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 2 -->
+        <details class="group bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#CCFBF1] text-[#0F766E] text-[11px] font-bold mb-1">Proof 2 · ISRT Year Final 2018 Q1a(v) &amp; 2025 Q6(c)</span>
+              <div class="font-bold text-[#1A1D24] text-sm sm:text-base">Linear Transformation of MGF: Prove $M_{a+bX}(t) = e^{at} M_X(bt)$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Let $Y = a + bX$ where $a, b$ are real constants. By definition of the MGF:</p>
+            <div class="bg-[#CCFBF1]/45 p-3 rounded-xl border border-teal-200 text-center text-[#1A1D24]">
+              $$M_Y(t) = E\big[e^{tY}\big] = E\big[e^{t(a+bX)}\big] = E\big[e^{at} \cdot e^{(bt)X}\big] = e^{at}\,E\big[e^{(bt)X}\big] = e^{at}\,M_X(bt) \quad \blacksquare$$
+            </div>
+            <p class="text-xs">Here $e^{at}$ is a non-random constant and factors straight out of the expectation operator.</p>
+          </div>
+        </details>
+
+        <!-- Proof 3 -->
+        <details class="group bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#FEF3C7] text-[#D97706] text-[11px] font-bold mb-1">Proof 3 · ISRT Year Final 2024 Q6(b–c)</span>
+              <div class="font-bold text-[#1A1D24] text-sm sm:text-base">MGF of Binomial$(n,p)$, Mean/Variance &amp; Reproductive Property</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p><strong>1. MGF Derivation:</strong> Let $q = 1 - p$. By the Binomial Theorem:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1A1D24]">
+              $$M_X(t) = \sum_{x=0}^{n} e^{tx}\binom{n}{x}p^x q^{n-x} = \sum_{x=0}^{n} \binom{n}{x}(pe^t)^x q^{n-x} = (q + pe^t)^n$$
+            </div>
+            <p><strong>2. Mean &amp; Variance:</strong></p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1A1D24] space-y-1">
+              $$M'_X(t) = n(q+pe^t)^{n-1}pe^t \implies E[X] = M'_X(0) = n(q+p)^{n-1}p = np$$
+              $$M''_X(t) = n(n-1)(q+pe^t)^{n-2}(pe^t)^2 + n(q+pe^t)^{n-1}pe^t \implies E[X^2] = n(n-1)p^2 + np$$
+              $$V(X) = n^2p^2 - np^2 + np - n^2p^2 = np(1 - p) = npq$$
+            </div>
+            <p><strong>3. Reproductive Property:</strong> For independent $X_1 \sim \text{Bin}(n_1, p)$ and $X_2 \sim \text{Bin}(n_2, p)$:</p>
+            <div class="bg-[#CCFBF1]/45 p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$M_{X_1+X_2}(t) = M_{X_1}(t)M_{X_2}(t) = (q+pe^t)^{n_1}(q+pe^t)^{n_2} = (q+pe^t)^{n_1+n_2}$$
+            </div>
+            <p>By the Uniqueness Theorem of MGFs, $X_1 + X_2 \sim \text{Bin}(n_1 + n_2, p)$. $\blacksquare$</p>
+          </div>
+        </details>
+
+        <!-- Proof 4 -->
+        <details class="group bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#CCFBF1] text-[#0F766E] text-[11px] font-bold mb-1">Proof 4 · ISRT 2nd Incourse 2025 Q4</span>
+              <div class="font-bold text-[#1A1D24] text-sm sm:text-base">CGF of Normal$(\mu, \sigma^2)$: Proving $\gamma_1 = 0$ and $\gamma_2 = 0$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Given $M_X(t) = \exp\!\left(\mu t + \frac{1}{2}\sigma^2 t^2\right)$, take the natural logarithm to obtain the CGF:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1A1D24]">
+              $$K_X(t) = \ln M_X(t) = \mu t + \frac{1}{2}\sigma^2 t^2$$
+            </div>
+            <p>Differentiate successively at $t = 0$ to extract cumulants:</p>
+            <div class="bg-[#CCFBF1]/45 p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold space-y-1">
+              $$\kappa_1 = K'_X(0) = \mu, \qquad \kappa_2 = K''_X(0) = \sigma^2, \qquad \kappa_3 = K'''_X(0) = 0, \qquad \kappa_4 = K^{(4)}_X(0) = 0$$
+              $$\gamma_1 = \frac{\kappa_3}{\kappa_2^{3/2}} = 0 \;\;(\text{Symmetric}), \qquad \gamma_2 = \frac{\kappa_4}{\kappa_2^2} = 0 \;\;(\text{Mesokurtic}) \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 5 -->
+        <details class="group bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#FAFAF7] text-[#4B5563] border border-[#E5E7EB] text-[11px] font-bold mb-1">Proof 5 · Binomial Expansion of $(X - \mu'_1)^r$</span>
+              <div class="font-bold text-[#1A1D24] text-sm sm:text-base">Central Moments from Raw Moments: $\mu_2 = \mu'_2 - (\mu'_1)^2$ and $\mu_3 = \mu'_3 - 3\mu'_2\mu'_1 + 2(\mu'_1)^3$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#4B5563] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#4B5563] space-y-3 leading-relaxed">
+            <p>Let $\mu = \mu'_1 = E[X]$. Expanding $(X - \mu'_1)^2$ and $(X - \mu'_1)^3$ inside expectation:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1A1D24] space-y-1.5">
+              $$\mu_2 = E[(X - \mu'_1)^2] = E[X^2] - 2\mu'_1 E[X] + (\mu'_1)^2 = \mu'_2 - 2(\mu'_1)^2 + (\mu'_1)^2 = \mu'_2 - (\mu'_1)^2$$
+              $$\mu_3 = E[(X - \mu'_1)^3] = E[X^3 - 3\mu'_1 X^2 + 3(\mu'_1)^2 X - (\mu'_1)^3]$$
+              $$= \mu'_3 - 3\mu'_1 \mu'_2 + 3(\mu'_1)^2\mu'_1 - (\mu'_1)^3 = \mu'_3 - 3\mu'_2\mu'_1 + 2(\mu'_1)^3 \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: AUTHENTIC ISRT PAST EXAM VAULT (2018–2025)               -->
+    <!-- =================================================================== -->
+    <section id="exams" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#D97706]">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1A1D24] mt-1">Past ISRT Exam Vault (2018–2025)</h2>
+        </div>
+        <p class="text-sm text-[#4B5563]">5 real AST 102 questions with exam-ready step-by-step solutions</p>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Exam 1: Year Final 2025, Q6(b) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-[#FEF3C7] text-[#D97706] text-xs font-bold">ISRT Year Final 2025 · Q6(b) [5 Marks]</span>
+              <span class="text-xs text-[#4B5563] font-medium">PGF of Independent Sums · AST 102</span>
+            </div>
+            <p class="text-sm text-[#1A1D24] leading-relaxed mb-3">
+              Keira tosses 2 fair coins ($X$ = number of heads). Independently, Hassan tosses 2 biased coins with $P(H) = \frac{1}{3}$ and 1 biased coin with $P(H) = \frac{1}{4}$ ($Y$ = number of heads). Let $Z = X + Y$. Find $P_X(t)$, $P_Y(t)$, the expanded polynomial $P_Z(t)$, and $E(Z)$.
+            </p>
+            <details class="mt-3">
+              <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#CCFBF1]/50 text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+                <span>Toggle Model Solution</span>
+                <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </summary>
+              <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2.5 leading-relaxed">
+                <p><strong>1. Keira's PGF ($X \sim \text{Bin}(2, 1/2)$):</strong>
+                  $$P_X(t) = \left(\frac{1}{2} + \frac{1}{2}t\right)^2 = \frac{1}{4}(1 + 2t + t^2)$$
+                </p>
+                <p><strong>2. Hassan's PGF (independent sum of 3 coins):</strong>
+                  $$P_Y(t) = \left(\frac{2}{3} + \frac{1}{3}t\right)^2\left(\frac{3}{4} + \frac{1}{4}t\right) = \frac{1}{36}(4 + 4t + t^2)(3 + t) = \frac{1}{36}(12 + 16t + 7t^2 + t^3)$$
+                </p>
+                <p><strong>3. Combined PGF ($Z = X + Y$, independent):</strong>
+                  $$P_Z(t) = P_X(t)P_Y(t) = \frac{1}{144}(1 + 2t + t^2)(12 + 16t + 7t^2 + t^3) = \mathbf{\frac{1}{144}(12 + 40t + 51t^2 + 31t^3 + 9t^4 + t^5)}$$
+                </p>
+                <p><strong>4. Expected Value $E(Z) = P'_Z(1)$:</strong>
+                  $$E(Z) = \frac{40 + 102 + 93 + 36 + 5}{144} = \frac{276}{144} = \mathbf{\frac{23}{12} \approx 1.9167}$$
+                  (Quick check: $E[X] + E[Y] = 1 + \frac{2}{3} + \frac{1}{4} = \frac{23}{12}$ ✓)
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Exam 2: 2nd Incourse 2025 Q2(b) & 2024 Q6(b) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-[#CCFBF1] text-[#0F766E] text-xs font-bold">ISRT 2nd Incourse 2025 Q2(b) &amp; 2024 Q6(b) [5 Marks]</span>
+              <span class="text-xs text-[#4B5563] font-medium">PGF Normalization &amp; Variance · AST 102</span>
+            </div>
+            <p class="text-sm text-[#1A1D24] leading-relaxed mb-3">
+              The probability generating function of a discrete random variable $X$ is given by $P_X(t) = k(3 + t + 2t^2)^2$. Show that $k = \dfrac{1}{36}$, find $P(X = 3)$, and show that $V(X) = \dfrac{29}{18}$.
+            </p>
+            <details class="mt-3">
+              <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#CCFBF1]/50 text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+                <span>Toggle Model Solution</span>
+                <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </summary>
+              <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2.5 leading-relaxed">
+                <p><strong>1. Find $k$:</strong> Using $P_X(1) = 1$: $k(3 + 1 + 2)^2 = 36k = 1 \implies k = \mathbf{\frac{1}{36}}$.</p>
+                <p><strong>2. Find $P(X = 3)$:</strong> Expand $P_X(t) = \frac{1}{36}(9 + 6t + 13t^2 + 4t^3 + 4t^4)$. The coefficient of $t^3$ is $P(X=3) = \frac{4}{36} = \mathbf{\frac{1}{9}}$.</p>
+                <p><strong>3. Find $V(X)$ via Derivatives at $t = 1$:</strong>
+                  $$P'_X(t) = \frac{1}{18}(3+t+2t^2)(1+4t) \implies P'_X(1) = \frac{1}{18}(6)(5) = \frac{30}{18} = \frac{5}{3}$$
+                  $$P''_X(t) = \frac{1}{18}\big[(1+4t)^2 + 4(3+t+2t^2)\big] \implies P''_X(1) = \frac{1}{18}(25 + 24) = \frac{49}{18}$$
+                  $$V(X) = P''_X(1) + P'_X(1) - \big[P'_X(1)\big]^2 = \frac{49}{18} + \frac{30}{18} - \frac{25}{9} = \frac{79 - 50}{18} = \mathbf{\frac{29}{18}} \;\checkmark$$
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Exam 3: 2nd Incourse 2025 Q3 -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-[#CCFBF1] text-[#0F766E] text-xs font-bold">ISRT 2nd Incourse 2025 · Q3 [3 Marks]</span>
+              <span class="text-xs text-[#4B5563] font-medium">MGF of Linear Combination · AST 102</span>
+            </div>
+            <p class="text-sm text-[#1A1D24] leading-relaxed mb-3">
+              Let $X$ and $Y$ be independent and identically distributed random variables with MGF $M_X(t) = e^{t^2 + 3t}$. Find the MGF of $Z = 3X - 3Y + 4$ and identify the distribution of $Z$.
+            </p>
+            <details class="mt-3">
+              <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#CCFBF1]/50 text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+                <span>Toggle Model Solution</span>
+                <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </summary>
+              <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2 leading-relaxed">
+                <p>By independence and $M_{a+bX}(t) = e^{at}M_X(bt)$:</p>
+                <div class="bg-white p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1A1D24]">
+                  $$M_Z(t) = E\big[e^{t(3X - 3Y + 4)}\big] = e^{4t}\,M_X(3t)\,M_Y(-3t)$$
+                  $$= e^{4t}\cdot e^{(3t)^2 + 3(3t)} \cdot e^{(-3t)^2 + 3(-3t)} = e^{4t + 9t^2 + 9t + 9t^2 - 9t} = \mathbf{e^{18t^2 + 4t}}$$
+                </div>
+                <p>Matching $e^{\mu_Z t + \frac{1}{2}\sigma_Z^2 t^2}$ gives $\mu_Z = 4$ and $\frac{1}{2}\sigma_Z^2 = 18 \implies \sigma_Z^2 = 36$. By the Uniqueness Theorem, $Z \sim \mathbf{N(4, 36)}$.</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Exam 4: 2nd Incourse 2025 Q4 -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-[#CCFBF1] text-[#0F766E] text-xs font-bold">ISRT 2nd Incourse 2025 · Q4 [3 Marks]</span>
+              <span class="text-xs text-[#4B5563] font-medium">CGF &amp; Distribution Shape · AST 102</span>
+            </div>
+            <p class="text-sm text-[#1A1D24] leading-relaxed mb-3">
+              Given the moment generating function $M_X(t) = e^{\mu t + \frac{1}{2}t^2\sigma^2}$, use the Cumulant Generating Function (CGF) to find $\gamma_1$ and $\gamma_2$, and comment on the shape of the distribution.
+            </p>
+            <details class="mt-3">
+              <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#CCFBF1]/50 text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+                <span>Toggle Model Solution</span>
+                <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </summary>
+              <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2 leading-relaxed">
+                <p>The CGF is $K_X(t) = \ln M_X(t) = \mu t + \frac{1}{2}\sigma^2 t^2$. Taking derivatives at $t = 0$: $\kappa_1 = \mu$, $\kappa_2 = \sigma^2$, $\kappa_3 = 0$, $\kappa_4 = 0$.</p>
+                <p>Therefore $\gamma_1 = \frac{\kappa_3}{\kappa_2^{3/2}} = \mathbf{0}$ and $\gamma_2 = \frac{\kappa_4}{\kappa_2^2} = \mathbf{0}$.</p>
+                <p><strong>Shape Comment:</strong> Since $\gamma_1 = 0$ and $\gamma_2 = 0$, the distribution is perfectly <strong>symmetric</strong> and <strong>mesokurtic</strong> (Normal).</p>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Exam 5: Year Final 2024 Q6(c) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-[#FEF3C7] text-[#D97706] text-xs font-bold">ISRT Year Final 2024 · Q6(c) [4 Marks]</span>
+              <span class="text-xs text-[#4B5563] font-medium">Binomial Sum vs. Difference · AST 102</span>
+            </div>
+            <p class="text-sm text-[#1A1D24] leading-relaxed mb-3">
+              Let $X_1 \sim \text{Bin}(n_1, p)$ and $X_2 \sim \text{Bin}(n_2, p)$ be independent. Prove via MGF that $X_1 + X_2 \sim \text{Bin}(n_1 + n_2, p)$, and explain why $X_1 - X_2$ is <em>not</em> Binomial.
+            </p>
+            <details class="mt-3">
+              <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#CCFBF1]/50 text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+                <span>Toggle Model Solution</span>
+                <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </summary>
+              <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#4B5563] space-y-2 leading-relaxed">
+                <p><strong>1. Sum $X_1 + X_2$:</strong> By independence, $M_{X_1+X_2}(t) = M_{X_1}(t)M_{X_2}(t) = (q+pe^t)^{n_1}(q+pe^t)^{n_2} = (q+pe^t)^{n_1+n_2}$. By the MGF Uniqueness Theorem, $X_1 + X_2 \sim \text{Bin}(n_1 + n_2, p)$.</p>
+                <p><strong>2. Why $X_1 - X_2$ is NOT Binomial:</strong>
+                  $$M_{X_1-X_2}(t) = M_{X_1}(t)M_{X_2}(-t) = (q + pe^t)^{n_1}(q + pe^{-t})^{n_2}$$
+                  This does not match the Binomial MGF form $(q^* + p^* e^t)^N$. Furthermore, $X_1 - X_2$ has support $\{-n_2, \dots, 0, \dots, n_1\}$, which includes <strong>negative integers</strong>, whereas a Binomial random variable can only take values in $\{0, 1, \dots, N\}$.
+                </p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 5: 5-QUESTION INTERACTIVE MASTERY QUIZ                      -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E5E7EB]">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 05 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-[#1A1D24] mt-1">5-Question Mastery Quiz</h2>
+            <p class="text-sm text-[#4B5563] mt-1">Test all 5 exam traps and formulas before graduating from Module 3.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-[#1A1D24] text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-teal-300">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-slate-200 text-[#1A1D24] border border-[#E5E7EB] text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-[#E5E7EB] bg-white mt-16">
+    <div class="max-w-[1080px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="px-4 py-2 rounded-xl bg-[#FAFAF7] text-[#4B5563] font-semibold border border-[#E5E7EB]">
+        ← Previous: Lesson 9 (Covariance &amp; Tower Laws)
+      </div>
+      <div class="text-[#4B5563] text-center">
+        <strong class="text-[#1A1D24]">Module 3 Complete!</strong> · AST 102 (ISRT, University of Dhaka)
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-[#CCFBF1] text-[#0F766E] font-bold border border-teal-200">
+        Next up: Module 4 — Lesson 11: Bernoulli, Binomial &amp; Hypergeometric Distributions →
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         UTILITY: SAFE KATEX RENDER & HIGH-DPI CANVAS HELPER
+      ------------------------------------------------------------------- */
+      function renderMath(el) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(el || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX render skipped:', err);
+        }
+      }
+
+      function setupHiDPI(canvas, wrapEl, aspect, minH, maxH) {
+        const w = Math.max(240, wrapEl.clientWidth);
+        const h = Math.max(minH, Math.min(maxH, Math.round(w * aspect)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      function gcd(a, b) {
+        a = Math.abs(Math.round(a));
+        b = Math.abs(Math.round(b));
+        while (b !== 0) { const t = a % b; a = b; b = t; }
+        return a || 1;
+      }
+
+      /* -------------------------------------------------------------------
+         1. READING PROGRESS BAR & CLICKABLE LEARNING OBJECTIVES
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      const objBtns = document.querySelectorAll('.obj-item');
+      const objDone = new Array(objBtns.length).fill(false);
+      objBtns.forEach((btn, idx) => {
+        btn.addEventListener('click', () => {
+          objDone[idx] = !objDone[idx];
+          const box = btn.querySelector('.obj-box');
+          if (objDone[idx]) {
+            box.textContent = '✓';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-300 bg-[#0F766E] text-white flex items-center justify-center text-xs font-bold shrink-0';
+            btn.classList.add('opacity-75');
+          } else {
+            box.textContent = '';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0';
+            btn.classList.remove('opacity-75');
+          }
+          const doneCnt = objDone.filter(Boolean).length;
+          document.getElementById('objCounter').textContent = `${doneCnt} / ${objBtns.length} Checked`;
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         2. WORKBENCH TAB SWITCHING
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      function redrawVisibleCanvases() {
+        if (!document.getElementById('tab-pgf').classList.contains('hidden')) renderPgfCanvas();
+        if (!document.getElementById('tab-mgf').classList.contains('hidden')) renderMgfLab();
+        if (!document.getElementById('tab-moments').classList.contains('hidden')) renderMomentsLab();
+      }
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#0F766E]', 'text-white', 'shadow-sm');
+            t.classList.add('text-[#4B5563]', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-[#0F766E]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-[#4B5563]', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const activePanel = document.getElementById('tab-' + target);
+          if (activePanel) {
+            activePanel.classList.remove('hidden');
+            redrawVisibleCanvases();
+            renderMath(activePanel);
+          }
+        });
+      });
+
+      window.addEventListener('resize', redrawVisibleCanvases);
+
+      /* -------------------------------------------------------------------
+         3. TAB 1: PGF POLYNOMIAL EXPANDER & MOMENT EXTRACTOR
+      ------------------------------------------------------------------- */
+      let pgfMode = 'custom'; // 'custom' | 'keira' | 'die' | 'binom4'
+      let pgfExpM = 2;
+      let pgfTerms = []; // [{x, num, den, p}]
+      let pgfSelectedX = 3;
+      let pgfBarRects = []; // hit boxes for canvas bar clicks
+
+      function polyMultiply(a, b) {
+        const res = new Array(a.length + b.length - 1).fill(0);
+        for (let i = 0; i < a.length; i++) {
+          for (let j = 0; j < b.length; j++) res[i + j] += a[i] * b[j];
+        }
+        return res;
+      }
+
+      function computePgfState() {
+        const normBadge = document.getElementById('pgfNormBadge');
+        if (pgfMode === 'keira') {
+          const raw = [12, 40, 51, 31, 9, 1];
+          pgfTerms = raw.map((num, x) => ({ x, num, den: 144, p: num / 144 }));
+          normBadge.textContent = 'P_Z(t) = P_X(t)·P_Y(t) = (1/144)(12 + 40t + 51t² + 31t³ + 9t⁴ + t⁵)';
+        } else if (pgfMode === 'die') {
+          const raw = [0, 1, 1, 1, 1, 1, 1];
+          pgfTerms = raw.map((num, x) => ({ x, num, den: 6, p: num / 6 })).filter(t => t.p > 0);
+          normBadge.textContent = 'P_X(t) = (1/6)(t + t² + t³ + t⁴ + t⁵ + t⁶)  [P(1) = 1]';
+        } else if (pgfMode === 'binom4') {
+          const p = 0.4, q = 0.6;
+          const comb = [1, 4, 6, 4, 1];
+          pgfTerms = comb.map((c, x) => {
+            const prob = c * Math.pow(p, x) * Math.pow(q, 4 - x);
+            return { x, num: null, den: null, p: prob };
+          });
+          normBadge.textContent = 'P_X(t) = (0.6 + 0.4t)⁴  [Normalizing k = 1]';
+        } else {
+          const c = [
+            Math.max(0, parseFloat(document.getElementById('pgfC0').value) || 0),
+            Math.max(0, parseFloat(document.getElementById('pgfC1').value) || 0),
+            Math.max(0, parseFloat(document.getElementById('pgfC2').value) || 0),
+            Math.max(0, parseFloat(document.getElementById('pgfC3').value) || 0)
+          ];
+          const sumC = c.reduce((s, v) => s + v, 0);
+          const expanded = pgfExpM === 2 ? polyMultiply(c, c) : c.slice();
+          const den = Math.pow(sumC, pgfExpM);
+          const allInt = c.every(v => Math.abs(v - Math.round(v)) < 1e-6);
+
+          if (den <= 0) {
+            pgfTerms = [{ x: 0, num: 1, den: 1, p: 1 }];
+            normBadge.textContent = 'Enter at least one positive weight cᵢ > 0.';
+          } else {
+            pgfTerms = [];
+            expanded.forEach((w, x) => {
+              if (w > 1e-9) {
+                pgfTerms.push({ x, num: allInt ? Math.round(w) : null, den: allInt ? Math.round(den) : null, p: w / den });
+              }
+            });
+            normBadge.textContent = `P(1) = 1 ⇒ k = 1 / (${sumC.toFixed(allInt ? 0 : 1)})${pgfExpM === 2 ? '²' : ''} = 1/${den.toFixed(allInt ? 0 : 2)} ≈ ${(1 / den).toFixed(4)}`;
+          }
+        }
+
+        if (!pgfTerms.some(t => t.x === pgfSelectedX)) {
+          pgfSelectedX = pgfTerms[0].x;
+        }
+        renderPgfUI();
+      }
+
+      function renderPgfUI() {
+        // Compute exact moments from PGF derivatives at t = 1
+        const p1 = pgfTerms.reduce((s, t) => s + t.x * t.p, 0);
+        const p2 = pgfTerms.reduce((s, t) => s + t.x * (t.x - 1) * t.p, 0);
+        const vx = Math.max(0, p2 + p1 - p1 * p1);
+
+        document.getElementById('pgfOutMean').textContent = p1.toFixed(4);
+        document.getElementById('pgfOutFact2').textContent = p2.toFixed(4);
+        document.getElementById('pgfOutVar').textContent = vx.toFixed(4);
+        document.getElementById('pgfDerivFormula').textContent =
+          `V(X) = P''(1) + P'(1) − [P'(1)]² = ${p2.toFixed(4)} + ${p1.toFixed(4)} − (${p1.toFixed(4)})² = ${vx.toFixed(4)}`;
+
+        // Expanded polynomial term chips
+        const wrap = document.getElementById('pgfTermsWrap');
+        wrap.innerHTML = pgfTerms.map((t, idx) => {
+          const active = t.x === pgfSelectedX;
+          const coef = t.num !== null ? `${t.num}/${t.den}` : t.p.toFixed(4);
+          const powStr = t.x === 0 ? '' : (t.x === 1 ? '·t' : `·t^${t.x}`);
+          return `
+            ${idx > 0 ? '<span class="text-[#4B5563] font-bold">+</span>' : ''}
+            <button type="button" data-px="${t.x}" class="pgf-term-chip px-2.5 py-1.5 rounded-lg font-mono text-xs font-bold border transition-all ${
+              active
+                ? 'bg-[#D97706] text-white border-[#D97706] shadow-xs scale-105'
+                : 'bg-white text-[#1A1D24] border-[#E5E7EB] hover:border-[#0F766E]'
+            }">${coef}${powStr}</button>
+          `;
+        }).join('');
+
+        wrap.querySelectorAll('.pgf-term-chip').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pgfSelectedX = parseInt(btn.getAttribute('data-px'), 10);
+            renderPgfUI();
+          });
+        });
+
+        const sel = pgfTerms.find(t => t.x === pgfSelectedX);
+        if (sel) {
+          let fracTxt = '';
+          if (sel.num !== null) {
+            const g = gcd(sel.num, sel.den);
+            fracTxt = ` = ${sel.num}/${sel.den}` + (g > 1 ? ` = ${sel.num / g}/${sel.den / g}` : '');
+          }
+          document.getElementById('pgfSelectedNote').textContent =
+            `P(X = ${sel.x})${fracTxt} ≈ ${sel.p.toFixed(4)}`;
+        }
+
+        renderPgfCanvas();
+      }
+
+      function renderPgfCanvas() {
+        const canvas = document.getElementById('pgfCanvas');
+        const { ctx, w, h } = setupHiDPI(canvas, document.getElementById('pgfCanvasWrap'), 0.44, 190, 240);
+        const padL = 42, padR = 18, padT = 22, padB = 32;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+
+        const maxP = Math.max(0.25, ...pgfTerms.map(t => t.p)) * 1.2;
+        const minX = Math.min(...pgfTerms.map(t => t.x)) - 0.6;
+        const maxX = Math.max(...pgfTerms.map(t => t.x)) + 0.6;
+        const toX = x => padL + ((x - minX) / (maxX - minX)) * plotW;
+        const toY = y => padT + plotH * (1 - y / maxP);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E5E7EB'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#4B5563'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxP * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        // Draw bars & record hitboxes
+        const barW = Math.min(44, (plotW / Math.max(3, pgfTerms.length)) * 0.56);
+        pgfBarRects = [];
+        pgfTerms.forEach(t => {
+          const cx = toX(t.x);
+          const py = toY(t.p);
+          const bh = toY(0) - py;
+          const isSel = (t.x === pgfSelectedX);
+          pgfBarRects.push({ x: t.x, left: cx - barW / 2 - 4, right: cx + barW / 2 + 4 });
+
+          ctx.fillStyle = isSel ? '#D97706' : 'rgba(15, 118, 110, 0.78)';
+          ctx.beginPath();
+          ctx.roundRect(cx - barW / 2, py, barW, bh, [6, 6, 0, 0]);
+          ctx.fill();
+
+          ctx.fillStyle = isSel ? '#D97706' : '#1A1D24';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+          ctx.fillText(t.p.toFixed(3), cx, py - 4);
+
+          ctx.fillStyle = '#4B5563'; ctx.textBaseline = 'top';
+          ctx.fillText(`x=${t.x}`, cx, padT + plotH + 8);
+        });
+
+        // Mean dashed line
+        const mean = pgfTerms.reduce((s, t) => s + t.x * t.p, 0);
+        const mx = toX(mean);
+        ctx.save();
+        ctx.setLineDash([5, 3]);
+        ctx.strokeStyle = '#D97706'; ctx.lineWidth = 2.2;
+        ctx.beginPath(); ctx.moveTo(mx, padT); ctx.lineTo(mx, padT + plotH); ctx.stroke();
+        ctx.restore();
+        ctx.fillStyle = '#D97706'; ctx.font = '700 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillText(`E[X]=${mean.toFixed(2)}`, mx, padT - 4);
+
+        // Axes
+        ctx.strokeStyle = '#4B5563'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      document.getElementById('pgfCanvas').addEventListener('click', (evt) => {
+        const rect = evt.target.getBoundingClientRect();
+        const clickX = evt.clientX - rect.left;
+        for (const bar of pgfBarRects) {
+          if (clickX >= bar.left && clickX <= bar.right) {
+            pgfSelectedX = bar.x;
+            renderPgfUI();
+            break;
+          }
+        }
+      });
+
+      document.querySelectorAll('.pgf-in').forEach(inp => {
+        inp.addEventListener('input', () => {
+          pgfMode = 'custom';
+          clearPgfPresetBtns();
+          computePgfState();
+        });
+      });
+
+      document.querySelectorAll('.pgf-m-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          pgfExpM = parseInt(btn.getAttribute('data-pm'), 10);
+          pgfMode = 'custom';
+          document.querySelectorAll('.pgf-m-btn').forEach(b => {
+            b.className = b === btn
+              ? 'pgf-m-btn px-2.5 py-1 rounded-md font-bold bg-[#0F766E] text-white'
+              : 'pgf-m-btn px-2.5 py-1 rounded-md font-bold text-[#4B5563]';
+          });
+          computePgfState();
+        });
+      });
+
+      function clearPgfPresetBtns() {
+        document.querySelectorAll('.pgf-preset').forEach(b => {
+          b.className = 'pgf-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+        });
+      }
+
+      document.querySelectorAll('.pgf-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-pgfpreset');
+          clearPgfPresetBtns();
+          btn.className = 'pgf-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all';
+          if (p === 'inc2025') {
+            pgfMode = 'custom'; pgfExpM = 2; pgfSelectedX = 3;
+            document.getElementById('pgfC0').value = 3;
+            document.getElementById('pgfC1').value = 1;
+            document.getElementById('pgfC2').value = 2;
+            document.getElementById('pgfC3').value = 0;
+            document.querySelectorAll('.pgf-m-btn').forEach(b => {
+              b.className = b.getAttribute('data-pm') === '2'
+                ? 'pgf-m-btn px-2.5 py-1 rounded-md font-bold bg-[#0F766E] text-white'
+                : 'pgf-m-btn px-2.5 py-1 rounded-md font-bold text-[#4B5563]';
+            });
+          } else {
+            pgfMode = p;
+            pgfSelectedX = (p === 'die') ? 1 : 2;
+          }
+          computePgfState();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. TAB 2: MGF & CGF CURVE EXPLORER
+      ------------------------------------------------------------------- */
+      let mgfDist = 'normal';
+      const mgfParams = { mu: 0.5, sigma: 1.0, lambda: 2.0, n: 6, p: 0.4, expLam: 1.5 };
+
+      function buildMgfSliders() {
+        const wrap = document.getElementById('mgfSlidersWrap');
+        if (mgfDist === 'normal') {
+          wrap.innerHTML = `
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1"><span>Mean $\\mu$</span><span id="mslV1" class="font-mono">${mgfParams.mu.toFixed(2)}</span></div>
+              <input id="msl1" type="range" min="-3" max="3" step="0.1" value="${mgfParams.mu}" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1"><span>Std Dev $\\sigma$</span><span id="mslV2" class="font-mono">${mgfParams.sigma.toFixed(2)}</span></div>
+              <input id="msl2" type="range" min="0.4" max="2.5" step="0.1" value="${mgfParams.sigma}" class="w-full" />
+            </div>
+          `;
+          document.getElementById('msl1').addEventListener('input', e => { mgfParams.mu = parseFloat(e.target.value); document.getElementById('mslV1').textContent = mgfParams.mu.toFixed(2); renderMgfLab(); });
+          document.getElementById('msl2').addEventListener('input', e => { mgfParams.sigma = parseFloat(e.target.value); document.getElementById('mslV2').textContent = mgfParams.sigma.toFixed(2); renderMgfLab(); });
+        } else if (mgfDist === 'poisson') {
+          wrap.innerHTML = `
+            <div class="sm:col-span-2">
+              <div class="flex justify-between text-xs font-bold mb-1"><span>Rate $\\lambda$</span><span id="mslV1" class="font-mono">${mgfParams.lambda.toFixed(2)}</span></div>
+              <input id="msl1" type="range" min="0.5" max="6.0" step="0.1" value="${mgfParams.lambda}" class="w-full" />
+            </div>
+          `;
+          document.getElementById('msl1').addEventListener('input', e => { mgfParams.lambda = parseFloat(e.target.value); document.getElementById('mslV1').textContent = mgfParams.lambda.toFixed(2); renderMgfLab(); });
+        } else if (mgfDist === 'binomial') {
+          wrap.innerHTML = `
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1"><span>Trials $n$</span><span id="mslV1" class="font-mono">${mgfParams.n}</span></div>
+              <input id="msl1" type="range" min="2" max="12" step="1" value="${mgfParams.n}" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1"><span>Success Prob $p$</span><span id="mslV2" class="font-mono">${mgfParams.p.toFixed(2)}</span></div>
+              <input id="msl2" type="range" min="0.1" max="0.9" step="0.05" value="${mgfParams.p}" class="w-full" />
+            </div>
+          `;
+          document.getElementById('msl1').addEventListener('input', e => { mgfParams.n = parseInt(e.target.value, 10); document.getElementById('mslV1').textContent = mgfParams.n; renderMgfLab(); });
+          document.getElementById('msl2').addEventListener('input', e => { mgfParams.p = parseFloat(e.target.value); document.getElementById('mslV2').textContent = mgfParams.p.toFixed(2); renderMgfLab(); });
+        } else {
+          wrap.innerHTML = `
+            <div class="sm:col-span-2">
+              <div class="flex justify-between text-xs font-bold mb-1"><span>Rate $\\lambda$ (Asymptote at $t = \\lambda$)</span><span id="mslV1" class="font-mono">${mgfParams.expLam.toFixed(2)}</span></div>
+              <input id="msl1" type="range" min="0.8" max="3.0" step="0.1" value="${mgfParams.expLam}" class="w-full" />
+            </div>
+          `;
+          document.getElementById('msl1').addEventListener('input', e => { mgfParams.expLam = parseFloat(e.target.value); document.getElementById('mslV1').textContent = mgfParams.expLam.toFixed(2); renderMgfLab(); });
+        }
+        renderMath(wrap);
+        renderMgfLab();
+      }
+
+      function renderMgfLab() {
+        let mFn, kFn, k1, k2, k3, k4, m1, m2, m3, formulaHtml, domainTxt, asymptoteT = null;
+
+        if (mgfDist === 'normal') {
+          const { mu, sigma } = mgfParams;
+          const v = sigma * sigma;
+          mFn = t => Math.exp(mu * t + 0.5 * v * t * t);
+          kFn = t => mu * t + 0.5 * v * t * t;
+          k1 = mu; k2 = v; k3 = 0; k4 = 0;
+          m1 = mu; m2 = v + mu * mu; m3 = mu * mu * mu + 3 * mu * v;
+          formulaHtml = `$M_X(t) = e^{${mu.toFixed(1)}t + ${(0.5*v).toFixed(2)}t^2}, \\quad K_X(t) = ${mu.toFixed(1)}t + ${(0.5*v).toFixed(2)}t^2$`;
+          domainTxt = 'Domain: all t ∈ ℝ';
+        } else if (mgfDist === 'poisson') {
+          const lam = mgfParams.lambda;
+          mFn = t => Math.exp(lam * (Math.exp(t) - 1));
+          kFn = t => lam * (Math.exp(t) - 1);
+          k1 = lam; k2 = lam; k3 = lam; k4 = lam;
+          m1 = lam; m2 = lam + lam * lam; m3 = lam + 3 * lam * lam + lam * lam * lam;
+          formulaHtml = `$M_X(t) = e^{${lam.toFixed(1)}(e^t - 1)}, \\quad K_X(t) = ${lam.toFixed(1)}(e^t - 1)$`;
+          domainTxt = 'Domain: all t ∈ ℝ';
+        } else if (mgfDist === 'binomial') {
+          const { n, p } = mgfParams, q = 1 - p;
+          mFn = t => Math.pow(q + p * Math.exp(t), n);
+          kFn = t => n * Math.log(q + p * Math.exp(t));
+          k1 = n * p; k2 = n * p * q; k3 = n * p * q * (q - p); k4 = n * p * q * (1 - 6 * p * q);
+          m1 = k1; m2 = k2 + k1 * k1; m3 = k3 + 3 * k2 * k1 + k1 * k1 * k1;
+          formulaHtml = `$M_X(t) = (${q.toFixed(2)} + ${p.toFixed(2)}e^t)^{${n}}, \\quad K_X(t) = ${n}\\ln(${q.toFixed(2)} + ${p.toFixed(2)}e^t)$`;
+          domainTxt = 'Domain: all t ∈ ℝ';
+        } else {
+          const lam = mgfParams.expLam;
+          asymptoteT = lam;
+          mFn = t => (t < lam - 0.02) ? lam / (lam - t) : NaN;
+          kFn = t => (t < lam - 0.02) ? -Math.log(1 - t / lam) : NaN;
+          k1 = 1 / lam; k2 = 1 / (lam * lam); k3 = 2 / Math.pow(lam, 3); k4 = 6 / Math.pow(lam, 4);
+          m1 = k1; m2 = 2 / (lam * lam); m3 = 6 / Math.pow(lam, 3);
+          formulaHtml = `$M_X(t) = \\dfrac{${lam.toFixed(1)}}{${lam.toFixed(1)} - t}\\; (t < ${lam.toFixed(1)}), \\quad K_X(t) = -\\ln(1 - t/${lam.toFixed(1)})$`;
+          domainTxt = `Exists ONLY for t < ${lam.toFixed(2)}`;
+        }
+
+        const g1 = k3 / Math.pow(k2, 1.5);
+        const g2 = k4 / (k2 * k2);
+
+        document.getElementById('mOutM1').textContent = m1.toFixed(2);
+        document.getElementById('mOutM2').textContent = m2.toFixed(2);
+        document.getElementById('mOutK1').textContent = k1.toFixed(2);
+        document.getElementById('mOutK2').textContent = k2.toFixed(2);
+        document.getElementById('mOutK3').textContent = k3.toFixed(2);
+        document.getElementById('mOutK4').textContent = k4.toFixed(2);
+        document.getElementById('mOutG1').textContent = g1.toFixed(2);
+        document.getElementById('mOutG2').textContent = g2.toFixed(2);
+
+        const skewWord = Math.abs(g1) < 0.02 ? 'Symmetric' : (g1 > 0 ? 'Right-Skewed' : 'Left-Skewed');
+        const kurtWord = Math.abs(g2) < 0.02 ? 'Mesokurtic' : (g2 > 0 ? 'Leptokurtic' : 'Platykurtic');
+        document.getElementById('mgfShapeVerdict').textContent = `${skewWord} · ${kurtWord}`;
+        document.getElementById('mgfDomainTag').textContent = domainTxt;
+        const fEl = document.getElementById('mgfActiveFormula');
+        fEl.innerHTML = formulaHtml;
+        renderMath(fEl);
+
+        const showTan = document.getElementById('mgfToggleTangent').checked;
+        const showTay = document.getElementById('mgfToggleTaylor').checked;
+
+        // Plot MGF Canvas
+        const tMin = -1.2, tMax = asymptoteT ? Math.max(1.4, asymptoteT + 0.5) : 1.2;
+        const { ctx: mCtx, w: mw, h: mh } = setupHiDPI(document.getElementById('mgfCanvas'), document.getElementById('mgfCanvasWrap'), 0.62, 210, 260);
+        drawFuncPlot(mCtx, mw, mh, tMin, tMax, 0, 8, mFn, {
+          mainColor: '#0F766E',
+          tangentFn: showTan ? (t => 1 + m1 * t) : null,
+          taylorFn: showTay ? (t => 1 + m1 * t + 0.5 * m2 * t * t + (m3 / 6) * t * t * t) : null,
+          asymptoteT,
+          yZeroDot: 1
+        });
+
+        // Plot CGF Canvas
+        const { ctx: cCtx, w: cw, h: ch } = setupHiDPI(document.getElementById('cgfCanvas'), document.getElementById('cgfCanvasWrap'), 0.62, 210, 260);
+        drawFuncPlot(cCtx, cw, ch, tMin, tMax, -3, 5, kFn, {
+          mainColor: '#D97706',
+          tangentFn: showTan ? (t => k1 * t) : null,
+          taylorFn: showTay ? (t => k1 * t + 0.5 * k2 * t * t + (k3 / 6) * t * t * t) : null,
+          asymptoteT,
+          yZeroDot: 0
+        });
+      }
+
+      function drawFuncPlot(ctx, w, h, tMin, tMax, yMin, yMax, fn, opts) {
+        const padL = 40, padR = 16, padT = 16, padB = 28;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const toX = t => padL + ((t - tMin) / (tMax - tMin)) * plotW;
+        const toY = y => padT + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E5E7EB'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#4B5563'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = yMin + (yMax - yMin) * (i / 4);
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(1), padL - 6, py);
+        }
+
+        // t = 0 vertical axis
+        ctx.strokeStyle = '#94A3B8'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(toX(0), padT); ctx.lineTo(toX(0), padT + plotH); ctx.stroke();
+
+        // Clip curve plotting to plot box
+        ctx.save();
+        ctx.beginPath(); ctx.rect(padL, padT, plotW, plotH); ctx.clip();
+
+        // Asymptote for Exponential
+        if (opts.asymptoteT !== null && opts.asymptoteT <= tMax) {
+          const ax = toX(opts.asymptoteT);
+          ctx.fillStyle = 'rgba(190, 18, 60, 0.08)';
+          ctx.fillRect(ax, padT, padL + plotW - ax, plotH);
+          ctx.save();
+          ctx.setLineDash([5, 4]);
+          ctx.strokeStyle = '#BE123C'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(ax, padT); ctx.lineTo(ax, padT + plotH); ctx.stroke();
+          ctx.restore();
+          ctx.fillStyle = '#BE123C'; ctx.font = '700 10px JetBrains Mono, monospace'; ctx.textAlign = 'right';
+          ctx.fillText(`t = λ`, ax - 4, padT + 14);
+        }
+
+        // Helper to plot curve
+        function plotCurve(f, color, width, dash) {
+          ctx.save();
+          ctx.strokeStyle = color; ctx.lineWidth = width;
+          if (dash) ctx.setLineDash(dash);
+          ctx.beginPath();
+          let started = false;
+          for (let i = 0; i <= 220; i++) {
+            const t = tMin + (tMax - tMin) * (i / 220);
+            const y = f(t);
+            if (!Number.isFinite(y) || y < yMin - 5 || y > yMax + 20) {
+              started = false;
+              continue;
+            }
+            if (!started) { ctx.moveTo(toX(t), toY(y)); started = true; }
+            else ctx.lineTo(toX(t), toY(y));
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        if (opts.tangentFn) plotCurve(opts.tangentFn, '#D97706', 1.8, [4, 3]);
+        if (opts.taylorFn) plotCurve(opts.taylorFn, '#BE123C', 2.0, [6, 3]);
+        plotCurve(fn, opts.mainColor, 2.8, null);
+
+        // Anchor dot at t=0
+        ctx.fillStyle = '#1A1D24';
+        ctx.beginPath(); ctx.arc(toX(0), toY(opts.yZeroDot), 4.5, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+
+        // Outer border & t ticks
+        ctx.strokeStyle = '#4B5563'; ctx.lineWidth = 1.3;
+        ctx.strokeRect(padL, padT, plotW, plotH);
+        ctx.fillStyle = '#4B5563'; ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        [-1, 0, 1].forEach(tv => {
+          if (tv >= tMin && tv <= tMax) ctx.fillText(`t=${tv}`, toX(tv), padT + plotH + 6);
+        });
+      }
+
+      document.querySelectorAll('.mgf-dist-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          mgfDist = btn.getAttribute('data-mdist');
+          document.querySelectorAll('.mgf-dist-btn').forEach(b => {
+            b.className = b === btn
+              ? 'mgf-dist-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'mgf-dist-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          buildMgfSliders();
+        });
+      });
+
+      document.getElementById('mgfToggleTangent').addEventListener('change', renderMgfLab);
+      document.getElementById('mgfToggleTaylor').addEventListener('change', renderMgfLab);
+
+      /* -------------------------------------------------------------------
+         5. TAB 3: LINEAR COMBINATION & REPRODUCTIVE PROPERTY LAB
+      ------------------------------------------------------------------- */
+      let reproMode = 'inc2025q3';
+      const reproState = {
+        a: 3, b: -3, c: 4, muX: 3, sdX: Math.sqrt(2), muY: 3, sdY: Math.sqrt(2),
+        n1: 5, n2: 4, p: 0.4, binSign: '+',
+        lam1: 3.0, lam2: 2.0, poisSign: '+'
+      };
+
+      function buildReproControls() {
+        const wrap = document.getElementById('reproControlsWrap');
+        if (reproMode === 'inc2025q3' || reproMode === 'normals') {
+          wrap.innerHTML = `
+            <div class="font-bold uppercase tracking-wider text-[#4B5563]">Independent Normals: $Z = aX + bY + c$</div>
+            <div class="grid grid-cols-3 gap-2">
+              <label class="block"><span class="font-bold block mb-1">$a$</span><input id="rpA" type="number" step="1" value="${reproState.a}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$b$</span><input id="rpB" type="number" step="1" value="${reproState.b}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$c$</span><input id="rpC" type="number" step="1" value="${reproState.c}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-[#E5E7EB]">
+              <label class="block"><span class="font-bold block mb-1">$\\mu_X$</span><input id="rpMuX" type="number" step="0.5" value="${reproState.muX}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$\\sigma_X^2$</span><input id="rpVarX" type="number" min="0.1" step="0.5" value="${(reproState.sdX**2).toFixed(2)}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$\\mu_Y$</span><input id="rpMuY" type="number" step="0.5" value="${reproState.muY}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$\\sigma_Y^2$</span><input id="rpVarY" type="number" min="0.1" step="0.5" value="${(reproState.sdY**2).toFixed(2)}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+            </div>
+          `;
+          wrap.querySelectorAll('.rp-in').forEach(inp => inp.addEventListener('input', () => {
+            reproState.a = parseFloat(document.getElementById('rpA').value) || 0;
+            reproState.b = parseFloat(document.getElementById('rpB').value) || 0;
+            reproState.c = parseFloat(document.getElementById('rpC').value) || 0;
+            reproState.muX = parseFloat(document.getElementById('rpMuX').value) || 0;
+            reproState.sdX = Math.sqrt(Math.max(0.01, parseFloat(document.getElementById('rpVarX').value) || 1));
+            reproState.muY = parseFloat(document.getElementById('rpMuY').value) || 0;
+            reproState.sdY = Math.sqrt(Math.max(0.01, parseFloat(document.getElementById('rpVarY').value) || 1));
+            renderReproOutput();
+          }));
+        } else if (reproMode === 'binomSumDiff') {
+          wrap.innerHTML = `
+            <div class="font-bold uppercase tracking-wider text-[#4B5563]">Independent Binomials: $X_1 \\pm X_2$</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" data-bsign="+" class="bsign-btn py-2 rounded-xl font-bold border-2 ${reproState.binSign==='+' ? 'bg-[#0F766E] text-white border-[#0F766E]' : 'bg-white text-[#1A1D24] border-[#E5E7EB]'}">Sum: $X_1 + X_2$</button>
+              <button type="button" data-bsign="-" class="bsign-btn py-2 rounded-xl font-bold border-2 ${reproState.binSign==='-' ? 'bg-[#BE123C] text-white border-[#BE123C]' : 'bg-white text-[#1A1D24] border-[#E5E7EB]'}">Difference: $X_1 - X_2$</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2 pt-2">
+              <label class="block"><span class="font-bold block mb-1">$n_1$</span><input id="rpN1" type="number" min="1" max="30" value="${reproState.n1}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$n_2$</span><input id="rpN2" type="number" min="1" max="30" value="${reproState.n2}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$p$</span><input id="rpP" type="number" min="0.05" max="0.95" step="0.05" value="${reproState.p}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+            </div>
+          `;
+          wrap.querySelectorAll('.bsign-btn').forEach(b => b.addEventListener('click', () => {
+            reproState.binSign = b.getAttribute('data-bsign');
+            buildReproControls();
+          }));
+          wrap.querySelectorAll('.rp-in').forEach(inp => inp.addEventListener('input', () => {
+            reproState.n1 = Math.max(1, parseInt(document.getElementById('rpN1').value, 10) || 1);
+            reproState.n2 = Math.max(1, parseInt(document.getElementById('rpN2').value, 10) || 1);
+            reproState.p = Math.min(0.95, Math.max(0.05, parseFloat(document.getElementById('rpP').value) || 0.5));
+            renderReproOutput();
+          }));
+        } else {
+          wrap.innerHTML = `
+            <div class="font-bold uppercase tracking-wider text-[#4B5563]">Independent Poissons: $X_1 \\pm X_2$</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" data-psign="+" class="psign-btn py-2 rounded-xl font-bold border-2 ${reproState.poisSign==='+' ? 'bg-[#0F766E] text-white border-[#0F766E]' : 'bg-white text-[#1A1D24] border-[#E5E7EB]'}">Sum: $X_1 + X_2$</button>
+              <button type="button" data-psign="-" class="psign-btn py-2 rounded-xl font-bold border-2 ${reproState.poisSign==='-' ? 'bg-[#BE123C] text-white border-[#BE123C]' : 'bg-white text-[#1A1D24] border-[#E5E7EB]'}">Difference: $X_1 - X_2$</button>
+            </div>
+            <div class="grid grid-cols-2 gap-2 pt-2">
+              <label class="block"><span class="font-bold block mb-1">$\\lambda_1$</span><input id="rpL1" type="number" min="0.5" max="20" step="0.5" value="${reproState.lam1}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+              <label class="block"><span class="font-bold block mb-1">$\\lambda_2$</span><input id="rpL2" type="number" min="0.5" max="20" step="0.5" value="${reproState.lam2}" class="rp-in w-full px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" /></label>
+            </div>
+          `;
+          wrap.querySelectorAll('.psign-btn').forEach(b => b.addEventListener('click', () => {
+            reproState.poisSign = b.getAttribute('data-psign');
+            buildReproControls();
+          }));
+          wrap.querySelectorAll('.rp-in').forEach(inp => inp.addEventListener('input', () => {
+            reproState.lam1 = Math.max(0.5, parseFloat(document.getElementById('rpL1').value) || 1);
+            reproState.lam2 = Math.max(0.5, parseFloat(document.getElementById('rpL2').value) || 1);
+            renderReproOutput();
+          }));
+        }
+        renderMath(wrap);
+        renderReproOutput();
+      }
+
+      function renderReproOutput() {
+        const banner = document.getElementById('reproVerdictBanner');
+        const box = document.getElementById('reproDerivationBox');
+
+        if (reproMode === 'inc2025q3' || reproMode === 'normals') {
+          const { a, b, c, muX, sdX, muY, sdY } = reproState;
+          const vX = sdX * sdX, vY = sdY * sdY;
+          const muZ = a * muX + b * muY + c;
+          const varZ = a * a * vX + b * b * vY;
+          banner.className = 'p-4 rounded-2xl border-2 border-teal-400 bg-[#CCFBF1]/50 flex items-center justify-between gap-3';
+          banner.innerHTML = `<div><div class="text-xs font-bold uppercase text-[#0F766E]">Reproductive Property Verdict</div><div class="text-base sm:text-lg font-extrabold text-[#1A1D24]">NORMAL FAMILY PRESERVED: $Z \\sim N(${muZ.toFixed(2)},\\, ${varZ.toFixed(2)})$ ✓</div></div><span class="px-3 py-1 rounded-full bg-[#0F766E] text-white text-xs font-bold shrink-0">REPRODUCTIVE</span>`;
+          box.innerHTML = `
+            <div><strong>1. Apply $M_Z(t) = e^{ct} M_X(at) M_Y(bt)$:</strong>
+              $$M_Z(t) = e^{${c}t}\\cdot\\exp\\!\\left(${muX}(${a}t) + \\frac{1}{2}(${vX.toFixed(2)})(${a}t)^2\\right)\\cdot\\exp\\!\\left(${muY}(${b}t) + \\frac{1}{2}(${vY.toFixed(2)})(${b}t)^2\\right)$$
+            </div>
+            <div><strong>2. Combine Exponents:</strong>
+              $$M_Z(t) = \\exp\\!\\left(${muZ.toFixed(2)}t + ${(0.5*varZ).toFixed(2)}t^2\\right) = \\exp\\!\\left(${muZ.toFixed(2)}t + \\frac{1}{2}(${varZ.toFixed(2)})t^2\\right)$$
+            </div>
+            <p class="text-xs text-[#4B5563]">By the <strong>MGF Uniqueness Theorem</strong>, $Z \\sim N(\\mu_Z = ${muZ.toFixed(2)},\\, \\sigma_Z^2 = ${varZ.toFixed(2)})$.</p>
+          `;
+        } else if (reproMode === 'binomSumDiff') {
+          const { n1, n2, p, binSign } = reproState;
+          const q = +(1 - p).toFixed(2);
+          if (binSign === '+') {
+            banner.className = 'p-4 rounded-2xl border-2 border-teal-400 bg-[#CCFBF1]/50 flex items-center justify-between gap-3';
+            banner.innerHTML = `<div><div class="text-xs font-bold uppercase text-[#0F766E]">Reproductive Property Verdict</div><div class="text-base sm:text-lg font-extrabold text-[#1A1D24]">BINOMIAL PRESERVED: $X_1 + X_2 \\sim \\text{Bin}(${n1 + n2},\\, ${p.toFixed(2)})$ ✓</div></div><span class="px-3 py-1 rounded-full bg-[#0F766E] text-white text-xs font-bold shrink-0">REPRODUCTIVE</span>`;
+            box.innerHTML = `
+              <div>$$M_{X_1+X_2}(t) = M_{X_1}(t)M_{X_2}(t) = (${q} + ${p.toFixed(2)}e^t)^{${n1}}(${q} + ${p.toFixed(2)}e^t)^{${n2}} = (${q} + ${p.toFixed(2)}e^t)^{${n1+n2}}$$</div>
+              <p class="text-xs text-[#4B5563]">Matches the Binomial MGF with $N = ${n1 + n2}$ and identical $p = ${p.toFixed(2)}$.</p>
+            `;
+          } else {
+            banner.className = 'p-4 rounded-2xl border-2 border-[#BE123C]/50 bg-[#FFE4E6]/75 flex items-center justify-between gap-3';
+            banner.innerHTML = `<div><div class="text-xs font-bold uppercase text-[#BE123C]">Reproductive Property Verdict</div><div class="text-base sm:text-lg font-extrabold text-[#1A1D24]">NOT BINOMIAL! ($X_1 - X_2$ FAILS) ✕</div></div><span class="px-3 py-1 rounded-full bg-[#BE123C] text-white text-xs font-bold shrink-0">NOT CLOSED</span>`;
+            box.innerHTML = `
+              <div>$$M_{X_1-X_2}(t) = M_{X_1}(t)M_{X_2}(-t) = (${q} + ${p.toFixed(2)}e^t)^{${n1}}(${q} + ${p.toFixed(2)}e^{-t})^{${n2}}$$</div>
+              <p class="text-xs text-[#BE123C] font-semibold">Cannot be written as $(q^* + p^* e^t)^N$ because of the $e^{-t}$ factor, and its support $\\{-${n2}, \\dots, ${n1}\\}$ contains negative integers!</p>
+            `;
+          }
+        } else {
+          const { lam1, lam2, poisSign } = reproState;
+          if (poisSign === '+') {
+            banner.className = 'p-4 rounded-2xl border-2 border-teal-400 bg-[#CCFBF1]/50 flex items-center justify-between gap-3';
+            banner.innerHTML = `<div><div class="text-xs font-bold uppercase text-[#0F766E]">Reproductive Property Verdict</div><div class="text-base sm:text-lg font-extrabold text-[#1A1D24]">POISSON PRESERVED: $X_1 + X_2 \\sim \\text{Poisson}(${(lam1+lam2).toFixed(1)})$ ✓</div></div><span class="px-3 py-1 rounded-full bg-[#0F766E] text-white text-xs font-bold shrink-0">REPRODUCTIVE</span>`;
+            box.innerHTML = `
+              <div>$$M_{X_1+X_2}(t) = e^{${lam1}(e^t - 1)} \\cdot e^{${lam2}(e^t - 1)} = e^{${(lam1+lam2).toFixed(1)}(e^t - 1)}$$</div>
+              <p class="text-xs text-[#4B5563]">By Uniqueness Theorem, independent Poisson sums remain Poisson with summed rate $\\lambda_1 + \\lambda_2$.</p>
+            `;
+          } else {
+            banner.className = 'p-4 rounded-2xl border-2 border-[#BE123C]/50 bg-[#FFE4E6]/75 flex items-center justify-between gap-3';
+            banner.innerHTML = `<div><div class="text-xs font-bold uppercase text-[#BE123C]">Reproductive Property Verdict</div><div class="text-base sm:text-lg font-extrabold text-[#1A1D24]">NOT POISSON! (Skellam Distribution) ✕</div></div><span class="px-3 py-1 rounded-full bg-[#BE123C] text-white text-xs font-bold shrink-0">NOT CLOSED</span>`;
+            box.innerHTML = `
+              <div>$$M_{X_1-X_2}(t) = e^{${lam1}(e^t - 1) + ${lam2}(e^{-t} - 1)}$$</div>
+              <p class="text-xs text-[#BE123C] font-semibold">Takes negative values and has $e^{-t}$ in the exponent—cannot be Poisson!</p>
+            `;
+          }
+        }
+        renderMath(document.getElementById('tab-repro'));
+      }
+
+      document.querySelectorAll('.repro-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          reproMode = btn.getAttribute('data-rpreset');
+          document.querySelectorAll('.repro-preset').forEach(b => {
+            b.className = b === btn
+              ? 'repro-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'repro-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          if (reproMode === 'inc2025q3') {
+            Object.assign(reproState, { a: 3, b: -3, c: 4, muX: 3, sdX: Math.sqrt(2), muY: 3, sdY: Math.sqrt(2) });
+          } else if (reproMode === 'normals') {
+            Object.assign(reproState, { a: 2, b: 1, c: -5, muX: 10, sdX: 2, muY: 4, sdY: 3 });
+          }
+          buildReproControls();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 4: RAW <-> CENTRAL MOMENTS & SHAPE CALCULATOR
+      ------------------------------------------------------------------- */
+      const MOM_PRESETS = {
+        quiz:    { m1: 12, m2: 164, m3: 2448, m4: 39200 },
+        stdnorm: { m1: 0,  m2: 1,   m3: 0,    m4: 3 },
+        exp1:    { m1: 1,  m2: 2,   m3: 6,    m4: 24 },
+        heavy:   { m1: 0,  m2: 1,   m3: 0,    m4: 6 }
+      };
+
+      function renderMomentsLab() {
+        const m1 = parseFloat(document.getElementById('momM1').value) || 0;
+        const m2 = parseFloat(document.getElementById('momM2').value) || 0;
+        const m3 = parseFloat(document.getElementById('momM3').value) || 0;
+        const m4 = parseFloat(document.getElementById('momM4').value) || 0;
+
+        const mu2 = m2 - m1 * m1;
+        const mu3 = m3 - 3 * m2 * m1 + 2 * Math.pow(m1, 3);
+        const mu4 = m4 - 4 * m3 * m1 + 6 * m2 * m1 * m1 - 3 * Math.pow(m1, 4);
+
+        const warn = document.getElementById('momWarningBox');
+        const meso = document.getElementById('momMesoNote');
+
+        if (mu2 <= 1e-9) {
+          warn.textContent = `Invalid raw moments: μ₂ = μ'₂ − (μ'₁)² = ${mu2.toFixed(4)} ≤ 0. Variance must be strictly positive!`;
+          warn.classList.remove('hidden');
+          document.getElementById('momOutMu2').textContent = mu2.toFixed(2);
+          document.getElementById('momOutSd').textContent = '—';
+          document.getElementById('momOutMu3').textContent = mu3.toFixed(2);
+          document.getElementById('momOutMu4').textContent = mu4.toFixed(2);
+          document.getElementById('momOutG1').textContent = '—';
+          document.getElementById('momOutG2').textContent = '—';
+          meso.textContent = 'Fix μ\'₂ > (μ\'₁)² to evaluate shape.';
+          return;
+        }
+        warn.classList.add('hidden');
+
+        const sd = Math.sqrt(mu2);
+        const g1 = mu3 / Math.pow(sd, 3);
+        const g2 = mu4 / (mu2 * mu2) - 3;
+        const reqMu4 = 3 * mu2 * mu2;
+
+        document.getElementById('momOutMu2').textContent = mu2.toFixed(3);
+        document.getElementById('momOutSd').textContent = sd.toFixed(3);
+        document.getElementById('momOutMu3').textContent = mu3.toFixed(2);
+        document.getElementById('momOutMu4').textContent = mu4.toFixed(2);
+        document.getElementById('momOutG1').textContent = g1.toFixed(3);
+        document.getElementById('momOutG2').textContent = g2.toFixed(3);
+
+        const skewW = Math.abs(g1) < 0.05 ? 'Symmetric' : (g1 > 0 ? 'Right-Skewed' : 'Left-Skewed');
+        const kurtW = Math.abs(g2) < 0.08 ? 'Mesokurtic' : (g2 > 0 ? 'Leptokurtic' : 'Platykurtic');
+        document.getElementById('momShapeTag').textContent = `${skewW} · ${kurtW}`;
+        meso.innerHTML = `<strong>Mesokurtic Benchmark:</strong> For $\\mu_2 = ${mu2.toFixed(2)}$, a mesokurtic distribution requires $\\mu_4 = 3\\sigma^4 = \\mathbf{${reqMu4.toFixed(2)}}$ (yours is ${mu4.toFixed(2)}).`;
+        renderMath(meso);
+
+        // Stylized Shape Canvas
+        const { ctx, w, h } = setupHiDPI(document.getElementById('momCanvas'), document.getElementById('momCanvasWrap'), 0.44, 180, 220);
+        const padL = 24, padR = 24, padT = 18, padB = 26;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const zMin = -4, zMax = 4;
+        const toX = z => padL + ((z - zMin) / (zMax - zMin)) * plotW;
+
+        // Clamp visual skewness/kurtosis gently so curve stays smooth and non-negative
+        const sVis = Math.max(-1.6, Math.min(1.6, g1));
+        const kVis = Math.max(-1.2, Math.min(4.0, g2));
+
+        function normPdf(z) { return Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI); }
+        function stylizedPdf(z) {
+          // Skew-normal + smooth peakedness shaping
+          const alpha = sVis * 2.2;
+          const phi = normPdf(z);
+          // Approx normal CDF for skew-normal factor
+          const t = alpha * z;
+          const cdf = 0.5 * (1 + Math.tanh(0.79788456 * (t + 0.044715 * t * t * t)));
+          const base = 2 * phi * cdf;
+          // Peakedness exponent p_exp > 0 (higher kVis => sharper peak & heavier tails)
+          const peakBoost = 1 + 0.22 * kVis * Math.exp(-1.4 * z * z) + 0.06 * Math.max(0, kVis) * Math.min(4, z * z) * Math.exp(-0.35 * z * z);
+          return Math.max(0, base * peakBoost);
+        }
+
+        let maxH = 0.45;
+        for (let i = 0; i <= 160; i++) {
+          const z = zMin + (zMax - zMin) * (i / 160);
+          maxH = Math.max(maxH, stylizedPdf(z));
+        }
+        maxH *= 1.15;
+        const toY = y => padT + plotH * (1 - y / maxH);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Normal reference curve (dashed slate)
+        ctx.save();
+        ctx.setLineDash([5, 4]);
+        ctx.strokeStyle = '#94A3B8'; ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        for (let i = 0; i <= 160; i++) {
+          const z = zMin + (zMax - zMin) * (i / 160);
+          if (i === 0) ctx.moveTo(toX(z), toY(normPdf(z)));
+          else ctx.lineTo(toX(z), toY(normPdf(z)));
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Stylized curve (filled teal)
+        ctx.fillStyle = 'rgba(15, 118, 110, 0.24)';
+        ctx.strokeStyle = '#0F766E'; ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        ctx.moveTo(toX(zMin), toY(0));
+        for (let i = 0; i <= 180; i++) {
+          const z = zMin + (zMax - zMin) * (i / 180);
+          ctx.lineTo(toX(z), toY(stylizedPdf(z)));
+        }
+        ctx.lineTo(toX(zMax), toY(0));
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Baseline & labels
+        ctx.strokeStyle = '#4B5563'; ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.moveTo(padL, toY(0)); ctx.lineTo(padL + plotW, toY(0)); ctx.stroke();
+        ctx.fillStyle = '#4B5563'; ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        [-3, -2, -1, 0, 1, 2, 3].forEach(z => ctx.fillText(`${z}σ`, toX(z), toY(0) + 6));
+      }
+
+      document.querySelectorAll('.mom-in').forEach(inp => inp.addEventListener('input', renderMomentsLab));
+      document.querySelectorAll('.mom-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = MOM_PRESETS[btn.getAttribute('data-mopreset')];
+          if (!p) return;
+          document.getElementById('momM1').value = p.m1;
+          document.getElementById('momM2').value = p.m2;
+          document.getElementById('momM3').value = p.m3;
+          document.getElementById('momM4').value = p.m4;
+          document.querySelectorAll('.mom-preset').forEach(b => {
+            b.className = b === btn
+              ? 'mom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'mom-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1A1D24] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          renderMomentsLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. SECTION 5: 5-QUESTION INTERACTIVE MASTERY QUIZ
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. (PGF Normalization) A discrete RV $X$ has PGF $P_X(t) = k(2 + t + t^2)^2$. What is the exact value of $k$?',
+          options: ['$1/4$', '$1/8$', '$1/16$', '$1/36$'],
+          correct: 2,
+          explanation: 'Using $P_X(1) = 1$: $k(2 + 1 + 1)^2 = k(4)^2 = 16k = 1 \\implies k = 1/16$.'
+        },
+        {
+          q: '2. (PGF Factorial-Moment Trap) For a discrete RV with PGF $P_X(t)$, suppose $P\'_X(1) = 3$ and $P\'\'_X(1) = 10$. What is the variance $V(X)$?',
+          options: ['$10 - 3^2 = 1$', '$10 + 3 - 3^2 = 4$', '$10 - 3 = 7$', '$10 + 3 = 13$'],
+          correct: 1,
+          explanation: 'Remember $P\'\'_X(1) = E[X(X-1)]$, NOT $E[X^2]$! Thus $V(X) = P\'\'_X(1) + P\'_X(1) - [P\'_X(1)]^2 = 10 + 3 - 9 = 4$.'
+        },
+        {
+          q: '3. (Linear Scaling of MGF) If $X$ has MGF $M_X(t)$, what is the MGF of $Y = 4 - 2X$?',
+          options: ['$e^{-2t} M_X(4t)$', '$e^{4t} M_X(-2t)$', '$4 M_X(-2t)$', '$e^{4t} M_X(2t)$'],
+          correct: 1,
+          explanation: 'By $M_{a+bX}(t) = e^{at} M_X(bt)$ with $a = 4$ and $b = -2$, we get $M_{4-2X}(t) = e^{4t} M_X(-2t)$.'
+        },
+        {
+          q: '4. (CGF Cumulants) If the Cumulant Generating Function is $K_X(t) = 5t + 4t^2$, what are the mean $\\mu$, variance $\\sigma^2$, and excess kurtosis $\\gamma_2$?',
+          options: [
+            '$\\mu = 5,\\; \\sigma^2 = 4,\\; \\gamma_2 = 0$',
+            '$\\mu = 5,\\; \\sigma^2 = 8,\\; \\gamma_2 = 0$',
+            '$\\mu = 5,\\; \\sigma^2 = 8,\\; \\gamma_2 = 3$',
+            '$\\mu = 4,\\; \\sigma^2 = 5,\\; \\gamma_2 = 0$'
+          ],
+          correct: 1,
+          explanation: '$K\'_X(0) = 5 = \\mu$, $K\'\'_X(0) = 8 = \\sigma^2$ (since $\\frac{d^2}{dt^2}(4t^2) = 8$), and $K^{(4)}_X(0) = 0 \\implies \\gamma_2 = 0$.'
+        },
+        {
+          q: '5. (Binomial Difference Trap) Suppose $X_1 \\sim \\text{Bin}(5, 0.4)$ and $X_2 \\sim \\text{Bin}(3, 0.4)$ are independent. What is the distribution of $X_1 - X_2$?',
+          options: [
+            '$\\text{Binomial}(2, 0.4)$',
+            '$\\text{Binomial}(8, 0.4)$',
+            'Not Binomial (its MGF has $e^{-t}$ and it can take negative values)',
+            '$\\text{Poisson}(0.8)$'
+          ],
+          correct: 2,
+          explanation: 'While $X_1 + X_2 \\sim \\text{Bin}(8, 0.4)$, the difference $X_1 - X_2$ has MGF $(0.6+0.4e^t)^5(0.6+0.4e^{-t})^3$ and takes values in $\\{-3, \\dots, 5\\}$, so it is NOT Binomial.'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-[#FAFAF7] border-[#E5E7EB] text-[#1A1D24] hover:border-[#0F766E] hover:bg-[#CCFBF1]/30';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-[#CCFBF1]/70 border-[#0F766E] text-[#0F766E] font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-[#FFE4E6] border-[#BE123C] text-[#BE123C] font-semibold';
+              else cls = 'bg-slate-50 border-slate-200 text-slate-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-[#CCFBF1]/50 border-teal-300 text-[#0F766E]' : 'bg-[#FFE4E6]/80 border-rose-300 text-[#BE123C]'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-[#1A1D24] text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        renderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         8. INITIALIZATION
+      ------------------------------------------------------------------- */
+      function initAll() {
+        computePgfState();
+        buildMgfSliders();
+        buildReproControls();
+        renderMomentsLab();
+        renderQuiz();
+        updateScrollProgress();
+        renderMath(document.body);
+      }
+
+      document.addEventListener('DOMContentLoaded', initAll);
+      window.addEventListener('load', () => {
+        redrawVisibleCanvases();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

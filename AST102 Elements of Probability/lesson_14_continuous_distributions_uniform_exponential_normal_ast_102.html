@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 14: Continuous Distributions — Uniform, Exponential &amp; Normal | AST 102: Elements of Probability (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Playfair Display, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ivory: '#FAFAF7',
+            ink: '#1E293B',
+            muted: '#475569',
+            borderWarm: '#E5E7EB',
+            tealPrimary: '#0F766E',
+            tealHover: '#115E59',
+            tealSoft: '#F0FDFA',
+            amberAccent: '#D97706',
+            amberSoft: '#FFFBEB',
+            indigoSec: '#4338CA',
+            indigoSoft: '#EEF2FF',
+            roseTrap: '#BE123C',
+            roseSoft: '#FFF1F2',
+            emeraldOk: '#059669',
+            emeraldSoft: '#ECFDF5',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX v0.16.11 via jsDelivr CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #FAFAF7;
+      color: #1E293B;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    h1, h2, .font-editorial {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Prevent display math overflow on small mobile screens */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #0F766E;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+    }
+
+    /* Clean disclosure arrows for details/summary */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] > summary .details-chevron {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-[#F0FDFA] selection:text-[#0F766E]">
+
+  <!-- ===================================================================== -->
+  <!-- 1. STICKY TOP ORIENTATION BAR & LIVE READING PROGRESS BAR             -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] shadow-sm">
+    <div class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam Weight Badge -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-[#475569]">
+          <span class="inline-flex items-center gap-1.5 font-bold text-[#1E293B]">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+            Module 4: Special Distributions
+          </span>
+          <span class="text-slate-300">·</span>
+          <span class="text-[#0F766E] font-semibold">Lesson 14 of 14 (Finale)</span>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFFBEB] text-[#D97706] border border-amber-200">
+            <svg class="w-3.5 h-3.5 text-[#D97706]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Year Final · High Weight
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Quick Jump Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#475569] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#475569] hover:text-[#4338CA] hover:bg-[#EEF2FF] transition-colors">Proofs</a>
+        <a href="#exam-vault" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#475569] hover:text-[#D97706] hover:bg-[#FFFBEB] transition-colors">Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#475569] hover:text-[#059669] hover:bg-[#ECFDF5] transition-colors">Mastery Quiz</a>
+      </nav>
+    </div>
+
+    <!-- Live Reading Progress Bar along bottom edge of sticky header -->
+    <div class="w-full h-[3px] bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-[#0F766E] via-teal-500 to-[#D97706] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- 2. HERO HEADER & INTERACTIVE LEARNING OBJECTIVES                      -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-[#0F172A] via-[#134E4A] to-[#0F766E] text-white py-12 sm:py-16 border-b border-teal-950">
+    <div class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#F0FDFA]">AST 102 · Course Finale · Lesson 14 of 14</span>
+            <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-300/40 text-amber-200">~50 min study</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+            Continuous Distributions: Uniform, Exponential &amp; Normal
+          </h1>
+
+          <p class="text-teal-50/90 text-base sm:text-lg leading-relaxed">
+            From flat randomness and memoryless lifetimes to the Gaussian bell curve, Z-standardization, and continuity-corrected approximations — aligned with <strong>AST 102 (ISRT, University of Dhaka)</strong> &amp; <strong>Ross Chapter 5</strong>.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D97706] hover:bg-amber-500 text-white font-semibold text-sm shadow-lg shadow-black/25 transition-all">
+              Launch 4-Tab Continuous Lab
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="#exam-vault" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+              ISRT Past Exam Vault
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive Clickable 5-Item Learning Objectives Checklist -->
+        <div class="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-5 sm:p-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-teal-100">Learning Objectives</span>
+            <span id="objCounter" class="font-mono text-xs font-bold text-amber-200">0/5 Completed</span>
+          </div>
+          <ul class="space-y-1.5 text-xs sm:text-sm text-teal-50">
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Compute probabilities, means, and variances for Continuous Uniform $U(a,b)$ and Exponential $\text{Exp}(\lambda)$ distributions.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Prove and apply the Exponential memoryless property and find distributions of $\min/\max$ of i.i.d. Exponentials.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Standardize any Normal $N(\mu, \sigma^2)$ to $Z \sim N(0,1)$, use $\Phi(-z) = 1 - \Phi(z)$, and solve inverse percentile problems.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Derive the distribution of linear combinations $aX + bY$ of independent Normal variables via MGFs.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Apply the Normal approximation to the Binomial distribution with the $\pm 0.5$ continuity correction.</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- 3. SECTION 1: CORE CONCEPTS & INTUITION                             -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 01 • Core Theory</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1E293B] mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-[#475569]">Sheldon Ross Ch. 5 · ISRT AST 102 Finals (2022–2025)</p>
+      </div>
+
+      <!-- CARD (A): CONTINUOUS UNIFORM U(a, b) -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1E293B] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">A</span>
+            Continuous Uniform Distribution $U(a, b)$
+          </h3>
+          <span class="text-xs font-semibold text-[#475569]">Flat Density · Foundation of Simulation (Ross Ch. 10)</span>
+        </div>
+        <p class="text-sm text-[#475569] leading-relaxed">
+          Models a completely random real number chosen over $[a, b]$ where every sub-interval of equal length carries identical probability. In computational statistics and Monte Carlo simulation (Ross Ch. 10), $U(0, 1)$ is the universal seed from which all other random variables are generated via inverse-CDF transforms.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-center">
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E] mb-1">PDF ($a \le x \le b$)</div>
+            <div class="text-sm font-semibold text-[#1E293B]">$f(x) = \dfrac{1}{b - a}$</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E] mb-1">CDF ($a \le x \le b$)</div>
+            <div class="text-sm font-semibold text-[#1E293B]">$F(x) = \dfrac{x - a}{b - a}$</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#F0FDFA] border border-teal-200">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E] mb-1">Mean</div>
+            <div class="text-sm font-semibold text-[#1E293B]">$E[X] = \dfrac{a + b}{2}$</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FFFBEB] border border-amber-200">
+            <div class="text-[11px] font-bold uppercase text-[#D97706] mb-1">Variance</div>
+            <div class="text-sm font-semibold text-[#1E293B]">$\text{Var}(X) = \dfrac{(b - a)^2}{12}$</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD (B): EXPONENTIAL DISTRIBUTION Exp(lambda) -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1E293B] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">B</span>
+            Exponential Distribution $\text{Exp}(\lambda)$
+          </h3>
+          <span class="text-xs font-semibold text-[#475569]">Waiting Time Between Poisson($\lambda$) Events · Year Final 2022 &amp; 2025</span>
+        </div>
+
+        <p class="text-sm text-[#475569] leading-relaxed">
+          If events occur according to a Poisson process at rate $\lambda &gt; 0$, the continuous waiting time $X$ until the first event (or between consecutive events) follows $\text{Exp}(\lambda)$. It is the <strong>unique continuous memoryless distribution</strong> and has a constant failure (hazard) rate $h(t) = \frac{f(t)}{S(t)} = \lambda$.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-1.5">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E]">PDF, CDF, Survival &amp; Moments ($x \ge 0$)</div>
+            <div>$f(x) = \lambda e^{-\lambda x}, \qquad F(x) = 1 - e^{-\lambda x}, \qquad S(x) = P(X &gt; x) = e^{-\lambda x}$</div>
+            <div class="pt-1 font-semibold text-[#1E293B]">$E[X] = \dfrac{1}{\lambda}, \qquad \text{Var}(X) = \dfrac{1}{\lambda^2}, \qquad h(t) = \lambda$</div>
+          </div>
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1.5">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E]">Memoryless &amp; Series/Parallel Reliability</div>
+            <div><strong>Memoryless:</strong> $P(X &gt; s + t \mid X &gt; s) = P(X &gt; t) = e^{-\lambda t}$</div>
+            <div><strong>Series System (Minimum):</strong> For i.i.d. $X_1, \dots, X_n \sim \text{Exp}(\lambda)$, $\min(X_1, \dots, X_n) \sim \text{Exp}(n\lambda)$ with $P(\min \ge a) = e^{-n\lambda a}$.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD (C): NORMAL / GAUSSIAN DISTRIBUTION N(mu, sigma^2) -->
+      <article class="bg-white rounded-2xl border border-[#E5E7EB] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1E293B] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 font-mono text-xs font-bold inline-flex items-center justify-center">C</span>
+            Normal (Gaussian) Distribution $N(\mu, \sigma^2)$
+          </h3>
+          <span class="text-xs font-semibold text-[#475569]">Ross §5.4 · ISRT Finals 2022–2025 Core</span>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-center">
+          $$f(x) = \frac{1}{\sigma\sqrt{2\pi}}\,\exp\!\left(-\frac{(x - \mu)^2}{2\sigma^2}\right), \qquad -\infty &lt; x &lt; \infty \quad (\sigma &gt; 0)$$
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1.5">
+            <div class="font-bold text-[#0F766E] uppercase text-[11px]">Geometry &amp; 68–95–99.7 Rule</div>
+            <p class="text-[#475569]">Symmetric bell centered at $\mu = \text{mean} = \text{median} = \text{mode}$. Inflection points sit at $\mu \pm \sigma$; peak height $\frac{1}{\sigma\sqrt{2\pi}}$ drops as $\sigma$ grows.</p>
+            <div class="font-mono text-[11px] font-bold text-[#0F766E] pt-1">±1σ: 68.3% · ±2σ: 95.4% · ±3σ: 99.7%</div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#EEF2FF] border border-indigo-200 space-y-1.5">
+            <div class="font-bold text-[#4338CA] uppercase text-[11px]">Standard Normal &amp; Symmetry</div>
+            <p class="text-[#475569]">Standardize via $Z = \dfrac{X - \mu}{\sigma} \sim N(0, 1)$, so $P(X \le x) = \Phi\!\left(\dfrac{x - \mu}{\sigma}\right)$.</p>
+            <div class="text-center font-bold text-[#4338CA] pt-1">$\Phi(-z) = 1 - \Phi(z)$</div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#FFFBEB] border border-amber-200 space-y-1.5">
+            <div class="font-bold text-[#D97706] uppercase text-[11px]">Linear Combos &amp; Binomial Approx</div>
+            <p class="text-[#475569]">Independent $X_i \sim N(\mu_i, \sigma_i^2) \implies \sum c_i X_i \sim N\!\left(\sum c_i\mu_i,\; \sum c_i^2\sigma_i^2\right)$.</p>
+            <p class="text-[11px] text-[#475569]">$B(n,p) \approx N(np, npq)$ when $np \ge 5, nq \ge 5$ (or $npq \ge 10$) with $\pm 0.5$ continuity correction.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ROSE ISRT EXAM-TRAP SPOTLIGHT -->
+      <div class="rounded-2xl border-2 border-[#BE123C]/40 bg-[#FFF1F2] p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#BE123C] text-white font-extrabold text-sm shadow-xs">!</span>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#BE123C]">ISRT Exam-Trap Spotlight</span>
+            <h3 class="text-lg font-bold text-[#1E293B]">Three Critical Continuous-Distribution Traps</h3>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 1: Variance vs. SD in $N(\mu, \sigma^2)$</div>
+            <p class="text-[#475569] leading-relaxed">
+              ISRT exams write $X \sim N(2, 3)$ meaning <strong>variance $\sigma^2 = 3$</strong> (so $\sigma = \sqrt{3}$), NOT $\sigma = 3$! Always verify whether the problem states "variance" or "standard deviation" before dividing by $\sigma$.
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 2: Continuity Correction Direction</div>
+            <p class="text-[#475569] leading-relaxed">
+              To <em>include</em> $k$: $P(X \ge k) \approx P(Y &gt; k - 0.5)$ and $P(X \le k) \approx P(Y &lt; k + 0.5)$. To <em>exclude</em> $k$: $P(X &gt; k) \approx P(Y &gt; k + 0.5)$ and $P(X &lt; k) \approx P(Y &lt; k - 0.5)$.
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 3: Min vs. Max of i.i.d. Exponentials</div>
+            <p class="text-[#475569] leading-relaxed">
+              $P(\min \ge a) = [P(X_1 \ge a)]^n = e^{-n\lambda a}$ (so $\min \sim \text{Exp}(n\lambda)$), whereas $P(\max \ge a) = 1 - P(\max &lt; a) = 1 - (1 - e^{-\lambda a})^n$. <strong>Never</strong> confuse $\max$ with $\text{Exp}(\lambda/n)$!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK-REFERENCE COMPARISON TABLE -->
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#1E293B] text-white flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold">Quick-Reference Comparison: Uniform, Exponential &amp; Normal</h3>
+          <span class="text-xs text-teal-200">Complete Formula Sheet</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-[#FAFAF7] border-b border-[#E5E7EB] text-[#475569] uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4 font-bold">Property</th>
+                <th class="py-3.5 px-4 font-bold text-[#0F766E]">Uniform $U(a, b)$</th>
+                <th class="py-3.5 px-4 font-bold text-[#D97706]">Exponential $\text{Exp}(\lambda)$</th>
+                <th class="py-3.5 px-4 font-bold text-[#4338CA]">Normal $N(\mu, \sigma^2)$</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-[#1E293B]">
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Support</td>
+                <td class="py-3 px-4">$[a, b]$</td>
+                <td class="py-3 px-4">$[0, \infty)$</td>
+                <td class="py-3 px-4">$(-\infty, \infty)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">PDF $f(x)$</td>
+                <td class="py-3 px-4">$\dfrac{1}{b - a}$</td>
+                <td class="py-3 px-4">$\lambda e^{-\lambda x}$</td>
+                <td class="py-3 px-4">$\dfrac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">CDF $F(x)$</td>
+                <td class="py-3 px-4">$\dfrac{x - a}{b - a}$</td>
+                <td class="py-3 px-4">$1 - e^{-\lambda x}$</td>
+                <td class="py-3 px-4">$\Phi\!\left(\dfrac{x - \mu}{\sigma}\right)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Mean $E[X]$</td>
+                <td class="py-3 px-4">$\dfrac{a + b}{2}$</td>
+                <td class="py-3 px-4">$\dfrac{1}{\lambda}$</td>
+                <td class="py-3 px-4">$\mu$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Variance $\text{Var}(X)$</td>
+                <td class="py-3 px-4">$\dfrac{(b - a)^2}{12}$</td>
+                <td class="py-3 px-4">$\dfrac{1}{\lambda^2}$</td>
+                <td class="py-3 px-4">$\sigma^2$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">MGF $M_X(t)$</td>
+                <td class="py-3 px-4">$\dfrac{e^{tb} - e^{ta}}{t(b - a)}$ <span class="text-[10px] text-[#475569]">($t \neq 0$)</span></td>
+                <td class="py-3 px-4">$\dfrac{\lambda}{\lambda - t}$ <span class="text-[10px] text-[#BE123C]">($t &lt; \lambda$)</span></td>
+                <td class="py-3 px-4">$\exp\!\left(\mu t + \dfrac{1}{2}\sigma^2 t^2\right)$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 4. SECTION 2: 4-TAB HIGH-DPI INTERACTIVE CONTINUOUS LAB             -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 02 • Interactive Studio</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1E293B] mt-1">4-Tab High-DPI Interactive Continuous Lab</h2>
+        </div>
+        <p class="text-sm text-[#475569]">Abramowitz-Stegun $\Phi(z)$ · Acklam $\Phi^{-1}(p)$ · Exact Binomial $n \le 150$</p>
+      </div>
+
+      <div id="labWorkbenchContainer" class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <!-- Pill Tab Bar -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-[#E5E7EB] bg-[#FAFAF7] p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="normal" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#0F766E] text-white shadow-sm">
+            1. Normal Bell Curve &amp; Z-Table
+          </button>
+          <button type="button" role="tab" data-tab="exp" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#475569] hover:bg-slate-200/70">
+            2. Exponential Memoryless &amp; Min/Max
+          </button>
+          <button type="button" role="tab" data-tab="cc" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#475569] hover:bg-slate-200/70">
+            3. Binomial → Normal &amp; CC
+          </button>
+          <button type="button" role="tab" data-tab="unifsum" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#475569] hover:bg-slate-200/70">
+            4. Uniform &amp; Sum of Normals
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: NORMAL BELL CURVE & Z-TABLE EXPLORER                     -->
+        <!-- =============================================================== -->
+        <div id="tab-normal" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1E293B]">Normal Bell Curve &amp; Interactive Z-Table Explorer</h3>
+              <p class="text-xs sm:text-sm text-[#475569]">Load an authentic ISRT exam preset or adjust $\mu, \sigma$ and query mode to see dual $X$/$Z$ axes and the live highlighted Z-table cell.</p>
+            </div>
+            <!-- 4 ISRT Exam Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-npreset="iq2025" class="norm-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">1. ISRT 2025 Q8(c): IQ 30th Percentile</button>
+              <button type="button" data-npreset="grades2022" class="norm-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">2. ISRT 2022 Q6(b): Exam Grades</button>
+              <button type="button" data-npreset="rods2024" class="norm-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">3. ISRT 2024 Q8(c): Metal Rods</button>
+              <button type="button" data-npreset="sym2025" class="norm-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">4. ISRT 2025 Q8(e): Symmetry Tail</button>
+            </div>
+          </div>
+
+          <!-- Parameters & Query Mode -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+            <div class="lg:col-span-4 space-y-3">
+              <div>
+                <div class="flex justify-between font-bold mb-1">
+                  <span class="text-[#0F766E]">Mean $\mu$</span>
+                  <input id="normNumMu" type="number" step="0.5" value="100" class="w-20 text-right px-2 py-0.5 rounded border border-slate-300 bg-white font-mono font-bold" />
+                </div>
+                <input id="normSliderMu" type="range" min="-20" max="120" step="0.5" value="100" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between font-bold mb-1">
+                  <span class="text-[#0F766E]">Std Dev $\sigma$</span>
+                  <input id="normNumSig" type="number" step="0.05" min="0.05" max="25" value="15" class="w-20 text-right px-2 py-0.5 rounded border border-slate-300 bg-white font-mono font-bold" />
+                </div>
+                <input id="normSliderSig" type="range" min="0.5" max="25" step="0.5" value="15" class="w-full" />
+              </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-3">
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" data-nmode="interval" class="norm-qmode px-3 py-1.5 rounded-lg font-bold border bg-white text-[#475569] border-[#E5E7EB] hover:border-[#0F766E] transition-all">Interval $P(a &lt; X &lt; b)$</button>
+                <button type="button" data-nmode="left" class="norm-qmode px-3 py-1.5 rounded-lg font-bold border bg-white text-[#475569] border-[#E5E7EB] hover:border-[#0F766E] transition-all">Left Tail $P(X &lt; a)$</button>
+                <button type="button" data-nmode="right" class="norm-qmode px-3 py-1.5 rounded-lg font-bold border bg-white text-[#475569] border-[#E5E7EB] hover:border-[#0F766E] transition-all">Right Tail $P(X &gt; a)$</button>
+                <button type="button" data-nmode="inverse" class="norm-qmode px-3 py-1.5 rounded-lg font-bold border bg-[#0F766E] text-white border-[#0F766E] shadow-xs transition-all">Inverse Percentile $p \to x$</button>
+              </div>
+
+              <!-- Dynamic Query Inputs -->
+              <div id="normCtrlBounds" class="hidden grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="block">
+                  <div class="flex justify-between font-bold mb-1"><span class="text-[#1E293B]">Bound $a$</span><span id="normLblA" class="font-mono">50</span></div>
+                  <input id="normInputA" type="number" step="0.01" value="50" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                </label>
+                <label id="normWrapB" class="block">
+                  <div class="flex justify-between font-bold mb-1"><span class="text-[#1E293B]">Bound $b$</span><span id="normLblB" class="font-mono">80</span></div>
+                  <input id="normInputB" type="number" step="0.01" value="80" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold" />
+                </label>
+              </div>
+
+              <div id="normCtrlInverse" class="space-y-1.5">
+                <div class="flex justify-between font-bold">
+                  <span class="text-[#D97706]">Target Left-Tail Percentile $p = P(X \le x)$</span>
+                  <span id="normValP" class="font-mono text-sm text-[#1E293B]">0.300</span>
+                </div>
+                <input id="normSliderP" type="range" min="0.005" max="0.995" step="0.005" value="0.300" class="w-full" />
+              </div>
+            </div>
+          </div>
+
+          <!-- High-DPI Bell Curve Canvas -->
+          <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#475569]">Gaussian Bell Curve with Dual $X$ &amp; $Z$ Axes</span>
+              <div class="flex flex-wrap items-center gap-3 text-[11px] font-semibold">
+                <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-3 h-3 rounded bg-[#0F766E]/45 border border-[#0F766E]"></span>Target Area</span>
+                <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-2.5 h-2.5 rounded-full bg-[#D97706]"></span>Inflection $\mu \pm \sigma$</span>
+              </div>
+            </div>
+            <div id="normCanvasWrap" class="w-full">
+              <canvas id="normCanvas" aria-label="Normal bell curve with dual X and Z axes"></canvas>
+            </div>
+          </div>
+
+          <!-- Live Readout Cards + Compact Interactive Z-Table Mini-Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-center">
+              <div class="p-3.5 rounded-xl bg-[#EEF2FF] border border-indigo-200 sm:col-span-2">
+                <div class="text-[11px] font-bold uppercase text-[#4338CA]">Standardized Z-Score(s)</div>
+                <div id="normOutZ" class="text-lg font-extrabold font-mono text-[#1E293B] mt-0.5">z = -0.5244</div>
+              </div>
+              <div class="p-3.5 rounded-xl bg-[#0F766E] text-white shadow-sm sm:col-span-2">
+                <div id="normOutMainLbl" class="text-[11px] font-bold uppercase text-teal-100">30th Percentile $x = \mu + z\sigma$</div>
+                <div id="normOutMainVal" class="text-2xl font-extrabold font-mono text-white mt-0.5">92.134</div>
+              </div>
+              <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] sm:col-span-2">
+                <div class="text-[11px] font-bold uppercase text-[#475569]">Peak Height $f(\mu) = 1/(\sigma\sqrt{2\pi})$</div>
+                <div id="normOutPeak" class="text-base font-extrabold font-mono text-[#1E293B] mt-0.5">0.02660</div>
+              </div>
+            </div>
+
+            <!-- Compact Interactive Z-Table Mini-Grid -->
+            <div class="lg:col-span-7 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#0F766E]">Interactive Standard Normal Z-Table Lookup ($\Phi(|z|)$)</span>
+                <span id="zTableActiveTag" class="font-mono font-bold text-[#D97706]">Active: |z| = 0.52 → Row 0.5, Col 0.02</span>
+              </div>
+              <div id="zTableWrap" class="overflow-x-auto"></div>
+              <p class="text-[11px] text-[#475569]">
+                For negative $z$, look up $\Phi(|z|)$ in the table and apply symmetry: $\Phi(-|z|) = 1 - \Phi(|z|)$.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: EXPONENTIAL MEMORYLESS & MIN/MAX LAB                     -->
+        <!-- =============================================================== -->
+        <div id="tab-exp" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1E293B]">Exponential Memoryless Property &amp; Min/Max Reliability Lab</h3>
+              <p class="text-xs sm:text-sm text-[#475569]">Inspect the memoryless renormalized tail on the left and compare Series ($\min$) vs. Parallel ($\max$) survival functions on the right.</p>
+            </div>
+            <button type="button" id="expPreset2022" class="px-3.5 py-2 rounded-xl bg-[#0F766E] hover:bg-[#115E59] text-white text-xs font-bold shadow-xs shrink-0 transition-colors">
+              Preset: ISRT 2022 Q8(c) — 5 i.i.d. Exponentials
+            </button>
+          </div>
+
+          <!-- Controls -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+            <div>
+              <div class="flex justify-between font-bold mb-1"><span class="text-[#0F766E]">Rate $\lambda$</span><span id="expValLam" class="font-mono">0.5</span></div>
+              <input id="expSliderLam" type="range" min="0.1" max="3.0" step="0.1" value="0.5" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between font-bold mb-1"><span class="text-[#D97706]">Elapsed $s$</span><span id="expValS" class="font-mono">1.5</span></div>
+              <input id="expSliderS" type="range" min="0.5" max="6.0" step="0.25" value="1.5" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between font-bold mb-1"><span class="text-[#0F766E]">Extra $t$</span><span id="expValT" class="font-mono">2.0</span></div>
+              <input id="expSliderT" type="range" min="0.5" max="5.0" step="0.25" value="2.0" class="w-full" />
+            </div>
+            <div>
+              <div class="flex justify-between font-bold mb-1"><span class="text-[#4338CA]">Components $n$</span><span id="expValN" class="font-mono">5</span></div>
+              <input id="expSliderN" type="range" min="1" max="8" step="1" value="5" class="w-full" />
+            </div>
+            <div class="col-span-2 sm:col-span-1">
+              <div class="flex justify-between font-bold mb-1"><span class="text-[#1E293B]">Threshold $a$</span><span id="expValA" class="font-mono">1.0</span></div>
+              <input id="expSliderA" type="range" min="0.5" max="5.0" step="0.25" value="1.0" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Dual Synchronized Canvases -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- Left: Memoryless -->
+            <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#0F766E]">1. Memoryless Property: $f(x)$ vs. $f(x \mid X &gt; s)$</span>
+                <span class="text-[11px] font-semibold text-[#D97706]">Dashed = Shifted Copy</span>
+              </div>
+              <div id="expMemWrap" class="w-full">
+                <canvas id="expMemCanvas" aria-label="Exponential memoryless property plot"></canvas>
+              </div>
+              <div id="expMemVerify" class="p-3 rounded-xl bg-[#1E293B] text-white font-mono text-[11px] text-center overflow-x-auto"></div>
+            </div>
+
+            <!-- Right: Series Min vs Parallel Max -->
+            <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#4338CA]">2. Survival $S(x)$: Single vs. Min vs. Max</span>
+                <div class="flex items-center gap-2 text-[10px] font-bold">
+                  <span class="text-[#0F766E]">● Min</span>
+                  <span class="text-[#475569]">● Single</span>
+                  <span class="text-[#4338CA]">● Max</span>
+                </div>
+              </div>
+              <div id="expRelWrap" class="w-full">
+                <canvas id="expRelCanvas" aria-label="Series minimum and parallel maximum survival curves"></canvas>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center font-mono text-[11px]">
+                <div class="p-2 rounded-xl bg-[#F0FDFA] border border-teal-200">
+                  <div class="font-sans text-[10px] font-bold text-[#0F766E]">Series $P(\min \ge a)$</div>
+                  <div id="expOutMin" class="font-extrabold text-[#1E293B] text-sm mt-0.5">0.0821</div>
+                </div>
+                <div class="p-2 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]">
+                  <div class="font-sans text-[10px] font-bold text-[#475569]">Single $P(X_1 \ge a)$</div>
+                  <div id="expOutSingle" class="font-extrabold text-[#1E293B] text-sm mt-0.5">0.6065</div>
+                </div>
+                <div class="p-2 rounded-xl bg-[#EEF2FF] border border-indigo-200">
+                  <div class="font-sans text-[10px] font-bold text-[#4338CA]">Parallel $P(\max \ge a)$</div>
+                  <div id="expOutMax" class="font-extrabold text-[#1E293B] text-sm mt-0.5">0.9905</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: BINOMIAL -> NORMAL & CONTINUITY CORRECTION               -->
+        <!-- =============================================================== -->
+        <div id="tab-cc" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E5E7EB]">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="text-lg font-bold text-[#1E293B]">Binomial → Normal Approximation &amp; Continuity Correction</h3>
+                <p class="text-xs sm:text-sm text-[#475569]">Toggle the $\pm 0.5$ continuity correction to see why half-bar extensions dramatically cut approximation error.</p>
+              </div>
+              <!-- Prominent CC Toggle Switch -->
+              <label class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-[#EEF2FF] border-2 border-[#4338CA] cursor-pointer select-none">
+                <input id="ccToggle" type="checkbox" checked class="w-4 h-4 accent-[#4338CA]" />
+                <span class="text-xs sm:text-sm font-bold text-[#4338CA]">Continuity Correction ($\pm 0.5$): <span id="ccToggleText">ON</span></span>
+              </label>
+            </div>
+            <!-- 3 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-ccpreset="rule" class="cc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">ISRT Rule Check (n=20, p=0.5)</button>
+              <button type="button" data-ccpreset="skew" class="cc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#D97706] transition-all">Skewed Small np (n=15, p=0.15)</button>
+              <button type="button" data-ccpreset="large" class="cc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Large Sample (n=60, p=0.4)</button>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+            <div class="lg:col-span-3 space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Trials $n$</span><span id="ccValN" class="font-mono">20</span></div>
+              <input id="ccSliderN" type="range" min="5" max="100" step="1" value="20" class="w-full" />
+            </div>
+            <div class="lg:col-span-3 space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Prob $p$</span><span id="ccValP" class="font-mono">0.50</span></div>
+              <input id="ccSliderP" type="range" min="0.05" max="0.95" step="0.01" value="0.50" class="w-full" />
+            </div>
+            <div class="lg:col-span-3 space-y-1">
+              <span class="font-bold text-[#475569] block">Query Type</span>
+              <select id="ccQueryType" class="w-full px-2.5 py-2 rounded-lg border border-slate-300 bg-white font-bold text-[#1E293B]">
+                <option value="le">P(X ≤ k)</option>
+                <option value="ge" selected>P(X ≥ k)</option>
+                <option value="between">P(a ≤ X ≤ b)</option>
+              </select>
+            </div>
+            <div class="lg:col-span-3 space-y-2">
+              <div id="ccWrapK" class="space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#4338CA]">Cutoff $k$</span><span id="ccValK" class="font-mono">12</span></div>
+                <input id="ccSliderK" type="range" min="0" max="20" step="1" value="12" class="w-full" />
+              </div>
+              <div id="ccWrapAB" class="hidden grid-cols-2 gap-2">
+                <div>
+                  <div class="flex justify-between font-bold"><span>$a$</span><span id="ccValA" class="font-mono">8</span></div>
+                  <input id="ccSliderA" type="range" min="0" max="20" step="1" value="8" class="w-full" />
+                </div>
+                <div>
+                  <div class="flex justify-between font-bold"><span>$b$</span><span id="ccValB" class="font-mono">13</span></div>
+                  <input id="ccSliderB" type="range" min="0" max="20" step="1" value="13" class="w-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- High-DPI Canvas -->
+          <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#475569]">Exact $B(n,p)$ Bars vs. $N(np, npq)$ Curve</span>
+              <span id="ccFormulaHint" class="font-mono text-[11px] font-bold text-[#4338CA]">Using Y &gt; 11.5 (with CC)</span>
+            </div>
+            <div id="ccCanvasWrap" class="w-full">
+              <canvas id="ccCanvas" aria-label="Binomial bars with Normal continuity correction overlay"></canvas>
+            </div>
+          </div>
+
+          <!-- Live Comparison Strip -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1">
+              <div class="font-bold text-[#0F766E] uppercase text-[10px]">Exact Binomial</div>
+              <div id="ccOutExact" class="text-xl font-extrabold font-mono text-[#1E293B]">0.2517</div>
+              <div class="text-[11px] text-[#475569]">Sum of exact PMF bars</div>
+            </div>
+            <div class="p-4 rounded-xl bg-[#EEF2FF] border border-indigo-200 space-y-1">
+              <div class="font-bold text-[#4338CA] uppercase text-[10px]">Normal WITH CC ($\pm 0.5$)</div>
+              <div id="ccOutWith" class="text-xl font-extrabold font-mono text-[#1E293B]">0.2512</div>
+              <div id="ccErrWith" class="text-[11px] font-mono font-bold text-[#059669]">|Error| = 0.0005</div>
+            </div>
+            <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-1">
+              <div class="font-bold text-[#475569] uppercase text-[10px]">Normal WITHOUT CC</div>
+              <div id="ccOutNo" class="text-xl font-extrabold font-mono text-[#1E293B]">0.1855</div>
+              <div id="ccErrNo" class="text-[11px] font-mono font-bold text-[#BE123C]">|Error| = 0.0662</div>
+            </div>
+            <div id="ccValidityCard" class="p-4 rounded-xl border-2 flex flex-col justify-center"></div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: UNIFORM & SUM OF INDEPENDENT NORMALS                     -->
+        <!-- =============================================================== -->
+        <div id="tab-unifsum" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1E293B]">Uniform $U(a, b)$ &amp; Linear Combinations of Independent Normals</h3>
+              <p class="text-xs sm:text-sm text-[#475569]">Switch between the flat Continuous Uniform model and the reproductive sum/difference of 3 independent Normals.</p>
+            </div>
+            <div class="inline-flex rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] p-1 text-xs font-bold shrink-0">
+              <button type="button" data-usmode="unif" class="us-mode-btn px-3.5 py-2 rounded-lg text-[#475569] transition-all">Mode A: Uniform $U(a, b)$</button>
+              <button type="button" data-usmode="sum" class="us-mode-btn px-3.5 py-2 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all">Mode B: Sum of Normals</button>
+            </div>
+          </div>
+
+          <!-- Mode A: Continuous Uniform U(a, b) -->
+          <div id="usUnifPanel" class="hidden space-y-5">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] text-xs">
+              <div>
+                <div class="flex justify-between font-bold mb-1"><span class="text-[#0F766E]">Min $a$</span><span id="unifValA" class="font-mono">2.0</span></div>
+                <input id="unifSliderA" type="range" min="0" max="8" step="0.5" value="2.0" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between font-bold mb-1"><span class="text-[#0F766E]">Max $b$</span><span id="unifValB" class="font-mono">10.0</span></div>
+                <input id="unifSliderB" type="range" min="2" max="15" step="0.5" value="10.0" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between font-bold mb-1"><span class="text-[#D97706]">Query $c$</span><span id="unifValC" class="font-mono">4.0</span></div>
+                <input id="unifSliderC" type="range" min="2" max="10" step="0.5" value="4.0" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between font-bold mb-1"><span class="text-[#D97706]">Query $d$</span><span id="unifValD" class="font-mono">7.0</span></div>
+                <input id="unifSliderD" type="range" min="2" max="10" step="0.5" value="7.0" class="w-full" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+                <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">PDF $f(x) = 1/(b - a)$ (Shaded Area $[c, d]$)</div>
+                <div id="unifPdfWrap" class="w-full"><canvas id="unifPdfCanvas"></canvas></div>
+              </div>
+              <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+                <div class="text-xs font-bold uppercase tracking-wider text-[#4338CA]">CDF $F(x)$ Ramp (Amber Jump $= F(d) - F(c)$)</div>
+                <div id="unifCdfWrap" class="w-full"><canvas id="unifCdfCanvas"></canvas></div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center font-mono text-xs">
+              <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]"><div class="font-sans text-[11px] font-bold text-[#475569]">Height $1/(b-a)$</div><div id="unifOutH" class="text-lg font-extrabold text-[#1E293B] mt-0.5">0.1250</div></div>
+              <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]"><div class="font-sans text-[11px] font-bold text-[#475569]">Mean $(a+b)/2$</div><div id="unifOutMean" class="text-lg font-extrabold text-[#1E293B] mt-0.5">6.000</div></div>
+              <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB]"><div class="font-sans text-[11px] font-bold text-[#475569]">Var $(b-a)^2/12$</div><div id="unifOutVar" class="text-lg font-extrabold text-[#1E293B] mt-0.5">5.333</div></div>
+              <div class="p-3 rounded-xl bg-[#0F766E] text-white"><div class="font-sans text-[11px] font-bold text-teal-100">$P(c \le X \le d)$</div><div id="unifOutProb" class="text-lg font-extrabold mt-0.5">0.3750</div></div>
+            </div>
+          </div>
+
+          <!-- Mode B: Linear Combination of 3 Independent Normals -->
+          <div id="usSumPanel" class="space-y-5">
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-spreset="q6d" class="sn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">ISRT 2025 Q6(d): X+Y+Z &lt; 25</button>
+              <button type="button" data-spreset="diff" class="sn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all">Difference: X − Y &lt; 5 (Variances ADD!)</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              <!-- Inputs Table -->
+              <div class="lg:col-span-5 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E5E7EB] space-y-3 text-xs">
+                <div class="font-bold uppercase tracking-wider text-[#475569]">$W = c_1 X_1 + c_2 X_2 + c_3 X_3$ (Variances $\sigma_i^2$)</div>
+                <div class="grid grid-cols-4 gap-2 text-center font-bold text-[11px] text-[#475569]">
+                  <span>Var</span><span>Coeff $c_i$</span><span>Mean $\mu_i$</span><span>Var $\sigma_i^2$</span>
+                </div>
+                <div class="grid grid-cols-4 gap-2 items-center">
+                  <span class="font-mono font-bold text-[#0F766E] text-center">$X_1$</span>
+                  <input id="snC1" type="number" step="0.5" value="1" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                  <input id="snM1" type="number" step="0.5" value="2" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                  <input id="snV1" type="number" min="0" step="0.5" value="3" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                </div>
+                <div class="grid grid-cols-4 gap-2 items-center">
+                  <span class="font-mono font-bold text-[#4338CA] text-center">$X_2$</span>
+                  <input id="snC2" type="number" step="0.5" value="1" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                  <input id="snM2" type="number" step="0.5" value="5" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                  <input id="snV2" type="number" min="0" step="0.5" value="1" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                </div>
+                <div class="grid grid-cols-4 gap-2 items-center">
+                  <span class="font-mono font-bold text-[#D97706] text-center">$X_3$</span>
+                  <input id="snC3" type="number" step="0.5" value="1" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                  <input id="snM3" type="number" step="0.5" value="20" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                  <input id="snV3" type="number" min="0" step="0.5" value="21" class="sn-in px-2 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                </div>
+                <div class="pt-2 border-t border-[#E5E7EB] flex items-center justify-between gap-2">
+                  <span class="font-bold text-[#1E293B]">Query Threshold $T$ ($P(W &lt; T)$):</span>
+                  <input id="snT" type="number" step="0.5" value="25" class="sn-in w-24 px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white font-mono font-bold text-center" />
+                </div>
+              </div>
+
+              <!-- Combined Bell Curve & Live KaTeX Derivation -->
+              <div class="lg:col-span-7 space-y-4">
+                <div class="rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-inner space-y-2">
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <span class="font-bold uppercase tracking-wider text-[#0F766E]">Combined Normal $W \sim N(\mu_W, \sigma_W^2)$</span>
+                    <span id="snHeaderBadge" class="font-mono font-bold text-[#0F766E]">P(W &lt; 25) = 0.3446</span>
+                  </div>
+                  <div id="snCanvasWrap" class="w-full"><canvas id="snCanvas"></canvas></div>
+                </div>
+                <div id="snDerivBox" class="p-4 rounded-2xl bg-[#1E293B] text-white text-xs sm:text-sm space-y-1.5 overflow-x-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 5. SECTION 3: PROOFS & DERIVATIONS DRAWER (5 <details> CARDS)       -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4338CA]">Section 03 • Exam Proofs</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1E293B] mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-[#475569]">5 high-frequency AST 102 continuous proofs — click any card to expand</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 1 · ISRT Year Final 2025 Q1(d)</span>
+              <div class="font-bold text-[#1E293B] text-sm sm:text-base">Memoryless Property of the Exponential Distribution: $P(X &gt; s + t \mid X &gt; s) = P(X &gt; t)$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#475569] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#475569] space-y-3 leading-relaxed">
+            <p>Let $X \sim \text{Exp}(\lambda)$ so its survival function is $P(X &gt; x) = \int_x^\infty \lambda e^{-\lambda u}\,du = e^{-\lambda x}$ for $x \ge 0$. For any $s, t \ge 0$, $\{X &gt; s + t\} \subseteq \{X &gt; s\}$:</p>
+            <div class="bg-[#F0FDFA] p-3.5 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$P(X &gt; s + t \mid X &gt; s) = \frac{P(X &gt; s + t \cap X &gt; s)}{P(X &gt; s)} = \frac{P(X &gt; s + t)}{P(X &gt; s)} = \frac{e^{-\lambda(s+t)}}{e^{-\lambda s}} = e^{-\lambda t} = P(X &gt; t) \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 2 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-[11px] font-bold mb-1">Proof 2 · ISRT Year Final 2023 Q8(c)</span>
+              <div class="font-bold text-[#1E293B] text-sm sm:text-base">Symmetry of the Standard Normal CDF: Prove $\Phi(-z) = 1 - \Phi(z)$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#475569] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#475569] space-y-3 leading-relaxed">
+            <p>The Standard Normal PDF $\phi(t) = \frac{1}{\sqrt{2\pi}}e^{-t^2/2}$ is an <strong>even function</strong> ($\phi(-t) = \phi(t)$). Substitute $u = -t$ ($du = -dt$) into $\Phi(-z) = \int_{-\infty}^{-z} \phi(t)\,dt$:</p>
+            <div class="bg-[#EEF2FF] p-3.5 rounded-xl border border-indigo-200 text-center text-[#4338CA] font-semibold">
+              $$\Phi(-z) = \int_{-\infty}^{-z} \phi(t)\,dt = \int_{\infty}^{z} \phi(-u)(-du) = \int_{z}^{\infty} \phi(u)\,du = 1 - \int_{-\infty}^{z} \phi(u)\,du = 1 - \Phi(z) \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 3 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-[11px] font-bold mb-1">Proof 3 · ISRT Year Final 2023 Q8(b)</span>
+              <div class="font-bold text-[#1E293B] text-sm sm:text-base">Derivation of Mean ($\mu$) and Variance ($\sigma^2$) of $X \sim N(\mu, \sigma^2)$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#475569] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#475569] space-y-3 leading-relaxed">
+            <p>Write $X = \mu + \sigma Z$ where $Z \sim N(0, 1)$ has PDF $\phi(z) = \frac{1}{\sqrt{2\pi}}e^{-z^2/2}$.</p>
+            <p><strong>1. Mean of $Z$:</strong> Since $z\phi(z)$ is an odd integrable function on $(-\infty, \infty)$, $E[Z] = \int_{-\infty}^{\infty} z\phi(z)\,dz = 0$.</p>
+            <p><strong>2. Variance of $Z$ (Integration by Parts):</strong> Set $u = z$ and $dv = z e^{-z^2/2}\,dz$ (so $du = dz$ and $v = -e^{-z^2/2}$):</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1E293B]">
+              $$E[Z^2] = \frac{1}{\sqrt{2\pi}}\left[\Big[-z e^{-z^2/2}\Big]_{-\infty}^{\infty} + \int_{-\infty}^{\infty} e^{-z^2/2}\,dz\right] = 0 + 1 = 1 \implies \text{Var}(Z) = 1 - 0^2 = 1$$
+            </div>
+            <p><strong>3. Scale back to $X = \mu + \sigma Z$:</strong></p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$E[X] = \mu + \sigma E[Z] = \mathbf{\mu}, \qquad \text{Var}(X) = \sigma^2 \text{Var}(Z) = \mathbf{\sigma^2} \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 4 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-[11px] font-bold mb-1">Proof 4 · ISRT Year Final 2025 Q8(b) &amp; 2024 Q8(b)</span>
+              <div class="font-bold text-[#1E293B] text-sm sm:text-base">Linear Combination of Independent Normals $Z = aX + bY$ via MGF</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#475569] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#475569] space-y-3 leading-relaxed">
+            <p>Let $X \sim N(\mu_1, \sigma_1^2)$ and $Y \sim N(\mu_2, \sigma_2^2)$ be independent, with $M_X(t) = \exp(\mu_1 t + \frac{1}{2}\sigma_1^2 t^2)$ and $M_Y(t) = \exp(\mu_2 t + \frac{1}{2}\sigma_2^2 t^2)$. For $Z = aX + bY$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E5E7EB] text-center text-[#1E293B] space-y-1.5">
+              $$M_Z(t) = E[e^{t(aX + bY)}] = M_X(at)\,M_Y(bt) = \exp\!\left(\mu_1(at) + \frac{1}{2}\sigma_1^2 a^2 t^2\right)\exp\!\left(\mu_2(bt) + \frac{1}{2}\sigma_2^2 b^2 t^2\right)$$
+              $$= \exp\!\left((a\mu_1 + b\mu_2)t + \frac{1}{2}(a^2\sigma_1^2 + b^2\sigma_2^2)t^2\right)$$
+            </div>
+            <p>By the MGF Uniqueness Theorem, $Z = aX + bY \sim N(a\mu_1 + b\mu_2,\; a^2\sigma_1^2 + b^2\sigma_2^2)$. (For $\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i$ with i.i.d. $N(\mu, \sigma^2)$, setting $a_i = \frac{1}{n}$ gives $\bar{X} \sim N(\mu, \sigma^2/n)$.) $\blacksquare$</p>
+          </div>
+        </details>
+
+        <!-- Proof 5 -->
+        <details class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 5 · ISRT Year Final 2022 Q8(c)</span>
+              <div class="font-bold text-[#1E293B] text-sm sm:text-base">Survival Probabilities of $\min(X_1,\dots,X_n)$ and $\max(X_1,\dots,X_n)$ for i.i.d. $\text{Exp}(\lambda)$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#475569] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E5E7EB] pt-4 text-sm text-[#475569] space-y-3 leading-relaxed">
+            <p><strong>1. Minimum (Series System):</strong> The minimum exceeds $a$ if and only if <em>every</em> component exceeds $a$:</p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$P(\min(X_1, \dots, X_n) \ge a) = P(X_1 \ge a, \dots, X_n \ge a) = \prod_{i=1}^{n} P(X_i \ge a) = (e^{-\lambda a})^n = \mathbf{e^{-n\lambda a}}$$
+            </div>
+            <p>Recognizing $S_{\min}(a) = e^{-(n\lambda)a}$ immediately proves $\min(X_1, \dots, X_n) \sim \text{Exp}(n\lambda)$.</p>
+            <p><strong>2. Maximum (Parallel System):</strong> Use the complement—the maximum is less than $a$ iff <em>every</em> component is less than $a$:</p>
+            <div class="bg-[#EEF2FF] p-3 rounded-xl border border-indigo-200 text-center text-[#4338CA] font-semibold">
+              $$P(\max(X_1, \dots, X_n) \ge a) = 1 - P(\max &lt; a) = 1 - \prod_{i=1}^{n} P(X_i &lt; a) = \mathbf{1 - (1 - e^{-\lambda a})^n} \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 6. SECTION 4: AUTHENTIC ISRT PAST EXAM VAULT (2022–2025)            -->
+    <!-- =================================================================== -->
+    <section id="exam-vault" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#D97706]">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1E293B] mt-1">ISRT Past Exam Vault (2022–2025)</h2>
+        </div>
+        <p class="text-sm text-[#475569]">5 authentic AST 102 Year Final problem sets with complete worked solutions</p>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Exam 1: Year Final 2025 Q8(c), Q8(e) & Q6(d) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">ISRT Year Final 2025 · Q8(c), Q8(e) &amp; Q6(d)</span>
+            <span class="text-xs text-[#475569] font-medium">IQ Percentile · Symmetry · Sum of Independent Normals</span>
+          </div>
+          <div class="space-y-1.5 text-sm text-[#1E293B] leading-relaxed">
+            <p><strong>Q8(c):</strong> IQ scores follow $N(100, 15^2)$. Find the 30th percentile.</p>
+            <p><strong>Q8(e):</strong> For $X \sim N(\mu, \sigma^2)$, suppose $P(X &lt; 50) = P(X &gt; 70)$ and $P(X &gt; 80) = 0.0228$. Find $\mu$ and $\sigma$.</p>
+            <p><strong>Q6(d):</strong> Let $X \sim N(2, 3)$, $Y \sim N(5, 1)$, and $Z \sim N(20, 21)$ be independent. Find $P(X + Y + Z &lt; 25)$.</p>
+          </div>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#475569] space-y-2.5 leading-relaxed">
+              <p><strong>Q8(c):</strong> We need $z_{0.30}$ such that $\Phi(z_{0.30}) = 0.30$. By symmetry, $\Phi(|z|) = 0.70 \implies z_{0.30} = -0.5244$. Thus:
+                $$x = \mu + z\sigma = 100 + (-0.5244)(15) = \mathbf{92.13}$$
+              </p>
+              <p><strong>Q8(e):</strong> Equal tails $P(X &lt; 50) = P(X &gt; 70)$ imply $\mu$ is the exact midpoint: $\mu = \frac{50 + 70}{2} = \mathbf{60}$. Next, $P(X &gt; 80) = 0.0228 \implies \Phi\!\left(\frac{80 - 60}{\sigma}\right) = 1 - 0.0228 = 0.9772 \implies \frac{20}{\sigma} = 2.00 \implies \sigma = \mathbf{10}$.</p>
+              <p><strong>Q6(d):</strong> Let $W = X + Y + Z$. By independence: $\mu_W = 2 + 5 + 20 = 27$ and $\sigma_W^2 = 3 + 1 + 21 = 25 \implies \sigma_W = 5$, so $W \sim N(27, 25)$.
+                $$P(W &lt; 25) = \Phi\!\left(\frac{25 - 27}{5}\right) = \Phi(-0.40) = 1 - \Phi(0.40) = 1 - 0.6554 = \mathbf{0.3446}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 2: Year Final 2024 Q8(c) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">ISRT Year Final 2024 · Q8(c) [6 Marks]</span>
+            <span class="text-xs text-[#475569] font-medium">Metal Rods · Inverse SD &amp; Expected Profit</span>
+          </div>
+          <p class="text-sm text-[#1E293B] leading-relaxed">
+            The length of a metal rod, $L$ cm, follows $N(8, c^2)$. Given $P(L &lt; 7.902) = 2.5\%$: (i) Show that $c = 0.05$ to two decimal places. (ii) Find $P(7.94 &lt; L &lt; 8.09)$. (iii) Production cost is 20p/rod. Rods with $L \le 7.94$ are scrapped for 5p; $7.94 &lt; L \le 8.09$ are sold for 50p; $L &gt; 8.09$ are shortened for an extra 10p and then sold for 50p. Calculate the expected profit per 500 rods to the nearest pound.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#475569] space-y-2.5 leading-relaxed">
+              <p><strong>(i)</strong> $\Phi\!\left(\frac{7.902 - 8}{c}\right) = 0.025 \implies \frac{-0.098}{c} = -1.96 \implies c = \frac{0.098}{1.96} = \mathbf{0.05\text{ cm}}$ ✓.</p>
+              <p><strong>(ii)</strong> $z_1 = \frac{7.94 - 8}{0.05} = -1.20$, $z_2 = \frac{8.09 - 8}{0.05} = 1.80$:
+                $$P(7.94 &lt; L &lt; 8.09) = \Phi(1.80) - \Phi(-1.20) = 0.9641 - (1 - 0.8849) = 0.9641 - 0.1151 = \mathbf{0.8490}$$
+              </p>
+              <p><strong>(iii)</strong> Net profit per rod across the three regimes:</p>
+              <ul class="list-disc list-inside space-y-1 font-mono text-xs bg-white p-3 rounded-xl border border-[#E5E7EB] text-[#1E293B]">
+                <li>L ≤ 7.94 (p = 0.1151): 5p − 20p = −15p</li>
+                <li>7.94 &lt; L ≤ 8.09 (p = 0.8490): 50p − 20p = +30p</li>
+                <li>L &gt; 8.09 (p = 1 − 0.9641 = 0.0359): 50p − 20p − 10p = +20p</li>
+              </ul>
+              <p>$E[\text{Profit/rod}] = 0.1151(-15) + 0.8490(30) + 0.0359(20) = -1.7265 + 25.47 + 0.718 = \mathbf{24.46\text{p}}$.
+                For 500 rods: $500 \times 24.46\text{p} = 12{,}230\text{p} \approx \mathbf{£122}$.
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 3: Year Final 2022 Q6(b) & Q6(c) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">ISRT Year Final 2022 · Q6(b) [7] &amp; Q6(c) [2]</span>
+            <span class="text-xs text-[#475569] font-medium">Student Grades &amp; Unknown Mean $\mu$</span>
+          </div>
+          <div class="space-y-1.5 text-sm text-[#1E293B] leading-relaxed">
+            <p><strong>Q6(b):</strong> Grades of 500 students follow $N(72, 10^2)$. Find (i) $P(X &gt; 80)$, (ii) $P(X &lt; 50)$, (iii) $P(50 &lt; X &lt; 80)$, and (iv) approximately how many students scored greater than 80.</p>
+            <p><strong>Q6(c):</strong> Suppose $X \sim N(\mu, 9)$ (variance 9) and $P(X &gt; 5) = 0.1$. Find $\mu$.</p>
+          </div>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#475569] space-y-2 leading-relaxed">
+              <p><strong>Q6(b):</strong> (i) $P(X &gt; 80) = 1 - \Phi(0.8) = 1 - 0.7881 = \mathbf{0.2119}$. (ii) $P(X &lt; 50) = \Phi(-2.2) = 1 - 0.9861 = \mathbf{0.0139}$. (iii) $P(50 &lt; X &lt; 80) = 0.7881 - 0.0139 = \mathbf{0.7742}$. (iv) Expected count $= 500 \times 0.2119 \approx \mathbf{106}$ students.</p>
+              <p><strong>Q6(c):</strong> Here $\sigma = \sqrt{9} = 3$. $P(X &gt; 5) = 0.1 \implies \Phi\!\left(\frac{5 - \mu}{3}\right) = 0.9 \implies \frac{5 - \mu}{3} = 1.2816 \implies \mu = 5 - 3(1.2816) = \mathbf{1.155}$.</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 4: Year Final 2022 Q8(c) & 2025 Q1(d) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-xs font-bold">ISRT Year Final 2022 Q8(c) [4] &amp; 2025 Q1(d)</span>
+            <span class="text-xs text-[#475569] font-medium">Min/Max of 5 i.i.d. Exponentials</span>
+          </div>
+          <p class="text-sm text-[#1E293B] leading-relaxed">
+            If $X_1, X_2, \dots, X_5$ are i.i.d. $\text{Exp}(\lambda)$ random variables, compute $P(\min(X_1, \dots, X_5) \ge a)$ and $P(\max(X_1, \dots, X_5) \ge a)$ for $a &gt; 0$, and identify the distribution of $\min(X_1, \dots, X_5)$.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#475569] space-y-2 leading-relaxed">
+              <p><strong>1. Minimum:</strong> $P(\min \ge a) = \prod_{i=1}^5 P(X_i \ge a) = (e^{-\lambda a})^5 = \mathbf{e^{-5\lambda a}}$. Since this is the survival function of an Exponential with rate $5\lambda$, $\min(X_1, \dots, X_5) \sim \mathbf{\text{Exp}(5\lambda)}$.</p>
+              <p><strong>2. Maximum:</strong> $P(\max \ge a) = 1 - P(\max &lt; a) = 1 - \prod_{i=1}^5 P(X_i &lt; a) = \mathbf{1 - (1 - e^{-\lambda a})^5}$.</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 5: Year Final 2024 Q1(c) -->
+        <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-xs font-bold">ISRT Year Final 2024 · Q1(c) [2 Marks]</span>
+            <span class="text-xs text-[#475569] font-medium">Normal Approximation to Binomial &amp; Continuity Correction</span>
+          </div>
+          <p class="text-sm text-[#1E293B] leading-relaxed">
+            When can we use the Normal approximation to the Binomial distribution? What is a continuity correction? Illustrate with a worked calculation.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E5E7EB] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E5E7EB] text-sm text-[#475569] space-y-2 leading-relaxed">
+              <p><strong>Conditions:</strong> Used when $n$ is large and $p$ is not too close to $0$ or $1$—standard rule of thumb: $np \ge 5$ and $nq \ge 5$ (or $npq \ge 10$). Then $X \sim B(n, p)$ is approximated by $Y \sim N(np, npq)$.</p>
+              <p><strong>Continuity Correction:</strong> Because a discrete integer value $k$ occupies the unit-width histogram bar $[k - 0.5, k + 0.5]$, we adjust discrete endpoints by $\pm 0.5$ when integrating a continuous Normal curve.</p>
+              <p><strong>Worked Example ($X \sim B(20, 0.5)$, find $P(X \ge 12)$):</strong> $\mu = 10$, $\sigma = \sqrt{5} \approx 2.2361$. With continuity correction:
+                $$P(X \ge 12) \approx P(Y &gt; 11.5) = 1 - \Phi\!\left(\frac{11.5 - 10}{2.2361}\right) = 1 - \Phi(0.6708) = \mathbf{0.2512} \quad (\text{Exact Binomial} = 0.2517)$$
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 7. SECTION 5: INTERACTIVE MASTERY QUIZ (5 QUESTIONS)                -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E5E7EB]">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#059669]">Section 05 • Final Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-[#1E293B] mt-1">5-Question Mastery Quiz</h2>
+            <p class="text-sm text-[#475569] mt-1">Complete these final 5 checks to cap off AST 102: Elements of Probability!</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-[#1E293B] text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-teal-300">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-slate-200 text-[#1E293B] border border-[#E5E7EB] text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4"></div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- CELEBRATORY AST 102 COURSE COMPLETION BANNER                        -->
+    <!-- =================================================================== -->
+    <section class="rounded-3xl bg-gradient-to-br from-[#0F172A] via-[#134E4A] to-[#0F766E] text-white p-7 sm:p-10 shadow-xl border border-teal-900 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-2">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/25 border border-emerald-300/40 text-emerald-200 text-xs font-bold uppercase tracking-wider">
+            ★ Course Milestone Reached
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-white">
+            AST 102 Course Complete — All 14 Lessons Built!
+          </h2>
+          <p class="text-teal-50/90 text-sm sm:text-base max-w-2xl leading-relaxed">
+            You now have a complete interactive study platform covering every topic, proof, and past exam pattern from 1st Incourse through Year Final for <strong>AST 102: Elements of Probability (ISRT, University of Dhaka)</strong>.
+          </p>
+        </div>
+        <div class="shrink-0 px-5 py-4 rounded-2xl bg-white/10 border border-white/20 text-center">
+          <div class="text-3xl font-extrabold font-mono text-amber-300">14 / 14</div>
+          <div class="text-xs font-semibold text-teal-100 mt-0.5">Interactive Lessons</div>
+        </div>
+      </div>
+
+      <!-- 4-Module Recap Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div class="p-4 rounded-2xl bg-white/10 border border-white/15 space-y-1">
+          <div class="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Module 1 (Lessons 1–5)</div>
+          <div class="font-bold text-white text-sm">Foundations &amp; Laws</div>
+          <p class="text-teal-100/80 leading-relaxed">Sample Spaces, Venn Sets, Combinatorics, Axioms &amp; Inequalities, Conditional Probability &amp; Bayes.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/10 border border-white/15 space-y-1">
+          <div class="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Module 2 (Lessons 6–7)</div>
+          <div class="font-bold text-white text-sm">Univariate RVs</div>
+          <p class="text-teal-100/80 leading-relaxed">Random Variables, PMF/PDF/CDF, Expectation, LOTUS, Variance &amp; Transformations.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-white/10 border border-white/15 space-y-1">
+          <div class="font-bold text-amber-300 uppercase tracking-wider text-[11px]">Module 3 (Lessons 8–10)</div>
+          <div class="font-bold text-white text-sm">Joint &amp; Generating</div>
+          <p class="text-teal-100/80 leading-relaxed">Joint/Marginal/Conditional, Covariance, Adam's &amp; Eve's Laws, Moments, PGF, MGF &amp; CGF.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-300/40 space-y-1">
+          <div class="font-bold text-emerald-200 uppercase tracking-wider text-[11px]">Module 4 (Lessons 11–14)</div>
+          <div class="font-bold text-white text-sm">Special Distributions ✓</div>
+          <p class="text-teal-50/90 leading-relaxed">Bernoulli, Binomial, Hypergeometric, Geometric, Neg-Binomial, Poisson, Uniform, Exponential &amp; Normal.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-[#E5E7EB] bg-white mt-16">
+    <div class="max-w-[1120px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="px-4 py-2 rounded-xl bg-[#FAFAF7] text-[#475569] font-semibold border border-[#E5E7EB]">
+        ← Lesson 13: Poisson Distribution &amp; Approximations
+      </div>
+      <div class="text-[#475569] text-center">
+        <strong class="text-[#1E293B]">AST 102 · Elements of Probability</strong> · ISRT, University of Dhaka
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-[#ECFDF5] text-[#059669] font-bold border border-emerald-200">
+        All 14 Lessons Complete ✓
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         1. HIGH-PRECISION NUMERICAL FUNCTIONS
+            - Abramowitz & Stegun 7.1.26 for Standard Normal CDF (err < 1.5e-7)
+            - Acklam's Rational Approximation for Inverse Normal (err < 1.15e-9)
+            - Overflow-free Log-Factorial array for Binomial PMF up to n=150
+      ------------------------------------------------------------------- */
+      function stdNormPDF(z) {
+        return Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+      }
+
+      function normPDF(x, mu, sigma) {
+        const z = (x - mu) / sigma;
+        return stdNormPDF(z) / sigma;
+      }
+
+      function normCDF(z) {
+        const sign = z < 0 ? -1 : 1;
+        const x = Math.abs(z) / Math.SQRT2;
+        const t = 1.0 / (1.0 + 0.3275911 * x);
+        const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429;
+        const erf = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+        return 0.5 * (1.0 + sign * erf);
+      }
+
+      function normInv(p) {
+        if (p <= 0) return -Infinity;
+        if (p >= 1) return Infinity;
+        const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+                   1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+        const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+                   6.680131188771972e+01, -1.328068155288572e+01];
+        const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+                   -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+        const d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+                   3.754408661907416e+00];
+        const pLow = 0.02425, pHigh = 1 - pLow;
+        let q, r;
+        if (p < pLow) {
+          q = Math.sqrt(-2 * Math.log(p));
+          return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+                 ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+        } else if (p <= pHigh) {
+          q = p - 0.5;
+          r = q * q;
+          return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q /
+                 (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+        } else {
+          q = Math.sqrt(-2 * Math.log(1 - p));
+          return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+                  ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+        }
+      }
+
+      const LOG_FACT = new Float64Array(161);
+      LOG_FACT[0] = 0;
+      for (let i = 1; i <= 160; i++) LOG_FACT[i] = LOG_FACT[i - 1] + Math.log(i);
+
+      function binomPMF(n, p, x) {
+        if (x < 0 || x > n) return 0;
+        if (p <= 0) return x === 0 ? 1 : 0;
+        if (p >= 1) return x === n ? 1 : 0;
+        return Math.exp(LOG_FACT[n] - LOG_FACT[x] - LOG_FACT[n - x] + x * Math.log(p) + (n - x) * Math.log(1 - p));
+      }
+
+      /* -------------------------------------------------------------------
+         2. KATEX & HIGH-DPI CANVAS UTILITIES
+      ------------------------------------------------------------------- */
+      function renderMath(el) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(el || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\[', right: '\\]', display: true },
+                { left: '\\(', right: '\\)', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX auto-render skipped:', err);
+        }
+      }
+
+      function setupHiDPI(canvas, wrapEl, aspect, minH, maxH) {
+        const w = Math.max(260, wrapEl.clientWidth);
+        const h = Math.max(minH, Math.min(maxH, Math.round(w * aspect)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      /* -------------------------------------------------------------------
+         3. READING PROGRESS BAR & LEARNING OBJECTIVES CHECKLIST
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const top = window.scrollY || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = height > 0 ? Math.min(100, Math.max(0, (top / height) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      const objBtns = document.querySelectorAll('.obj-btn');
+      const objDone = new Array(objBtns.length).fill(false);
+      objBtns.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          objDone[i] = !objDone[i];
+          const box = btn.querySelector('.obj-box');
+          const txt = btn.querySelector('.obj-text');
+          if (objDone[i]) {
+            box.textContent = '✓';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-300 bg-[#0F766E] text-white flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.add('line-through', 'opacity-70');
+          } else {
+            box.textContent = '';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.remove('line-through', 'opacity-70');
+          }
+          document.getElementById('objCounter').textContent = `${objDone.filter(Boolean).length}/5 Completed`;
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. TAB SWITCHING & RESIZE OBSERVER
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      function redrawVisibleCanvases() {
+        if (!document.getElementById('tab-normal').classList.contains('hidden')) renderNormalLab();
+        if (!document.getElementById('tab-exp').classList.contains('hidden')) renderExpLab();
+        if (!document.getElementById('tab-cc').classList.contains('hidden')) renderCcLab();
+        if (!document.getElementById('tab-unifsum').classList.contains('hidden')) {
+          if (usMode === 'unif') renderUniformLab();
+          else renderSumNormalsLab();
+        }
+      }
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#0F766E]', 'text-white', 'shadow-sm');
+            t.classList.add('text-[#475569]', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-[#0F766E]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-[#475569]', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const active = document.getElementById('tab-' + target);
+          if (active) {
+            active.classList.remove('hidden');
+            redrawVisibleCanvases();
+            renderMath(active);
+          }
+        });
+      });
+
+      if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => redrawVisibleCanvases());
+        ro.observe(document.getElementById('labWorkbenchContainer'));
+      }
+      window.addEventListener('resize', redrawVisibleCanvases);
+
+      /* -------------------------------------------------------------------
+         5. TAB 1: NORMAL BELL CURVE & Z-TABLE EXPLORER
+      ------------------------------------------------------------------- */
+      const normState = { mu: 100, sig: 15, mode: 'inverse', a: 50, b: 80, p: 0.30 };
+
+      function syncNormControls() {
+        document.getElementById('normNumMu').value = normState.mu;
+        document.getElementById('normSliderMu').value = Math.max(-20, Math.min(120, normState.mu));
+        document.getElementById('normNumSig').value = normState.sig;
+        document.getElementById('normSliderSig').value = Math.max(0.5, Math.min(25, normState.sig));
+        document.getElementById('normInputA').value = normState.a;
+        document.getElementById('normInputB').value = normState.b;
+        document.getElementById('normSliderP').value = normState.p;
+
+        document.querySelectorAll('.norm-qmode').forEach(b => {
+          const active = b.getAttribute('data-nmode') === normState.mode;
+          b.className = active
+            ? 'norm-qmode px-3 py-1.5 rounded-lg font-bold border bg-[#0F766E] text-white border-[#0F766E] shadow-xs transition-all'
+            : 'norm-qmode px-3 py-1.5 rounded-lg font-bold border bg-white text-[#475569] border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+        });
+
+        const isInv = (normState.mode === 'inverse');
+        const ctrlBounds = document.getElementById('normCtrlBounds');
+        ctrlBounds.classList.toggle('hidden', isInv);
+        ctrlBounds.classList.toggle('grid', !isInv);
+        document.getElementById('normWrapB').classList.toggle('hidden', normState.mode !== 'interval');
+        document.getElementById('normCtrlInverse').classList.toggle('hidden', !isInv);
+      }
+
+      function renderZTable(targetZ) {
+        const absZ = Math.min(3.49, Math.abs(targetZ));
+        const rowVal = Math.floor(absZ * 10) / 10; // e.g., 0.5
+        const colIdx = Math.min(9, Math.round((absZ - rowVal) * 100)); // 0..9
+        const baseRow = Math.max(0, Math.min(3.0, Math.round((rowVal - 0.1) * 10) / 10));
+
+        document.getElementById('zTableActiveTag').textContent =
+          `Active: |z| = ${absZ.toFixed(2)} → Row ${rowVal.toFixed(1)}, Col 0.0${colIdx}`;
+
+        let html = `<table class="w-full text-center border-collapse font-mono text-[11px]"><thead><tr class="bg-slate-200/70 text-[#1E293B]">`;
+        html += `<th class="py-1.5 px-2 border border-slate-200 font-bold">z</th>`;
+        for (let c = 0; c <= 9; c++) {
+          const isCol = (c === colIdx);
+          html += `<th class="py-1.5 px-1 border border-slate-200 ${isCol ? 'bg-[#0F766E] text-white' : ''}">.0${c}</th>`;
+        }
+        html += `</tr></thead><tbody>`;
+
+        for (let r = 0; r < 4; r++) {
+          const rv = +(baseRow + r * 0.1).toFixed(1);
+          const isRow = Math.abs(rv - rowVal) < 1e-6;
+          html += `<tr><td class="py-1.5 px-2 border border-slate-200 font-bold ${isRow ? 'bg-[#0F766E] text-white' : 'bg-white text-[#475569]'}">${rv.toFixed(1)}</td>`;
+          for (let c = 0; c <= 9; c++) {
+            const zc = rv + c * 0.01;
+            const phi = normCDF(zc);
+            const isHit = isRow && c === colIdx;
+            html += `<td class="py-1.5 px-1 border border-slate-200 ${isHit ? 'bg-[#0F766E] text-white font-extrabold ring-2 ring-[#D97706]' : (isRow || c === colIdx ? 'bg-[#F0FDFA] text-[#0F766E]' : 'bg-white text-[#475569]')}">${phi.toFixed(4)}</td>`;
+          }
+          html += `</tr>`;
+        }
+        html += `</tbody></table>`;
+        document.getElementById('zTableWrap').innerHTML = html;
+      }
+
+      function renderNormalLab() {
+        const { mu, sig, mode } = normState;
+        let a = normState.a, b = normState.b, p = normState.p;
+        if (mode === 'interval' && a > b) { const t = a; a = b; b = t; }
+
+        document.getElementById('normLblA').textContent = a;
+        document.getElementById('normLblB').textContent = b;
+        document.getElementById('normValP').textContent = p.toFixed(3);
+
+        const peak = 1 / (sig * Math.sqrt(2 * Math.PI));
+        document.getElementById('normOutPeak').textContent = peak.toFixed(5);
+
+        let shadeLo = mu - 4 * sig, shadeHi = mu + 4 * sig;
+        let zLookup = 0;
+
+        if (mode === 'interval') {
+          const za = (a - mu) / sig, zb = (b - mu) / sig;
+          const prob = Math.max(0, normCDF(zb) - normCDF(za));
+          shadeLo = a; shadeHi = b; zLookup = zb;
+          document.getElementById('normOutZ').textContent = `z₁ = ${za.toFixed(2)},  z₂ = ${zb.toFixed(2)}`;
+          document.getElementById('normOutMainLbl').textContent = `Probability P(${a} < X < ${b})`;
+          document.getElementById('normOutMainVal').textContent = prob.toFixed(4);
+        } else if (mode === 'left') {
+          const za = (a - mu) / sig;
+          const prob = normCDF(za);
+          shadeLo = mu - 4 * sig; shadeHi = a; zLookup = za;
+          document.getElementById('normOutZ').textContent = `z = ${za.toFixed(3)}`;
+          document.getElementById('normOutMainLbl').textContent = `Left Tail P(X < ${a})`;
+          document.getElementById('normOutMainVal').textContent = prob.toFixed(4);
+        } else if (mode === 'right') {
+          const za = (a - mu) / sig;
+          const prob = 1 - normCDF(za);
+          shadeLo = a; shadeHi = mu + 4 * sig; zLookup = za;
+          document.getElementById('normOutZ').textContent = `z = ${za.toFixed(3)}`;
+          document.getElementById('normOutMainLbl').textContent = `Right Tail P(X > ${a})`;
+          document.getElementById('normOutMainVal').textContent = prob.toFixed(4);
+        } else {
+          const zp = normInv(p);
+          const xp = mu + zp * sig;
+          shadeLo = mu - 4 * sig; shadeHi = xp; zLookup = zp;
+          document.getElementById('normOutZ').textContent = `z = ${zp.toFixed(4)}`;
+          document.getElementById('normOutMainLbl').textContent = `${(p * 100).toFixed(1)}th Percentile x = μ + zσ`;
+          document.getElementById('normOutMainVal').textContent = xp.toFixed(sig < 0.2 ? 4 : 2);
+        }
+
+        renderZTable(zLookup);
+
+        // Draw High-DPI Bell Curve Canvas with Dual X & Z Axes
+        const { ctx, w, h } = setupHiDPI(document.getElementById('normCanvas'), document.getElementById('normCanvasWrap'), 0.36, 220, 280);
+        const padL = 32, padR = 32, padT = 24, padB = 52;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const xMin = mu - 4 * sig, xMax = mu + 4 * sig;
+        const yMax = peak * 1.16;
+        const toX = x => padL + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = y => padT + plotH * (1 - y / yMax);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Shaded Teal Target Area
+        const sL = Math.max(xMin, shadeLo), sR = Math.min(xMax, shadeHi);
+        if (sR > sL) {
+          ctx.fillStyle = 'rgba(15, 118, 110, 0.34)';
+          ctx.beginPath();
+          ctx.moveTo(toX(sL), toY(0));
+          for (let i = 0; i <= 140; i++) {
+            const xi = sL + (sR - sL) * (i / 140);
+            ctx.lineTo(toX(xi), toY(normPDF(xi, mu, sig)));
+          }
+          ctx.lineTo(toX(sR), toY(0));
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Smooth Bell Curve
+        ctx.strokeStyle = '#0F766E'; ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for (let i = 0; i <= 240; i++) {
+          const xi = xMin + (xMax - xMin) * (i / 240);
+          if (i === 0) ctx.moveTo(toX(xi), toY(normPDF(xi, mu, sig)));
+          else ctx.lineTo(toX(xi), toY(normPDF(xi, mu, sig)));
+        }
+        ctx.stroke();
+
+        // Mean dashed line
+        ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(toX(mu), padT); ctx.lineTo(toX(mu), toY(0)); ctx.stroke(); ctx.restore();
+
+        // Inflection point amber dots at mu +- sigma
+        [mu - sig, mu + sig].forEach(ix => {
+          ctx.fillStyle = '#D97706'; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(toX(ix), toY(normPDF(ix, mu, sig)), 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        });
+
+        // Baseline & Dual Horizontal Axes (Top: X, Bottom: Z)
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, toY(0)); ctx.lineTo(padL + plotW, toY(0)); ctx.stroke();
+
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (let z = -3; z <= 3; z++) {
+          const xv = mu + z * sig;
+          const px = toX(xv);
+          ctx.strokeStyle = '#94A3B8'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(px, toY(0)); ctx.lineTo(px, toY(0) + 5); ctx.stroke();
+          ctx.fillStyle = '#1E293B';
+          ctx.fillText(sig < 0.2 ? xv.toFixed(2) : (Number.isInteger(xv) ? xv : xv.toFixed(1)), px, toY(0) + 8);
+          ctx.fillStyle = '#4338CA';
+          ctx.fillText(z === 0 ? 'Z=0' : (z > 0 ? `+${z}` : `${z}`), px, toY(0) + 25);
+        }
+      }
+
+      document.getElementById('normSliderMu').addEventListener('input', e => { normState.mu = parseFloat(e.target.value); document.getElementById('normNumMu').value = normState.mu; renderNormalLab(); });
+      document.getElementById('normNumMu').addEventListener('input', e => { normState.mu = parseFloat(e.target.value) || 0; renderNormalLab(); });
+      document.getElementById('normSliderSig').addEventListener('input', e => { normState.sig = parseFloat(e.target.value); document.getElementById('normNumSig').value = normState.sig; renderNormalLab(); });
+      document.getElementById('normNumSig').addEventListener('input', e => { normState.sig = Math.max(0.01, parseFloat(e.target.value) || 1); renderNormalLab(); });
+      document.getElementById('normInputA').addEventListener('input', e => { normState.a = parseFloat(e.target.value) || 0; renderNormalLab(); });
+      document.getElementById('normInputB').addEventListener('input', e => { normState.b = parseFloat(e.target.value) || 0; renderNormalLab(); });
+      document.getElementById('normSliderP').addEventListener('input', e => { normState.p = parseFloat(e.target.value); renderNormalLab(); });
+
+      document.querySelectorAll('.norm-qmode').forEach(btn => {
+        btn.addEventListener('click', () => {
+          normState.mode = btn.getAttribute('data-nmode');
+          syncNormControls();
+          renderNormalLab();
+        });
+      });
+
+      document.querySelectorAll('.norm-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-npreset');
+          if (p === 'iq2025') { Object.assign(normState, { mu: 100, sig: 15, mode: 'inverse', p: 0.30 }); }
+          else if (p === 'grades2022') { Object.assign(normState, { mu: 72, sig: 10, mode: 'interval', a: 50, b: 80 }); }
+          else if (p === 'rods2024') { Object.assign(normState, { mu: 8, sig: 0.05, mode: 'interval', a: 7.94, b: 8.09 }); }
+          else if (p === 'sym2025') { Object.assign(normState, { mu: 60, sig: 10, mode: 'right', a: 80 }); }
+          document.querySelectorAll('.norm-preset').forEach(b => {
+            b.className = b === btn
+              ? 'norm-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'norm-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          syncNormControls();
+          renderNormalLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 2: EXPONENTIAL MEMORYLESS & MIN/MAX LAB
+      ------------------------------------------------------------------- */
+      function renderExpLab() {
+        const lam = parseFloat(document.getElementById('expSliderLam').value);
+        const s   = parseFloat(document.getElementById('expSliderS').value);
+        const t   = parseFloat(document.getElementById('expSliderT').value);
+        const n   = parseInt(document.getElementById('expSliderN').value, 10);
+        const a   = parseFloat(document.getElementById('expSliderA').value);
+
+        document.getElementById('expValLam').textContent = lam.toFixed(1);
+        document.getElementById('expValS').textContent = s.toFixed(2);
+        document.getElementById('expValT').textContent = t.toFixed(2);
+        document.getElementById('expValN').textContent = n;
+        document.getElementById('expValA').textContent = a.toFixed(2);
+
+        const pS = Math.exp(-lam * s);
+        const pST = Math.exp(-lam * (s + t));
+        const pT = Math.exp(-lam * t);
+
+        document.getElementById('expMemVerify').textContent =
+          `P(X > ${(s+t).toFixed(2)}) / P(X > ${s.toFixed(2)}) = ${pST.toFixed(5)} / ${pS.toFixed(5)} = ${pT.toFixed(5)} = e^(-${lam.toFixed(1)}·${t.toFixed(2)}) = P(X > ${t.toFixed(2)})`;
+
+        // --- Left Canvas: Memoryless Property ---
+        const { ctx: mCtx, w: mw, h: mh } = setupHiDPI(document.getElementById('expMemCanvas'), document.getElementById('expMemWrap'), 0.58, 200, 250);
+        const padL = 40, padR = 16, padT = 18, padB = 30;
+        const pW = mw - padL - padR, pH = mh - padT - padB;
+        const xMaxM = Math.max(s + t + 2.5, 5 / lam);
+        const yMaxM = lam * 1.15;
+        const toXM = x => padL + (x / xMaxM) * pW;
+        const toYM = y => padT + pH * (1 - y / yMaxM);
+
+        mCtx.clearRect(0, 0, mw, mh);
+
+        // Soft Amber shade [s, xMaxM]
+        mCtx.fillStyle = 'rgba(217, 119, 6, 0.22)';
+        mCtx.beginPath(); mCtx.moveTo(toXM(s), toYM(0));
+        for (let i = 0; i <= 100; i++) {
+          const xi = s + (xMaxM - s) * (i / 100);
+          mCtx.lineTo(toXM(xi), toYM(lam * Math.exp(-lam * xi)));
+        }
+        mCtx.lineTo(toXM(xMaxM), toYM(0)); mCtx.closePath(); mCtx.fill();
+
+        // Deep Teal shade [s+t, xMaxM]
+        if (s + t < xMaxM) {
+          mCtx.fillStyle = 'rgba(15, 118, 110, 0.48)';
+          mCtx.beginPath(); mCtx.moveTo(toXM(s + t), toYM(0));
+          for (let i = 0; i <= 80; i++) {
+            const xi = (s + t) + (xMaxM - (s + t)) * (i / 80);
+            mCtx.lineTo(toXM(xi), toYM(lam * Math.exp(-lam * xi)));
+          }
+          mCtx.lineTo(toXM(xMaxM), toYM(0)); mCtx.closePath(); mCtx.fill();
+        }
+
+        // Unconditional PDF f(x)
+        mCtx.strokeStyle = '#0F766E'; mCtx.lineWidth = 2.4;
+        mCtx.beginPath();
+        for (let i = 0; i <= 160; i++) {
+          const xi = (i / 160) * xMaxM;
+          if (i === 0) mCtx.moveTo(toXM(xi), toYM(lam * Math.exp(-lam * xi)));
+          else mCtx.lineTo(toXM(xi), toYM(lam * Math.exp(-lam * xi)));
+        }
+        mCtx.stroke();
+
+        // Renormalized Conditional PDF f(x | X > s) = lam * exp(-lam*(x - s)) for x >= s (dashed amber)
+        mCtx.save(); mCtx.setLineDash([6, 4]); mCtx.strokeStyle = '#D97706'; mCtx.lineWidth = 2.2;
+        mCtx.beginPath();
+        for (let i = 0; i <= 120; i++) {
+          const xi = s + (xMaxM - s) * (i / 120);
+          const yi = lam * Math.exp(-lam * (xi - s));
+          if (i === 0) mCtx.moveTo(toXM(xi), toYM(yi)); else mCtx.lineTo(toXM(xi), toYM(yi));
+        }
+        mCtx.stroke(); mCtx.restore();
+
+        // Axes & markers s, s+t
+        mCtx.strokeStyle = '#475569'; mCtx.lineWidth = 1.3;
+        mCtx.beginPath(); mCtx.moveTo(padL, padT); mCtx.lineTo(padL, padT + pH); mCtx.lineTo(padL + pW, padT + pH); mCtx.stroke();
+        mCtx.font = '700 10px JetBrains Mono, monospace'; mCtx.textAlign = 'center'; mCtx.textBaseline = 'top';
+        mCtx.fillStyle = '#D97706'; mCtx.fillText(`s=${s.toFixed(1)}`, toXM(s), padT + pH + 6);
+        mCtx.fillStyle = '#0F766E'; mCtx.fillText(`s+t=${(s+t).toFixed(1)}`, toXM(s + t), padT + pH + 6);
+
+        // --- Right Canvas: Survival Curves Single, Min, Max ---
+        const sSingle = Math.exp(-lam * a);
+        const sMin = Math.exp(-n * lam * a);
+        const sMax = 1 - Math.pow(1 - Math.exp(-lam * a), n);
+
+        document.getElementById('expOutMin').textContent = sMin.toFixed(4);
+        document.getElementById('expOutSingle').textContent = sSingle.toFixed(4);
+        document.getElementById('expOutMax').textContent = sMax.toFixed(4);
+
+        const { ctx: rCtx, w: rw, h: rh } = setupHiDPI(document.getElementById('expRelCanvas'), document.getElementById('expRelWrap'), 0.58, 200, 250);
+        const pWR = rw - padL - padR, pHR = rh - padT - padB;
+        const xMaxR = Math.max(a + 2.0, 5 / lam);
+        const toXR = x => padL + (x / xMaxR) * pWR;
+        const toYR = y => padT + pHR * (1 - y / 1.05);
+
+        rCtx.clearRect(0, 0, rw, rh);
+        // Grid
+        rCtx.strokeStyle = '#E5E7EB'; rCtx.lineWidth = 1;
+        rCtx.font = '600 10px JetBrains Mono, monospace'; rCtx.fillStyle = '#475569'; rCtx.textAlign = 'right'; rCtx.textBaseline = 'middle';
+        [0, 0.25, 0.5, 0.75, 1.0].forEach(yv => {
+          rCtx.beginPath(); rCtx.moveTo(padL, toYR(yv)); rCtx.lineTo(padL + pWR, toYR(yv)); rCtx.stroke();
+          rCtx.fillText(yv.toFixed(2), padL - 6, toYR(yv));
+        });
+
+        function plotSurv(fn, col, wLine) {
+          rCtx.strokeStyle = col; rCtx.lineWidth = wLine;
+          rCtx.beginPath();
+          for (let i = 0; i <= 140; i++) {
+            const xi = (i / 140) * xMaxR;
+            if (i === 0) rCtx.moveTo(toXR(xi), toYR(fn(xi))); else rCtx.lineTo(toXR(xi), toYR(fn(xi)));
+          }
+          rCtx.stroke();
+        }
+        plotSurv(x => 1 - Math.pow(1 - Math.exp(-lam * x), n), '#4338CA', 2.4);
+        plotSurv(x => Math.exp(-lam * x), '#475569', 2.0);
+        plotSurv(x => Math.exp(-n * lam * x), '#0F766E', 2.4);
+
+        // Vertical marker at x = a
+        const ax = toXR(a);
+        rCtx.save(); rCtx.setLineDash([4, 3]); rCtx.strokeStyle = '#D97706'; rCtx.lineWidth = 1.8;
+        rCtx.beginPath(); rCtx.moveTo(ax, padT); rCtx.lineTo(ax, toYR(0)); rCtx.stroke(); rCtx.restore();
+        [ { y: sMin, c: '#0F766E' }, { y: sSingle, c: '#475569' }, { y: sMax, c: '#4338CA' } ].forEach(pt => {
+          rCtx.fillStyle = pt.c; rCtx.strokeStyle = '#ffffff'; rCtx.lineWidth = 1.8;
+          rCtx.beginPath(); rCtx.arc(ax, toYR(pt.y), 4.5, 0, Math.PI * 2); rCtx.fill(); rCtx.stroke();
+        });
+
+        rCtx.strokeStyle = '#475569'; rCtx.lineWidth = 1.3;
+        rCtx.beginPath(); rCtx.moveTo(padL, padT); rCtx.lineTo(padL, padT + pHR); rCtx.lineTo(padL + pWR, padT + pHR); rCtx.stroke();
+        rCtx.fillStyle = '#D97706'; rCtx.font = '700 10px JetBrains Mono, monospace'; rCtx.textAlign = 'center'; rCtx.textBaseline = 'top';
+        rCtx.fillText(`a=${a.toFixed(2)}`, ax, padT + pHR + 6);
+      }
+
+      ['expSliderLam', 'expSliderS', 'expSliderT', 'expSliderN', 'expSliderA'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderExpLab);
+      });
+      document.getElementById('expPreset2022').addEventListener('click', () => {
+        document.getElementById('expSliderLam').value = '0.5';
+        document.getElementById('expSliderN').value = '5';
+        document.getElementById('expSliderA').value = '1.0';
+        renderExpLab();
+      });
+
+      /* -------------------------------------------------------------------
+         7. TAB 3: BINOMIAL -> NORMAL & CONTINUITY CORRECTION
+      ------------------------------------------------------------------- */
+      function renderCcLab() {
+        const n = parseInt(document.getElementById('ccSliderN').value, 10);
+        const p = parseFloat(document.getElementById('ccSliderP').value);
+        const q = 1 - p;
+        const qType = document.getElementById('ccQueryType').value;
+        const useCC = document.getElementById('ccToggle').checked;
+
+        document.getElementById('ccToggleText').textContent = useCC ? 'ON' : 'OFF';
+        document.getElementById('ccValN').textContent = n;
+        document.getElementById('ccValP').textContent = p.toFixed(2);
+
+        const slK = document.getElementById('ccSliderK');
+        const slA = document.getElementById('ccSliderA');
+        const slB = document.getElementById('ccSliderB');
+        slK.max = n; slA.max = n; slB.max = n;
+
+        let k = Math.min(n, parseInt(slK.value, 10)); slK.value = k;
+        let a = Math.min(n, parseInt(slA.value, 10)); slA.value = a;
+        let b = Math.min(n, Math.max(a, parseInt(slB.value, 10))); slB.value = b;
+
+        document.getElementById('ccValK').textContent = k;
+        document.getElementById('ccValA').textContent = a;
+        document.getElementById('ccValB').textContent = b;
+
+        document.getElementById('ccWrapK').classList.toggle('hidden', qType === 'between');
+        const wrapAB = document.getElementById('ccWrapAB');
+        wrapAB.classList.toggle('hidden', qType !== 'between');
+        wrapAB.classList.toggle('grid', qType === 'between');
+
+        const mu = n * p, sd = Math.sqrt(n * p * q);
+        let exact = 0, normWith = 0, normNo = 0;
+        let shadeLo = 0, shadeHi = 0, hintTxt = '';
+
+        for (let x = 0; x <= n; x++) {
+          const hit = (qType === 'le' && x <= k) || (qType === 'ge' && x >= k) || (qType === 'between' && x >= a && x <= b);
+          if (hit) exact += binomPMF(n, p, x);
+        }
+
+        if (qType === 'le') {
+          normWith = normCDF((k + 0.5 - mu) / sd);
+          normNo   = normCDF((k - mu) / sd);
+          shadeLo = -10; shadeHi = useCC ? k + 0.5 : k;
+          hintTxt = useCC ? `Using Y < ${(k + 0.5).toFixed(1)} (+0.5 CC)` : `Using Y < ${k} (No CC)`;
+        } else if (qType === 'ge') {
+          normWith = 1 - normCDF((k - 0.5 - mu) / sd);
+          normNo   = 1 - normCDF((k - mu) / sd);
+          shadeLo = useCC ? k - 0.5 : k; shadeHi = n + 10;
+          hintTxt = useCC ? `Using Y > ${(k - 0.5).toFixed(1)} (−0.5 CC)` : `Using Y > ${k} (No CC)`;
+        } else {
+          normWith = normCDF((b + 0.5 - mu) / sd) - normCDF((a - 0.5 - mu) / sd);
+          normNo   = normCDF((b - mu) / sd) - normCDF((a - mu) / sd);
+          shadeLo = useCC ? a - 0.5 : a; shadeHi = useCC ? b + 0.5 : b;
+          hintTxt = useCC ? `Using ${(a - 0.5).toFixed(1)} < Y < ${(b + 0.5).toFixed(1)} (±0.5 CC)` : `Using ${a} < Y < ${b} (No CC)`;
+        }
+
+        document.getElementById('ccFormulaHint').textContent = hintTxt;
+        document.getElementById('ccOutExact').textContent = exact.toFixed(4);
+        document.getElementById('ccOutWith').textContent = normWith.toFixed(4);
+        document.getElementById('ccOutNo').textContent = normNo.toFixed(4);
+        document.getElementById('ccErrWith').textContent = `|Error| = ${Math.abs(exact - normWith).toFixed(4)}`;
+        document.getElementById('ccErrNo').textContent = `|Error| = ${Math.abs(exact - normNo).toFixed(4)}`;
+
+        const vCard = document.getElementById('ccValidityCard');
+        const npOk = (n * p >= 5 && n * q >= 5);
+        vCard.className = npOk
+          ? 'p-4 rounded-xl border-2 border-emerald-400 bg-[#ECFDF5] flex flex-col justify-center'
+          : 'p-4 rounded-xl border-2 border-amber-300 bg-[#FFFBEB] flex flex-col justify-center';
+        vCard.innerHTML = `<div class="text-[10px] font-bold uppercase ${npOk ? 'text-[#059669]' : 'text-[#D97706]'}">Rule of Thumb</div>
+          <div class="text-sm font-extrabold ${npOk ? 'text-emerald-950' : 'text-amber-950'}">${npOk ? 'VALID (np, nq ≥ 5) ✓' : 'SKEWED (np or nq < 5)'}</div>
+          <div class="text-[11px] font-mono text-[#475569]">np=${(n*p).toFixed(1)}, nq=${(n*q).toFixed(1)}</div>`;
+
+        // Draw Canvas
+        const dispLo = Math.max(0, Math.floor(mu - 4 * sd - 1));
+        const dispHi = Math.min(n, Math.ceil(mu + 4 * sd + 1));
+        const xs = [], pmfs = [];
+        for (let x = dispLo; x <= dispHi; x++) { xs.push(x); pmfs.push(binomPMF(n, p, x)); }
+
+        const { ctx, w, h } = setupHiDPI(document.getElementById('ccCanvas'), document.getElementById('ccCanvasWrap'), 0.40, 220, 280);
+        const padL = 44, padR = 18, padT = 18, padB = 32;
+        const pW = w - padL - padR, pH = h - padT - padB;
+        const maxY = Math.max(0.08, ...pmfs, normPDF(mu, mu, sd)) * 1.16;
+        const xLeft = dispLo - 0.6, xRight = dispHi + 0.6;
+        const toX = x => padL + ((x - xLeft) / (xRight - xLeft)) * pW;
+        const toY = v => padT + pH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E5E7EB'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#475569'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          ctx.beginPath(); ctx.moveTo(padL, toY(yv)); ctx.lineTo(padL + pW, toY(yv)); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, toY(yv));
+        }
+
+        // Exact Binomial Bars (unit width x - 0.5 to x + 0.5)
+        const labelStep = xs.length > 26 ? 4 : (xs.length > 14 ? 2 : 1);
+        xs.forEach((x, idx) => {
+          const hit = (qType === 'le' && x <= k) || (qType === 'ge' && x >= k) || (qType === 'between' && x >= a && x <= b);
+          const bx1 = toX(x - 0.46), bx2 = toX(x + 0.46);
+          const py = toY(pmfs[idx]);
+          ctx.fillStyle = hit ? 'rgba(15, 118, 110, 0.55)' : '#E2E8F0';
+          ctx.strokeStyle = hit ? '#0F766E' : '#CBD5E1'; ctx.lineWidth = 1;
+          ctx.fillRect(bx1, py, bx2 - bx1, Math.max(0, toY(0) - py));
+          ctx.strokeRect(bx1, py, bx2 - bx1, Math.max(0, toY(0) - py));
+          if (idx % labelStep === 0 || idx === xs.length - 1) {
+            ctx.fillStyle = '#475569'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(x, toX(x), padT + pH + 8);
+          }
+        });
+
+        // Shaded Indigo Normal Area
+        const sL = Math.max(xLeft, shadeLo), sR = Math.min(xRight, shadeHi);
+        if (sR > sL) {
+          ctx.fillStyle = 'rgba(67, 56, 202, 0.24)';
+          ctx.beginPath(); ctx.moveTo(toX(sL), toY(0));
+          for (let i = 0; i <= 120; i++) {
+            const xi = sL + (sR - sL) * (i / 120);
+            ctx.lineTo(toX(xi), toY(normPDF(xi, mu, sd)));
+          }
+          ctx.lineTo(toX(sR), toY(0)); ctx.closePath(); ctx.fill();
+        }
+
+        // Smooth Indigo Normal Curve
+        ctx.strokeStyle = '#4338CA'; ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for (let i = 0; i <= 200; i++) {
+          const xi = xLeft + (xRight - xLeft) * (i / 200);
+          if (i === 0) ctx.moveTo(toX(xi), toY(normPDF(xi, mu, sd)));
+          else ctx.lineTo(toX(xi), toY(normPDF(xi, mu, sd)));
+        }
+        ctx.stroke();
+
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + pH); ctx.lineTo(padL + pW, padT + pH); ctx.stroke();
+      }
+
+      ['ccSliderN', 'ccSliderP', 'ccSliderK', 'ccSliderA', 'ccSliderB', 'ccQueryType', 'ccToggle'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderCcLab);
+        document.getElementById(id).addEventListener('change', renderCcLab);
+      });
+
+      document.querySelectorAll('.cc-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-ccpreset');
+          if (p === 'rule') { document.getElementById('ccSliderN').value = 20; document.getElementById('ccSliderP').value = 0.50; document.getElementById('ccQueryType').value = 'ge'; document.getElementById('ccSliderK').max = 20; document.getElementById('ccSliderK').value = 12; }
+          else if (p === 'skew') { document.getElementById('ccSliderN').value = 15; document.getElementById('ccSliderP').value = 0.15; document.getElementById('ccQueryType').value = 'le'; document.getElementById('ccSliderK').max = 15; document.getElementById('ccSliderK').value = 2; }
+          else if (p === 'large') { document.getElementById('ccSliderN').value = 60; document.getElementById('ccSliderP').value = 0.40; document.getElementById('ccQueryType').value = 'between'; document.getElementById('ccSliderA').max = 60; document.getElementById('ccSliderB').max = 60; document.getElementById('ccSliderA').value = 20; document.getElementById('ccSliderB').value = 28; }
+          document.querySelectorAll('.cc-preset').forEach(b => {
+            b.className = b === btn
+              ? 'cc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'cc-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          renderCcLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         8. TAB 4: UNIFORM & SUM OF INDEPENDENT NORMALS
+      ------------------------------------------------------------------- */
+      let usMode = 'sum'; // 'unif' | 'sum'
+
+      function renderUniformLab() {
+        const slA = document.getElementById('unifSliderA');
+        const slB = document.getElementById('unifSliderB');
+        const slC = document.getElementById('unifSliderC');
+        const slD = document.getElementById('unifSliderD');
+
+        let a = parseFloat(slA.value), b = parseFloat(slB.value);
+        if (b <= a + 0.5) { b = a + 1; slB.value = b; }
+        slC.min = a; slC.max = b; slD.min = a; slD.max = b;
+        let c = Math.max(a, Math.min(b, parseFloat(slC.value))); slC.value = c;
+        let d = Math.max(c, Math.min(b, parseFloat(slD.value))); slD.value = d;
+
+        document.getElementById('unifValA').textContent = a.toFixed(1);
+        document.getElementById('unifValB').textContent = b.toFixed(1);
+        document.getElementById('unifValC').textContent = c.toFixed(1);
+        document.getElementById('unifValD').textContent = d.toFixed(1);
+
+        const hVal = 1 / (b - a);
+        const prob = (d - c) / (b - a);
+        document.getElementById('unifOutH').textContent = hVal.toFixed(4);
+        document.getElementById('unifOutMean').textContent = ((a + b) / 2).toFixed(3);
+        document.getElementById('unifOutVar').textContent = (Math.pow(b - a, 2) / 12).toFixed(3);
+        document.getElementById('unifOutProb').textContent = prob.toFixed(4);
+
+        const padL = 42, padR = 18, padT = 18, padB = 30;
+        const xMin = a - 1.5, xMax = b + 1.5;
+
+        // PDF Canvas
+        const { ctx: pCtx, w: pw, h: ph } = setupHiDPI(document.getElementById('unifPdfCanvas'), document.getElementById('unifPdfWrap'), 0.52, 185, 230);
+        const pW = pw - padL - padR, pH = ph - padT - padB;
+        const toX = x => padL + ((x - xMin) / (xMax - xMin)) * pW;
+        const toYp = y => padT + pH * (1 - y / (hVal * 1.35));
+
+        pCtx.clearRect(0, 0, pw, ph);
+        pCtx.fillStyle = 'rgba(15, 118, 110, 0.14)';
+        pCtx.fillRect(toX(a), toYp(hVal), toX(b) - toX(a), toYp(0) - toYp(hVal));
+        pCtx.fillStyle = 'rgba(15, 118, 110, 0.45)';
+        pCtx.fillRect(toX(c), toYp(hVal), toX(d) - toX(c), toYp(0) - toYp(hVal));
+        pCtx.strokeStyle = '#0F766E'; pCtx.lineWidth = 2.5;
+        pCtx.strokeRect(toX(a), toYp(hVal), toX(b) - toX(a), toYp(0) - toYp(hVal));
+        pCtx.strokeStyle = '#475569'; pCtx.lineWidth = 1.3;
+        pCtx.beginPath(); pCtx.moveTo(padL, padT); pCtx.lineTo(padL, padT + pH); pCtx.lineTo(padL + pW, padT + pH); pCtx.stroke();
+        pCtx.fillStyle = '#475569'; pCtx.font = '600 10px JetBrains Mono, monospace'; pCtx.textAlign = 'center'; pCtx.textBaseline = 'top';
+        [a, c, d, b].forEach(v => pCtx.fillText(v.toFixed(1), toX(v), padT + pH + 6));
+
+        // CDF Canvas
+        const { ctx: cCtx, w: cw, h: ch } = setupHiDPI(document.getElementById('unifCdfCanvas'), document.getElementById('unifCdfWrap'), 0.52, 185, 230);
+        const cW = cw - padL - padR, cH = ch - padT - padB;
+        const toXc = x => padL + ((x - xMin) / (xMax - xMin)) * cW;
+        const toYc = y => padT + cH * (1 - y / 1.1);
+        const fc = (c - a) / (b - a), fd = (d - a) / (b - a);
+
+        cCtx.clearRect(0, 0, cw, ch);
+        cCtx.strokeStyle = '#4338CA'; cCtx.lineWidth = 2.6;
+        cCtx.beginPath();
+        cCtx.moveTo(toXc(xMin), toYc(0)); cCtx.lineTo(toXc(a), toYc(0)); cCtx.lineTo(toXc(b), toYc(1)); cCtx.lineTo(toXc(xMax), toYc(1));
+        cCtx.stroke();
+
+        // Amber vertical jump arrow
+        const jx = toXc(d);
+        cCtx.strokeStyle = '#D97706'; cCtx.lineWidth = 2.8;
+        cCtx.beginPath(); cCtx.moveTo(jx, toYc(fc)); cCtx.lineTo(jx, toYc(fd)); cCtx.stroke();
+        cCtx.fillStyle = '#D97706';
+        cCtx.beginPath(); cCtx.arc(toXc(c), toYc(fc), 4, 0, Math.PI * 2); cCtx.fill();
+        cCtx.beginPath(); cCtx.arc(toXc(d), toYc(fd), 4, 0, Math.PI * 2); cCtx.fill();
+
+        cCtx.strokeStyle = '#475569'; cCtx.lineWidth = 1.3;
+        cCtx.beginPath(); cCtx.moveTo(padL, padT); cCtx.lineTo(padL, padT + cH); cCtx.lineTo(padL + cW, padT + cH); cCtx.stroke();
+        cCtx.fillStyle = '#475569'; cCtx.font = '600 10px JetBrains Mono, monospace'; cCtx.textAlign = 'center'; cCtx.textBaseline = 'top';
+        [a, c, d, b].forEach(v => cCtx.fillText(v.toFixed(1), toXc(v), padT + cH + 6));
+      }
+
+      function renderSumNormalsLab() {
+        const c1 = parseFloat(document.getElementById('snC1').value) || 0;
+        const m1 = parseFloat(document.getElementById('snM1').value) || 0;
+        const v1 = Math.max(0, parseFloat(document.getElementById('snV1').value) || 0);
+        const c2 = parseFloat(document.getElementById('snC2').value) || 0;
+        const m2 = parseFloat(document.getElementById('snM2').value) || 0;
+        const v2 = Math.max(0, parseFloat(document.getElementById('snV2').value) || 0);
+        const c3 = parseFloat(document.getElementById('snC3').value) || 0;
+        const m3 = parseFloat(document.getElementById('snM3').value) || 0;
+        const v3 = Math.max(0, parseFloat(document.getElementById('snV3').value) || 0);
+        const T  = parseFloat(document.getElementById('snT').value) || 0;
+
+        const muW  = c1 * m1 + c2 * m2 + c3 * m3;
+        const varW = c1 * c1 * v1 + c2 * c2 * v2 + c3 * c3 * v3;
+        const sdW  = Math.sqrt(Math.max(1e-6, varW));
+        const zT   = (T - muW) / sdW;
+        const prob = normCDF(zT);
+
+        document.getElementById('snHeaderBadge').textContent = `W ~ N(${muW.toFixed(2)}, ${varW.toFixed(2)}) | P(W < ${T}) = ${prob.toFixed(4)}`;
+
+        const dBox = document.getElementById('snDerivBox');
+        dBox.innerHTML = `
+          <div>$\\mu_W = (${c1})(${m1}) + (${c2})(${m2}) + (${c3})(${m3}) = \\mathbf{${muW.toFixed(2)}}$</div>
+          <div>$\\sigma_W^2 = (${c1})^2(${v1}) + (${c2})^2(${v2}) + (${c3})^2(${v3}) = \\mathbf{${varW.toFixed(2)}} \\implies \\sigma_W = ${sdW.toFixed(3)}$ <span class="text-amber-300 text-xs">(Variances ALWAYS add!)</span></div>
+          <div>$P(W < ${T}) = \\Phi\\!\\left(\\dfrac{${T} - ${muW.toFixed(2)}}{${sdW.toFixed(3)}}\\right) = \\Phi(${zT.toFixed(3)}) = \\mathbf{${prob.toFixed(4)}}$</div>
+        `;
+        renderMath(dBox);
+
+        // Plot Combined Bell Curve
+        const { ctx, w, h } = setupHiDPI(document.getElementById('snCanvas'), document.getElementById('snCanvasWrap'), 0.44, 190, 240);
+        const padL = 28, padR = 28, padT = 18, padB = 30;
+        const pW = w - padL - padR, pH = h - padT - padB;
+        const xMin = muW - 4 * sdW, xMax = muW + 4 * sdW;
+        const peak = 1 / (sdW * Math.sqrt(2 * Math.PI));
+        const toX = x => padL + ((x - xMin) / (xMax - xMin)) * pW;
+        const toY = y => padT + pH * (1 - y / (peak * 1.15));
+
+        ctx.clearRect(0, 0, w, h);
+
+        const sR = Math.min(xMax, T);
+        if (sR > xMin) {
+          ctx.fillStyle = 'rgba(15, 118, 110, 0.34)';
+          ctx.beginPath(); ctx.moveTo(toX(xMin), toY(0));
+          for (let i = 0; i <= 120; i++) {
+            const xi = xMin + (sR - xMin) * (i / 120);
+            ctx.lineTo(toX(xi), toY(normPDF(xi, muW, sdW)));
+          }
+          ctx.lineTo(toX(sR), toY(0)); ctx.closePath(); ctx.fill();
+        }
+
+        ctx.strokeStyle = '#0F766E'; ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for (let i = 0; i <= 180; i++) {
+          const xi = xMin + (xMax - xMin) * (i / 180);
+          if (i === 0) ctx.moveTo(toX(xi), toY(normPDF(xi, muW, sdW)));
+          else ctx.lineTo(toX(xi), toY(normPDF(xi, muW, sdW)));
+        }
+        ctx.stroke();
+
+        // Threshold vertical line at T
+        if (T >= xMin && T <= xMax) {
+          ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = '#D97706'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(toX(T), padT); ctx.lineTo(toX(T), toY(0)); ctx.stroke(); ctx.restore();
+        }
+
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.moveTo(padL, toY(0)); ctx.lineTo(padL + pW, toY(0)); ctx.stroke();
+        ctx.fillStyle = '#475569'; ctx.font = '600 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        [-2, -1, 0, 1, 2].forEach(z => {
+          const xv = muW + z * sdW;
+          ctx.fillText(xv.toFixed(1), toX(xv), toY(0) + 7);
+        });
+      }
+
+      ['unifSliderA', 'unifSliderB', 'unifSliderC', 'unifSliderD'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderUniformLab);
+      });
+      document.querySelectorAll('.sn-in').forEach(inp => inp.addEventListener('input', renderSumNormalsLab));
+
+      document.querySelectorAll('.us-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          usMode = btn.getAttribute('data-usmode');
+          document.querySelectorAll('.us-mode-btn').forEach(b => {
+            b.className = b === btn
+              ? 'us-mode-btn px-3.5 py-2 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'us-mode-btn px-3.5 py-2 rounded-lg text-[#475569] transition-all';
+          });
+          document.getElementById('usUnifPanel').classList.toggle('hidden', usMode !== 'unif');
+          document.getElementById('usSumPanel').classList.toggle('hidden', usMode !== 'sum');
+          if (usMode === 'unif') renderUniformLab();
+          else renderSumNormalsLab();
+        });
+      });
+
+      document.querySelectorAll('.sn-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-spreset');
+          if (p === 'q6d') {
+            document.getElementById('snC1').value = 1; document.getElementById('snM1').value = 2; document.getElementById('snV1').value = 3;
+            document.getElementById('snC2').value = 1; document.getElementById('snM2').value = 5; document.getElementById('snV2').value = 1;
+            document.getElementById('snC3').value = 1; document.getElementById('snM3').value = 20; document.getElementById('snV3').value = 21;
+            document.getElementById('snT').value = 25;
+          } else {
+            document.getElementById('snC1').value = 1; document.getElementById('snM1').value = 10; document.getElementById('snV1').value = 4;
+            document.getElementById('snC2').value = -1; document.getElementById('snM2').value = 6; document.getElementById('snV2').value = 5;
+            document.getElementById('snC3').value = 0; document.getElementById('snM3').value = 0; document.getElementById('snV3').value = 0;
+            document.getElementById('snT').value = 5;
+          }
+          document.querySelectorAll('.sn-preset').forEach(b => {
+            b.className = b === btn
+              ? 'sn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'sn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1E293B] border border-[#E5E7EB] hover:border-[#0F766E] transition-all';
+          });
+          renderSumNormalsLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         9. SECTION 5: INTERACTIVE 5-QUESTION MASTERY QUIZ
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. (Exponential Memoryless) A lightbulb lifetime $X \\sim \\text{Exp}(\\lambda = 0.2\\text{ per hour})$ has already worked for $5$ hours. What is the probability it lasts at least $3$ MORE hours ($P(X > 8 \\mid X > 5)$)?',
+          options: [
+            '$e^{-1.6} \\approx 0.2019$',
+            '$e^{-1.0} \\approx 0.3679$',
+            '$e^{-0.6} \\approx 0.5488$',
+            '$1 - e^{-0.6} \\approx 0.4512$'
+          ],
+          correct: 2,
+          explanation: 'By the Exponential memoryless property, $P(X > 5 + 3 \\mid X > 5) = P(X > 3) = e^{-0.2(3)} = e^{-0.6} \\approx 0.5488$.'
+        },
+        {
+          q: '2. (Linear Combination Variance Trap) Let $X \\sim N(10, 4)$ and $Y \\sim N(6, 5)$ be independent (note: variances are $4$ and $5$). What is the distribution of $W = 2X - 3Y$?',
+          options: [
+            '$N(2,\\; -29)$',
+            '$N(2,\\; 61)$',
+            '$N(2,\\; 16 - 45)$',
+            '$N(2,\\; 23)$'
+          ],
+          correct: 1,
+          explanation: '$E[W] = 2(10) - 3(6) = 2$. Variances ALWAYS add with squared coefficients: $\\text{Var}(2X - 3Y) = 2^2(4) + (-3)^2(5) = 16 + 45 = 61$. Thus $W \\sim N(2, 61)$.'
+        },
+        {
+          q: '3. (Standard Normal Symmetry) Given $\\Phi(1.645) = 0.9500$, what is $P(-1.645 < Z < 1.645)$?',
+          options: [
+            '$0.9500$',
+            '$0.9000$',
+            '$0.0500$',
+            '$0.4500$'
+          ],
+          correct: 1,
+          explanation: 'By symmetry $\\Phi(-1.645) = 1 - \\Phi(1.645) = 0.0500$. Hence $P(-1.645 < Z < 1.645) = 0.9500 - 0.0500 = 0.9000$.'
+        },
+        {
+          q: '4. (Continuity Correction Direction) When approximating a Binomial probability $P(X \\ge 12)$ using a continuous Normal variable $Y \\sim N(np, npq)$, which continuity-corrected probability should be computed?',
+          options: [
+            '$P(Y > 12.5)$',
+            '$P(Y > 11.5)$',
+            '$P(Y < 11.5)$',
+            '$P(Y < 12.5)$'
+          ],
+          correct: 1,
+          explanation: 'To INCLUDE the integer $12$ (whose histogram bar spans $[11.5, 12.5]$), the right tail must start at $11.5$: $P(X \\ge 12) \\approx P(Y > 11.5)$.'
+        },
+        {
+          q: '5. (Minimum of i.i.d. Exponentials) If $X_1, X_2, X_3, X_4 \\stackrel{\\text{i.i.d.}}{\\sim} \\text{Exp}(\\lambda)$, what is the distribution of $M = \\min(X_1, X_2, X_3, X_4)$?',
+          options: [
+            '$\\text{Exp}(\\lambda / 4)$',
+            '$\\text{Exp}(4\\lambda)$',
+            '$N(4/\\lambda, 4/\\lambda^2)$',
+            'Uniform$(0, 4\\lambda)$'
+          ],
+          correct: 1,
+          explanation: '$P(M \\ge a) = [P(X_1 \\ge a)]^4 = (e^{-\\lambda a})^4 = e^{-(4\\lambda)a}$, which is the exact survival function of $\\text{Exp}(4\\lambda)$.'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-[#FAFAF7] border-[#E5E7EB] text-[#1E293B] hover:border-[#0F766E] hover:bg-[#F0FDFA]';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-[#ECFDF5] border-[#059669] text-[#059669] font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-[#FFF1F2] border-[#BE123C] text-[#BE123C] font-semibold';
+              else cls = 'bg-slate-50 border-slate-200 text-slate-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-[#ECFDF5] border-emerald-300 text-[#059669]' : 'bg-[#FFF1F2] border-rose-300 text-[#BE123C]'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-[#1E293B] text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        renderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         10. INITIALIZATION
+      ------------------------------------------------------------------- */
+      function initAll() {
+        syncNormControls();
+        renderNormalLab();
+        renderExpLab();
+        renderCcLab();
+        renderUniformLab();
+        renderSumNormalsLab();
+        renderQuiz();
+        updateScrollProgress();
+        renderMath(document.body);
+      }
+
+      document.addEventListener('DOMContentLoaded', initAll);
+      window.addEventListener('load', () => {
+        redrawVisibleCanvases();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

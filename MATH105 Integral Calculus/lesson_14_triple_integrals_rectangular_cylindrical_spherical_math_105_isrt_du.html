@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 14: Triple Integrals (Rect, Cyl &amp; Sph) | MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK SLATE ACADEMIC THEME (CONSISTENT WITH LESSONS 1–13)
+       ========================================================================== */
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --accent-border: rgba(56, 189, 248, 0.38);
+      --accent2-soft: rgba(129, 140, 248, 0.15);
+      --accent2-border: rgba(129, 140, 248, 0.38);
+      --green-soft: rgba(52, 211, 153, 0.14);
+      --green-border: rgba(52, 211, 153, 0.38);
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.38);
+      --rose-soft: rgba(251, 113, 133, 0.12);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 270px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ==========================================================================
+       MOBILE TOP BAR (< 900px)
+       ========================================================================== */
+    .mobile-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .mobile-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .menu-toggle {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .mobile-bar-title {
+      font-size: 0.9rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-pct-pill {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
+      color: var(--green); background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       FIXED LEFT SIDEBAR (270px)
+       ========================================================================== */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      z-index: 55; backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    aside.sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 60;
+      transition: transform 0.25s ease;
+    }
+    .brand { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .brand .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .brand h1 { font-size: 1.06rem; margin-top: 5px; line-height: 1.3; font-weight: 800; }
+    .brand p { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
+
+    .progress-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; margin-bottom: 7px; font-weight: 600;
+    }
+    .progress-bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--green));
+      transition: width 0.35s ease;
+    }
+    .progress-detail {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; color: var(--muted); margin-top: 7px;
+    }
+
+    nav.side-nav { display: flex; flex-direction: column; gap: 5px; }
+    .nav-heading {
+      font-size: 0.69rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); padding: 0 10px; margin-bottom: 4px;
+    }
+    nav.side-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.18s ease;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    nav.side-nav a:hover { background: var(--surface-2); color: var(--text); }
+    nav.side-nav a.active {
+      background: var(--surface-2);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .foot-btn {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .foot-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 34px 40px 84px;
+      max-width: calc(1140px + var(--sidebar-w));
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.13), rgba(129, 140, 248, 0.17));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-bottom: 34px;
+    }
+    .hero .pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      background: var(--accent-soft); border: 1px solid var(--accent-border);
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .hero h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    .hero p { color: var(--muted); max-width: 830px; font-size: 0.95rem; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .hero-chip {
+      font-size: 0.77rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(11, 17, 32, 0.55); border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 1.32rem; font-weight: 800; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .num {
+      background: var(--accent); color: var(--bg);
+      font-family: var(--font-mono); font-weight: 800; font-size: 0.85rem;
+      width: 28px; height: 28px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-sub { color: var(--muted); font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================================================
+       CONTROLS, BUTTONS & CANVASES
+       ========================================================================== */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn, .btn {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.84rem; font-weight: 600;
+      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .tab-btn:hover, .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+    .tab-btn.active, .btn-primary {
+      background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700;
+    }
+    .btn-primary:hover:not(:disabled) { background: #7dd3fc; border-color: #7dd3fc; color: var(--bg); }
+    .btn.toggled {
+      background: var(--accent2-soft); border-color: var(--accent-2); color: var(--accent-2);
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .control-group label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted); font-weight: 600;
+    }
+    .control-group label strong {
+      font-family: var(--font-mono); color: var(--accent); font-size: 0.82rem;
+    }
+    .control-group select {
+      width: 100%;
+      background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 11px; font-size: 0.86rem; cursor: pointer;
+    }
+    .control-group select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .control-group input[type="range"] {
+      width: 100%; accent-color: var(--accent); cursor: pointer; height: 6px;
+    }
+
+    .canvas-wrap {
+      background: #070d19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+      width: 100%;
+      height: 410px;
+      cursor: grab;
+      touch-action: none;
+    }
+    .canvas-wrap:active { cursor: grabbing; }
+    .canvas-wrap.compact { height: 350px; }
+    .canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+
+    .drag-hint {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(17, 24, 39, 0.84);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-mono); font-size: 0.71rem;
+      padding: 4px 10px; border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .legend-row {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      overflow-x: auto;
+    }
+    .stat.highlight { background: var(--green-soft); border-color: var(--green-border); }
+    .stat.accent { background: var(--accent-soft); border-color: var(--accent-border); }
+    .stat .label {
+      font-size: 0.71rem; color: var(--muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat .val {
+      font-family: var(--font-mono);
+      font-size: 0.98rem; font-weight: 700; margin-top: 4px; color: var(--accent);
+    }
+    .stat .sub { font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+
+    /* Section 2 Two-Column & Surface Translator */
+    .lab2-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(290px, 1fr);
+      gap: 18px; align-items: start;
+    }
+    .coord-readout-list { display: flex; flex-direction: column; gap: 9px; margin-top: 12px; }
+    .coord-row {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .coord-row.cyl { border-left-color: var(--green); }
+    .coord-row.sph { border-left-color: var(--accent-2); }
+    .coord-lbl { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
+    .coord-val { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--text); }
+
+    .surface-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .surface-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px;
+      overflow-x: auto;
+    }
+    .surface-box.cyl { border-top-color: var(--green); }
+    .surface-box.sph { border-top-color: var(--accent-2); }
+    .surface-box h5 {
+      font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--muted); margin-bottom: 8px;
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY, TABLE & EXAM TRAPS
+       ========================================================================== */
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 16px; }
+    .formula-box {
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent-2);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-top: 10px; }
+    table.ref-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; background: var(--surface-2); }
+    table.ref-table th, table.ref-table td {
+      padding: 11px 13px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top;
+    }
+    table.ref-table th {
+      background: var(--bg); color: var(--muted);
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    table.ref-table tr:last-child td { border-bottom: none; }
+
+    .trap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .trap-box {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+    }
+    .trap-box strong { color: var(--rose); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    /* ==========================================================================
+       SECTION 4: VAULT
+       ========================================================================== */
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .vault-item.reviewed { border-color: var(--green-border); }
+    .vault-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+      border-radius: 999px; background: var(--accent2-soft); color: var(--accent-2);
+      border: 1px solid var(--accent2-border);
+    }
+    .badge.sky { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+
+    .vault-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .reveal-box {
+      display: none; margin-top: 12px; padding: 14px 16px;
+      background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.91rem;
+    }
+    .reveal-box.open { display: block; }
+    .reveal-box.hint-box { background: var(--amber-soft); border-color: var(--amber-border); }
+    .check-label {
+      margin-left: auto; font-size: 0.82rem; font-weight: 600; color: var(--green);
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+      padding: 6px 11px; border-radius: 8px;
+      background: var(--green-soft); border: 1px solid var(--green-border);
+      user-select: none;
+    }
+    .check-label input { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; }
+
+    /* ==========================================================================
+       SECTION 5: QUIZ
+       ========================================================================== */
+    .quiz-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    }
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; margin-top: 12px; }
+    .opt-btn {
+      text-align: left; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px;
+      cursor: pointer; font-size: 0.89rem; transition: all 0.18s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .opt-btn.correct { background: var(--green-soft); border-color: var(--green); color: var(--green); font-weight: 600; }
+    .opt-btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); }
+    .feedback {
+      margin-top: 11px; font-size: 0.87rem; color: var(--text);
+      padding: 10px 13px; border-radius: 8px; background: var(--surface-2);
+      border: 1px solid var(--border); display: none;
+    }
+    .feedback.show { display: block; }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 80;
+      background: var(--surface-2); border: 1px solid var(--accent-border);
+      color: var(--text); padding: 11px 16px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+      opacity: 0; transform: translateY(10px); pointer-events: none; transition: all 0.22s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 980px) {
+      .lab2-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .mobile-bar { display: flex; }
+      aside.sidebar {
+        transform: translateX(-100%);
+        top: 63px;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+      }
+      aside.sidebar.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 22px 16px 64px; }
+      section { scroll-margin-top: 78px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Header -->
+  <header class="mobile-bar">
+    <div class="mobile-bar-left">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-bar-title">Lesson 14: Triple Integrals</span>
+    </div>
+    <span class="mobile-pct-pill" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Fixed Left Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Lesson 14 navigation">
+    <div class="brand">
+      <div class="tag">MATH 105 · ISRT, DU</div>
+      <h1>Lesson 14: Triple Integrals (Rect, Cyl &amp; Sph)</h1>
+      <p>Module 4 · Multiple Integrals</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Mastery Progress</span>
+        <strong id="progressPct" style="color:var(--green)">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-detail" id="progressDetail">0 / 13 tasks (0/8 Vault, 0/5 Quiz)</div>
+    </div>
+
+    <nav class="side-nav" id="sideNav">
+      <div class="nav-heading">Sections (11.7–11.8, 14.5–14.6)</div>
+      <a href="#sec1" class="active" data-sec="sec1">1. 3D Solid Explorer</a>
+      <a href="#sec2" data-sec="sec2">2. Point &amp; Surface Lab</a>
+      <a href="#sec3" data-sec="sec3">3. Core Theory &amp; Traps</a>
+      <a href="#sec4" data-sec="sec4">4. ISRT Past-Exam Vault (8)</a>
+      <a href="#sec5" data-sec="sec5">5. Quick Mastery Check (5)</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="foot-btn" id="prevBtn"><span>&larr; Prev Lesson</span><span class="mono">L13</span></button>
+      <button type="button" class="foot-btn" id="nextBtn"><span>Next Lesson &rarr;</span><span class="mono" style="color:var(--accent)">L15</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <span class="pill">Module 4 · Sections 11.7, 11.8, 14.5 &amp; 14.6 · Year Final Core</span>
+      <h2>Triple Integrals: Rectangular, Cylindrical &amp; Spherical Coordinates</h2>
+      <p>
+        Rotate 3D solids of integration interactively, inspect $xy$-plane projection shadows and volume elements $dV$, convert points and quadric surfaces across all three 3D coordinate systems using Howard Anton's $(\rho, \theta, \phi)$ convention, and master 8 authentic ISRT exam problems.
+      </p>
+      <div class="hero-chips">
+        <span class="hero-chip">$dV = dz\,dy\,dx$</span>
+        <span class="hero-chip">$dV = r\,dz\,dr\,d\theta$</span>
+        <span class="hero-chip">$dV = \rho^2\sin\phi\,d\rho\,d\phi\,d\theta$</span>
+        <span class="hero-chip">Anton $(\rho, \theta, \phi)$ Convention</span>
+        <span class="hero-chip">8 Solved ISRT Problems</span>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         SECTION 1: 3D COORDINATE & SOLID-OF-INTEGRATION EXPLORER
+         ====================================================================== -->
+    <section id="sec1">
+      <h3 class="section-title"><span class="num">1</span> 3D Coordinate &amp; Solid-of-Integration Explorer</h3>
+      <p class="section-sub">Drag directly on the 3D canvas (mouse or touch) to orbit around each ISRT exam solid, adjust the cutaway sweep to inspect the interior, and toggle the $xy$-projection shadow $R$ and volume element $dV$.</p>
+
+      <div class="card">
+        <div class="controls-grid">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="solidPreset"><span>ISRT Exam 3D Solid Preset (5 Presets)</span></label>
+            <select id="solidPreset">
+              <option value="paraboloid">1) Final 2025 Q6b: Paraboloid z = x²+y² &amp; Plane z = 9 (Cylindrical)</option>
+              <option value="icecream">2) 2nd Incourse 2025 Q5: Sphere x²+y²+z²=1 &amp; Cone z=√(x²+y²) (Cyl/Sph)</option>
+              <option value="qball">3) Final 2025 Q6c: Quarter-Ball (x∈[-1,1], y≥0, z≥0) (Spherical)</option>
+              <option value="rhemi">4) 2nd Incourse 2025 Q6: Right-Half Upper Hemisphere (x≥0, z≥0)</option>
+              <option value="cylhemi">5) Class Notes Ex 1: Hemisphere z=√(25-r²) inside Cylinder r=3 (Cylindrical)</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="cutawaySlider">
+              <span>Cutaway Sweep</span>
+              <strong id="cutawayLabel">310&deg;</strong>
+            </label>
+            <input type="range" id="cutawaySlider" min="30" max="360" step="5" value="310" />
+          </div>
+        </div>
+
+        <div class="controls-grid" style="margin-bottom:14px;">
+          <div class="control-group">
+            <label for="azSlider">
+              <span>Camera Azimuth</span>
+              <strong id="azLabel">38&deg;</strong>
+            </label>
+            <input type="range" id="azSlider" min="-180" max="180" step="2" value="38" />
+          </div>
+          <div class="control-group">
+            <label for="elSlider">
+              <span>Camera Elevation</span>
+              <strong id="elLabel">24&deg;</strong>
+            </label>
+            <input type="range" id="elSlider" min="5" max="75" step="1" value="24" />
+          </div>
+          <div class="control-group" style="display:flex;flex-direction:row;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+            <button type="button" class="btn toggled" id="toggleShadowBtn">xy-Projection $R$</button>
+            <button type="button" class="btn toggled" id="toggleDvBtn">Volume Element $dV$</button>
+            <button type="button" class="btn" id="resetViewBtn">&#8634; Reset View</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="solidCanvasWrap">
+          <canvas id="solidCanvas" aria-label="Interactive 3D solid of integration canvas"></canvas>
+          <span class="drag-hint">Drag to Rotate 3D</span>
+        </div>
+
+        <div class="legend-row">
+          <span class="legend-item"><span class="swatch" style="background:var(--accent)"></span> Upper / Outer Surface</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--accent-2)"></span> Lower / Inner Surface</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--green)"></span> $xy$-Plane Projection Shadow $R$</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Volume Element $dV$</span>
+        </div>
+
+        <!-- 4 Live Telemetry Cards -->
+        <div class="telemetry">
+          <div class="stat accent">
+            <div class="label">1. Best Coordinate System</div>
+            <div class="val" id="sTeleSys">—</div>
+            <div class="sub" id="sTeleSysSub">—</div>
+          </div>
+          <div class="stat">
+            <div class="label">2. Exact Integration Bounds</div>
+            <div class="val" id="sTeleBounds" style="font-size:0.86rem;color:var(--text)">—</div>
+            <div class="sub" id="sTeleBoundsSub">Anton / ISRT bounds</div>
+          </div>
+          <div class="stat">
+            <div class="label">3. Iterated Integral Setup</div>
+            <div class="val" id="sTeleSetup" style="font-size:0.84rem;color:var(--text)">—</div>
+            <div class="sub" id="sTeleSetupSub">Includes exact Jacobian</div>
+          </div>
+          <div class="stat highlight">
+            <div class="label">4. Exact Value</div>
+            <div class="val" id="sTeleVal" style="color:var(--green)">—</div>
+            <div class="sub" id="sTeleValDec">Decimal value</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 2: 3D POINT & SURFACE EQUATION CONVERTER LAB (2 TABS)
+         ====================================================================== -->
+    <section id="sec2">
+      <h3 class="section-title"><span class="num">2</span> 3D Point &amp; Surface Equation Converter Lab</h3>
+      <p class="section-sub">Visualize Howard Anton's $(\rho, \theta, \phi)$ convention in 3D and drill the exact quadric surface translations tested in ISRT Final Q1(e).</p>
+
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-lab2="point3d">Tab A: Live 3D Point Converter (Rect &harr; Cyl &harr; Sph)</button>
+          <button type="button" class="tab-btn" data-lab2="surface">Tab B: Quadric Surface Equation Translator (Short-Question Drill)</button>
+        </div>
+
+        <!-- TAB A: Live 3D Point Converter -->
+        <div id="lab2-point3d">
+          <div class="tabs" style="margin-bottom:14px;">
+            <button type="button" class="btn" id="ptPreset1">Final 2025 Q6a(i): $(r,\theta,z)=(4, \pi/3, -3)$</button>
+            <button type="button" class="btn" id="ptPreset2">Final 2025 Q6a(ii): $(\rho,\theta,\phi)=(4, \pi/3, \pi/4)$</button>
+            <button type="button" class="btn" id="ptPreset3">Class Notes: $(\rho,\theta,\phi)=(1, \pi, 0)$</button>
+          </div>
+
+          <div class="lab2-grid">
+            <div class="canvas-wrap compact" id="pt3dCanvasWrap">
+              <canvas id="pt3dCanvas" aria-label="3D point coordinate converter canvas"></canvas>
+              <span class="drag-hint">Drag to Rotate</span>
+            </div>
+
+            <div>
+              <div class="controls-grid" style="grid-template-columns:1fr;margin-bottom:10px;">
+                <div class="control-group">
+                  <label for="rhoSlider"><span>Radius from Origin ($\rho$)</span><strong id="rhoVal">&rho; = 4.00</strong></label>
+                  <input type="range" id="rhoSlider" min="0.5" max="6.0" step="0.1" value="4.0" />
+                </div>
+                <div class="control-group">
+                  <label for="thetaSlider"><span>Azimuthal Angle in $xy$-plane ($\theta$)</span><strong id="thetaVal">&theta; = 60&deg; (&pi;/3)</strong></label>
+                  <input type="range" id="thetaSlider" min="0" max="360" step="5" value="60" />
+                </div>
+                <div class="control-group">
+                  <label for="phiSlider"><span>Polar Angle from $+z$-axis ($\phi$)</span><strong id="phiVal">&phi; = 45&deg; (&pi;/4)</strong></label>
+                  <input type="range" id="phiSlider" min="0" max="180" step="1" value="45" />
+                </div>
+              </div>
+
+              <div class="coord-readout-list" id="coordReadouts">
+                <div class="coord-row">
+                  <span class="coord-lbl">Rectangular $(x, y, z)$</span>
+                  <span class="coord-val" id="outRect">—</span>
+                </div>
+                <div class="coord-row cyl">
+                  <span class="coord-lbl">Cylindrical $(r, \theta, z)$</span>
+                  <span class="coord-val" id="outCyl">—</span>
+                </div>
+                <div class="coord-row sph">
+                  <span class="coord-lbl">Spherical $(\rho, \theta, \phi)$ — Anton / ISRT</span>
+                  <span class="coord-val" id="outSph">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: Quadric Surface Equation Translator -->
+        <div id="lab2-surface" style="display:none;">
+          <div class="tabs" id="surfTabs">
+            <button type="button" class="tab-btn active" data-surf="0">1) Paraboloid $z = x^2+y^2$ (Final 2025 Q1e)</button>
+            <button type="button" class="tab-btn" data-surf="1">2) Cylinder $x^2+y^2 = 1$ (Final 2024 Q1e)</button>
+            <button type="button" class="tab-btn" data-surf="2">3) Cone $z = \sqrt{x^2+y^2}$</button>
+            <button type="button" class="tab-btn" data-surf="3">4) Sphere $x^2+y^2+z^2 = a^2$</button>
+            <button type="button" class="tab-btn" data-surf="4">5) Plane $z = a$ (Notes Ex 15)</button>
+          </div>
+          <div id="surfOutput"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: CORE THEORY, VOLUME ELEMENTS & EXAM TRAPS
+         ====================================================================== -->
+    <section id="sec3">
+      <h3 class="section-title"><span class="num">3</span> Core Theory, Volume Elements &amp; ISRT Exam Traps</h3>
+
+      <div class="grid-3">
+        <div class="card">
+          <h4 style="color:var(--accent)">1. Rectangular $(x, y, z)$</h4>
+          <div class="formula-box">
+            $$dV = dz\,dy\,dx$$
+            $$\iiint_G f(x,y,z)\,dV = \iint_R \left[\int_{g_1(x,y)}^{g_2(x,y)} f\,dz\right]dA$$
+          </div>
+          <p style="font-size:0.84rem;color:var(--muted);">Ranges: $x, y, z \in \mathbb{R}$. Best for boxes, planes, tetrahedra, and linear wedges.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--green)">2. Cylindrical $(r, \theta, z)$</h4>
+          <div class="formula-box" style="border-left-color:var(--green)">
+            $$x = r\cos\theta,\quad y = r\sin\theta,\quad z = z$$
+            $$r^2 = x^2 + y^2,\qquad dV = r\,dz\,dr\,d\theta$$
+          </div>
+          <p style="font-size:0.84rem;color:var(--muted);">Ranges: $r \ge 0,\; 0 \le \theta \le 2\pi,\; z \in \mathbb{R}$. Polar coordinates in $xy$ + vertical height $z$.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--accent-2)">3. Spherical $(\rho, \theta, \phi)$</h4>
+          <div class="formula-box">
+            $$x = \rho\sin\phi\cos\theta,\quad y = \rho\sin\phi\sin\theta$$
+            $$z = \rho\cos\phi,\quad \rho^2 = x^2+y^2+z^2$$
+            $$dV = \rho^2\sin\phi\,d\rho\,d\phi\,d\theta$$
+          </div>
+          <p style="font-size:0.84rem;color:var(--muted);">Ranges: $\rho \ge 0,\; 0 \le \theta \le 2\pi,\; 0 \le \phi \le \pi$ ($\phi$ measured from $+z$-axis).</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Decision Matrix: When to Choose Rectangular vs. Cylindrical vs. Spherical</h4>
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th>Coordinate System</th>
+                <th>Ideal Solid Geometry</th>
+                <th>Tell-Tale Integrand Clues</th>
+                <th>ISRT Exam Benchmarks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color:var(--accent)">Rectangular</strong></td>
+                <td>Boxes, coordinate planes, tetrahedra, linear wedges</td>
+                <td>Polynomials $12xy^2z^3$, $z$, separable in $x, y, z$</td>
+                <td>Class Notes Ex 1 (Box), Ex 2 (Wedge)</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--green)">Cylindrical</strong></td>
+                <td>Circular cylinders, paraboloids ($z=x^2+y^2$), solids symmetric around the $z$-axis</td>
+                <td>Expressions with $x^2 + y^2$ and separate $z$</td>
+                <td>Final 2025 Q6b ($z=x^2+y^2$ &amp; $z=9$), 2nd Incourse 2025 Q5</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--accent-2)">Spherical</strong></td>
+                <td>Spheres centered at origin, ice-cream cones ($\phi = \phi_0$), hemispheres, octants</td>
+                <td>Expressions with $x^2+y^2+z^2$ (e.g., $e^{-(x^2+y^2+z^2)^{3/2}}$, $\sqrt{x^2+y^2+z^2}$)</td>
+                <td>Final 2025 Q6c, 2nd Incourse 2025 Q6, Final 2018 Q8a</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 style="margin-top:20px;color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h4>
+        <div class="trap-grid">
+          <div class="trap-box">
+            <strong>Trap 1: Anton $(\rho, \theta, \phi)$ Notation</strong>
+            ISRT follows Howard Anton's order $(\rho, \theta, \phi)$: $\theta$ is the <em>horizontal</em> azimuthal angle in the $xy$-plane, and $\phi$ is the <em>vertical</em> polar angle from the $+z$-axis (physics books often swap $\theta$ and $\phi$!).
+          </div>
+          <div class="trap-box">
+            <strong>Trap 2: Forgetting the Jacobian Factor</strong>
+            Never write $dz\,dr\,d\theta$ or $d\rho\,d\phi\,d\theta$! Cylindrical requires <strong>$r$</strong> ($dV = r\,dz\,dr\,d\theta$) and Spherical requires <strong>$\rho^2\sin\phi$</strong> ($dV = \rho^2\sin\phi\,d\rho\,d\phi\,d\theta$).
+          </div>
+          <div class="trap-box">
+            <strong>Trap 3: Half-Ball / Quarter-Ball $\theta$-Limits</strong>
+            Always check the signs of $x$ and $y$! In Final 2025 Q6c, $y \in [0, \sqrt{1-x^2}]$ ($y \ge 0$) gives $0 \le \theta \le \pi$. In 2nd Incourse 2025 Q6, $x \in [0, \sqrt{9-y^2}]$ ($x \ge 0$) gives $-\frac{\pi}{2} \le \theta \le \frac{\pi}{2}$ (NOT $0$ to $2\pi$!).
+          </div>
+          <div class="trap-box">
+            <strong>Trap 4: Cone-Sphere Intersection Radius</strong>
+            For $x^2+y^2+z^2 = 1$ and $z = \sqrt{x^2+y^2}$ (2nd Incourse 2025 Q5), substituting $z = r$ gives $r^2 + r^2 = 1 \implies 2r^2 = 1 \implies r = \frac{1}{\sqrt{2}}$ (NOT $r = 1$!).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ====================================================================== -->
+    <section id="sec4">
+      <h3 class="section-title"><span class="num">4</span> ISRT Past-Exam &amp; Class-Notes Vault (8 Problems)</h3>
+      <div class="tabs" id="vaultFilters">
+        <button type="button" class="tab-btn active" data-vcat="all">All (8)</button>
+        <button type="button" class="tab-btn" data-vcat="conversions">Conversions (2)</button>
+        <button type="button" class="tab-btn" data-vcat="cylindrical">Cylindrical (2)</button>
+        <button type="button" class="tab-btn" data-vcat="spherical">Spherical (3)</button>
+        <button type="button" class="tab-btn" data-vcat="rectangular">Rectangular (1)</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ====================================================================== -->
+    <section id="sec5">
+      <h3 class="section-title"><span class="num">5</span> Quick Mastery Check</h3>
+      <div class="quiz-bar">
+        <span style="color:var(--muted);font-size:0.9rem;">Quiz Score: <strong id="quizScore" style="color:var(--green);font-family:var(--font-mono)">0 / 5</strong></span>
+        <button type="button" class="btn" id="resetQuizBtn">&#8634; Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2600);
+      }
+
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(220, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      /* ----------------------------------------------------------------------
+         2. 3D PROJECTION HELPER (Right-Handed: +z up, +x front-left, +y front-right)
+         ---------------------------------------------------------------------- */
+      function makeProjector(w, h, azDeg, elDeg, scale, ox, oy) {
+        const az = (azDeg * Math.PI) / 180;
+        const el = (elDeg * Math.PI) / 180;
+        const cosA = Math.cos(az), sinA = Math.sin(az);
+        const cosE = Math.cos(el), sinE = Math.sin(el);
+        return function (x, y, z) {
+          // Rotate around z-axis by az, then tilt by el
+          const x1 = -x * sinA + y * cosA;
+          const y1 = -x * cosA - y * sinA;
+          const sx = ox + x1 * scale;
+          const sy = oy - (z * cosE - y1 * sinE) * scale;
+          return [sx, sy, y1];
+        };
+      }
+
+      function draw3DAxes(ctx, proj, axisLen) {
+        const o = proj(0, 0, 0);
+        const axes = [
+          { end: proj(axisLen, 0, 0), neg: proj(-axisLen * 0.6, 0, 0), lbl: 'x', col: '#94a3b8' },
+          { end: proj(0, axisLen, 0), neg: proj(0, -axisLen * 0.6, 0), lbl: 'y', col: '#94a3b8' },
+          { end: proj(0, 0, axisLen), neg: proj(0, 0, -axisLen * 0.4), lbl: 'z', col: '#cbd5e1' }
+        ];
+        axes.forEach((a) => {
+          ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+          ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(a.neg[0], a.neg[1]); ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.strokeStyle = a.col;
+          ctx.lineWidth = 1.6;
+          ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(a.end[0], a.end[1]); ctx.stroke();
+
+          ctx.fillStyle = a.col;
+          ctx.font = '700 12px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(a.lbl, a.end[0] + (a.end[0] >= o[0] ? 10 : -10), a.end[1] + (a.end[1] <= o[1] ? -8 : 8));
+        });
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 1: 3D SOLID-OF-INTEGRATION EXPLORER (5 ISRT PRESETS)
+         ---------------------------------------------------------------------- */
+      const solidPresets = {
+        paraboloid: {
+          sys: 'Cylindrical (r, θ, z)',
+          sysSub: 'Paraboloid z = r² is circularly symmetric about z',
+          boundsTex: '0\\le\\theta\\le 2\\pi,\\; 0\\le r\\le 3,\\; r^2\\le z\\le 9',
+          setupTex: '\\int_0^{2\\pi}\\!\\int_0^3\\!\\int_{r^2}^9 r\\,dz\\,dr\\,d\\theta',
+          valTex: '\\frac{81\\pi}{2}',
+          valDec: '≈ 127.2345',
+          tStart: 0, tSpan: Math.PI * 2,
+          rMax: 3, zScale: 1 / 3,
+          draw(ctx, proj, tEnd, showShadow, showDv) {
+            const zS = this.zScale;
+            // Shadow R on z=0
+            if (showShadow) {
+              ctx.fillStyle = 'rgba(52, 211, 153, 0.16)';
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.6;
+              ctx.beginPath();
+              for (let i = 0; i <= 60; i++) {
+                const t = (i / 60) * tEnd;
+                const p = proj(3 * Math.cos(t), 3 * Math.sin(t), 0);
+                i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              if (tEnd < Math.PI * 1.99) ctx.lineTo(...proj(0, 0, 0).slice(0, 2));
+              ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
+            // Paraboloid wireframe rings & ribs
+            ctx.strokeStyle = 'rgba(129, 140, 248, 0.55)'; ctx.lineWidth = 1.2;
+            [0.8, 1.5, 2.2, 3.0].forEach((r) => {
+              ctx.beginPath();
+              for (let i = 0; i <= 48; i++) {
+                const t = (i / 48) * tEnd;
+                const p = proj(r * Math.cos(t), r * Math.sin(t), r * r * zS);
+                i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              ctx.stroke();
+            });
+            for (let m = 0; m <= 12; m++) {
+              const t = (m / 12) * tEnd;
+              ctx.strokeStyle = (m === 0 || m === 12) ? '#38bdf8' : 'rgba(56, 189, 248, 0.35)';
+              ctx.lineWidth = (m === 0 || m === 12) ? 2 : 1.1;
+              ctx.beginPath();
+              for (let k = 0; k <= 20; k++) {
+                const r = (k / 20) * 3;
+                const p = proj(r * Math.cos(t), r * Math.sin(t), r * r * zS);
+                k === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              ctx.stroke();
+            }
+            // Top plane z = 9 cap
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.16)';
+            ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i <= 60; i++) {
+              const t = (i / 60) * tEnd;
+              const p = proj(3 * Math.cos(t), 3 * Math.sin(t), 9 * zS);
+              i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+            }
+            if (tEnd < Math.PI * 1.99) ctx.lineTo(...proj(0, 0, 9 * zS).slice(0, 2));
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+
+            // Cylindrical dV column at r=1.8, t=0.6
+            if (showDv) {
+              const r0 = 1.6, r1 = 2.0, t0 = 0.45, t1 = 0.72;
+              const zb = r0 * r0 * zS, zt = 9 * zS;
+              drawBoxElem(ctx, proj, r0, r1, t0, t1, zb, zt);
+            }
+          }
+        },
+
+        icecream: {
+          sys: 'Spherical (or Cylindrical)',
+          sysSub: 'Cone φ = π/4 & Sphere ρ = 1 (Cyl: r = 1/√2)',
+          boundsTex: '0\\le\\theta\\le 2\\pi,\\; 0\\le\\phi\\le\\frac{\\pi}{4},\\; 0\\le\\rho\\le 1',
+          setupTex: '\\int_0^{2\\pi}\\!\\int_0^{\\pi/4}\\!\\int_0^1 \\rho^2\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta',
+          valTex: '\\frac{\\pi}{3}(2 - \\sqrt{2})',
+          valDec: '≈ 0.6134',
+          tStart: 0, tSpan: Math.PI * 2,
+          rMax: 1.15, zScale: 2.8,
+          draw(ctx, proj, tEnd, showShadow, showDv) {
+            const s = this.zScale;
+            const rInt = Math.SQRT1_2 * s;
+            if (showShadow) {
+              ctx.fillStyle = 'rgba(52, 211, 153, 0.16)';
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.6;
+              ctx.beginPath();
+              for (let i = 0; i <= 48; i++) {
+                const t = (i / 48) * tEnd;
+                const p = proj(rInt * Math.cos(t), rInt * Math.sin(t), 0);
+                i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              if (tEnd < Math.PI * 1.99) ctx.lineTo(...proj(0, 0, 0).slice(0, 2));
+              ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
+            // Cone lateral ribs from (0,0,0) to (rInt, rInt)
+            for (let m = 0; m <= 12; m++) {
+              const t = (m / 12) * tEnd;
+              ctx.strokeStyle = (m === 0 || m === 12) ? '#818cf8' : 'rgba(129, 140, 248, 0.42)';
+              ctx.lineWidth = (m === 0 || m === 12) ? 2 : 1.1;
+              const p0 = proj(0, 0, 0);
+              const p1 = proj(rInt * Math.cos(t), rInt * Math.sin(t), rInt);
+              ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.stroke();
+            }
+            // Sphere cap (0 <= phi <= pi/4)
+            [Math.PI / 12, Math.PI / 6, Math.PI / 4].forEach((phi, idx) => {
+              ctx.strokeStyle = idx === 2 ? '#38bdf8' : 'rgba(56, 189, 248, 0.45)';
+              ctx.lineWidth = idx === 2 ? 2.2 : 1.2;
+              ctx.beginPath();
+              for (let i = 0; i <= 48; i++) {
+                const t = (i / 48) * tEnd;
+                const p = proj(s * Math.sin(phi) * Math.cos(t), s * Math.sin(phi) * Math.sin(t), s * Math.cos(phi));
+                i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              ctx.stroke();
+            });
+            for (let m = 0; m <= 12; m++) {
+              const t = (m / 12) * tEnd;
+              ctx.strokeStyle = (m === 0 || m === 12) ? '#38bdf8' : 'rgba(56, 189, 248, 0.35)';
+              ctx.lineWidth = (m === 0 || m === 12) ? 2 : 1.1;
+              ctx.beginPath();
+              for (let k = 0; k <= 16; k++) {
+                const phi = (k / 16) * (Math.PI / 4);
+                const p = proj(s * Math.sin(phi) * Math.cos(t), s * Math.sin(phi) * Math.sin(t), s * Math.cos(phi));
+                k === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              ctx.stroke();
+            }
+            if (showDv) {
+              drawSphericalElem(ctx, proj, 0.55 * s, 0.85 * s, 0.35, 0.72, 0.22, 0.50);
+            }
+          }
+        },
+
+        qball: {
+          sys: 'Spherical (ρ, θ, φ)',
+          sysSub: 'y ≥ 0 gives 0 ≤ θ ≤ π; z ≥ 0 gives 0 ≤ φ ≤ π/2',
+          boundsTex: '0\\le\\theta\\le\\pi,\\; 0\\le\\phi\\le\\frac{\\pi}{2},\\; 0\\le\\rho\\le 1',
+          setupTex: '\\int_0^{\\pi}\\!\\int_0^{\\pi/2}\\!\\int_0^1 e^{-\\rho^3}\\rho^2\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta',
+          valTex: '\\frac{\\pi}{3}(1 - e^{-1})',
+          valDec: '≈ 0.6619',
+          tStart: 0, tSpan: Math.PI,
+          rMax: 1.15, zScale: 2.6,
+          draw(ctx, proj, tEnd, showShadow, showDv) {
+            const s = this.zScale;
+            const limT = Math.min(tEnd, Math.PI);
+            if (showShadow) {
+              ctx.fillStyle = 'rgba(52, 211, 153, 0.18)';
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.moveTo(...proj(0, 0, 0).slice(0, 2));
+              for (let i = 0; i <= 48; i++) {
+                const t = (i / 48) * limT;
+                const p = proj(s * Math.cos(t), s * Math.sin(t), 0);
+                ctx.lineTo(p[0], p[1]);
+              }
+              ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
+            drawHemisphereMesh(ctx, proj, s, 0, limT);
+            if (showDv) {
+              drawSphericalElem(ctx, proj, 0.5 * s, 0.82 * s, 0.8, 1.25, 0.45, 0.82);
+            }
+          }
+        },
+
+        rhemi: {
+          sys: 'Spherical (ρ, θ, φ)',
+          sysSub: 'x ≥ 0 gives -π/2 ≤ θ ≤ π/2; z ≥ 0 gives 0 ≤ φ ≤ π/2',
+          boundsTex: '-\\frac{\\pi}{2}\\le\\theta\\le\\frac{\\pi}{2},\\; 0\\le\\phi\\le\\frac{\\pi}{2},\\; 0\\le\\rho\\le 3',
+          setupTex: '\\int_{-\\pi/2}^{\\pi/2}\\!\\int_0^{\\pi/2}\\!\\int_0^3 \\rho^3\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta',
+          valTex: '\\frac{81\\pi}{4}',
+          valDec: '≈ 63.6173',
+          tStart: -Math.PI / 2, tSpan: Math.PI,
+          rMax: 3.1, zScale: 0.9,
+          draw(ctx, proj, tEnd, showShadow, showDv) {
+            const s = 3 * this.zScale;
+            const span = Math.min(tEnd, Math.PI);
+            const tA = -Math.PI / 2, tB = -Math.PI / 2 + span;
+            if (showShadow) {
+              ctx.fillStyle = 'rgba(52, 211, 153, 0.18)';
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.moveTo(...proj(0, 0, 0).slice(0, 2));
+              for (let i = 0; i <= 48; i++) {
+                const t = tA + (i / 48) * span;
+                const p = proj(s * Math.cos(t), s * Math.sin(t), 0);
+                ctx.lineTo(p[0], p[1]);
+              }
+              ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
+            drawHemisphereMesh(ctx, proj, s, tA, tB);
+            if (showDv) {
+              drawSphericalElem(ctx, proj, 0.52 * s, 0.84 * s, -0.35, 0.15, 0.45, 0.85);
+            }
+          }
+        },
+
+        cylhemi: {
+          sys: 'Cylindrical (r, θ, z)',
+          sysSub: 'Cylinder r = 3 cuts sphere z = √(25 - r²)',
+          boundsTex: '0\\le\\theta\\le 2\\pi,\\; 0\\le r\\le 3,\\; 0\\le z\\le\\sqrt{25-r^2}',
+          setupTex: '\\int_0^{2\\pi}\\!\\int_0^3\\!\\int_0^{\\sqrt{25-r^2}} r\\,dz\\,dr\\,d\\theta',
+          valTex: '\\frac{122\\pi}{3}',
+          valDec: '≈ 127.7581',
+          tStart: 0, tSpan: Math.PI * 2,
+          rMax: 3.3, zScale: 0.56,
+          draw(ctx, proj, tEnd, showShadow, showDv) {
+            const s = this.zScale;
+            const rC = 3 * s;
+            const zWall = 4 * s;
+            if (showShadow) {
+              ctx.fillStyle = 'rgba(52, 211, 153, 0.16)';
+              ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.6;
+              ctx.beginPath();
+              for (let i = 0; i <= 48; i++) {
+                const t = (i / 48) * tEnd;
+                const p = proj(rC * Math.cos(t), rC * Math.sin(t), 0);
+                i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              if (tEnd < Math.PI * 1.99) ctx.lineTo(...proj(0, 0, 0).slice(0, 2));
+              ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
+            // Cylinder vertical wall r = 3, 0 <= z <= 4
+            for (let m = 0; m <= 12; m++) {
+              const t = (m / 12) * tEnd;
+              ctx.strokeStyle = (m === 0 || m === 12) ? '#818cf8' : 'rgba(129, 140, 248, 0.35)';
+              ctx.lineWidth = (m === 0 || m === 12) ? 2 : 1.1;
+              const p0 = proj(rC * Math.cos(t), rC * Math.sin(t), 0);
+              const p1 = proj(rC * Math.cos(t), rC * Math.sin(t), zWall);
+              ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.stroke();
+            }
+            // Spherical cap z = sqrt(25 - r^2) for 0 <= r <= 3
+            [1, 2, 3].forEach((rVal, idx) => {
+              const zVal = Math.sqrt(25 - rVal * rVal) * s;
+              ctx.strokeStyle = idx === 2 ? '#38bdf8' : 'rgba(56, 189, 248, 0.45)';
+              ctx.lineWidth = idx === 2 ? 2.2 : 1.2;
+              ctx.beginPath();
+              for (let i = 0; i <= 48; i++) {
+                const t = (i / 48) * tEnd;
+                const p = proj(rVal * s * Math.cos(t), rVal * s * Math.sin(t), zVal);
+                i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              ctx.stroke();
+            });
+            for (let m = 0; m <= 10; m++) {
+              const t = (m / 10) * tEnd;
+              ctx.strokeStyle = (m === 0 || m === 10) ? '#38bdf8' : 'rgba(56, 189, 248, 0.35)';
+              ctx.lineWidth = (m === 0 || m === 10) ? 2 : 1.1;
+              ctx.beginPath();
+              for (let k = 0; k <= 14; k++) {
+                const rVal = (k / 14) * 3;
+                const zVal = Math.sqrt(25 - rVal * rVal) * s;
+                const p = proj(rVal * s * Math.cos(t), rVal * s * Math.sin(t), zVal);
+                k === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+              }
+              ctx.stroke();
+            }
+            if (showDv) {
+              drawBoxElem(ctx, proj, 1.4 * s, 1.85 * s, 0.5, 0.82, 0, Math.sqrt(25 - 1.6 * 1.6) * s);
+            }
+          }
+        }
+      };
+
+      function drawHemisphereMesh(ctx, proj, radius, tA, tB) {
+        const span = tB - tA;
+        if (span <= 0.01) return;
+        [Math.PI / 6, Math.PI / 3, Math.PI / 2].forEach((phi, idx) => {
+          ctx.strokeStyle = idx === 2 ? '#38bdf8' : 'rgba(56, 189, 248, 0.45)';
+          ctx.lineWidth = idx === 2 ? 2 : 1.2;
+          ctx.beginPath();
+          for (let i = 0; i <= 40; i++) {
+            const t = tA + (i / 40) * span;
+            const p = proj(radius * Math.sin(phi) * Math.cos(t), radius * Math.sin(phi) * Math.sin(t), radius * Math.cos(phi));
+            i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+          }
+          ctx.stroke();
+        });
+        for (let m = 0; m <= 10; m++) {
+          const t = tA + (m / 10) * span;
+          ctx.strokeStyle = (m === 0 || m === 10) ? '#818cf8' : 'rgba(56, 189, 248, 0.35)';
+          ctx.lineWidth = (m === 0 || m === 10) ? 2 : 1.1;
+          ctx.beginPath();
+          for (let k = 0; k <= 16; k++) {
+            const phi = (k / 16) * (Math.PI / 2);
+            const p = proj(radius * Math.sin(phi) * Math.cos(t), radius * Math.sin(phi) * Math.sin(t), radius * Math.cos(phi));
+            k === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]);
+          }
+          ctx.stroke();
+        }
+      }
+
+      function drawBoxElem(ctx, proj, r0, r1, t0, t1, z0, z1) {
+        const pts = (z) => [
+          proj(r0 * Math.cos(t0), r0 * Math.sin(t0), z),
+          proj(r1 * Math.cos(t0), r1 * Math.sin(t0), z),
+          proj(r1 * Math.cos(t1), r1 * Math.sin(t1), z),
+          proj(r0 * Math.cos(t1), r0 * Math.sin(t1), z)
+        ];
+        const b = pts(z0), top = pts(z1);
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.34)';
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1.8;
+        [[b[0], b[1], top[1], top[0]], [b[1], b[2], top[2], top[1]], [top[0], top[1], top[2], top[3]]].forEach((face) => {
+          ctx.beginPath();
+          face.forEach((p, idx) => idx === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+        });
+      }
+
+      function drawSphericalElem(ctx, proj, p0, p1, t0, t1, f0, f1) {
+        const sp = (rho, t, f) => proj(rho * Math.sin(f) * Math.cos(t), rho * Math.sin(f) * Math.sin(t), rho * Math.cos(f));
+        const a = sp(p0, t0, f0), b = sp(p1, t0, f0), c = sp(p1, t1, f0), d = sp(p0, t1, f0);
+        const e = sp(p0, t0, f1), f = sp(p1, t0, f1), g = sp(p1, t1, f1), h = sp(p0, t1, f1);
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.36)';
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1.8;
+        [[a, b, c, d], [b, c, g, f], [e, f, g, h], [a, b, f, e]].forEach((face) => {
+          ctx.beginPath();
+          face.forEach((p, idx) => idx === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+        });
+      }
+
+      const solidState = {
+        preset: 'paraboloid',
+        az: 38,
+        el: 24,
+        cutaway: 310,
+        showShadow: true,
+        showDv: true
+      };
+
+      const solidCanvas = document.getElementById('solidCanvas');
+
+      function drawSolidExplorer() {
+        const pr = solidPresets[solidState.preset];
+        const { ctx, w, h } = setupCanvas(solidCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const scale = Math.min(w, h) * 0.105;
+        const proj = makeProjector(w, h, solidState.az, solidState.el, scale, w * 0.5, h * 0.66);
+
+        draw3DAxes(ctx, proj, 3.6);
+        const tEnd = (solidState.cutaway / 360) * pr.tSpan;
+        pr.draw(ctx, proj, tEnd, solidState.showShadow, solidState.showDv);
+
+        // Update slider labels
+        document.getElementById('azLabel').innerHTML = `${solidState.az}&deg;`;
+        document.getElementById('elLabel').innerHTML = `${solidState.el}&deg;`;
+        document.getElementById('cutawayLabel').innerHTML = `${solidState.cutaway}&deg;`;
+
+        // Update telemetry cards when preset changes
+        const setupEl = document.getElementById('sTeleSetup');
+        if (setupEl.dataset.pkey !== solidState.preset) {
+          document.getElementById('sTeleSys').textContent = pr.sys;
+          document.getElementById('sTeleSysSub').textContent = pr.sysSub;
+          const bEl = document.getElementById('sTeleBounds');
+          const vEl = document.getElementById('sTeleVal');
+          bEl.innerHTML = `$${pr.boundsTex}$`;
+          setupEl.innerHTML = `$${pr.setupTex}$`;
+          vEl.innerHTML = `$${pr.valTex}$`;
+          document.getElementById('sTeleValDec').textContent = pr.valDec;
+          setupEl.dataset.pkey = solidState.preset;
+          renderMath(bEl); renderMath(setupEl); renderMath(vEl);
+        }
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2A: LIVE 3D POINT CONVERTER (RECT <-> CYL <-> SPH)
+         ---------------------------------------------------------------------- */
+      const ptState = { rho: 4.0, thetaDeg: 60, phiDeg: 45, az: 38, el: 24 };
+      const pt3dCanvas = document.getElementById('pt3dCanvas');
+
+      function drawPoint3D() {
+        const rho = ptState.rho;
+        const tRad = (ptState.thetaDeg * Math.PI) / 180;
+        const pRad = (ptState.phiDeg * Math.PI) / 180;
+
+        const r = rho * Math.sin(pRad);
+        const x = r * Math.cos(tRad);
+        const y = r * Math.sin(tRad);
+        const z = rho * Math.cos(pRad);
+
+        document.getElementById('rhoVal').textContent = `ρ = ${rho.toFixed(2)}`;
+        document.getElementById('thetaVal').textContent = `θ = ${ptState.thetaDeg}° (${tRad.toFixed(2)} rad)`;
+        document.getElementById('phiVal').textContent = `φ = ${ptState.phiDeg}° (${pRad.toFixed(2)} rad)`;
+
+        document.getElementById('outRect').textContent = `(x, y, z) = (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`;
+        document.getElementById('outCyl').textContent = `(r, θ, z) = (${r.toFixed(3)}, ${ptState.thetaDeg}°, ${z.toFixed(3)})`;
+        document.getElementById('outSph').textContent = `(ρ, θ, φ) = (${rho.toFixed(2)}, ${ptState.thetaDeg}°, ${ptState.phiDeg}°)`;
+
+        const { ctx, w, h } = setupCanvas(pt3dCanvas);
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        const scale = Math.min(w, h) * 0.068;
+        const proj = makeProjector(w, h, ptState.az, ptState.el, scale, w * 0.5, h * 0.54);
+        draw3DAxes(ctx, proj, 5.5);
+
+        const o = proj(0, 0, 0);
+        const pQ = proj(x, y, 0); // xy projection Q
+        const pP = proj(x, y, z); // 3D point P
+
+        // Angle theta arc in xy-plane (emerald)
+        if (r > 0.15) {
+          ctx.strokeStyle = '#34d399'; ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          for (let i = 0; i <= 28; i++) {
+            const a = (i / 28) * tRad;
+            const pt = proj(1.3 * Math.cos(a), 1.3 * Math.sin(a), 0);
+            i === 0 ? ctx.moveTo(pt[0], pt[1]) : ctx.lineTo(pt[0], pt[1]);
+          }
+          ctx.stroke();
+        }
+
+        // Angle phi arc from +z-axis to OP (indigo)
+        if (ptState.phiDeg > 2) {
+          ctx.strokeStyle = '#818cf8'; ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = 0; i <= 28; i++) {
+            const a = (i / 28) * pRad;
+            const pt = proj(1.6 * Math.sin(a) * Math.cos(tRad), 1.6 * Math.sin(a) * Math.sin(tRad), 1.6 * Math.cos(a));
+            i === 0 ? ctx.moveTo(pt[0], pt[1]) : ctx.lineTo(pt[0], pt[1]);
+          }
+          ctx.stroke();
+        }
+
+        // Radius r on xy-plane (emerald)
+        ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2.2;
+        ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(pQ[0], pQ[1]); ctx.stroke();
+
+        // Vertical height z from Q to P (dashed sky)
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 1.8; ctx.setLineDash([4, 3]);
+        ctx.beginPath(); ctx.moveTo(pQ[0], pQ[1]); ctx.lineTo(pP[0], pP[1]); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Vector rho from O to P (amber)
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.8;
+        ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(pP[0], pP[1]); ctx.stroke();
+
+        // Dots for Q and P
+        ctx.fillStyle = '#34d399';
+        ctx.beginPath(); ctx.arc(pQ[0], pQ[1], 4.2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fbbf24';
+        ctx.strokeStyle = '#070d19'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(pP[0], pP[1], 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '700 11.5px "JetBrains Mono", monospace';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+        ctx.fillText(`P(${x.toFixed(1)}, ${y.toFixed(1)}, ${z.toFixed(1)})`, pP[0] + 8, pP[1] - 6);
+        ctx.fillStyle = '#34d399';
+        ctx.fillText('Q(x,y,0)', pQ[0] + 6, pQ[1] + 12);
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 2B: QUADRIC SURFACE EQUATION TRANSLATOR
+         ---------------------------------------------------------------------- */
+      const surfData = [
+        {
+          title: 'Circular Paraboloid (Final 2025 Q1e)',
+          rect: 'z = x^2 + y^2',
+          cyl: 'z = r^2',
+          cylSteps: 'Since $x^2 + y^2 = r^2$, substitute directly: $z = r^2$.',
+          sph: '\\rho = \\cot\\phi\\csc\\phi',
+          sphSteps: 'Substitute $z = \\rho\\cos\\phi$ and $x^2+y^2 = \\rho^2\\sin^2\\phi$: $$\\rho\\cos\\phi = \\rho^2\\sin^2\\phi \\implies \\rho = \\frac{\\cos\\phi}{\\sin^2\\phi} = \\cot\\phi\\csc\\phi.$$'
+        },
+        {
+          title: 'Circular Cylinder (Final 2024 Q1e)',
+          rect: 'x^2 + y^2 = 1',
+          cyl: 'r = 1',
+          cylSteps: 'Since $x^2 + y^2 = r^2$, we have $r^2 = 1 \\implies r = 1$ (since $r \\ge 0$).',
+          sph: '\\rho = \\csc\\phi',
+          sphSteps: 'Substitute $x = \\rho\\sin\\phi\\cos\\theta,\\; y = \\rho\\sin\\phi\\sin\\theta$: $$\\rho^2\\sin^2\\phi(\\cos^2\\theta + \\sin^2\\theta) = 1 \\implies \\rho\\sin\\phi = 1 \\implies \\rho = \\csc\\phi.$$'
+        },
+        {
+          title: 'Upper Circular Cone',
+          rect: 'z = \\sqrt{x^2 + y^2}',
+          cyl: 'z = r',
+          cylSteps: 'Since $\\sqrt{x^2+y^2} = r$ ($r \\ge 0$), the cone is simply $z = r$.',
+          sph: '\\phi = \\frac{\\pi}{4}',
+          sphSteps: 'Substitute $z = \\rho\\cos\\phi$ and $r = \\rho\\sin\\phi$: $$\\rho\\cos\\phi = \\rho\\sin\\phi \\implies \\tan\\phi = 1 \\implies \\phi = \\frac{\\pi}{4}.$$'
+        },
+        {
+          title: 'Sphere Centered at Origin',
+          rect: 'x^2 + y^2 + z^2 = a^2',
+          cyl: 'r^2 + z^2 = a^2',
+          cylSteps: 'Replace $x^2+y^2$ with $r^2$: $r^2 + z^2 = a^2$ (upper hemisphere $z = \\sqrt{a^2 - r^2}$).',
+          sph: '\\rho = a',
+          sphSteps: 'Since $x^2+y^2+z^2 = \\rho^2$, we immediately obtain $\\rho^2 = a^2 \\implies \\rho = a$ ($a &gt; 0$).'
+        },
+        {
+          title: 'Horizontal Plane (Class Notes Ex 15)',
+          rect: 'z = a',
+          cyl: 'z = a',
+          cylSteps: 'The $z$-coordinate is unchanged in cylindrical coordinates: $z = a$.',
+          sph: '\\rho = a\\sec\\phi',
+          sphSteps: 'Substitute $z = \\rho\\cos\\phi$: $$\\rho\\cos\\phi = a \\implies \\rho = \\frac{a}{\\cos\\phi} = a\\sec\\phi.$$'
+        }
+      ];
+
+      function renderSurfaceTranslator(idx) {
+        const s = surfData[idx];
+        const out = document.getElementById('surfOutput');
+        out.innerHTML = `
+          <div style="font-weight:700;font-size:1rem;color:var(--text);margin-bottom:4px;">${s.title}</div>
+          <div class="surface-grid">
+            <div class="surface-box">
+              <h5>Rectangular Form</h5>
+              <div style="font-size:1.1rem;margin:10px 0;">$$${s.rect}$$</div>
+              <p style="font-size:0.82rem;color:var(--muted);">Standard Cartesian equation in $(x, y, z)$.</p>
+            </div>
+            <div class="surface-box cyl">
+              <h5>Cylindrical Form $(r, \\theta, z)$</h5>
+              <div style="font-size:1.1rem;margin:10px 0;color:var(--green);">$$${s.cyl}$$</div>
+              <p style="font-size:0.83rem;color:var(--muted);">${s.cylSteps}</p>
+            </div>
+            <div class="surface-box sph">
+              <h5>Spherical Form $(\\rho, \\theta, \\phi)$</h5>
+              <div style="font-size:1.1rem;margin:10px 0;color:var(--accent-2);">$$${s.sph}$$</div>
+              <p style="font-size:0.83rem;color:var(--muted);">${s.sphSteps}</p>
+            </div>
+          </div>
+        `;
+        renderMath(out);
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const vaultData = [
+        {
+          id: 'v1', cat: 'conversions', exam: 'Final 2025 Q1(e) & Final 2024 Q1(e)', topic: 'Surface Conversions',
+          q: '<strong>(a)</strong> Find equations of the paraboloid $z = x^2 + y^2$ in cylindrical and spherical coordinates.<br/><strong>(b)</strong> Find the equation of the cylinder $x^2 + y^2 = 1$ in spherical coordinates.',
+          hint: 'Use $x^2+y^2 = r^2 = \\rho^2\\sin^2\\phi$ and $z = \\rho\\cos\\phi$.',
+          sol: `<strong>(a) Paraboloid $z = x^2 + y^2$:</strong><br/>
+                &bull; Cylindrical: $z = r^2$.<br/>
+                &bull; Spherical: $\\rho\\cos\\phi = \\rho^2\\sin^2\\phi \\implies \\rho = \\dfrac{\\cos\\phi}{\\sin^2\\phi} = \\cot\\phi\\csc\\phi$ (note $\\rho = 0$ is included at $\\phi = \\pi/2$).<br/>
+                <strong>(b) Cylinder $x^2 + y^2 = 1$:</strong><br/>
+                &bull; Spherical: $\\rho^2\\sin^2\\phi = 1 \\implies \\rho\\sin\\phi = 1 \\implies \\rho = \\csc\\phi$.`
+        },
+        {
+          id: 'v2', cat: 'conversions', exam: 'Final 2025 Q6(a) / Final 2023 Q6(a)', topic: 'Point Conversions',
+          q: 'Find the rectangular coordinates $(x, y, z)$ of the points:<br/><strong>(i)</strong> Cylindrical $(r, \\theta, z) = \\left(4, \\frac{\\pi}{3}, -3\\right)$ &qquad <strong>(ii)</strong> Spherical $(\\rho, \\theta, \\phi) = \\left(4, \\frac{\\pi}{3}, \\frac{\\pi}{4}\\right)$.',
+          hint: 'Use $x = r\\cos\\theta, y = r\\sin\\theta$ for (i), and $x = \\rho\\sin\\phi\\cos\\theta, y = \\rho\\sin\\phi\\sin\\theta, z = \\rho\\cos\\phi$ for (ii).',
+          sol: `<strong>(i) Cylindrical $(4, \\frac{\\pi}{3}, -3)$:</strong>
+                $$x = 4\\cos\\frac{\\pi}{3} = 2, \\qquad y = 4\\sin\\frac{\\pi}{3} = 2\\sqrt{3}, \\qquad z = -3 \\implies (2,\\; 2\\sqrt{3},\\; -3).$$
+                <strong>(ii) Spherical $(4, \\frac{\\pi}{3}, \\frac{\\pi}{4})$:</strong>
+                $$x = 4\\sin\\frac{\\pi}{4}\\cos\\frac{\\pi}{3} = 4\\cdot\\frac{\\sqrt{2}}{2}\\cdot\\frac{1}{2} = \\sqrt{2}, \\qquad y = 4\\sin\\frac{\\pi}{4}\\sin\\frac{\\pi}{3} = 4\\cdot\\frac{\\sqrt{2}}{2}\\cdot\\frac{\\sqrt{3}}{2} = \\sqrt{6}, \\qquad z = 4\\cos\\frac{\\pi}{4} = 2\\sqrt{2}.$$
+                Result: $(\\sqrt{2},\\; \\sqrt{6},\\; 2\\sqrt{2})$.`
+        },
+        {
+          id: 'v3', cat: 'cylindrical', exam: 'Final 2025 Q6(b) / Final 2023 Q6(b)', topic: 'Cylindrical Volume',
+          q: 'Use cylindrical coordinates to find the volume of the solid enclosed by the paraboloid $z = x^2 + y^2$ and the plane $z = 9$.',
+          hint: 'Set $r^2 = 9 \\implies r = 3$ for the $xy$-projection disk. Integrate $r\\,dz\\,dr\\,d\\theta$ with $r^2 \\le z \\le 9$.',
+          sol: `Intersection: $z = r^2 = 9 \\implies r = 3$ ($0 \\le r \\le 3,\\; 0 \\le \\theta \\le 2\\pi$).
+                $$V = \\int_0^{2\\pi}\\int_0^3\\int_{r^2}^9 r\\,dz\\,dr\\,d\\theta = \\int_0^{2\\pi}\\int_0^3 r(9 - r^2)\\,dr\\,d\\theta$$
+                $$= 2\\pi\\left[\\frac{9r^2}{2} - \\frac{r^4}{4}\\right]_0^3 = 2\\pi\\left(\\frac{81}{2} - \\frac{81}{4}\\right) = \\frac{81\\pi}{2}.$$`
+        },
+        {
+          id: 'v4', cat: 'cylindrical', exam: '2nd Incourse 2025 Q5', topic: 'Cylindrical Ice-Cream Cone',
+          q: 'Use cylindrical coordinates to find the volume of the solid bounded above by the sphere $x^2 + y^2 + z^2 = 1$ and below by the cone $z = \\sqrt{x^2 + y^2}$.',
+          hint: 'Substitute $z = r$ into $r^2 + z^2 = 1$ to get the intersection radius $r = \\frac{1}{\\sqrt{2}}$ (NOT $1$!).',
+          sol: `Intersection: $r^2 + r^2 = 1 \\implies r = \\frac{1}{\\sqrt{2}}$. Bounds: $0 \\le \\theta \\le 2\\pi,\\; 0 \\le r \\le \\frac{1}{\\sqrt{2}},\\; r \\le z \\le \\sqrt{1-r^2}$.
+                $$V = \\int_0^{2\\pi}\\int_0^{1/\\sqrt{2}}\\int_r^{\\sqrt{1-r^2}} r\\,dz\\,dr\\,d\\theta = 2\\pi\\int_0^{1/\\sqrt{2}} \\left(r\\sqrt{1-r^2} - r^2\\right)dr$$
+                $$= 2\\pi\\left[-\\frac{1}{3}(1-r^2)^{3/2} - \\frac{r^3}{3}\\right]_0^{1/\\sqrt{2}} = 2\\pi\\left[\\left(-\\frac{1}{6\\sqrt{2}} - \\frac{1}{6\\sqrt{2}}\\right) - \\left(-\\frac{1}{3}\\right)\\right] = \\frac{\\pi}{3}(2 - \\sqrt{2}).$$`
+        },
+        {
+          id: 'v5', cat: 'spherical', exam: 'Final 2025 Q6(c) / Final 2023 Q6(c)', topic: 'Spherical Quarter-Ball',
+          q: 'Use spherical coordinates to evaluate $\\displaystyle \\int_{-1}^1 \\int_0^{\\sqrt{1-x^2}} \\int_0^{\\sqrt{1-x^2-y^2}} e^{-(x^2+y^2+z^2)^{3/2}}\\,dz\\,dy\\,dx$.',
+          hint: 'Check the signs: $y \\ge 0 \\implies 0 \\le \\theta \\le \\pi$ and $z \\ge 0 \\implies 0 \\le \\phi \\le \\frac{\\pi}{2}$. The factor $\\rho^2$ from $dV$ pairs with $e^{-\\rho^3}$!',
+          sol: `The region is the quarter-ball $\\rho \\le 1$ with $y \\ge 0$ ($0 \\le \\theta \\le \\pi$) and $z \\ge 0$ ($0 \\le \\phi \\le \\frac{\\pi}{2}$):
+                $$I = \\int_0^{\\pi}\\int_0^{\\pi/2}\\int_0^1 e^{-\\rho^3}\\rho^2\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta = \\left(\\int_0^{\\pi} d\\theta\\right)\\left(\\int_0^{\\pi/2} \\sin\\phi\\,d\\phi\\right)\\left(\\int_0^1 e^{-\\rho^3}\\rho^2\\,d\\rho\\right)$$
+                $$= (\\pi)(1)\\left[-\\frac{1}{3}e^{-\\rho^3}\\right]_0^1 = \\frac{\\pi}{3}\\left(1 - e^{-1}\\right).$$`
+        },
+        {
+          id: 'v6', cat: 'spherical', exam: '2nd Incourse 2025 Q6', topic: 'Spherical Transform',
+          q: 'Transform the integral $\\displaystyle \\int_{-3}^3 \\int_0^{\\sqrt{9-y^2}} \\int_0^{\\sqrt{9-x^2-y^2}} \\sqrt{x^2+y^2+z^2}\\,dz\\,dx\\,dy$ into spherical coordinates (do not attempt to solve it).',
+          hint: 'Here $y \\in [-3, 3]$ and $x \\in [0, \\sqrt{9-y^2}]$ ($x \\ge 0$ right half-disk!), so $-\\frac{\\pi}{2} \\le \\theta \\le \\frac{\\pi}{2}$. Integrand $\\rho \\cdot \\rho^2\\sin\\phi = \\rho^3\\sin\\phi$.',
+          sol: `Region analysis: $y \\in [-3, 3]$, $x \\ge 0$ (Quadrants I &amp; IV $\\implies -\\frac{\\pi}{2} \\le \\theta \\le \\frac{\\pi}{2}$), $z \\ge 0$ ($0 \\le \\phi \\le \\frac{\\pi}{2}$), and $x^2+y^2+z^2 \\le 9$ ($0 \\le \\rho \\le 3$).<br/>
+                Integrand: $\\sqrt{x^2+y^2+z^2} = \\rho$, multiplied by $dV = \\rho^2\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta$:
+                $$\\int_{-\\pi/2}^{\\pi/2}\\int_0^{\\pi/2}\\int_0^3 \\rho^3\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta.$$
+                <em>(Bonus check: evaluates to $\\frac{81\\pi}{4}$.)</em>`
+        },
+        {
+          id: 'v7', cat: 'spherical', exam: 'Final 2018 Q8(a) / Class Notes Ex 19', topic: 'Spherical Ice-Cream Integral',
+          q: 'Use spherical coordinates to evaluate $\\displaystyle \\int_0^2 \\int_0^{\\sqrt{4-y^2}} \\int_{\\sqrt{x^2+y^2}}^{\\sqrt{8-x^2-y^2}} z^2\\,dz\\,dx\\,dy$.',
+          hint: 'First octant ($0 \\le \\theta \\le \\frac{\\pi}{2}$), cone $\\phi = \\frac{\\pi}{4}$, sphere $\\rho = \\sqrt{8} = 2\\sqrt{2}$, and $z^2 dV = \\rho^4\\cos^2\\phi\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta$.',
+          sol: `Bounds: $0 \\le \\theta \\le \\frac{\\pi}{2}$, $0 \\le \\phi \\le \\frac{\\pi}{4}$, $0 \\le \\rho \\le 2\\sqrt{2}$. Since $z = \\rho\\cos\\phi$:
+                $$I = \\int_0^{\\pi/2}\\int_0^{\\pi/4}\\int_0^{2\\sqrt{2}} \\rho^4\\cos^2\\phi\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta = \\left(\\frac{\\pi}{2}\\right)\\left[\\frac{\\rho^5}{5}\\right]_0^{2\\sqrt{2}}\\left[-\\frac{\\cos^3\\phi}{3}\\right]_0^{\\pi/4}$$
+                $$= \\frac{\\pi}{2}\\cdot\\frac{128\\sqrt{2}}{5}\\cdot\\frac{1}{3}\\left(1 - \\frac{\\sqrt{2}}{4}\\right) = \\frac{64\\sqrt{2}\\pi}{15}\\left(1 - \\frac{\\sqrt{2}}{4}\\right) = \\frac{32\\pi(2\\sqrt{2} - 1)}{15}.$$`
+        },
+        {
+          id: 'v8', cat: 'rectangular', exam: 'Class Notes Ex 1 & Ex 2 (Sec. 14.5)', topic: 'Rectangular Box & Wedge',
+          q: '<strong>(a)</strong> Evaluate $\\displaystyle \\iiint_G 12xy^2z^3\\,dV$ over the box $[-1, 2] \\times [0, 3] \\times [0, 2]$.<br/><strong>(b)</strong> Evaluate $\\displaystyle \\iiint_G z\\,dV$ over the first-octant wedge of $y^2 + z^2 \\le 1$ bounded by $y = x$ and $x = 0$.',
+          hint: 'For (a), separate into a product of 3 single integrals. For (b), $0 \\le z \\le \\sqrt{1-y^2}$, and the $xy$-projection is the triangle $0 \\le x \\le 1,\\; x \\le y \\le 1$.',
+          sol: `<strong>(a) Rectangular Box:</strong>
+                $$\\int_{-1}^2\\int_0^3\\int_0^2 12xy^2z^3\\,dz\\,dy\\,dx = 12\\left[\\frac{x^2}{2}\\right]_{-1}^2\\left[\\frac{y^3}{3}\\right]_0^3\\left[\\frac{z^4}{4}\\right]_0^2 = 12\\left(\\frac{3}{2}\\right)(9)(4) = 648.$$
+                <strong>(b) First-Octant Cylindrical Wedge:</strong>
+                $$\\int_0^1\\int_x^1\\int_0^{\\sqrt{1-y^2}} z\\,dz\\,dy\\,dx = \\frac{1}{2}\\int_0^1\\int_x^1 (1 - y^2)\\,dy\\,dx = \\frac{1}{2}\\int_0^1\\left(\\frac{2}{3} - x + \\frac{x^3}{3}\\right)dx = \\frac{1}{2}\\left(\\frac{2}{3} - \\frac{1}{2} + \\frac{1}{12}\\right) = \\frac{1}{8}.$$`
+        }
+      ];
+
+      const reviewedVault = new Set();
+
+      function renderVault(filter) {
+        const list = document.getElementById('vaultList');
+        list.innerHTML = '';
+        vaultData.filter((v) => filter === 'all' || v.cat === filter).forEach((v) => {
+          const isRev = reviewedVault.has(v.id);
+          const card = document.createElement('div');
+          card.className = `vault-item ${isRev ? 'reviewed' : ''}`;
+          card.innerHTML = `
+            <div class="vault-head">
+              <span class="badge">${v.exam}</span>
+              <span class="badge sky">${v.topic}</span>
+            </div>
+            <p>${v.q}</p>
+            <div class="vault-actions">
+              <button type="button" class="btn" data-toggle="${v.id}-hint">Show Hint</button>
+              <button type="button" class="btn btn-primary" data-toggle="${v.id}-sol">Step-by-Step Solution</button>
+              <label class="check-label">
+                <input type="checkbox" class="vault-cb" data-vid="${v.id}" ${isRev ? 'checked' : ''} />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="reveal-box hint-box" id="${v.id}-hint"><strong>Hint:</strong> ${v.hint}</div>
+            <div class="reveal-box" id="${v.id}-sol">${v.sol}</div>
+          `;
+          list.appendChild(card);
+        });
+
+        list.querySelectorAll('[data-toggle]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const box = document.getElementById(btn.dataset.toggle);
+            const open = box.classList.toggle('open');
+            if (btn.dataset.toggle.endsWith('-hint')) {
+              btn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            } else {
+              btn.textContent = open ? 'Hide Solution' : 'Step-by-Step Solution';
+            }
+            if (open) renderMath(box);
+          });
+        });
+
+        list.querySelectorAll('.vault-cb').forEach((cb) => {
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) reviewedVault.add(vid);
+            else reviewedVault.delete(vid);
+            cb.closest('.vault-item').classList.toggle('reviewed', cb.checked);
+            updateProgress();
+          });
+        });
+
+        renderMath(list);
+      }
+
+      /* ----------------------------------------------------------------------
+         7. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. What is the equation of the circular cylinder $x^2 + y^2 = 1$ in <strong>spherical coordinates</strong> (Final 2024 Q1e)?',
+          opts: ['$\\rho = 1$', '$\\rho = \\sec\\phi$', '$\\rho = \\csc\\phi$', '$\\rho = \\cot\\phi\\csc\\phi$'],
+          ans: 2,
+          exp: 'Since $x^2 + y^2 = \\rho^2\\sin^2\\phi = 1$, taking the positive square root gives $\\rho\\sin\\phi = 1 \\implies \\rho = \\csc\\phi$.'
+        },
+        {
+          q: '2. When using cylindrical coordinates to find the volume between the sphere $x^2+y^2+z^2=1$ and the cone $z=\\sqrt{x^2+y^2}$ (2nd Incourse 2025 Q5), what is the upper $r$-limit?',
+          opts: ['$r = 1$', '$r = \\dfrac{1}{\\sqrt{2}}$', '$r = \\dfrac{1}{2}$', '$r = \\sqrt{2}$'],
+          ans: 1,
+          exp: 'Substituting $z = r$ into $r^2 + z^2 = 1$ yields $2r^2 = 1 \\implies r = \\frac{1}{\\sqrt{2}}$.'
+        },
+        {
+          q: '3. In $\\displaystyle \\int_{-3}^3 \\int_0^{\\sqrt{9-y^2}} \\int_0^{\\sqrt{9-x^2-y^2}} f\\,dz\\,dx\\,dy$ (2nd Incourse 2025 Q6), what are the spherical $\\theta$-limits?',
+          opts: ['$0 \\le \\theta \\le 2\\pi$', '$0 \\le \\theta \\le \\pi$', '$-\\dfrac{\\pi}{2} \\le \\theta \\le \\dfrac{\\pi}{2}$', '$0 \\le \\theta \\le \\dfrac{\\pi}{2}$'],
+          ans: 2,
+          exp: 'Since $y \\in [-3, 3]$ and $x \\ge 0$ (Quadrants I and IV of the $xy$-plane), the azimuthal angle sweeps $-\\frac{\\pi}{2} \\le \\theta \\le \\frac{\\pi}{2}$.'
+        },
+        {
+          q: '4. When transforming $\\iiint_G \\sqrt{x^2+y^2+z^2}\\,dV$ into spherical coordinates, what is the complete integrand (including the Jacobian)?',
+          opts: ['$\\rho\\,d\\rho\\,d\\phi\\,d\\theta$', '$\\rho^2\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta$', '$\\rho^3\\,d\\rho\\,d\\phi\\,d\\theta$', '$\\rho^3\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta$'],
+          ans: 3,
+          exp: 'The integrand $\\sqrt{x^2+y^2+z^2} = \\rho$ multiplies the spherical volume element $dV = \\rho^2\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta$ to give $\\rho^3\\sin\\phi\\,d\\rho\\,d\\phi\\,d\\theta$.'
+        },
+        {
+          q: '5. Using Howard Anton\'s $(\\rho, \\theta, \\phi)$ convention, what are the rectangular coordinates of $(\\rho, \\theta, \\phi) = \\left(4, \\dfrac{\\pi}{3}, \\dfrac{\\pi}{4}\\right)$ (Final 2025 Q6a)?',
+          opts: ['$(\\;\\sqrt{2},\\; \\sqrt{6},\\; 2\\sqrt{2}\\;)$', '$(\\;2,\\; 2\\sqrt{3},\\; 2\\sqrt{2}\\;)$', '$(\\;\\sqrt{6},\\; \\sqrt{2},\\; 2\\sqrt{2}\\;)$', '$(\\;2\\sqrt{2},\\; \\sqrt{2},\\; \\sqrt{6}\\;)$'],
+          ans: 0,
+          exp: '$x = 4\\sin(\\frac{\\pi}{4})\\cos(\\frac{\\pi}{3}) = \\sqrt{2}$, $y = 4\\sin(\\frac{\\pi}{4})\\sin(\\frac{\\pi}{3}) = \\sqrt{6}$, and $z = 4\\cos(\\frac{\\pi}{4}) = 2\\sqrt{2}$.'
+        }
+      ];
+
+      const quizAnswered = new Map();
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        quizData.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'quiz-q';
+          div.innerHTML = `
+            <p><strong>${item.q}</strong></p>
+            <div class="options" id="q-opts-${idx}"></div>
+            <div class="feedback" id="q-fb-${idx}"></div>
+          `;
+          container.appendChild(div);
+          const optsDiv = div.querySelector(`#q-opts-${idx}`);
+          item.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'opt-btn';
+            btn.innerHTML = opt;
+            btn.addEventListener('click', () => handleQuizAnswer(idx, oi));
+            optsDiv.appendChild(btn);
+          });
+        });
+        renderMath(container);
+      }
+
+      function handleQuizAnswer(qIdx, oIdx) {
+        if (quizAnswered.has(qIdx)) return;
+        const item = quizData[qIdx];
+        const ok = oIdx === item.ans;
+        quizAnswered.set(qIdx, ok);
+
+        const btns = document.querySelectorAll(`#q-opts-${qIdx} .opt-btn`);
+        btns.forEach((b, i) => {
+          b.disabled = true;
+          if (i === item.ans) b.classList.add('correct');
+          else if (i === oIdx) b.classList.add('wrong');
+        });
+
+        const fb = document.getElementById(`q-fb-${qIdx}`);
+        fb.innerHTML = (ok ? '<strong style="color:var(--green)">Correct!</strong> ' : '<strong style="color:var(--rose)">Not quite.</strong> ') + item.exp;
+        fb.classList.add('show');
+        renderMath(fb);
+
+        const score = [...quizAnswered.values()].filter(Boolean).length;
+        document.getElementById('quizScore').textContent = `${score} / ${quizData.length}`;
+        updateProgress();
+      }
+
+      /* ----------------------------------------------------------------------
+         8. MASTERY PROGRESS (8 VAULT + 5 QUIZ = 13 TASKS)
+         ---------------------------------------------------------------------- */
+      function updateProgress() {
+        const total = vaultData.length + quizData.length;
+        const done = reviewedVault.size + quizAnswered.size;
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressDetail').textContent = `${done} / ${total} tasks (${reviewedVault.size}/8 Vault, ${quizAnswered.size}/5 Quiz)`;
+      }
+
+      /* ----------------------------------------------------------------------
+         9. DRAG-TO-ROTATE HELPER FOR 3D CANVASES (MOUSE + TOUCH)
+         ---------------------------------------------------------------------- */
+      function attachDragRotate(canvasEl, onDelta) {
+        let dragging = false, lx = 0, ly = 0;
+        const start = (x, y) => { dragging = true; lx = x; ly = y; };
+        const move = (x, y) => {
+          if (!dragging) return;
+          onDelta(x - lx, y - ly);
+          lx = x; ly = y;
+        };
+        const end = () => { dragging = false; };
+
+        canvasEl.addEventListener('mousedown', (e) => start(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => move(e.clientX, e.clientY));
+        window.addEventListener('mouseup', end);
+
+        canvasEl.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) start(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        canvasEl.addEventListener('touchmove', (e) => {
+          if (dragging && e.touches.length === 1) {
+            e.preventDefault();
+            move(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: false });
+        canvasEl.addEventListener('touchend', end);
+      }
+
+      /* ----------------------------------------------------------------------
+         10. DOM INITIALIZATION & EVENT WIRING
+         ---------------------------------------------------------------------- */
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile drawer
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        function setDrawer(open) {
+          sidebar.classList.toggle('open', open);
+          overlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+        menuToggle.addEventListener('click', () => setDrawer(!sidebar.classList.contains('open')));
+        overlay.addEventListener('click', () => setDrawer(false));
+        document.querySelectorAll('#sideNav a').forEach((a) => a.addEventListener('click', () => setDrawer(false)));
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 13 — Double Integrals in Polar Coordinates');
+        });
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          showToast('Next Up: Lesson 15 — Change of Variables & the Jacobian');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('main section');
+        const navLinks = document.querySelectorAll('#sideNav a');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.sec === entry.target.id));
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Controls & Drag-to-Rotate
+        const azSlider = document.getElementById('azSlider');
+        const elSlider = document.getElementById('elSlider');
+        const cutawaySlider = document.getElementById('cutawaySlider');
+
+        document.getElementById('solidPreset').addEventListener('change', (e) => {
+          solidState.preset = e.target.value;
+          drawSolidExplorer();
+        });
+        azSlider.addEventListener('input', () => { solidState.az = parseInt(azSlider.value, 10); drawSolidExplorer(); });
+        elSlider.addEventListener('input', () => { solidState.el = parseInt(elSlider.value, 10); drawSolidExplorer(); });
+        cutawaySlider.addEventListener('input', () => { solidState.cutaway = parseInt(cutawaySlider.value, 10); drawSolidExplorer(); });
+
+        const shBtn = document.getElementById('toggleShadowBtn');
+        shBtn.addEventListener('click', () => {
+          solidState.showShadow = !solidState.showShadow;
+          shBtn.classList.toggle('toggled', solidState.showShadow);
+          drawSolidExplorer();
+        });
+
+        const dvBtn = document.getElementById('toggleDvBtn');
+        dvBtn.addEventListener('click', () => {
+          solidState.showDv = !solidState.showDv;
+          dvBtn.classList.toggle('toggled', solidState.showDv);
+          drawSolidExplorer();
+        });
+
+        document.getElementById('resetViewBtn').addEventListener('click', () => {
+          solidState.az = 38; solidState.el = 24; solidState.cutaway = 310;
+          azSlider.value = 38; elSlider.value = 24; cutawaySlider.value = 310;
+          drawSolidExplorer();
+        });
+
+        attachDragRotate(solidCanvas, (dx, dy) => {
+          solidState.az = ((solidState.az + dx * 0.6 + 540) % 360) - 180;
+          solidState.el = Math.max(5, Math.min(75, solidState.el + dy * 0.4));
+          azSlider.value = Math.round(solidState.az);
+          elSlider.value = Math.round(solidState.el);
+          drawSolidExplorer();
+        });
+
+        // Section 2 Tabs & Controls
+        document.querySelectorAll('[data-lab2]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-lab2]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tgt = btn.dataset.lab2;
+            document.getElementById('lab2-point3d').style.display = tgt === 'point3d' ? 'block' : 'none';
+            document.getElementById('lab2-surface').style.display = tgt === 'surface' ? 'block' : 'none';
+            if (tgt === 'point3d') requestAnimationFrame(drawPoint3D);
+          });
+        });
+
+        const rhoSlider = document.getElementById('rhoSlider');
+        const thetaSlider = document.getElementById('thetaSlider');
+        const phiSlider = document.getElementById('phiSlider');
+
+        rhoSlider.addEventListener('input', () => { ptState.rho = parseFloat(rhoSlider.value); drawPoint3D(); });
+        thetaSlider.addEventListener('input', () => { ptState.thetaDeg = parseInt(thetaSlider.value, 10); drawPoint3D(); });
+        phiSlider.addEventListener('input', () => { ptState.phiDeg = parseInt(phiSlider.value, 10); drawPoint3D(); });
+
+        attachDragRotate(pt3dCanvas, (dx, dy) => {
+          ptState.az = ((ptState.az + dx * 0.6 + 540) % 360) - 180;
+          ptState.el = Math.max(5, Math.min(75, ptState.el + dy * 0.4));
+          drawPoint3D();
+        });
+
+        // Exam Point Presets
+        function setPt(rho, tDeg, pDeg) {
+          ptState.rho = rho; ptState.thetaDeg = tDeg; ptState.phiDeg = pDeg;
+          rhoSlider.value = rho; thetaSlider.value = tDeg; phiSlider.value = pDeg;
+          drawPoint3D();
+        }
+        document.getElementById('ptPreset1').addEventListener('click', () => {
+          // (r, theta, z) = (4, pi/3, -3) => rho = 5, phi = acos(-3/5) ≈ 126.87 deg
+          setPt(5.0, 60, 127);
+          showToast('Loaded Final 2025 Q6a(i): (r,θ,z) = (4, 60°, -3) → (2, 2√3, -3)');
+        });
+        document.getElementById('ptPreset2').addEventListener('click', () => {
+          setPt(4.0, 60, 45);
+          showToast('Loaded Final 2025 Q6a(ii): (ρ,θ,φ) = (4, 60°, 45°) → (√2, √6, 2√2)');
+        });
+        document.getElementById('ptPreset3').addEventListener('click', () => {
+          setPt(1.0, 180, 0);
+          showToast('Loaded Class Notes: (ρ,θ,φ) = (1, π, 0) → (0, 0, 1)');
+        });
+
+        // Surface Translator Tabs
+        document.querySelectorAll('#surfTabs .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#surfTabs .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderSurfaceTranslator(parseInt(btn.dataset.surf, 10));
+          });
+        });
+
+        // Section 4 Vault Filters
+        document.querySelectorAll('#vaultFilters .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#vaultFilters .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderVault(btn.dataset.vcat);
+          });
+        });
+
+        // Section 5 Reset Quiz
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          quizAnswered.clear();
+          document.getElementById('quizScore').textContent = `0 / ${quizData.length}`;
+          renderQuiz();
+          updateProgress();
+        });
+
+        // Initial Renders
+        renderSurfaceTranslator(0);
+        renderVault('all');
+        renderQuiz();
+        drawSolidExplorer();
+        drawPoint3D();
+        updateProgress();
+        renderMath(document.body);
+
+        // ResizeObserver for crisp HiDPI canvases
+        const ro = new ResizeObserver(() => {
+          drawSolidExplorer();
+          drawPoint3D();
+        });
+        ro.observe(document.getElementById('solidCanvasWrap'));
+        ro.observe(document.getElementById('pt3dCanvasWrap'));
+      });
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawSolidExplorer();
+        drawPoint3D();
+      });
+    })();
+  </script>
+</body>
+</html>

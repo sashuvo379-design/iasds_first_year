@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 1: Foundations of Applied Statistics & Data Production</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top reading progress bar */
+    #reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 1000;
+      transition: width 0.1s linear;
+    }
+
+    /* Layout */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 22px 18px;
+      overflow-y: auto;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: transform 0.25s ease;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card {
+      background: var(--surface-alt);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+    .progress-card-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .progress-track {
+      height: 7px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 0 8px;
+    }
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.18s ease;
+    }
+    .nav-link:hover {
+      background: var(--surface-alt);
+      color: var(--text);
+    }
+    .nav-link.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .nav-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      color: transparent;
+      transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .btn-ghost:hover {
+      background: var(--surface-alt);
+    }
+
+    /* Mobile topbar */
+    .mobile-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Main content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 42px 80px;
+      max-width: 1060px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #6d28d9 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 36px 38px;
+      margin-bottom: 34px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      top: -90px;
+      right: -60px;
+      pointer-events: none;
+    }
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 11px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      backdrop-filter: blur(4px);
+    }
+    .hero h1 {
+      font-size: 30px;
+      line-height: 1.22;
+      margin-bottom: 10px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .hero p.subtitle {
+      font-size: 15.5px;
+      opacity: 0.92;
+      max-width: 720px;
+      margin-bottom: 20px;
+    }
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.22);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 13px;
+    }
+    .hero-meta div span {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.78;
+    }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 30px 32px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .section-header h2 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+    .mark-done-btn {
+      padding: 7px 13px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    h3 {
+      font-size: 17.5px;
+      font-weight: 700;
+      margin: 22px 0 10px;
+      color: var(--text);
+    }
+    h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 14px 0 6px;
+    }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    /* Cards & Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 16px 0;
+      font-size: 14.5px;
+    }
+    .callout.trap {
+      border-left-color: var(--danger);
+      background: var(--danger-soft);
+    }
+    .callout.tip {
+      border-left-color: var(--success);
+      background: var(--success-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong.callout-title {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Timeline */
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .t-item {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 13.5px;
+    }
+    .t-era {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 12.5px;
+      margin-bottom: 4px;
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 11px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    tr:last-child td { border-bottom: none; }
+    .yes-pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--success-soft);
+      color: var(--success);
+    }
+    .no-pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    /* Interactive Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 16px;
+    }
+    .tab-btn {
+      padding: 8px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .tab-panel {
+      display: none;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .tab-panel.active { display: block; }
+
+    /* Accordion / Collapsible */
+    details {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14.5px;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after {
+      content: "+";
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 14.5px;
+    }
+
+    /* Interactive Lab: Measurement Scale Classifier */
+    .lab-box {
+      background: var(--surface-alt);
+      border: 2px solid var(--primary);
+      border-radius: 14px;
+      padding: 22px;
+      margin-top: 10px;
+    }
+    .lab-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .stat-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .lab-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .lab-source {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .lab-prompt {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .lab-sub {
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+    .scale-btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .scale-btn {
+      padding: 13px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 14.5px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .scale-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      transform: translateY(-1px);
+    }
+    .scale-btn.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .scale-btn.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .lab-feedback {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: left;
+    }
+    .lab-feedback.show { display: block; }
+    .lab-feedback.ok { background: var(--success-soft); border: 1px solid var(--success); }
+    .lab-feedback.err { background: var(--danger-soft); border: 1px solid var(--danger); }
+
+    .btn-primary {
+      padding: 10px 18px;
+      border-radius: 9px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .mcq-q {
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+    .mcq-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .mcq-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .mcq-opt {
+      text-align: left;
+      padding: 10px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+      font-weight: 700;
+    }
+    .mcq-opt.selected-wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+      font-weight: 700;
+    }
+    .mcq-exp {
+      display: none;
+      margin-top: 10px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    /* SVG diagram container */
+    .diagram-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 16px 0;
+      text-align: center;
+      overflow-x: auto;
+    }
+    .mono {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+      background: var(--surface-alt);
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    /* Exam Tag */
+    .exam-badge {
+      display: inline-block;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 99px;
+      background: var(--warning-soft);
+      color: var(--warning);
+      margin-right: 6px;
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 1</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L1</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 1 Progress</span>
+          <span id="progress-text">0 / 8</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list" id="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Statistics, History & Scope</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Population, Sample & Terms</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Variables & Data Structures</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Four Scales of Measurement</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Interactive Scale Lab</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Data Sources & Sampling</a></li>
+          <li><a class="nav-link" href="#sec-7" data-sec="sec-7"><span class="nav-check">✓</span>7. Data Cleaning & Ethics</a></li>
+          <li><a class="nav-link" href="#sec-8" data-sec="sec-8"><span class="nav-check">✓</span>8. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 1 of 4 • 1st Incourse Core</span>
+          <span class="badge">Lesson 1 of 12</span>
+          <span class="badge">⏱ Est. Study Time: 50 mins</span>
+        </div>
+        <h1>Foundations of Applied Statistics &amp; Data Production</h1>
+        <p class="subtitle">
+          Master the language of statistics—from populations, parameters, and the four measurement scales to sampling designs, controlled experiments, data cleaning, and real ISRT exam problems.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Instructor Slides</span><strong>Dr. Mohammad Shahed Masud</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 1–10 (L1_Introduction)</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2017–2025</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>What is Statistics? History, Branches &amp; Scope</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1', this)">Mark Complete</button>
+        </div>
+
+        <p>The word <strong>statistics</strong> carries two distinct meanings in everyday and academic language:</p>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Meaning 1 • Plural Sense</span>
+            <h4>Numerical Facts</h4>
+            <p style="margin-bottom:0">Recorded figures representing real-world measurements—such as family income, student age, a quarterback's completion percentage, or starting salaries of graduates.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Meaning 2 • Singular Sense</span>
+            <h4>The Scientific Discipline</h4>
+            <p style="margin-bottom:0"><strong>Statistics</strong> is the science of <em>collecting, analyzing, presenting, and interpreting data</em>, as well as <em>making decisions</em> based on such analyses.</p>
+          </div>
+        </div>
+
+        <h3>Historical Evolution of Statistics</h3>
+        <p>Historically known as the <strong>"Science of Statecraft"</strong>, the word derives from the Latin <em>status</em>, Italian <em>statista</em>, German <em>statistik</em>, and French <em>statistique</em>—each referring to a political state.</p>
+        <div class="timeline">
+          <div class="t-item">
+            <div class="t-era">Ancient Era</div>
+            Ancient Egypt, Rome &amp; China systematically recorded population, land, and resources for taxation and governance.
+          </div>
+          <div class="t-item">
+            <div class="t-era">17th Century</div>
+            <strong>Blaise Pascal</strong> &amp; <strong>Pierre-Simon Laplace</strong> developed probability theory out of gambling and uncertainty.
+          </div>
+          <div class="t-item">
+            <div class="t-era">19th Century</div>
+            <strong>C. F. Gauss</strong> introduced the normal distribution; <strong>Galton</strong> &amp; <strong>Karl Pearson</strong> created correlation and regression.
+          </div>
+          <div class="t-item">
+            <div class="t-era">20th Century</div>
+            <strong>R. A. Fisher</strong> pioneered experimental design &amp; ANOVA; <strong>Neyman &amp; Egon Pearson</strong> formalized hypothesis testing &amp; confidence intervals.
+          </div>
+          <div class="t-item">
+            <div class="t-era">Modern Era</div>
+            Deep integration with <strong>Data Science, Machine Learning, and AI</strong> across healthcare, finance, engineering, and public policy.
+          </div>
+        </div>
+
+        <h3>Two Aspects &amp; Two Branches</h3>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Theoretical vs. Applied</span>
+            <ul>
+              <li><strong>Theoretical (Mathematical) Statistics:</strong> Focuses on the development, derivation, and proof of statistical theorems, formulas, rules, and laws.</li>
+              <li><strong>Applied Statistics:</strong> Applies those theorems, formulas, and methods to solve real-world problems in medicine, economics, sports, industry, and government.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Descriptive vs. Inferential</span>
+            <ul>
+              <li><strong>Descriptive Statistics:</strong> Methods for <em>organizing, displaying, and describing</em> data using tables, graphs, and numerical summary measures (e.g., mean, histogram).</li>
+              <li><strong>Inferential Statistics:</strong> Methods that use <em>sample results</em> to make decisions, estimates, or predictions about a larger <em>population</em> (e.g., surveying 2,000 graduates to estimate the national starting salary).</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Uses, Scope &amp; Abuses of Statistics</h3>
+        <p>Why do almost all university disciplines require statistics? (1) To read and critically evaluate studies in your field, (2) to conduct original research and forecast outcomes, and (3) to become informed consumers and citizens. Career paths span Statisticians, Data Scientists, Biostatisticians, Financial Analysts, Market Research Analysts, Actuaries, and Operations Research Analysts.</p>
+        <div class="callout warn">
+          <strong class="callout-title">Exam Focus: Limitations &amp; Abuses of Applied Statistics</strong>
+          Statistics is a powerful tool, but it can be misused or limited when:
+          <ul style="margin-bottom:0; margin-top:6px">
+            <li><strong>Biased or non-representative samples</strong> are generalized to the whole population.</li>
+            <li><strong>Association is mistaken for causation</strong> (ignoring confounding variables).</li>
+            <li><strong>Misleading graphs</strong> (truncated axes, distorted areas) or cherry-picked averages (e.g., using the mean on heavily skewed income data) are used to manipulate opinion.</li>
+            <li><strong>Aggregate limitation:</strong> Statistics deals with aggregates/groups rather than explaining an isolated individual case with certainty.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02</div>
+            <h2>Population, Sample, Parameter, Statistic &amp; Basic Terms</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2', this)">Mark Complete</button>
+        </div>
+
+        <div class="diagram-box">
+          <svg viewBox="0 0 740 190" width="100%" style="max-width:720px; height:auto;" aria-label="Population and Sample Relationship">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb" />
+              </marker>
+              <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669" />
+              </marker>
+            </defs>
+            <!-- Population box -->
+            <rect x="16" y="25" width="240" height="140" rx="14" fill="rgba(37,99,235,0.1)" stroke="#2563eb" stroke-width="2" />
+            <text x="136" y="55" text-anchor="middle" font-weight="800" font-size="16" fill="currentColor">POPULATION (N)</text>
+            <text x="136" y="77" text-anchor="middle" font-size="12.5" fill="currentColor" opacity="0.8">All elements under study</text>
+            <rect x="36" y="94" width="200" height="54" rx="8" fill="rgba(37,99,235,0.15)" />
+            <text x="136" y="116" text-anchor="middle" font-weight="700" font-size="13" fill="#2563eb">Parameter (Greek Letters)</text>
+            <text x="136" y="136" text-anchor="middle" font-size="13" fill="currentColor">Mean: μ | SD: σ | Var: σ²</text>
+
+            <!-- Sample box -->
+            <rect x="484" y="25" width="240" height="140" rx="14" fill="rgba(5,150,105,0.1)" stroke="#059669" stroke-width="2" />
+            <text x="604" y="55" text-anchor="middle" font-weight="800" font-size="16" fill="currentColor">SAMPLE (n)</text>
+            <text x="604" y="77" text-anchor="middle" font-size="12.5" fill="currentColor" opacity="0.8">Subset selected for study</text>
+            <rect x="504" y="94" width="200" height="54" rx="8" fill="rgba(5,150,105,0.15)" />
+            <text x="604" y="116" text-anchor="middle" font-weight="700" font-size="13" fill="#059669">Statistic (Roman Letters)</text>
+            <text x="604" y="136" text-anchor="middle" font-size="13" fill="currentColor">Mean: x̄ | SD: s | Var: s²</text>
+
+            <!-- Top arrow -->
+            <path d="M 264 68 C 330 40, 410 40, 476 68" fill="none" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrow)" />
+            <text x="370" y="38" text-anchor="middle" font-weight="700" font-size="13" fill="#2563eb">Sampling</text>
+
+            <!-- Bottom arrow -->
+            <path d="M 476 125 C 410 153, 330 153, 264 125" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow-green)" />
+            <text x="370" y="168" text-anchor="middle" font-weight="700" font-size="13" fill="#059669">Statistical Inference</text>
+          </svg>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Population vs. Sample</h4>
+            <ul>
+              <li><strong>Population:</strong> Consists of <em>all</em> elements—individuals, items, or objects—whose characteristics are being studied. (It does not have to be people; it can be houses, books, cars, or companies.)</li>
+              <li><strong>Sample:</strong> A portion (subset) of the population selected for study.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Parameter vs. Statistic</h4>
+            <ul>
+              <li><strong>Population Parameter:</strong> A numerical summary measure (mean, median, variance, SD) calculated for a <em>population</em> data set.</li>
+              <li><strong>Sample Statistic:</strong> A numerical summary measure calculated for a <em>sample</em> data set.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout trap">
+          <strong class="callout-title">Exam Trap (1st Incourse 2025 MCQ #1)</strong>
+          Population <strong>parameters</strong> are conventionally denoted by <strong>lowercase Greek letters</strong> (e.g., <span class="mono">μ</span>, <span class="mono">σ</span>, <span class="mono">ρ</span>), whereas sample <strong>statistics</strong> use <strong>Roman letters</strong> (e.g., <span class="mono">x̄</span>, <span class="mono">s</span>, <span class="mono">r</span>). Easy mnemonic: <strong>P</strong>opulation → <strong>P</strong>arameter; <strong>S</strong>ample → <strong>S</strong>tatistic.
+        </div>
+
+        <h3>Anatomy of a Data Set (Basic Terms)</h3>
+        <p>Consider Table 1.1 from Dr. Masud's slides (<em>2007 Charitable Givings of Six Retailers, in millions of dollars</em>):</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Company <em>(Elements / Members)</em></th>
+                <th>2007 Charitable Givings ($M) <em>(Variable X)</em></th>
+                <th>Statistical Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Home Depot</td><td>42.0</td><td>Observation 1</td></tr>
+              <tr><td>Macy's</td><td>35.2</td><td>Observation 2</td></tr>
+              <tr><td><strong>Wal-Mart</strong></td><td><strong>337.9</strong></td><td>Wal-Mart = <strong>Element</strong>; 337.9 = <strong>Observation / Measurement</strong></td></tr>
+              <tr><td>Best Buy</td><td>31.8</td><td>Observation 4</td></tr>
+              <tr><td>Target</td><td>168.9</td><td>Observation 5</td></tr>
+              <tr><td>Lowe's</td><td>27.5</td><td>Observation 6</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul>
+          <li><strong>Element (or Member):</strong> A specific subject or object (person, firm, item, state, country) about which information is collected.</li>
+          <li><strong>Variable:</strong> A characteristic under study that assumes different values for different elements (often denoted <span class="mono">X, Y, Z</span>). In contrast, a <strong>constant</strong> has a fixed value.</li>
+          <li><strong>Observation (or Measurement):</strong> The value of a variable for one specific element.</li>
+          <li><strong>Data Set:</strong> A collection of observations on one or more variables.</li>
+        </ul>
+
+        <details>
+          <summary>Slide Class Activity: Population or Sample? (Click to check answers)</summary>
+          <div class="details-body">
+            <ol>
+              <li>Number of personal fouls committed by <em>all</em> NBA players during 2008–2009 → <strong>Population</strong></li>
+              <li>Yield of potatoes per acre for <em>10 pieces of land</em> → <strong>Sample</strong></li>
+              <li>Weekly salaries of <em>all</em> employees of a company → <strong>Population</strong></li>
+              <li>Cattle owned by <em>100 farmers</em> in Iowa → <strong>Sample</strong></li>
+              <li>Number of computers sold last week at <em>all</em> computer stores in Los Angeles → <strong>Population</strong></li>
+            </ol>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Types of Variables &amp; Cross-Section vs. Time-Series Data</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3', this)">Mark Complete</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Quantitative Variables</span>
+            <p>Can be measured <strong>numerically</strong> (incomes, heights, gross sales, number of cars, accidents). Divided into two subtypes:</p>
+            <ul>
+              <li><strong>Discrete:</strong> Values are <em>countable</em> with no intermediate values between consecutive counts (e.g., 0, 1, 2, ... — number of houses, cars, siblings, typographical errors).</li>
+              <li><strong>Continuous:</strong> Can assume <em>any value</em> within an interval, limited only by measurement precision (e.g., height, weight, age, length, time taken on an exam: 42.674 min).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Qualitative (Categorical) Variables</span>
+            <p>Cannot assume a meaningful numerical value, but can be classified into two or more <strong>nonnumeric categories</strong>.</p>
+            <ul>
+              <li>Student class standing (freshman, sophomore, junior, senior)</li>
+              <li>Gender, blood group, brand of a computer, make of a car, opinions of people, spring break locations.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout trap">
+          <strong class="callout-title">Exam Trap: Money is Treated as Continuous!</strong>
+          In Dr. Masud's slides and Mihad's notes, <strong>any variable involving money</strong> (salaries, monthly TV cable bills, lottery revenues, prices) is explicitly classified as a <strong>Quantitative Continuous</strong> variable.
+        </div>
+
+        <h3>Cross-Section Data vs. Time-Series Data</h3>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag green">Cross-Section Data</span>
+            <p>Data collected on <strong>different elements</strong> at the <strong>same point in time</strong> (or for the same period of time).</p>
+            <p style="margin-bottom:0; font-size:13.5px; color:var(--text-muted)"><em>Examples:</em> Incomes of 100 families in 2009; Charitable givings of 6 retailers in 2007; Supermarkets in 40 cities on Dec 31, 2009.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">Time-Series Data</span>
+            <p>Data collected on the <strong>same element</strong> for the same variable at <strong>different points in time</strong> (or periods).</p>
+            <p style="margin-bottom:0; font-size:13.5px; color:var(--text-muted)"><em>Examples:</em> U.S. exports from 1983 to 2009; Total indoor movie screens each year from 2003 to 2008; Monthly food bill of one family during 2009.</p>
+          </div>
+        </div>
+
+        <details>
+          <summary>Slide Class Activities: Variable Types &amp; Cross-Section/Time-Series (Solutions)</summary>
+          <div class="details-body">
+            <p><strong>Quantitative vs. Qualitative:</strong></p>
+            <ol>
+              <li>Number of typographical errors in newspapers → <strong>Quantitative (Discrete)</strong></li>
+              <li>Monthly TV cable bills → <strong>Quantitative (Continuous — money)</strong></li>
+              <li>Spring break locations favored by college students → <strong>Qualitative</strong></li>
+              <li>Number of cars owned by families → <strong>Quantitative (Discrete)</strong></li>
+              <li>Lottery revenues of states → <strong>Quantitative (Continuous — money)</strong></li>
+            </ol>
+            <p><strong>Cross-Section vs. Time-Series:</strong></p>
+            <ol>
+              <li>Food bill of a family for each month of 2009 → <strong>Time-Series</strong></li>
+              <li>Number of armed robberies each year in Dallas (1998–2009) → <strong>Time-Series</strong></li>
+              <li>Number of supermarkets in 40 cities on Dec 31, 2009 → <strong>Cross-Section</strong></li>
+              <li>Gross sales of 200 ice cream parlors in July 2009 → <strong>Cross-Section</strong></li>
+            </ol>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 4 -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04</div>
+            <h2>The Four Scales of Measurement (NOIR)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4', this)">Mark Complete</button>
+        </div>
+
+        <p>Beyond qualitative vs. quantitative, variables are ranked into a four-level hierarchy of measurement precision: <strong>N</strong>ominal → <strong>O</strong>rdinal → <strong>I</strong>nterval → <strong>R</strong>atio. Each higher level retains all properties of the levels below it and adds one new mathematical property.</p>
+
+        <div class="grid-4">
+          <div class="card">
+            <span class="card-top-tag">1. Nominal</span>
+            <p style="font-size:13.5px">Mutually exclusive, exhaustive categories with <strong>no inherent order</strong>.</p>
+            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:0"><strong>Examples:</strong> Blood group (A, B, AB, O), Gender, Eye color, Zip code, Student ID, Religion, Nationality.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">2. Ordinal</span>
+            <p style="font-size:13.5px">Categories can be <strong>ranked/ordered</strong>, but exact gaps between ranks are unknown or unequal.</p>
+            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:0"><strong>Examples:</strong> Letter grades (A–F), 1st/2nd/3rd place, Rating scale (poor/good/excellent), Player rankings.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">3. Interval</span>
+            <p style="font-size:13.5px">Ordered + <strong>equal, meaningful differences</strong> between units, but <strong>no true zero</strong> (0 is arbitrary).</p>
+            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:0"><strong>Examples:</strong> Temperature (°C, °F), IQ score, SAT score, Calendar year.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">4. Ratio</span>
+            <p style="font-size:13.5px">All interval properties + a <strong>true zero</strong> (0 = complete absence), so <strong>ratios</strong> are meaningful (2× as much).</p>
+            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:0"><strong>Examples:</strong> Height, Weight, Age, Time, Salary, Kelvin temperature, Blood pressure, Number of siblings.</p>
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <strong class="callout-title">Classic Distinction: Celsius vs. Kelvin &amp; Student IDs</strong>
+          <ul style="margin-bottom:0">
+            <li><strong>0°C or 0°F</strong> does <em>not</em> mean zero heat (so 20°C is not "twice as hot" as 10°C) → <strong>Interval</strong>. By contrast, <strong>0 Kelvin</strong> is absolute zero (zero thermal motion) → <strong>Ratio</strong>.</li>
+            <li><strong>Student ID / Zip Code / Jersey Number</strong> use digits, but they only label identity—averaging two IDs is meaningless → <strong>Nominal</strong>.</li>
+          </ul>
+        </div>
+
+        <h3>Hierarchy of Properties &amp; Valid Mathematical Operations</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Scale</th>
+                <th>Categories</th>
+                <th>Order / Rank</th>
+                <th>Equal Gaps</th>
+                <th>True Zero</th>
+                <th>Valid Math Operations</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Nominal</strong></td><td><span class="yes-pill">YES</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td><td>Equality (=, ≠), Counting</td></tr>
+              <tr><td><strong>Ordinal</strong></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td><td>=, ≠, Ordering (&lt;, &gt;)</td></tr>
+              <tr><td><strong>Interval</strong></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="no-pill">NO</span></td><td>=, ≠, &lt;, &gt;, Addition &amp; Subtraction (+, −)</td></tr>
+              <tr><td><strong>Ratio</strong></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td>All operations (+, −, ×, ÷, Ratios)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Central Tendency Compatibility Matrix <span class="exam-badge">Final 2023 Q1(b) — 3 Marks</span></h3>
+        <p>Knowing which averages are mathematically valid for each measurement scale is a recurring ISRT Final Exam favorite:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Level of Measurement</th>
+                <th>Mode</th>
+                <th>Median</th>
+                <th>Arithmetic Mean</th>
+                <th>Harmonic Mean</th>
+                <th>Geometric Mean</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Nominal</strong></td><td><span class="yes-pill">YES</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td></tr>
+              <tr><td><strong>Ordinal</strong></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td><td><span class="no-pill">NO</span></td></tr>
+              <tr><td><strong>Interval / Ratio (any real value)</strong></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="no-pill">NO*</span></td><td><span class="no-pill">NO*</span></td></tr>
+              <tr><td><strong>Interval / Ratio (only negative values)</strong></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="no-pill">NO**</span></td></tr>
+              <tr><td><strong>Interval / Ratio (only positive values)</strong></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td><td><span class="yes-pill">YES</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted)"><em>*Harmonic Mean is undefined if any value is 0 (division by zero) and unstable when mixing positive and negative signs. **Geometric Mean requires strictly positive values because the nth root of a negative product can be imaginary (or zero if any value is 0).</em></p>
+      </section>
+
+      <!-- SECTION 5: INTERACTIVE LAB -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Interactive Practice Lab</div>
+            <h2>Measurement Scale Classifier</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5', this)">Mark Complete</button>
+        </div>
+
+        <p>Test your instincts on <strong>16 real variables</strong> pulled directly from ISRT past exams (2023–2025) and Dr. Masud's lecture slides. Choose the correct measurement scale and read the instant explanation.</p>
+
+        <div class="lab-box">
+          <div class="lab-topbar">
+            <div class="tabs" style="margin:0">
+              <button class="tab-btn active" onclick="setLabFilter('all', this)">All (16)</button>
+              <button class="tab-btn" onclick="setLabFilter('exam', this)">Past ISRT Exams (10)</button>
+              <button class="tab-btn" onclick="setLabFilter('slide', this)">Slide Activities (6)</button>
+            </div>
+            <div class="stat-pills">
+              <span class="stat-pill">Card: <span id="lab-idx">1</span>/<span id="lab-total">16</span></span>
+              <span class="stat-pill" style="color:var(--success)">Score: <span id="lab-score">0</span></span>
+              <span class="stat-pill" style="color:var(--warning)">🔥 Streak: <span id="lab-streak">0</span></span>
+            </div>
+          </div>
+
+          <div class="lab-card">
+            <span class="lab-source" id="lab-source">ISRT Final 2024</span>
+            <div class="lab-prompt" id="lab-prompt">Loading...</div>
+            <div class="lab-sub" id="lab-hint">Select the most appropriate scale of measurement:</div>
+
+            <div class="scale-btn-grid" id="lab-buttons">
+              <button class="scale-btn" onclick="answerLab('Nominal', this)">Nominal</button>
+              <button class="scale-btn" onclick="answerLab('Ordinal', this)">Ordinal</button>
+              <button class="scale-btn" onclick="answerLab('Interval', this)">Interval</button>
+              <button class="scale-btn" onclick="answerLab('Ratio', this)">Ratio</button>
+            </div>
+
+            <div class="lab-feedback" id="lab-feedback"></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <button class="btn-ghost" style="flex:0 0 auto" onclick="restartLab()">↺ Restart Deck</button>
+            <button class="btn-primary" id="lab-next-btn" onclick="nextLabCard()">Next Variable →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6 -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06</div>
+            <h2>Sources of Data, Sampling Methods, Surveys &amp; Experiments</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6', this)">Mark Complete</button>
+        </div>
+
+        <h3>1. Sources of Data: Primary vs. Secondary</h3>
+        <p>Data come from three main sources: <strong>Internal sources</strong> (company accounting/HR/police records), <strong>External sources</strong> (organizations outside the firm), and <strong>Surveys &amp; Experiments</strong>.</p>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Primary Data</span>
+            <p>Collected <strong>originally</strong> by the investigator or organization for a specific purpose; pure, original, and never previously subjected to statistical treatment.</p>
+            <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:0"><strong>Merits:</strong> Tailored to exact research goals, higher reliability/control.<br><strong>Demerits:</strong> Expensive, time-consuming, requires trained personnel.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Secondary Data</span>
+            <p>Obtained from a source that did <strong>not</strong> originally collect it, or reused from published official sources (e.g., <strong>BBS, BANBEIS, NIPORT, Bangladesh Bank, BARC</strong>; major surveys like <strong>BDHS, MICS, LFS, MMS, UHS</strong>).</p>
+            <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:0"><strong>Advantages over Primary:</strong> Saves time and cost, immediately available, enables large-scale/historical comparisons.<br><strong>Limitations:</strong> Original purpose may not match; possible missing variables or incompatible definitions.</p>
+          </div>
+        </div>
+
+        <h3>2. Census vs. Sample Survey</h3>
+        <p>A <strong>Census</strong> includes <em>every</em> member of the population, whereas a <strong>Sample Survey</strong> studies a selected subset. We usually prefer a sample survey for three core reasons:</p>
+        <ol>
+          <li><strong>Time:</strong> Populations are often huge; sampling yields timely results.</li>
+          <li><strong>Cost:</strong> Surveying every element typically exceeds budget constraints.</li>
+          <li><strong>Impossibility:</strong> Some populations cannot be fully reached (e.g., homeless individuals), and some tests are <strong>destructive</strong> (e.g., burning out every lightbulb or draining every battery to test average lifespan).</li>
+        </ol>
+
+        <h3>3. Interactive Sampling Methods Explorer</h3>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="openTab('samp-srs', this)">Simple Random</button>
+          <button class="tab-btn" onclick="openTab('samp-sys', this)">Systematic</button>
+          <button class="tab-btn" onclick="openTab('samp-strat', this)">Stratified</button>
+          <button class="tab-btn" onclick="openTab('samp-clus', this)">Cluster</button>
+          <button class="tab-btn" onclick="openTab('samp-non', this)">Non-Random</button>
+        </div>
+        <div id="samp-srs" class="tab-panel active">
+          <h4>Simple Random Sampling (SRS)</h4>
+          <p>Every member of the population has a known, equal chance of being selected (e.g., drawing 10 names from a box of 100 students, or using random numbers).</p>
+          <ul style="margin-bottom:0">
+            <li><strong>With Replacement:</strong> Selected element is returned to the population before the next draw (population size stays constant; repeats allowed, e.g., rolling a die).</li>
+            <li><strong>Without Replacement:</strong> Selected element is not returned (population shrinks by 1 each draw; no repeats—most common in real surveys).</li>
+          </ul>
+        </div>
+        <div id="samp-sys" class="tab-panel">
+          <h4>Systematic Random Sampling</h4>
+          <p style="margin-bottom:0">Randomly select one unit from the first <em>k</em> units, then include every <em>k</em>-th unit thereafter. <em>Example:</em> To select 10 students from 50, compute <em>k</em> = 50/10 = 5, pick a random start between 1 and 5, and choose every 5th student (or every 7th shopper entering a mall).</p>
+        </div>
+        <div id="samp-strat" class="tab-panel">
+          <h4>Stratified Random Sampling</h4>
+          <p style="margin-bottom:0">Divide a heterogeneous population into homogeneous subgroups called <strong>strata</strong> (based on gender, income, smoking status, etc.), then draw a random sample from <strong>every</strong> stratum. Ensures every subgroup is represented.</p>
+        </div>
+        <div id="samp-clus" class="tab-panel">
+          <h4>Cluster Sampling</h4>
+          <p style="margin-bottom:0">Divide the population into (often geographical) groups called <strong>clusters</strong>—where each cluster mirrors the population—randomly select a few clusters, and survey <em>all</em> elements inside those chosen clusters (e.g., interviewing all teachers in 2 randomly chosen school buildings).</p>
+        </div>
+        <div id="samp-non" class="tab-panel">
+          <h4>Non-Random Samples (Some members have zero chance of selection)</h4>
+          <ul style="margin-bottom:0">
+            <li><strong>Convenience Sample:</strong> Selecting the most accessible members for speed (e.g., polling shoppers at a single mall).</li>
+            <li><strong>Judgment Sample:</strong> Selecting members based on an expert's prior knowledge/judgment; rarely guaranteed to be representative for large populations.</li>
+          </ul>
+        </div>
+
+        <h3>4. Sampling vs. Non-Sampling Errors &amp; Questionnaires</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Sampling vs. Non-Sampling Error</h4>
+            <ul style="margin-bottom:0">
+              <li><strong>Sampling Error (Chance Error):</strong> The natural difference between a sample result and the true population value simply because only a subset was observed. Occurs <em>only</em> in sample surveys.</li>
+              <li><strong>Non-Sampling Error (Systematic Error):</strong> Human mistakes in data collection, recording, coding, or tabulation. Occurs in <em>both</em> sample surveys and censuses.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>Questionnaire Preparation Standards</h4>
+            <p style="font-size:13.5px">Called the "heart of a survey operation." Good questions must be:</p>
+            <ul style="margin-bottom:0; font-size:13.5px">
+              <li>Easily understood, simple, and logically sequenced.</li>
+              <li>Concrete &amp; realistic (ask <em>"razor blades used last week"</em> instead of <em>"annually"</em>).</li>
+              <li>Include uncertainty options (<em>"Don't know"</em>, <em>"No preference"</em>) and avoid hard-to-analyze ambiguous open-ended questions.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>5. Observational Study vs. Controlled Experiment</h3>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag amber">Observational Study</span>
+            <p style="margin-bottom:0">The researcher observes or surveys subjects <strong>without controlling</strong> factors or randomly assigning treatments (e.g., comparing people who voluntarily chose Diet 1 vs. Diet 2). Because other variables are not controlled, effects can be <strong>confounded</strong> (e.g., higher income vs. higher rent is confounded by family size and neighborhood). <strong>Association does not prove causation!</strong></p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Controlled Experiment</span>
+            <p style="margin-bottom:0">The researcher actively <strong>controls factors</strong> and <strong>randomly assigns</strong> subjects into treatment/control groups (e.g., randomly assigning volunteers to Diet 1 vs. Diet 2, or herb vs. placebo). Designed experiments allow us to establish <strong>cause-and-effect</strong> relationships.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 7 -->
+      <section class="lesson-section" id="sec-7">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 07</div>
+            <h2>Data Preparation, Cleaning, Outliers &amp; Ethics</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-7', this)">Mark Complete</button>
+        </div>
+
+        <p>Before running any statistical analysis or hypothesis test, raw data must undergo <strong>data processing and cleaning</strong>:</p>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">1. Data Cleaning &amp; Verification</span>
+            <p style="margin-bottom:0">Human entry errors are inevitable in large datasets. Verify every numerical and categorical entry; when an impossible or suspicious value appears, trace its <strong>case number</strong> back to the original survey/record and correct it.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">2. Handling Missing Data</span>
+            <p style="margin-bottom:0">Evaluate both the <strong>number of missing cases</strong> and the <strong>pattern</strong> (pattern is more influential!). Distinguish <em>randomly missing</em> (scattered) from <em>non-randomly missing</em> (clustered on sensitive items like income). For imputation, use the <strong>mean</strong> for continuous data and the <strong>median</strong> for ordinal data.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">3. Detecting Univariate Outliers</span>
+            <p style="margin-bottom:0">Extreme scores at either tail of a variable's distribution. Detect them using <strong>boxplots</strong>, <strong>stem-and-leaf plots</strong>, or standardized <strong>z-scores</strong>. General rule from slides: a raw score with <span class="mono">z &gt; 3</span> or <span class="mono">z &lt; -3</span> is flagged as an outlier.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">4. Ethical Issues in Data Collection</span>
+            <p style="margin-bottom:0">Key ethical responsibilities include obtaining <strong>informed consent</strong>, protecting respondent <strong>privacy &amp; confidentiality</strong> (anonymizing personal identifiers), avoiding <strong>data fabrication/cherry-picking</strong>, and ensuring voluntary, unbiased participation.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-8">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 08 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2017–2025)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-8', this)">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <p>Click an option for instant feedback. Includes verbatim MCQs from the <strong>2025 1st Incourse</strong> plus high-yield Lesson 1 concept checks.</p>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Questions &amp; Model Solutions</h3>
+        <p>Attempt each question in your notebook first, then expand the model solution to verify your structure and phrasing.</p>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2025 • Q1(a),(b) [2 Marks]</span> Qualitative vs. Quantitative &amp; Measurement Scales</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> (a) Distinguish between <em>qualitative</em> and <em>quantitative</em> variables with one example of each. [1] &nbsp;(b) Identify the scale of measurement of: (i) IQ Score, (ii) number of siblings. [1]</p>
+            <p><strong>Model Solution:</strong></p>
+            <ul>
+              <li><strong>(a)</strong> A <strong>qualitative (categorical) variable</strong> cannot take meaningful numerical values and classifies elements into nonnumeric categories (e.g., blood group, gender). A <strong>quantitative variable</strong> is measured numerically and supports arithmetic operations (e.g., height, number of siblings).</li>
+              <li><strong>(b)</strong> (i) <strong>IQ Score:</strong> <em>Interval scale</em> (equal unit differences exist, e.g., 109 to 110, but there is no true zero representing total absence of intelligence). (ii) <strong>Number of siblings:</strong> <em>Ratio scale</em> (countable quantitative data with a true zero—0 means no siblings, and 4 siblings is twice as many as 2).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2024 • Q4(a),(b),(c) [8 Marks]</span> Four Levels of Measurement &amp; Data Ethics</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> (a) Explain the four levels of measurement: nominal, ordinal, interval and ratio with appropriate examples. [4] (b) Identify and justify the most appropriate level for: (i) Blood type (A, B, AB, O), (ii) Temperature in Celsius, (iii) Student ID number, (iv) Rankings in a singing competition. [2] (c) Describe one ethical issue in data collection. [2]</p>
+            <p><strong>Model Solution:</strong></p>
+            <ul>
+              <li><strong>(a)</strong> Define all four scales clearly (categories → order → equal intervals → true zero) with 1–2 examples each (see Section 4).</li>
+              <li><strong>(b)</strong>
+                <ol>
+                  <li><strong>Blood type:</strong> <em>Nominal</em> — mutually exclusive categories with no natural ranking.</li>
+                  <li><strong>Temperature in Celsius:</strong> <em>Interval</em> — equal 1°C increments, but 0°C is arbitrary (freezing point of water, not zero heat).</li>
+                  <li><strong>Student ID number:</strong> <em>Nominal</em> — numeric digits serve purely as unique labels; arithmetic/ranking is meaningless.</li>
+                  <li><strong>Rankings in a singing competition:</strong> <em>Ordinal</em> — ordered (1st, 2nd, 3rd), but the gap in talent between 1st and 2nd need not equal the gap between 2nd and 3rd.</li>
+                </ol>
+              </li>
+              <li><strong>(c) Ethical Issue (e.g., Privacy &amp; Informed Consent):</strong> Collecting personal or sensitive data (medical records, income) without informing participants of the study's purpose, obtaining voluntary consent, or safeguarding confidentiality risks harming respondents and violates research ethics.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2023 • Q1(a),(b) [4 Marks]</span> Variable Scales &amp; Central Tendency Table</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> (a) At what level are the following variables measured? <em>SAT score, Blood Pressure, Types of soft drinks, Number of pages in books.</em> [1] (b) Complete the YES/NO table for valid central tendency measures by level of measurement. [3]</p>
+            <p><strong>Model Solution:</strong></p>
+            <ul>
+              <li><strong>(a)</strong> SAT score → <strong>Interval</strong>; Blood Pressure → <strong>Ratio</strong> (0 mmHg represents absence of pressure); Types of soft drinks → <strong>Nominal</strong>; Number of pages in books → <strong>Ratio</strong> (true zero, countable).</li>
+              <li><strong>(b)</strong> Refer directly to the <strong>Central Tendency Compatibility Matrix</strong> in Section 4: Nominal (Mode only); Ordinal (Mode, Median); Interval/Ratio any real (Mode, Median, AM); Interval/Ratio only negative (Mode, Median, AM, HM); Interval/Ratio only positive (all 5: Mode, Median, AM, HM, GM).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2019 • Q2(a),(b),(c) [12 Marks]</span> Scope/Abuses, Primary vs. Secondary &amp; Core Distinctions</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> (a) Define 'Statistics' and discuss the nature, scope, uses, and abuses of Applied Statistics. [4] (b) Define primary and secondary data with examples; discuss primary data collection techniques with merits/demerits. [5] (c) Distinguish with examples between: (i) Population &amp; sample, (ii) Parameter &amp; statistic, (iii) Descriptive &amp; inferential statistics. [3]</p>
+            <p><strong>Model Solution Outline:</strong></p>
+            <ul>
+              <li><strong>(a)</strong> Give the formal definition (science of collecting, analyzing, presenting, interpreting data, and decision-making). Cover scope/uses (healthcare/biostatistics, finance, policy, engineering, data science) and abuses (biased sampling, confusing correlation with causation, misleading graphs, cherry-picked averages).</li>
+              <li><strong>(b)</strong> Contrast original primary data (e.g., a field survey you conduct) with secondary data (e.g., BBS or World Bank reports). Discuss primary collection techniques: direct personal interviews (high response, costly), mailed/online questionnaires (cheap, non-response bias), telephone surveys (fast, limited depth), and controlled experiments (causal power, resource-intensive).</li>
+              <li><strong>(c)</strong> Provide crisp 2-line definitions + concrete examples for each pair (see Sections 1 &amp; 2).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2023 • Q2(a) &amp; Mid-Term 2017 • Q3(a),(c),(d)</span> Short-Answer Essentials</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>Descriptive vs. Inferential Statistics (1st Incourse 2023 Q2a [1]):</strong> Descriptive summarizes and displays observed data via tables, graphs, and summary measures; inferential uses sample data to estimate parameters, test hypotheses, and make predictions about a population.</li>
+              <li><strong>Advantages of Secondary Data over Primary Data (Final 2017 Q1i [1]):</strong> Lower cost, faster availability, wider geographical/historical coverage, and no need for field logistics.</li>
+              <li><strong>Mutually Exclusive &amp; Exhaustive Categories (Final 2017 Q1j [1]):</strong> <em>Mutually exclusive</em> means no element can belong to more than one category (e.g., Blood groups A, B, AB, O). <em>Exhaustive</em> means every possible element fits into at least one listed category.</li>
+              <li><strong>Data Processing Phase (Mid-Term 2017 Q3d [2]):</strong> Converting raw collected data into clean, analysis-ready form through editing/cleaning (fixing entry errors via case numbers), coding, handling missing values, checking outliers, and tabulating.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme & Sidebar ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l1_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+    document.querySelectorAll('.nav-link').forEach(a => {
+      a.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('open');
+      });
+    });
+
+    // ---------- Reading Progress Bar & Active Section ----------
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      document.getElementById('reading-progress').style.width = pct + '%';
+
+      const sections = document.querySelectorAll('.lesson-section');
+      let current = 'sec-1';
+      sections.forEach(sec => {
+        if (scrollTop >= sec.offsetTop - 130) current = sec.id;
+      });
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.sec === current);
+      });
+    });
+
+    // ---------- Section Completion Tracker ----------
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l1_done') || '[]');
+    function syncProgress() {
+      const total = 8;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.toggle('done', completedSecs.includes(link.dataset.sec));
+      });
+      document.querySelectorAll('.lesson-section').forEach(sec => {
+        const btn = sec.querySelector('.mark-done-btn');
+        const isDone = completedSecs.includes(sec.id);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(secId) {
+      if (completedSecs.includes(secId)) {
+        completedSecs = completedSecs.filter(id => id !== secId);
+      } else {
+        completedSecs.push(secId);
+      }
+      localStorage.setItem('ast101_l1_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() {
+      completedSecs = [];
+      localStorage.removeItem('ast101_l1_done');
+      syncProgress();
+    }
+    syncProgress();
+
+    // ---------- Sampling Tabs ----------
+    function openTab(panelId, btn) {
+      const parent = btn.closest('.lesson-section');
+      parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(panelId).classList.add('active');
+    }
+
+    // ---------- Interactive Lab: Measurement Scale Classifier ----------
+    const labDeck = [
+      { varName: "Blood Type (A, B, AB, O)", scale: "Nominal", tag: "exam", source: "ISRT Final 2024 & 1st Incourse 2025", exp: "Mutually exclusive categories with no natural order or ranking." },
+      { varName: "Temperature in Celsius (°C)", scale: "Interval", tag: "exam", source: "ISRT Final 2024", exp: "Equal 1°C differences are meaningful, but 0°C is arbitrary (does not mean zero heat)." },
+      { varName: "Student ID Number", scale: "Nominal", tag: "exam", source: "ISRT Final 2024", exp: "Even though it uses digits, an ID only labels identity; ordering or averaging IDs is meaningless." },
+      { varName: "Rankings in a Singing Competition", scale: "Ordinal", tag: "exam", source: "ISRT Final 2024", exp: "Clear order (1st, 2nd, 3rd), but the skill gap between ranks is not fixed or equal." },
+      { varName: "IQ Score", scale: "Interval", tag: "exam", source: "ISRT Final 2025", exp: "Standardized psychological test with equal score intervals, but no true zero (0 IQ does not exist)." },
+      { varName: "Number of Siblings", scale: "Ratio", tag: "exam", source: "ISRT Final 2025", exp: "Discrete quantitative variable with a true zero (0 means no siblings) and meaningful ratios." },
+      { varName: "SAT Score", scale: "Interval", tag: "exam", source: "ISRT Final 2023", exp: "Equal differences between score points, but no meaningful absolute zero." },
+      { varName: "Blood Pressure (mmHg)", scale: "Ratio", tag: "exam", source: "ISRT Final 2023", exp: "Continuous physical measurement with equal units and a true zero (0 = absence of pressure)." },
+      { varName: "Types of Soft Drinks", scale: "Nominal", tag: "exam", source: "ISRT Final 2023", exp: "Purely qualitative labels with no intrinsic ranking." },
+      { varName: "Number of Pages in Books", scale: "Ratio", tag: "exam", source: "ISRT Final 2023", exp: "Countable quantity with a true zero; a 400-page book has twice as many pages as a 200-page book." },
+      { varName: "Rankings of Golfers in a Tournament", scale: "Ordinal", tag: "slide", source: "L1 Slide Class Activity", exp: "Ordered positions, but exact score differences between consecutive ranks are not fixed." },
+      { varName: "Temperatures Inside 10 Pizza Ovens (°F/°C)", scale: "Interval", tag: "slide", source: "L1 Slide Class Activity", exp: "Standard oven temperatures use °F or °C—equal intervals, arbitrary zero." },
+      { varName: "Weights of Selected Cell Phones", scale: "Ratio", tag: "slide", source: "L1 Slide Class Activity", exp: "Weight has a true zero and valid ratios (200g is twice as heavy as 100g)." },
+      { varName: "Salaries of NFL Coaches", scale: "Ratio", tag: "slide", source: "L1 Slide Class Activity", exp: "Money has a true zero ($0 = no income) and meaningful ratios; also treated as continuous." },
+      { varName: "Textbook Ratings (Poor, Fair, Good, Excellent)", scale: "Ordinal", tag: "slide", source: "L1 Slide Class Activity", exp: "Ordered qualitative categories without exact numerical distances between ratings." },
+      { varName: "Magazine Categories (Sports, Health, News)", scale: "Nominal", tag: "slide", source: "L1 Slide Class Activity", exp: "Unordered, mutually exclusive categories." }
+    ];
+
+    let activeDeck = [...labDeck];
+    let labPos = 0, labScore = 0, labStreak = 0, labAnswered = false;
+
+    function setLabFilter(filter, btn) {
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeDeck = filter === 'all' ? [...labDeck] : labDeck.filter(x => x.tag === filter);
+      restartLab();
+    }
+
+    function restartLab() {
+      labPos = 0; labScore = 0; labStreak = 0; labAnswered = false;
+      renderLabCard();
+    }
+
+    function renderLabCard() {
+      const item = activeDeck[labPos];
+      labAnswered = false;
+      document.getElementById('lab-idx').textContent = labPos + 1;
+      document.getElementById('lab-total').textContent = activeDeck.length;
+      document.getElementById('lab-score').textContent = labScore;
+      document.getElementById('lab-streak').textContent = labStreak;
+      document.getElementById('lab-source').textContent = item.source;
+      document.getElementById('lab-prompt').textContent = item.varName;
+      document.getElementById('lab-next-btn').textContent = labPos < activeDeck.length - 1 ? 'Next Variable →' : 'Restart Deck ↺';
+
+      const fb = document.getElementById('lab-feedback');
+      fb.className = 'lab-feedback';
+      fb.innerHTML = '';
+
+      document.querySelectorAll('#lab-buttons .scale-btn').forEach(b => {
+        b.disabled = false;
+        b.className = 'scale-btn';
+      });
+    }
+
+    function answerLab(choice, btn) {
+      if (labAnswered) return;
+      labAnswered = true;
+      const item = activeDeck[labPos];
+      const isCorrect = choice === item.scale;
+      const fb = document.getElementById('lab-feedback');
+
+      document.querySelectorAll('#lab-buttons .scale-btn').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === item.scale) b.classList.add('correct');
+      });
+
+      if (isCorrect) {
+        labScore++;
+        labStreak++;
+        fb.className = 'lab-feedback show ok';
+        fb.innerHTML = `<strong>✓ Correct! (${item.scale})</strong> — ${item.exp}`;
+      } else {
+        btn.classList.add('wrong');
+        labStreak = 0;
+        fb.className = 'lab-feedback show err';
+        fb.innerHTML = `<strong>✗ Not quite.</strong> The right answer is <strong>${item.scale}</strong>. ${item.exp}`;
+      }
+      document.getElementById('lab-score').textContent = labScore;
+      document.getElementById('lab-streak').textContent = labStreak;
+    }
+
+    function nextLabCard() {
+      if (labPos < activeDeck.length - 1) {
+        labPos++;
+        renderLabCard();
+      } else {
+        restartLab();
+      }
+    }
+    renderLabCard();
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "1st Incourse 2025 • MCQ #1",
+        q: "Which of the following are usually used to denote population parameters?",
+        opts: ["Lowercase Greek letters", "Roman letters", "Associated Roman alphabets", "Uppercase Greek letters"],
+        ans: 0,
+        exp: "Parameters (like μ, σ, ρ) are denoted by lowercase Greek letters, whereas sample statistics (x̄, s, r) use Roman letters."
+      },
+      {
+        tag: "1st Incourse 2025 • MCQ #5",
+        q: "Which of the following is a quantitative variable?",
+        opts: ["Color of a car", "Gender of a student", "Number of students in Stat 101", "City in which a person lives"],
+        ans: 2,
+        exp: "Number of students is numerically countable (Quantitative Discrete). The other three are qualitative categories."
+      },
+      {
+        tag: "1st Incourse 2025 • MCQ #6",
+        q: "Scale of measurement of the variable 'Blood Group' is:",
+        opts: ["Ratio", "Ordinal", "Interval", "None of the above options"],
+        ans: 3,
+        exp: "Blood Group (A, B, AB, O) is measured on the Nominal scale, which is not listed—making 'None of the above options' correct!"
+      },
+      {
+        tag: "L1 Concept Check",
+        q: "Every 7th customer entering a shopping mall is asked to select their favorite store. What sampling method is this?",
+        opts: ["Simple Random Sampling", "Systematic Random Sampling", "Stratified Sampling", "Cluster Sampling"],
+        ans: 1,
+        exp: "Selecting every k-th unit (here k = 7) after a random start is Systematic Random Sampling."
+      },
+      {
+        tag: "L1 Concept Check",
+        q: "Which type of error can occur in BOTH a sample survey and a complete census?",
+        opts: ["Sampling error", "Chance error", "Non-sampling error", "None of the above"],
+        ans: 2,
+        exp: "Non-sampling (systematic/human) errors in recording, coding, or interviewing can happen even when every member of a population is surveyed."
+      },
+      {
+        tag: "L1 Concept Check",
+        q: "In a study comparing two diets, subjects are randomly assigned into two groups. This study is best described as:",
+        opts: ["An observational study", "A controlled experiment", "A convenience sample", "A cross-sectional census"],
+        ans: 1,
+        exp: "Random assignment of subjects to treatments is the defining feature of a controlled experiment, enabling causal inference."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const container = document.getElementById('mcq-container');
+      container.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((opt, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx}, ${oi}, this)">${String.fromCharCode(97 + oi)}) ${opt}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        container.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+
+    function pickMCQ(qIdx, oIdx, btn) {
+      if (mcqState[qIdx] !== undefined) return;
+      const item = mcqData[qIdx];
+      const ok = oIdx === item.ans;
+      mcqState[qIdx] = ok;
+
+      const parent = btn.parentElement;
+      const buttons = parent.querySelectorAll('.mcq-opt');
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+
+      const expEl = document.getElementById(`mcq-exp-${qIdx}`);
+      expEl.className = 'mcq-exp show';
+      expEl.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+
+    function updateMCQBanner() {
+      const answered = Object.keys(mcqState).length;
+      const correct = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${correct} / ${mcqData.length} correct (${answered} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

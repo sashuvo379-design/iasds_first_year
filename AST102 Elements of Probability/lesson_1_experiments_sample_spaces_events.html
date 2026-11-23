@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1: Experiments, Sample Spaces & Events | AST 102 — Elements of Probability</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            navy: {
+              800: '#1e293b',
+              900: '#0f172a',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX for crisp mathematical typesetting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* Minimal custom styling for smooth accordions, subtle scrollbars, and SVG transitions */
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .accordion-content {
+      transition: max-height 0.3s ease, opacity 0.25s ease;
+    }
+
+    .svg-edge {
+      transition: stroke 0.2s ease, stroke-width 0.2s ease, opacity 0.2s ease;
+    }
+
+    .svg-node {
+      transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease;
+    }
+
+    /* Prevent KaTeX display math from causing horizontal overflow on narrow mobile screens */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVIGATION BAR & DYNAMIC READING PROGRESS BAR              -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <!-- Reading Progress Bar -->
+    <div class="w-full h-1 bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-indigo-600 transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Metadata Badges -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+          <span class="inline-flex items-center gap-1.5 font-bold text-slate-900">
+            <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+            AST 102: Elements of Probability
+          </span>
+          <span class="text-slate-300">→</span>
+          <span class="text-slate-600">Module 1</span>
+          <span class="text-slate-300">→</span>
+          <span class="text-indigo-600 font-semibold">Lesson 1 of 14</span>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            ~35 min study
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            Exam Weight: 1st Incourse + Year Final
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Section Quick Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="nav-link shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 transition-colors">1. Concepts</a>
+        <a href="#lab" class="nav-link shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 transition-colors">2. Interactive Lab</a>
+        <a href="#infinite" class="nav-link shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 transition-colors">3. Infinite Spaces & Proofs</a>
+        <a href="#exams" class="nav-link shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 transition-colors">4. ISRT Exam Vault</a>
+        <a href="#quiz" class="nav-link shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-indigo-700 hover:bg-indigo-50 transition-colors">5. Mastery Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO BANNER                                                           -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white py-12 sm:py-16 border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 text-xs font-semibold tracking-wide uppercase mb-4">
+          ISRT • University of Dhaka • Module 1: Foundations
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
+          Lesson 1: Experiments, Sample Spaces &amp; Events
+        </h1>
+        <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+          Before we can calculate a single probability, we must formalize uncertainty. In this lesson—grounded in <strong>AST 102 Lecture 02–03 Notes</strong> and <strong>Sheldon Ross (Ch. 2.2)</strong>—you will master sample spaces, events, tree diagrams, countably infinite outcomes, and real ISRT exam problems.
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+          <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-900/30 transition-all">
+            Launch Interactive Lab
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </a>
+          <a href="#exams" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-sm transition-all">
+            Jump to ISRT Exam Vault
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT CONTAINER                                                -->
+  <!-- ===================================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: CORE CONCEPTS & DEFINITIONS                              -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Section 01</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Core Concepts &amp; Definitions</h2>
+        </div>
+        <p class="text-sm text-slate-500">Sources: AST 102 Lecture 02–03 Notes &amp; Sheldon Ross, Ch. 2.2</p>
+      </div>
+
+      <!-- Concept Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Card 1: Experiment vs. Random Experiment -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">01 • Foundation</span>
+            <span class="text-xs text-slate-400 font-medium">Lecture 02</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-3">Experiment vs. Random Experiment</h3>
+          <div class="space-y-3 text-sm text-slate-600 leading-relaxed">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <p class="font-semibold text-slate-800 mb-1">Experiment</p>
+              <p>A process or procedure by which an <strong>observation (or measurement)</strong> is obtained. It may be deterministic (outcome known in advance under identical conditions, e.g., heating water to 100°C at 1 atm).</p>
+            </div>
+            <div class="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100">
+              <p class="font-semibold text-indigo-950 mb-1">Random Experiment</p>
+              <p>An experiment whose outcome <strong>cannot be predicted with certainty</strong> in advance, even when repeated under identical conditions—yet the <em>set of all possible outcomes</em> is known beforehand.</p>
+            </div>
+            <p class="text-xs text-slate-500 pt-1">
+              <strong>Examples:</strong> Tossing a coin, rolling a six-sided die, selecting a card from an urn containing cards numbered 1 to 100, or testing a blood sample for Dengue.
+            </p>
+          </div>
+        </article>
+
+        <!-- Card 2: Trial, Outcome & Equally Likely Outcomes -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">02 • Building Blocks</span>
+            <span class="text-xs text-slate-400 font-medium">Lecture 02</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-3">Trial, Outcome &amp; Equally Likely</h3>
+          <ul class="space-y-3 text-sm text-slate-600 leading-relaxed">
+            <li class="flex items-start gap-2.5">
+              <span class="mt-1 w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
+              <div>
+                <strong class="text-slate-900">Trial:</strong> A single unit or execution of a random experiment (e.g., rolling a die once).
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="mt-1 w-2 h-2 rounded-full bg-indigo-500 shrink-0"></span>
+              <div>
+                <strong class="text-slate-900">Outcome (Sample Point):</strong> The observed result of a single trial (e.g., getting a <code>1, 2, 3, 4, 5,</code> or <code>6</code> on a die).
+              </div>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="mt-1 w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+              <div>
+                <strong class="text-slate-900">Equally Likely Outcomes:</strong> Outcomes of a trial are equally likely if we have <em>no reason to expect any one outcome rather than another</em> (e.g., Head and Tail on a fair coin; all 6 faces of a balanced die).
+              </div>
+            </li>
+          </ul>
+          <div class="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900">
+            <strong>Shortcut when equally likely:</strong> If $S$ is finite and all outcomes are equally likely, then $P(E) = \dfrac{|E|}{|S|}$.
+          </div>
+        </article>
+
+        <!-- Card 3: Sample Space -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow md:col-span-2">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">03 • Core Structure</span>
+            <span class="text-xs text-slate-400 font-medium">Ross Ch. 2.2 &amp; Lecture 02</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Sample Space ($S$ or $\Omega$)</h3>
+          <p class="text-sm text-slate-600 leading-relaxed mb-4">
+            The collection (set) of <strong>all possible outcomes</strong> of a random experiment is called its <strong>sample space</strong>, usually denoted by $S$ or $\Omega$.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs sm:text-sm">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="font-semibold text-slate-800 mb-1">1 Fair Coin</div>
+              <div class="text-slate-600">$\Omega = \{H, T\}$, $|\Omega| = 2$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="font-semibold text-slate-800 mb-1">2 Coins Simultaneously</div>
+              <div class="text-slate-600">$S = \{HH, HT, TH, TT\}$, $|S| = 4$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="font-semibold text-slate-800 mb-1">3 Coins Simultaneously</div>
+              <div class="text-slate-600">$S = \{HHH, HHT, \dots, TTT\}$, $|S| = 8$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="font-semibold text-slate-800 mb-1">1 Six-Sided Die</div>
+              <div class="text-slate-600">$\Omega = \{1, 2, 3, 4, 5, 6\}$, $|\Omega| = 6$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="font-semibold text-slate-800 mb-1">Pair of Dice</div>
+              <div class="text-slate-600">$S = \{(i,j) : 1 \le i, j \le 6\}$, $|S| = 36$</div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="font-semibold text-slate-800 mb-1">Newborn Sex / Transistor Life</div>
+              <div class="text-slate-600">$S = \{g, b\}$ &nbsp;|&nbsp; $S = \{x : 0 \le x < \infty\}$</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4: Events & Special Types (with Inline SVG Venn Diagram) -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">04 • Subsets of S</span>
+            <span class="text-xs text-slate-400 font-medium">Lecture 02</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-2">Events &amp; Special Event Types</h3>
+          <p class="text-sm text-slate-600 mb-4">
+            An <strong>event</strong> $E$ is any subset of the sample space ($E \subseteq S$), denoted by capital letters ($A, B, E$). Event $E$ occurs if the experiment's outcome belongs to $E$.
+          </p>
+
+          <div class="space-y-2.5 text-sm text-slate-600">
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+              <strong class="text-slate-900">Impossible (Null) Event ($\emptyset$):</strong> Contains no outcomes; can never occur. $P(\emptyset) = 0$.
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+              <strong class="text-slate-900">Sure (Certain) Event ($S$):</strong> The entire sample space; always occurs. $P(S) = 1$.
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+              <strong class="text-slate-900">Complementary Event ($A^c$ or $A'$):</strong> All outcomes in $S$ <em>not</em> in $A$. One occurs if and only if the other does not.
+            </div>
+            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+              <strong class="text-slate-900">Exhaustive Events:</strong> Events whose union covers the entire sample space ($A_1 \cup A_2 \cup \dots \cup A_k = S$).
+            </div>
+          </div>
+
+          <!-- Mutually Exclusive Box + Inline SVG Venn Diagram -->
+          <div class="mt-4 p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 flex flex-col sm:flex-row items-center gap-4">
+            <div class="flex-1 text-sm">
+              <p class="font-bold text-indigo-950 mb-1">Mutually Exclusive Events</p>
+              <p class="text-slate-700 text-xs leading-relaxed">
+                Events $A$ and $B$ are mutually exclusive (disjoint) if the occurrence of one precludes the other: $A \cap B = \emptyset$. Example on a die: $A = \{1,3,5\}$ (odd) and $B = \{2,4,6\}$ (even).
+              </p>
+            </div>
+            <svg viewBox="0 0 180 100" class="w-40 h-auto shrink-0 rounded-lg bg-white border border-indigo-200 p-1" aria-label="Venn diagram of mutually exclusive events A and B">
+              <rect x="4" y="4" width="172" height="92" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+              <text x="158" y="20" font-size="11" font-weight="700" fill="#475569">S</text>
+              <circle cx="56" cy="54" r="28" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+              <text x="56" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#312e81">A</text>
+              <circle cx="124" cy="54" r="28" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+              <text x="124" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">B</text>
+              <text x="90" y="90" text-anchor="middle" font-size="9" font-weight="600" fill="#64748b">A ∩ B = ∅</text>
+            </svg>
+          </div>
+        </article>
+
+        <!-- Card 5: Tree Diagrams -->
+        <article class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold">05 • Visual Tool</span>
+              <span class="text-xs text-slate-400 font-medium">Lecture 02 &amp; 03</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Tree Diagrams for Multi-Stage Experiments</h3>
+            <p class="text-sm text-slate-600 leading-relaxed mb-4">
+              A <strong>tree diagram</strong> organizes multi-stage experiments into sequential branches so you can systematically list every outcome in $S$ without missing or double-counting any path.
+            </p>
+
+            <!-- Class Note Worked Example Preview -->
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 mb-4">
+              <p class="font-semibold text-slate-900 mb-1">Class Note Example (Lecture 02):</p>
+              <p class="mb-2">Flip a coin. If <strong>Head</strong> occurs, flip the coin a second time. If <strong>Tail</strong> occurs, toss a die.</p>
+              <div class="font-mono text-xs bg-white p-2.5 rounded-lg border border-slate-200 text-indigo-900 overflow-x-auto">
+                S = { HH, HT, T1, T2, T3, T4, T5, T6 } &nbsp;(|S| = 8)
+              </div>
+            </div>
+          </div>
+
+          <!-- Compact SVG illustration of the asymmetrical coin/die tree -->
+          <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-3">
+            <svg viewBox="0 0 360 145" class="w-full h-auto" aria-label="Tree diagram for coin flip followed by coin or die">
+              <!-- Start Node -->
+              <circle cx="24" cy="72" r="5" fill="#4f46e5"/>
+              <!-- Stage 1 branches -->
+              <line x1="29" y1="72" x2="96" y2="30" stroke="#64748b" stroke-width="1.8"/>
+              <line x1="29" y1="72" x2="96" y2="96" stroke="#64748b" stroke-width="1.8"/>
+              <!-- Stage 1 nodes -->
+              <circle cx="104" cy="30" r="12" fill="#e0e7ff" stroke="#4f46e5" stroke-width="1.8"/>
+              <text x="104" y="34" text-anchor="middle" font-size="11" font-weight="700" fill="#312e81">H</text>
+              <circle cx="104" cy="96" r="12" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
+              <text x="104" y="100" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">T</text>
+
+              <!-- Stage 2 from H -->
+              <line x1="116" y1="30" x2="205" y2="18" stroke="#4f46e5" stroke-width="1.5"/>
+              <line x1="116" y1="30" x2="205" y2="42" stroke="#4f46e5" stroke-width="1.5"/>
+              <text x="215" y="22" font-size="11" font-weight="600" fill="#1e293b">H  →  HH</text>
+              <text x="215" y="46" font-size="11" font-weight="600" fill="#1e293b">T  →  HT</text>
+
+              <!-- Stage 2 from T (6 branches) -->
+              <line x1="116" y1="96" x2="205" y2="62" stroke="#d97706" stroke-width="1.3"/>
+              <line x1="116" y1="96" x2="205" y2="76" stroke="#d97706" stroke-width="1.3"/>
+              <line x1="116" y1="96" x2="205" y2="90" stroke="#d97706" stroke-width="1.3"/>
+              <line x1="116" y1="96" x2="205" y2="104" stroke="#d97706" stroke-width="1.3"/>
+              <line x1="116" y1="96" x2="205" y2="118" stroke="#d97706" stroke-width="1.3"/>
+              <line x1="116" y1="96" x2="205" y2="132" stroke="#d97706" stroke-width="1.3"/>
+              <text x="215" y="65" font-size="10" font-weight="600" fill="#334155">1 → T1</text>
+              <text x="215" y="79" font-size="10" font-weight="600" fill="#334155">2 → T2</text>
+              <text x="215" y="93" font-size="10" font-weight="600" fill="#334155">3 → T3</text>
+              <text x="215" y="107" font-size="10" font-weight="600" fill="#334155">4 → T4</text>
+              <text x="215" y="121" font-size="10" font-weight="600" fill="#334155">5 → T5</text>
+              <text x="215" y="135" font-size="10" font-weight="600" fill="#334155">6 → T6</text>
+            </svg>
+          </div>
+        </article>
+      </div>
+
+      <!-- ISRT EXAM SPOTLIGHT: SAMPLE SPACE VS. SET -->
+      <div class="mt-8 rounded-2xl border-2 border-amber-300 bg-amber-50/70 p-6 shadow-sm">
+        <div class="flex items-center gap-2.5 mb-4">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-amber-500 text-white font-bold text-sm shadow-sm">!</span>
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-800">ISRT Exam Spotlight • Frequently Asked (1st Incourse 2020)</span>
+            <h3 class="text-lg sm:text-xl font-bold text-slate-900">Sample Space vs. Arbitrary Set</h3>
+          </div>
+        </div>
+        <p class="text-sm text-slate-700 mb-4 leading-relaxed">
+          <strong>Key Principle:</strong> <em>Every sample space is a set, but not every set is a sample space.</em> A set only becomes a sample space when it is tied to a specific random experiment and satisfies two strict rules: its elements must be <strong>mutually exclusive</strong> and <strong>collectively exhaustive</strong>.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="bg-white rounded-xl p-4 border border-amber-200">
+            <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+              General Mathematical Set
+            </h4>
+            <ul class="space-y-1.5 text-slate-600 list-disc list-inside">
+              <li>Any well-defined collection of distinct objects (numbers, letters, symbols).</li>
+              <li>Requires no connection to a random experiment or chance process.</li>
+              <li>Example: $\{2, 4, \text{apple}, \pi\}$ is a valid set, not tied to any trial.</li>
+              <li>Need not exhaust all possibilities of an experiment (e.g., $\{1, 2, 3\}$ for a die is just an <em>event</em>, not the sample space).</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-indigo-200">
+            <h4 class="font-bold text-indigo-950 mb-2 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+              Sample Space ($S$ or $\Omega$)
+            </h4>
+            <ul class="space-y-1.5 text-slate-700 list-disc list-inside">
+              <li>Specifically the set of <strong>all possible outcomes</strong> of a defined random experiment.</li>
+              <li><strong>Mutually exclusive:</strong> No two elementary outcomes can occur simultaneously on a single trial.</li>
+              <li><strong>Collectively exhaustive:</strong> At least one element of $S$ <em>must</em> occur on every trial ($P(S) = 1$).</li>
+              <li>Example: For rolling a die, $S = \{1, 2, 3, 4, 5, 6\}$ is the unique sample space.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: INTERACTIVE LAB (4-MODE WORKBENCH)                       -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Section 02 • Hands-On Workbench</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Interactive Lab: Sample Space &amp; Tree Builder</h2>
+        </div>
+        <p class="text-sm text-slate-500">Explore events, complements, and infinite trials dynamically</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Lab Mode Tabs -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-slate-200 bg-slate-50 p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="coins" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-sm">
+            1. Coin Toss Tree
+          </button>
+          <button type="button" role="tab" data-tab="dice" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            2. Two-Dice 6×6 Grid
+          </button>
+          <button type="button" role="tab" data-tab="dengue" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            3. Dengue 3-Sample Tree
+          </button>
+          <button type="button" role="tab" data-tab="infinite" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            4. Roll Until 3 Simulator
+          </button>
+        </div>
+
+        <!-- TAB 1: COIN TOSS TREE BUILDER -->
+        <div id="tab-coins" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Coin Toss Sample Space &amp; Tree Diagram</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Choose 1, 2, or 3 fair coins and click an event filter to highlight matching paths.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500 uppercase">Coins:</span>
+              <div class="inline-flex rounded-xl bg-slate-100 p-1">
+                <button type="button" data-coins="1" class="coin-count-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">1 Coin</button>
+                <button type="button" data-coins="2" class="coin-count-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900">2 Coins</button>
+                <button type="button" data-coins="3" class="coin-count-btn px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-indigo-700 shadow-sm">3 Coins</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Event Filter Chips -->
+          <div class="flex flex-wrap items-center gap-2" id="coinFilterContainer">
+            <button type="button" data-filter="all" class="coin-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-indigo-600 text-white border-indigo-600">All Outcomes (S)</button>
+            <button type="button" data-filter="atLeastOneH" class="coin-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-indigo-300">At least 1 Head</button>
+            <button type="button" data-filter="exactOneH" class="coin-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-indigo-300">Exactly 1 Head</button>
+            <button type="button" data-filter="moreHThanT" class="coin-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-indigo-300">More Heads than Tails</button>
+            <button type="button" data-filter="noH" class="coin-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:border-indigo-300">No Heads (Complement of ≥1 H)</button>
+          </div>
+
+          <!-- Live Stats Strip -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+              <div class="text-xs font-medium text-slate-500">Event Size |E|</div>
+              <div id="coinStatE" class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-0.5">8</div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+              <div class="text-xs font-medium text-slate-500">Sample Space |S|</div>
+              <div id="coinStatS" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5">8</div>
+            </div>
+            <div class="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 text-center">
+              <div class="text-xs font-medium text-indigo-700">Probability P(E) = |E|/|S|</div>
+              <div id="coinStatP" class="text-xl sm:text-2xl font-extrabold text-indigo-700 mt-0.5">8/8 = 1.000</div>
+            </div>
+          </div>
+
+          <!-- SVG Tree Canvas + Sample Space Badges -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+            <div class="lg:col-span-2 rounded-xl border border-slate-200 bg-slate-50/50 p-3 overflow-x-auto">
+              <div id="coinTreeSvgWrap" class="min-w-[320px]"></div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Sample Space S</h4>
+              <div id="coinSampleBadges" class="flex flex-wrap gap-2"></div>
+              <p id="coinFilterNote" class="text-xs text-slate-500 mt-4 leading-relaxed border-t border-slate-200 pt-3">
+                Showing all outcomes in the sample space. Notice how every path from Start to a leaf produces a unique outcome.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: TWO-DICE 6x6 SAMPLE SPACE GRID -->
+        <div id="tab-dice" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Two-Dice 6×6 Sample Space Matrix ($|S| = 36$)</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Use preset filters or <strong>click any cell</strong> to build your own custom event $E \subseteq S$.</p>
+            </div>
+            <button type="button" id="diceClearBtn" class="self-start sm:self-auto px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors">
+              Clear Selection
+            </button>
+          </div>
+
+          <!-- Dice Filter Buttons -->
+          <div class="flex flex-wrap gap-2">
+            <button type="button" data-dice-filter="sum6" class="dice-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-indigo-600 text-white border-indigo-600 transition-all">Sum = 6 (Class Note)</button>
+            <button type="button" data-dice-filter="sum7" class="dice-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 transition-all">Sum = 7 (Ross Ex.)</button>
+            <button type="button" data-dice-filter="oddSum" class="dice-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 transition-all">Sum is Odd</button>
+            <button type="button" data-dice-filter="atLeastOne1" class="dice-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 transition-all">At least one 1</button>
+            <button type="button" data-dice-filter="doubles" class="dice-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 transition-all">Doubles (i = j)</button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <!-- 6x6 Grid -->
+            <div class="lg:col-span-2 overflow-x-auto">
+              <div class="inline-block min-w-full">
+                <div class="grid grid-cols-7 gap-1.5 text-center items-center" id="diceGridContainer">
+                  <!-- Generated by JavaScript -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Metrics Panel -->
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+                  <div class="text-xs font-medium text-emerald-700">|E| Selected</div>
+                  <div id="diceStatE" class="text-2xl font-extrabold text-emerald-700 mt-0.5">5</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                  <div class="text-xs font-medium text-slate-500">|Eᶜ| Complement</div>
+                  <div id="diceStatEc" class="text-2xl font-extrabold text-slate-700 mt-0.5">31</div>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-center">
+                <div class="text-xs font-semibold text-indigo-700">Probability P(E) = |E| / 36</div>
+                <div id="diceStatP" class="text-2xl font-extrabold text-indigo-800 mt-1">5/36 ≈ 0.1389</div>
+                <div id="diceStatPc" class="text-xs text-indigo-600 mt-1">P(Eᶜ) = 1 − P(E) = 31/36 ≈ 0.8611</div>
+              </div>
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Outcomes in E</div>
+                <div id="diceOutcomeList" class="font-mono text-xs text-slate-700 leading-relaxed max-h-36 overflow-y-auto">
+                  {(1,5), (2,4), (3,3), (4,2), (5,1)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: 3-SAMPLE DENGUE TEST (1ST INCOURSE 2022) -->
+        <div id="tab-dengue" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold mb-1">1st Incourse 2022 • Q5</span>
+              <h3 class="text-lg font-bold text-slate-900">3-Sample Dengue Test Tree Diagram</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Each of 3 samples is classified as <strong>Positive (P)</strong> or <strong>Negative (N)</strong>. Assuming equally likely outcomes ($|S| = 2^3 = 8$).</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button type="button" data-dengue-filter="all" class="dengue-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-indigo-600 text-white border-indigo-600 transition-all">All Outcomes (S)</button>
+            <button type="button" data-dengue-filter="nonePos" class="dengue-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 transition-all">None Positive (NNN)</button>
+            <button type="button" data-dengue-filter="atLeastOnePos" class="dengue-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 transition-all">At Least One Positive (Complement)</button>
+            <button type="button" data-dengue-filter="exactOnePos" class="dengue-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white text-slate-700 border-slate-200 hover:border-indigo-300 transition-all">Exactly One Positive</button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+            <div class="lg:col-span-2 rounded-xl border border-slate-200 bg-slate-50/50 p-3 overflow-x-auto">
+              <div id="dengueTreeSvgWrap" class="min-w-[320px]"></div>
+            </div>
+            <div class="space-y-4">
+              <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200">
+                <div class="text-xs font-semibold text-indigo-700">Selected Event Probability</div>
+                <div id="dengueStatP" class="text-2xl font-extrabold text-indigo-900 mt-1">8/8 = 1.000</div>
+                <div id="dengueStatDesc" class="text-xs text-slate-600 mt-2 leading-relaxed">
+                  All 8 equally likely outcomes of testing 3 samples.
+                </div>
+              </div>
+              <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-1.5">
+                <div class="font-bold text-emerald-900">Complement Rule Insight</div>
+                <p>Let $A$ = "None of the results is positive" $= \{NNN\}$.</p>
+                <p>Then $A^c$ = "At least one result is positive" has $8 - 1 = 7$ outcomes.</p>
+                <p class="font-mono font-semibold pt-1">P(Aᶜ) = 1 − P(A) = 1 − 1/8 = 7/8 = 0.875</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: COUNTABLY INFINITE SIMULATOR ("ROLL UNTIL A 3 APPEARS") -->
+        <div id="tab-infinite" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[11px] font-bold mb-1">1st Incourse 2020 • Q5</span>
+              <h3 class="text-lg font-bold text-slate-900">Countably Infinite Simulator: Roll a Die Until a 3 Appears</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Let <code>3</code> = rolling a three ($p=1/6$) and <code>N</code> = rolling 1, 2, 4, 5, or 6 ($q=5/6$). Sample space: $S = \{3, N3, NN3, NNN3, \dots\}$.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" id="simRun1Btn" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors">
+                Run 1 Trial
+              </button>
+              <button type="button" id="simRun25Btn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition-colors">
+                Run 25 Trials
+              </button>
+              <button type="button" id="simResetBtn" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-colors">
+                Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Latest Trial Visualization -->
+          <div class="p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="space-y-1">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Latest Trial Outcome Sequence</div>
+              <div id="simLatestSeq" class="flex flex-wrap items-center gap-1.5 font-mono text-sm">
+                <span class="text-slate-400">Click "Run 1 Trial" to roll the die until a 3 appears...</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 shrink-0 border-t sm:border-t-0 sm:border-l border-slate-700 pt-2 sm:pt-0 sm:pl-4">
+              <div>
+                <div class="text-[11px] text-slate-400">Total Trials</div>
+                <div id="simTotalTrials" class="text-xl font-bold text-white">0</div>
+              </div>
+              <div>
+                <div class="text-[11px] text-slate-400">Avg Rolls (Theory: 6.0)</div>
+                <div id="simAvgRolls" class="text-xl font-bold text-emerald-400">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Observed vs Theoretical Bar Chart -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+            <div class="lg:col-span-2 rounded-xl border border-slate-200 p-4 bg-white">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-600">Waiting Time Distribution: Empirical vs. Theoretical $P(E_k) = (5/6)^{k-1}(1/6)$</h4>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="inline-flex items-center gap-1.5 text-slate-600"><span class="w-3 h-3 rounded bg-indigo-500"></span>Observed</span>
+                  <span class="inline-flex items-center gap-1.5 text-slate-600"><span class="w-3 h-3 rounded bg-emerald-400/70 border border-emerald-600"></span>Theory</span>
+                </div>
+              </div>
+              <div id="simChartBars" class="space-y-2.5">
+                <!-- Rendered by JavaScript -->
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Recent Trial Log</h4>
+              <div id="simLogList" class="space-y-1.5 text-xs font-mono text-slate-700 max-h-64 overflow-y-auto">
+                <div class="text-slate-400 italic font-sans">No trials recorded yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: CLASSIFYING SAMPLE SPACES & PROOFS DRAWER                -->
+    <!-- =================================================================== -->
+    <section id="infinite" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Section 03</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Classifying Sample Spaces &amp; Key Proofs</h2>
+        </div>
+        <p class="text-sm text-slate-500">Essential for discrete vs. continuous probability theory</p>
+      </div>
+
+      <!-- 3 Classification Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-sm mb-3">1</div>
+          <h3 class="text-base font-bold text-slate-900 mb-1.5">Finite Sample Space</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+            Contains a fixed, countable number of outcomes $N$. Easy to list or count with combinatorics.
+          </p>
+          <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-700">
+            <strong>Examples:</strong> Rolling 2 dice ($|S|=36$), 7-horse race finish orders ($|S|=7! = 5040$).
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 font-bold text-sm mb-3">2</div>
+          <h3 class="text-base font-bold text-slate-900 mb-1.5">Countably Infinite</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+            Contains infinitely many outcomes that can be put into a <strong>1-to-1 correspondence with the natural numbers</strong> $\{1, 2, 3, \dots\}$.
+          </p>
+          <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-700">
+            <strong>Examples:</strong> Rolling a die until a 3 appears; tossing a coin until the first Head appears.
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-amber-50 text-amber-700 font-bold text-sm mb-3">3</div>
+          <h3 class="text-base font-bold text-slate-900 mb-1.5">Uncountable (Continuous)</h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+            Contains an entire interval of real numbers; outcomes cannot be listed in a sequence.
+          </p>
+          <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-700">
+            <strong>Examples:</strong> Lifetime (in hours) of a transistor $S = \{x : 0 \le x < \infty\} = [0, \infty)$.
+          </div>
+        </div>
+      </div>
+
+      <!-- Expandable Proofs Drawer -->
+      <div class="space-y-4">
+        <h3 class="text-lg font-bold text-slate-900">Step-by-Step Exam Derivations</h3>
+
+        <!-- Proof 1 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[11px] font-bold mb-1">Proof 1 • Infinite Geometric Series</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Show that $\sum_{k=1}^{\infty} P(E_k) = 1$ when rolling a fair die until a 3 appears</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Let $E_k$ be the elementary event that the first <code>3</code> appears on exactly the $k$-th roll ($k = 1, 2, 3, \dots$). This requires $(k-1)$ consecutive non-3s (each with probability $q = \frac{5}{6}$) followed by a <code>3</code> on the $k$-th roll (probability $p = \frac{1}{6}$).</p>
+            <p>By independence of successive die rolls:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$P(E_k) = \left(\frac{5}{6}\right)^{k-1}\left(\frac{1}{6}\right), \quad k = 1, 2, 3, \dots$$
+            </div>
+            <p>Summing over all mutually exclusive outcomes in the countably infinite sample space $S$:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$\sum_{k=1}^{\infty} P(E_k) = \sum_{k=1}^{\infty} \frac{1}{6}\left(\frac{5}{6}\right)^{k-1}$$
+            </div>
+            <p>This is an infinite geometric series with first term $a = \frac{1}{6}$ and common ratio $r = \frac{5}{6}$ (where $|r| < 1$). Using $\sum_{k=1}^{\infty} a r^{k-1} = \frac{a}{1-r}$:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950">
+              $$\sum_{k=1}^{\infty} P(E_k) = \frac{1/6}{1 - 5/6} = \frac{1/6}{1/6} = 1 \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-amber-50 text-amber-800 text-[11px] font-bold mb-1">Proof 2 • 1st Incourse 2025 (Q5)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Prove that $P(\text{first Head appears on an odd-numbered toss}) = \frac{2}{3}$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>When a fair coin is tossed until the first Head ($H$) appears, the countably infinite sample space is:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$S = \{H,\; TH,\; TTH,\; TTTH,\; \dots\}$$
+            </div>
+            <p>Let $E_n$ denote the outcome that the first Head occurs on toss $n$. Since the coin is fair ($p = 1/2$):</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$P(E_n) = \left(\frac{1}{2}\right)^{n-1}\left(\frac{1}{2}\right) = \left(\frac{1}{2}\right)^n, \quad n = 1, 2, 3, \dots$$
+            </div>
+            <p>Let $A$ be the event that the first Head appears on an <strong>odd-numbered toss</strong>: $A = \{E_1, E_3, E_5, E_7, \dots\}$. Because these outcomes are mutually exclusive, by Axiom 3 (countable additivity):</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$P(A) = P(E_1) + P(E_3) + P(E_5) + \dots = \frac{1}{2} + \left(\frac{1}{2}\right)^3 + \left(\frac{1}{2}\right)^5 + \dots = \frac{1}{2} + \frac{1}{8} + \frac{1}{32} + \dots$$
+            </div>
+            <p>This is a geometric series with $a = \frac{1}{2}$ and common ratio $r = \frac{1}{4}$:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950">
+              $$P(A) = \frac{1/2}{1 - 1/4} = \frac{1/2}{3/4} = \frac{2}{3} \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: PAST ISRT EXAM VAULT                                     -->
+    <!-- =================================================================== -->
+    <section id="exams" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Past ISRT Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-slate-500">Click any card to reveal the exam-ready model solution</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5">
+
+        <!-- Exam Card 1: 1st Incourse 2025 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold">1st Incourse 2025 • Q1(a) &amp; Q5</span>
+              <span class="text-xs font-medium text-slate-400">ISRT, University of Dhaka</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q1(a):</strong> Distinguish between an <em>experiment</em> and a <em>random experiment</em> with examples.</p>
+              <p><strong>Q5:</strong> A fair coin is tossed repeatedly until the first head appears. Write down the sample space, assign probabilities to each outcome, and find the probability that the first head appears on an odd-numbered toss.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <div>
+              <p class="font-bold text-slate-900">Solution to Q1(a):</p>
+              <p>An <strong>experiment</strong> is any process that yields an observation or measurement. In a deterministic experiment, the outcome is uniquely determined by the conditions (e.g., measuring the boiling point of pure water at sea level). A <strong>random experiment</strong> is an experiment whose outcome cannot be predicted with certainty beforehand, even under identical conditions, though all possible outcomes are known (e.g., tossing a coin or rolling a die).</p>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <p class="font-bold text-slate-900">Solution to Q5:</p>
+              <ul class="list-disc list-inside space-y-1 mt-1">
+                <li><strong>Sample Space:</strong> $S = \{H, TH, TTH, TTTH, \dots\}$ (countably infinite).</li>
+                <li><strong>Probability Assignment:</strong> Let $E_k$ be getting $(k-1)$ tails followed by a head on toss $k$. Then $P(E_k) = \left(\frac{1}{2}\right)^k$ for $k = 1, 2, 3, \dots$</li>
+                <li><strong>Odd Toss Probability:</strong> $P(\text{odd}) = \sum_{m=0}^{\infty} \left(\frac{1}{2}\right)^{2m+1} = \frac{1/2}{1 - 1/4} = \mathbf{\frac{2}{3}}$.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam Card 2: 1st Incourse 2022 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold">1st Incourse 2022 • Q1 [2 pts] &amp; Q5 [3 pts]</span>
+              <span class="text-xs font-medium text-slate-400">ISRT, University of Dhaka</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q1:</strong> Consider an experiment of rolling one die. Define <em>trial</em>, <em>outcome</em>, <em>sample space</em>, and <em>event</em> for this experiment.</p>
+              <p><strong>Q5:</strong> A medical technologist conducted tests on three samples for possible Dengue infection. S/he categorizes each test result as being positive or negative. Write down the sample space. What is the probability that none of the results is positive? What is the probability that at least one of the results is positive?</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <div>
+              <p class="font-bold text-slate-900">Solution to Q1 (Rolling One Die):</p>
+              <ul class="list-disc list-inside space-y-1 mt-1">
+                <li><strong>Trial:</strong> Rolling the die once.</li>
+                <li><strong>Outcome:</strong> The face number observed on top (e.g., 4).</li>
+                <li><strong>Sample Space:</strong> $S = \{1, 2, 3, 4, 5, 6\}$.</li>
+                <li><strong>Event:</strong> Any subset of $S$, e.g., $E = \{2, 4, 6\}$ (getting an even number).</li>
+              </ul>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <p class="font-bold text-slate-900">Solution to Q5 (Dengue Tests):</p>
+              <p>Let $P$ = Positive and $N$ = Negative. The sample space has $2^3 = 8$ equally likely outcomes:</p>
+              <p class="font-mono text-xs bg-white p-2.5 rounded-lg border border-slate-200 my-1.5">S = { PPP, PPN, PNP, NPP, PNN, NPN, NNP, NNN }</p>
+              <ul class="list-disc list-inside space-y-1">
+                <li>Let $A$ = none of the results is positive $= \{NNN\}$. Then $P(A) = \mathbf{\frac{1}{8}} = 0.125$.</li>
+                <li>Let $B$ = at least one result is positive $= A^c$. Then $P(B) = 1 - P(A) = 1 - \frac{1}{8} = \mathbf{\frac{7}{8}} = 0.875$.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam Card 3: 1st Incourse 2020 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold">1st Incourse 2020 • Q5 [3 pts]</span>
+              <span class="text-xs font-medium text-slate-400">ISRT, University of Dhaka</span>
+            </div>
+            <div class="text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q5:</strong> What do you mean by a sample space? Distinguish between a sample space and a set. An experiment consists of rolling a die until a 3 appears. Construct a sample space for this experiment.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>Sample Space:</strong> The set of all possible outcomes of a random experiment, denoted by $S$ or $\Omega$.</p>
+            <p><strong>Sample Space vs. Set:</strong> A set is any well-defined collection of objects with no requirement of randomness. A sample space is a specialized set whose elements represent <em>all mutually exclusive and collectively exhaustive outcomes</em> of a specific random experiment. Hence, every sample space is a set, but not every set is a sample space.</p>
+            <p><strong>Constructing $S$ (Rolling a die until a 3 appears):</strong> Let <code>3</code> denote rolling a three, and <code>N</code> denote rolling any other face ($\{1,2,4,5,6\}$). Every terminating sequence has zero or more <code>N</code>s followed by a single <code>3</code>:</p>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 text-center">
+              $$S = \{(3),\; (N, 3),\; (N, N, 3),\; (N, N, N, 3),\; \dots\}$$
+            </div>
+            <p class="text-xs text-slate-500">Note: This sample space is <strong>countably infinite</strong>.</p>
+          </div>
+        </div>
+
+        <!-- Exam Card 4: Year Final 2022 & 2023 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2022 Q1(a, d) &amp; Year Final 2023 Q2(a)</span>
+              <span class="text-xs font-medium text-slate-400">ISRT, University of Dhaka</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Final 2022 Q1(a) [3 pts]:</strong> Define random experiment, sample space, and event. Give an example to explain the concept of mutually exclusive events using a Venn diagram.</p>
+              <p><strong>Final 2022 Q1(d) [2 pts]:</strong> A coin is tossed three times. Calculate the probability of obtaining more heads than tails.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <div>
+              <p class="font-bold text-slate-900">Solution to Q1(a):</p>
+              <p>State standard definitions of random experiment, sample space $S$, and event $E \subseteq S$. For mutually exclusive events, let a fair die be rolled ($S=\{1,2,3,4,5,6\}$), with $A = \{1, 3, 5\}$ (odd) and $B = \{2, 4, 6\}$ (even). Since $A \cap B = \emptyset$, they cannot occur together—shown by two non-overlapping circles $A$ and $B$ inside rectangle $S$.</p>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <p class="font-bold text-slate-900">Solution to Q1(d):</p>
+              <p>For 3 tosses of a fair coin, $|S| = 2^3 = 8$:</p>
+              <p class="font-mono text-xs bg-white p-2 rounded-lg border border-slate-200 my-1">S = { HHH, HHT, HTH, THH, HTT, THT, TTH, TTT }</p>
+              <p>Let $E$ be the event of obtaining <em>more heads than tails</em> (i.e., 2 or 3 heads):</p>
+              <p class="font-mono text-xs bg-emerald-50 p-2 rounded-lg border border-emerald-200 text-emerald-900 my-1">E = { HHH, HHT, HTH, THH } &nbsp;⇒&nbsp; |E| = 4</p>
+              <p>Therefore, $P(E) = \frac{|E|}{|S|} = \frac{4}{8} = \mathbf{\frac{1}{2}} = 0.5$.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 5: QUICK MASTERY CHECK (5-QUESTION INTERACTIVE QUIZ)        -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Section 05 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Quick Mastery Check</h2>
+            <p class="text-sm text-slate-500 mt-1">Test your grasp of Lesson 1 before moving on to Lesson 2 (Set Operations &amp; Venn Diagrams).</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-emerald-400">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Questions Container -->
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4">
+          <!-- Populated dynamically by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-slate-200 bg-white mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-slate-500">
+      <div>
+        <strong class="text-slate-800">AST 102: Elements of Probability</strong> — Interactive Study Platform (ISRT, University of Dhaka)
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-semibold">Lesson 1 Complete</span>
+        <span class="text-slate-400">Next: Lesson 2 — Set Operations &amp; Venn Diagrams</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         1. READING PROGRESS BAR & ACTIVE NAV HIGHLIGHT
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const percent = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) progressBar.style.width = percent.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      /* -------------------------------------------------------------------
+         2. ACCORDIONS (PROOFS & PAST EXAM SOLUTIONS)
+      ------------------------------------------------------------------- */
+      document.querySelectorAll('.accordion-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.rounded-2xl');
+          const panel = card ? card.querySelector('.accordion-panel') : null;
+          const icon = btn.querySelector('.accordion-icon');
+          const labelSpan = btn.querySelector('span');
+          if (!panel) return;
+
+          const isOpen = !panel.classList.contains('hidden');
+          if (isOpen) {
+            panel.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            if (labelSpan && labelSpan.textContent === 'Hide Model Solution') {
+              labelSpan.textContent = 'Show Model Solution';
+            }
+          } else {
+            panel.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+            if (labelSpan && labelSpan.textContent === 'Show Model Solution') {
+              labelSpan.textContent = 'Hide Model Solution';
+            }
+            // Ensure any KaTeX inside newly opened panels is rendered
+            safeRenderMath(panel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         3. INTERACTIVE LAB: TAB SWITCHING
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm');
+            t.classList.add('text-slate-600', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-slate-600', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const activePanel = document.getElementById('tab-' + target);
+          if (activePanel) {
+            activePanel.classList.remove('hidden');
+            safeRenderMath(activePanel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. LAB TAB 1: COIN TOSS TREE BUILDER (1, 2, OR 3 COINS)
+      ------------------------------------------------------------------- */
+      let currentCoins = 3;
+      let currentCoinFilter = 'all';
+
+      function generateOutcomes(n, symA, symB) {
+        if (n === 1) return [symA, symB];
+        const sub = generateOutcomes(n - 1, symA, symB);
+        return [...sub.map(s => symA + s), ...sub.map(s => symB + s)];
+      }
+
+      function matchesCoinFilter(outcome, filter) {
+        const heads = (outcome.match(/H/g) || []).length;
+        const tails = outcome.length - heads;
+        switch (filter) {
+          case 'atLeastOneH': return heads >= 1;
+          case 'exactOneH': return heads === 1;
+          case 'moreHThanT': return heads > tails;
+          case 'noH': return heads === 0;
+          default: return true;
+        }
+      }
+
+      const coinFilterNotes = {
+        all: 'Showing all outcomes in the sample space S. Every path from Start to a leaf produces a unique outcome.',
+        atLeastOneH: 'Event E: At least one Head appears. Notice this contains every outcome except the all-Tails outcome.',
+        exactOneH: 'Event E: Exactly one Head appears across the tosses.',
+        moreHThanT: 'Event E: Strictly more Heads than Tails (for 3 coins, this is Year Final 2022 Q1d: 4/8 = 1/2).',
+        noH: 'Event E: Zero Heads (all Tails). This is the exact complement of "At least 1 Head".'
+      };
+
+      function buildBinaryTreeSVG(depth, symA, symB, matchFn, stageLabels) {
+        const width = 560;
+        const height = depth === 1 ? 150 : (depth === 2 ? 220 : 320);
+        const startX = 48;
+        const stepX = (width - 150) / depth;
+        const outcomes = generateOutcomes(depth, symA, symB);
+        const matchedSet = new Set(outcomes.filter(matchFn));
+
+        // Helper: check if any descendant leaf under prefix is matched
+        function prefixHasMatch(prefix) {
+          for (const out of matchedSet) {
+            if (out.startsWith(prefix)) return true;
+          }
+          return false;
+        }
+
+        let edgesSvg = '';
+        let nodesSvg = '';
+        let headersSvg = '';
+
+        // Stage column labels
+        headersSvg += `<text x="${startX}" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b">Start</text>`;
+        for (let d = 1; d <= depth; d++) {
+          const cx = startX + d * stepX;
+          headersSvg += `<text x="${cx}" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b">${stageLabels[d - 1]}</text>`;
+        }
+        headersSvg += `<text x="${width - 42}" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#4f46e5">Outcome</text>`;
+
+        // Recursive node layout
+        const topPad = 40;
+        const usableH = height - topPad - 20;
+
+        function layoutNode(prefix, level, yMin, yMax) {
+          const x = startX + level * stepX;
+          const y = (yMin + yMax) / 2;
+          const active = prefixHasMatch(prefix);
+
+          if (level < depth) {
+            const mid = (yMin + yMax) / 2;
+            const childA = layoutNode(prefix + symA, level + 1, yMin, mid);
+            const childB = layoutNode(prefix + symB, level + 1, mid, yMax);
+
+            const activeA = prefixHasMatch(prefix + symA);
+            const activeB = prefixHasMatch(prefix + symB);
+
+            edgesSvg += `<line class="svg-edge" x1="${x}" y1="${y}" x2="${childA.x}" y2="${childA.y}" stroke="${activeA ? '#10b981' : '#cbd5e1'}" stroke-width="${activeA ? 2.6 : 1.5}" />`;
+            edgesSvg += `<line class="svg-edge" x1="${x}" y1="${y}" x2="${childB.x}" y2="${childB.y}" stroke="${activeB ? '#10b981' : '#cbd5e1'}" stroke-width="${activeB ? 2.6 : 1.5}" />`;
+          } else {
+            // Leaf outcome pill
+            const isMatch = matchedSet.has(prefix);
+            const pillX = width - 74;
+            edgesSvg += `<line x1="${x + 13}" y1="${y}" x2="${pillX - 4}" y2="${y}" stroke="${isMatch ? '#10b981' : '#e2e8f0'}" stroke-dasharray="3,3" stroke-width="1.5"/>`;
+            nodesSvg += `
+              <rect x="${pillX}" y="${y - 11}" width="64" height="22" rx="6" fill="${isMatch ? '#d1fae5' : '#f1f5f9'}" stroke="${isMatch ? '#10b981' : '#cbd5e1'}" stroke-width="1.5"/>
+              <text x="${pillX + 32}" y="${y + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="${isMatch ? '#065f46' : '#94a3b8'}">${prefix}</text>
+            `;
+          }
+
+          if (level === 0) {
+            nodesSvg += `<circle cx="${x}" cy="${y}" r="8" fill="#4f46e5" stroke="#ffffff" stroke-width="2"/>`;
+          } else {
+            const label = prefix[prefix.length - 1];
+            const isFirstSym = label === symA;
+            const fill = active ? (isFirstSym ? '#4f46e5' : '#0f766e') : '#f8fafc';
+            const stroke = active ? (isFirstSym ? '#312e81' : '#115e59') : '#cbd5e1';
+            const txtColor = active ? '#ffffff' : '#94a3b8';
+            nodesSvg += `
+              <circle class="svg-node" cx="${x}" cy="${y}" r="12" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+              <text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="${txtColor}">${label}</text>
+            `;
+          }
+
+          return { x, y };
+        }
+
+        layoutNode('', 0, topPad, topPad + usableH);
+
+        return `<svg viewBox="0 0 ${width} ${height}" class="w-full h-auto" role="img" aria-label="Interactive probability tree diagram">${headersSvg}${edgesSvg}${nodesSvg}</svg>`;
+      }
+
+      function renderCoinLab() {
+        const outcomes = generateOutcomes(currentCoins, 'H', 'T');
+        const matched = outcomes.filter(o => matchesCoinFilter(o, currentCoinFilter));
+        const prob = matched.length / outcomes.length;
+
+        document.getElementById('coinStatE').textContent = matched.length;
+        document.getElementById('coinStatS').textContent = outcomes.length;
+        document.getElementById('coinStatP').textContent = `${matched.length}/${outcomes.length} = ${prob.toFixed(3)}`;
+        document.getElementById('coinFilterNote').textContent = coinFilterNotes[currentCoinFilter] || '';
+
+        // Render SVG tree
+        document.getElementById('coinTreeSvgWrap').innerHTML = buildBinaryTreeSVG(
+          currentCoins, 'H', 'T',
+          o => matchesCoinFilter(o, currentCoinFilter),
+          ['Toss 1', 'Toss 2', 'Toss 3']
+        );
+
+        // Render sample space badges
+        const badgeWrap = document.getElementById('coinSampleBadges');
+        badgeWrap.innerHTML = outcomes.map(o => {
+          const isMatch = matchesCoinFilter(o, currentCoinFilter);
+          return `<span class="px-2.5 py-1 rounded-lg font-mono text-xs font-bold border transition-all ${
+            isMatch
+              ? 'bg-emerald-100 text-emerald-800 border-emerald-300 shadow-xs'
+              : 'bg-white text-slate-400 border-slate-200'
+          }">${o}</span>`;
+        }).join('');
+      }
+
+      document.querySelectorAll('.coin-count-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentCoins = parseInt(btn.getAttribute('data-coins'), 10);
+          document.querySelectorAll('.coin-count-btn').forEach(b => {
+            b.classList.remove('bg-white', 'text-indigo-700', 'shadow-sm');
+            b.classList.add('text-slate-600');
+          });
+          btn.classList.add('bg-white', 'text-indigo-700', 'shadow-sm');
+          btn.classList.remove('text-slate-600');
+          renderCoinLab();
+        });
+      });
+
+      document.querySelectorAll('.coin-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentCoinFilter = btn.getAttribute('data-filter');
+          document.querySelectorAll('.coin-filter-btn').forEach(b => {
+            b.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+            b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+          });
+          btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+          btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+          renderCoinLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         5. LAB TAB 2: TWO-DICE 6x6 SAMPLE SPACE GRID
+      ------------------------------------------------------------------- */
+      const selectedDiceCells = new Set();
+
+      function initDiceGrid() {
+        const container = document.getElementById('diceGridContainer');
+        let html = `<div class="text-[11px] font-bold text-slate-400 p-1">D1\\D2</div>`;
+        for (let j = 1; j <= 6; j++) {
+          html += `<div class="text-xs font-bold text-indigo-700 bg-indigo-50 rounded-lg py-1.5">${j}</div>`;
+        }
+        for (let i = 1; i <= 6; i++) {
+          html += `<div class="text-xs font-bold text-indigo-700 bg-indigo-50 rounded-lg py-2">${i}</div>`;
+          for (let j = 1; j <= 6; j++) {
+            const key = `${i},${j}`;
+            html += `
+              <button type="button" data-cell="${key}"
+                class="dice-cell py-2 px-1 rounded-lg font-mono text-xs font-semibold border transition-all bg-white text-slate-600 border-slate-200 hover:border-indigo-400">
+                (${i},${j})
+              </button>
+            `;
+          }
+        }
+        container.innerHTML = html;
+
+        container.querySelectorAll('.dice-cell').forEach(cell => {
+          cell.addEventListener('click', () => {
+            const key = cell.getAttribute('data-cell');
+            if (selectedDiceCells.has(key)) {
+              selectedDiceCells.delete(key);
+            } else {
+              selectedDiceCells.add(key);
+            }
+            clearDiceFilterStyles();
+            updateDiceUI();
+          });
+        });
+
+        applyDiceFilter('sum6');
+      }
+
+      function clearDiceFilterStyles() {
+        document.querySelectorAll('.dice-filter-btn').forEach(b => {
+          b.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+          b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+        });
+      }
+
+      function applyDiceFilter(filter) {
+        selectedDiceCells.clear();
+        for (let i = 1; i <= 6; i++) {
+          for (let j = 1; j <= 6; j++) {
+            let match = false;
+            if (filter === 'sum6') match = (i + j === 6);
+            else if (filter === 'sum7') match = (i + j === 7);
+            else if (filter === 'oddSum') match = ((i + j) % 2 === 1);
+            else if (filter === 'atLeastOne1') match = (i === 1 || j === 1);
+            else if (filter === 'doubles') match = (i === j);
+            if (match) selectedDiceCells.add(`${i},${j}`);
+          }
+        }
+        updateDiceUI();
+      }
+
+      function updateDiceUI() {
+        document.querySelectorAll('.dice-cell').forEach(cell => {
+          const key = cell.getAttribute('data-cell');
+          if (selectedDiceCells.has(key)) {
+            cell.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+            cell.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'shadow-sm');
+          } else {
+            cell.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+            cell.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-600', 'shadow-sm');
+          }
+        });
+
+        const count = selectedDiceCells.size;
+        const comp = 36 - count;
+        document.getElementById('diceStatE').textContent = count;
+        document.getElementById('diceStatEc').textContent = comp;
+        document.getElementById('diceStatP').textContent = `${count}/36 ≈ ${(count / 36).toFixed(4)}`;
+        document.getElementById('diceStatPc').textContent = `P(Eᶜ) = 1 − P(E) = ${comp}/36 ≈ ${(comp / 36).toFixed(4)}`;
+
+        const sorted = Array.from(selectedDiceCells).sort().map(k => `(${k})`);
+        document.getElementById('diceOutcomeList').textContent = sorted.length ? `{ ${sorted.join(', ')} }` : '∅ (Empty / Null Event)';
+      }
+
+      document.querySelectorAll('.dice-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          clearDiceFilterStyles();
+          btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+          btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+          applyDiceFilter(btn.getAttribute('data-dice-filter'));
+        });
+      });
+
+      document.getElementById('diceClearBtn').addEventListener('click', () => {
+        selectedDiceCells.clear();
+        clearDiceFilterStyles();
+        updateDiceUI();
+      });
+
+      /* -------------------------------------------------------------------
+         6. LAB TAB 3: 3-SAMPLE DENGUE TEST TREE
+      ------------------------------------------------------------------- */
+      let currentDengueFilter = 'all';
+
+      function matchesDengueFilter(outcome, filter) {
+        const pos = (outcome.match(/P/g) || []).length;
+        if (filter === 'nonePos') return pos === 0;
+        if (filter === 'atLeastOnePos') return pos >= 1;
+        if (filter === 'exactOnePos') return pos === 1;
+        return true;
+      }
+
+      const dengueDesc = {
+        all: 'All 8 equally likely outcomes of testing 3 medical samples.',
+        nonePos: 'Only 1 outcome (NNN) has zero positive results: P(None Positive) = 1/8 = 0.125.',
+        atLeastOnePos: 'Complement of NNN: 7 out of 8 outcomes contain at least one Positive result (7/8 = 0.875).',
+        exactOnePos: 'Outcomes {PNN, NPN, NNP} have exactly one positive sample: P = 3/8 = 0.375.'
+      };
+
+      function renderDengueLab() {
+        const outcomes = generateOutcomes(3, 'P', 'N');
+        const matched = outcomes.filter(o => matchesDengueFilter(o, currentDengueFilter));
+        document.getElementById('dengueStatP').textContent = `${matched.length}/8 = ${(matched.length / 8).toFixed(3)}`;
+        document.getElementById('dengueStatDesc').textContent = dengueDesc[currentDengueFilter];
+
+        document.getElementById('dengueTreeSvgWrap').innerHTML = buildBinaryTreeSVG(
+          3, 'P', 'N',
+          o => matchesDengueFilter(o, currentDengueFilter),
+          ['Sample 1', 'Sample 2', 'Sample 3']
+        );
+      }
+
+      document.querySelectorAll('.dengue-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentDengueFilter = btn.getAttribute('data-dengue-filter');
+          document.querySelectorAll('.dengue-filter-btn').forEach(b => {
+            b.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+            b.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+          });
+          btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+          btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+          renderDengueLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. LAB TAB 4: COUNTABLY INFINITE SIMULATOR (ROLL UNTIL A 3)
+      ------------------------------------------------------------------- */
+      let simTotalTrials = 0;
+      let simTotalRolls = 0;
+      const simBuckets = new Array(11).fill(0); // indices 0..9 => k=1..10, index 10 => k>=11
+      const simHistory = [];
+
+      function theoreticalProb(bucketIndex) {
+        if (bucketIndex < 10) {
+          const k = bucketIndex + 1;
+          return Math.pow(5 / 6, k - 1) * (1 / 6);
+        }
+        // P(K >= 11) = (5/6)^10
+        return Math.pow(5 / 6, 10);
+      }
+
+      function runDieUntilThree(count) {
+        let lastSeq = [];
+        for (let t = 0; t < count; t++) {
+          const rolls = [];
+          while (true) {
+            const face = Math.floor(Math.random() * 6) + 1;
+            rolls.push(face);
+            if (face === 3) break;
+          }
+          const k = rolls.length;
+          simTotalTrials++;
+          simTotalRolls += k;
+          if (k <= 10) simBuckets[k - 1]++;
+          else simBuckets[10]++;
+
+          const label = k <= 6 ? rolls.map(r => r === 3 ? '3' : 'N').join('') : `N×${k - 1},3`;
+          simHistory.unshift({ trial: simTotalTrials, k, label, faces: rolls });
+          if (simHistory.length > 20) simHistory.pop();
+          lastSeq = rolls;
+        }
+        renderSimUI(lastSeq);
+      }
+
+      function renderSimUI(lastSeq) {
+        document.getElementById('simTotalTrials').textContent = simTotalTrials;
+        document.getElementById('simAvgRolls').textContent = simTotalTrials > 0
+          ? (simTotalRolls / simTotalTrials).toFixed(2)
+          : '—';
+
+        const seqEl = document.getElementById('simLatestSeq');
+        if (lastSeq && lastSeq.length) {
+          const maxShow = 14;
+          const displayRolls = lastSeq.length > maxShow ? lastSeq.slice(0, maxShow - 1) : lastSeq;
+          let chips = displayRolls.map(r => {
+            const is3 = r === 3;
+            return `<span class="px-2 py-0.5 rounded-md font-bold text-xs ${is3 ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-200'}">${is3 ? '3 (Stop)' : 'N(' + r + ')'}</span>`;
+          }).join('<span class="text-slate-500">→</span>');
+          if (lastSeq.length > maxShow) {
+            chips += `<span class="text-slate-400 text-xs">... →</span><span class="px-2 py-0.5 rounded-md font-bold text-xs bg-emerald-500 text-white">3 (k=${lastSeq.length})</span>`;
+          } else {
+            chips += `<span class="ml-2 text-xs text-emerald-300 font-semibold">k = ${lastSeq.length}</span>`;
+          }
+          seqEl.innerHTML = chips;
+        } else {
+          seqEl.innerHTML = '<span class="text-slate-400">Click "Run 1 Trial" to roll the die until a 3 appears...</span>';
+        }
+
+        // Render Bar Chart (max scale 30%)
+        const maxScale = 0.30;
+        const chartEl = document.getElementById('simChartBars');
+        let barsHtml = '';
+        for (let i = 0; i < 11; i++) {
+          const label = i < 10 ? `k = ${i + 1}` : 'k ≥ 11';
+          const obsProb = simTotalTrials > 0 ? simBuckets[i] / simTotalTrials : 0;
+          const theoProb = theoreticalProb(i);
+          const obsWidth = Math.min(100, (obsProb / maxScale) * 100);
+          const theoWidth = Math.min(100, (theoProb / maxScale) * 100);
+
+          barsHtml += `
+            <div class="grid grid-cols-12 items-center gap-2 text-xs">
+              <div class="col-span-2 font-mono font-semibold text-slate-600">${label}</div>
+              <div class="col-span-7 space-y-1">
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-indigo-500 rounded-full transition-all duration-300" style="width:${obsWidth.toFixed(1)}%"></div>
+                </div>
+                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-emerald-400 rounded-full" style="width:${theoWidth.toFixed(1)}%"></div>
+                </div>
+              </div>
+              <div class="col-span-3 text-right font-mono text-[11px] text-slate-500">
+                <span class="text-indigo-700 font-semibold">${(obsProb * 100).toFixed(1)}%</span> / ${(theoProb * 100).toFixed(1)}%
+              </div>
+            </div>
+          `;
+        }
+        chartEl.innerHTML = barsHtml;
+
+        // Render Log
+        const logEl = document.getElementById('simLogList');
+        if (!simHistory.length) {
+          logEl.innerHTML = '<div class="text-slate-400 italic font-sans">No trials recorded yet.</div>';
+        } else {
+          logEl.innerHTML = simHistory.map(item => `
+            <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-white border border-slate-200">
+              <span class="text-slate-400">#${item.trial}</span>
+              <span class="font-semibold text-slate-800">${item.label}</span>
+              <span class="px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold">k=${item.k}</span>
+            </div>
+          `).join('');
+        }
+      }
+
+      document.getElementById('simRun1Btn').addEventListener('click', () => runDieUntilThree(1));
+      document.getElementById('simRun25Btn').addEventListener('click', () => runDieUntilThree(25));
+      document.getElementById('simResetBtn').addEventListener('click', () => {
+        simTotalTrials = 0;
+        simTotalRolls = 0;
+        simBuckets.fill(0);
+        simHistory.length = 0;
+        renderSimUI([]);
+      });
+
+      /* -------------------------------------------------------------------
+         8. QUICK MASTERY CHECK (5-QUESTION QUIZ)
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. Which of the following best defines an impossible (null) event? (Year Final 2023 Q1c)',
+          options: [
+            'An event that contains every outcome in the sample space S.',
+            'An event that contains no sample points (∅) and can never occur.',
+            'An event whose probability is strictly less than 0.5.',
+            'Two events that share at least one common outcome.'
+          ],
+          correct: 1,
+          explanation: 'The impossible (null) event is the empty subset ∅ of S. Because it contains no outcomes, it can never occur and P(∅) = 0.'
+        },
+        {
+          q: '2. Why is every sample space a set, but NOT every set a sample space?',
+          options: [
+            'Because a sample space can only contain numbers, whereas a set can contain words.',
+            'Because a sample space must always be finite, whereas a set can be infinite.',
+            'Because a sample space must consist of all mutually exclusive and collectively exhaustive outcomes of a specific random experiment.',
+            'Because a sample space cannot have subsets.'
+          ],
+          correct: 2,
+          explanation: 'A sample space is a specialized set tied to a random experiment whose elements are mutually exclusive (no overlap) and collectively exhaustive (cover every possible result).'
+        },
+        {
+          q: '3. An experiment consists of rolling a fair die until a 3 appears. How is its sample space classified?',
+          options: [
+            'Finite',
+            'Countably infinite',
+            'Uncountable (continuous)',
+            'Empty (null)'
+          ],
+          correct: 1,
+          explanation: 'The outcomes {(3), (N,3), (N,N,3), ...} can be mapped 1-to-1 with the natural numbers k = 1, 2, 3, ..., with no upper bound, making S countably infinite.'
+        },
+        {
+          q: '4. When two fair dice are rolled simultaneously, how many outcomes belong to the event "the sum of the dots is 6"?',
+          options: [
+            '4 outcomes',
+            '5 outcomes',
+            '6 outcomes',
+            '12 outcomes'
+          ],
+          correct: 1,
+          explanation: 'From AST 102 Lecture 02 notes: E = {(1,5), (2,4), (3,3), (4,2), (5,1)}, which contains exactly 5 outcomes out of 36.'
+        },
+        {
+          q: '5. Two coins are tossed simultaneously (S = {HH, HT, TH, TT}). What is the complementary event of "At least one head appears"?',
+          options: [
+            '{ HH }',
+            '{ HT, TH }',
+            '{ TT }',
+            '{ HH, TT }'
+          ],
+          correct: 2,
+          explanation: '"At least one head appears" is A = {HH, HT, TH}. Its complement Aᶜ consists of all outcomes in S not in A, which is {TT} (no heads).'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optionsHtml = item.options.map((opt, oIdx) => {
+            let btnClass = 'bg-white border-slate-200 text-slate-700 hover:border-indigo-400 hover:bg-indigo-50/40';
+            if (answered) {
+              if (oIdx === item.correct) {
+                btnClass = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold';
+              } else if (oIdx === userAnswers[qIdx]) {
+                btnClass = 'bg-rose-50 border-rose-400 text-rose-900 font-semibold';
+              } else {
+                btnClass = 'bg-slate-50 border-slate-200 text-slate-400';
+              }
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${btnClass}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const feedbackHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-slate-900 text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optionsHtml}</div>
+              ${feedbackHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, idx) => acc + (ans === quizData[idx].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         9. KATEX SAFE RENDERING & INITIALIZATION
+      ------------------------------------------------------------------- */
+      function safeRenderMath(rootEl) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(rootEl || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX rendering skipped:', err);
+        }
+      }
+
+      window.addEventListener('load', () => {
+        renderCoinLab();
+        initDiceGrid();
+        renderDengueLab();
+        renderSimUI([]);
+        renderQuiz();
+        updateScrollProgress();
+        safeRenderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

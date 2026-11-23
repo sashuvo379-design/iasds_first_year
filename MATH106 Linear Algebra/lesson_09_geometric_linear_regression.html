@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 9: Geometric Linear Regression (OLS as Projection) | Linear Algebra (MATH 106)</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent-1: #2563eb;
+      --accent-2: #e11d48;
+      --accent-3: #059669;
+      --accent-4: #d97706;
+      --accent-purple: #7c3aed;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+      --sidebar-w: 270px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-card: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --primary: #60a5fa;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --primary-hover: #93c5fd;
+      --accent-1: #60a5fa;
+      --accent-2: #fb7185;
+      --accent-3: #34d399;
+      --accent-4: #fbbf24;
+      --accent-purple: #a78bfa;
+      --success: #34d399;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --warning: #fbbf24;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+    }
+    .brand-badge {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #059669);
+      color: #fff; font-weight: 800; font-size: 14px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-title { font-size: 14px; font-weight: 700; line-height: 1.25; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+
+    .progress-box { background: var(--bg-subtle); border-radius: 10px; padding: 12px; margin-bottom: 18px; }
+    .progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-bar { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #0ea5e9, #059669); transition: width 0.35s ease; }
+
+    .nav-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 700; margin: 12px 8px 6px; }
+    .nav-links { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+    .nav-links a {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px;
+      color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 500; transition: all 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      width: 20px; height: 20px; border-radius: 6px; background: var(--bg-subtle);
+      font-size: 11px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0;
+    }
+    .nav-links a.active .nav-num { background: var(--primary); color: #fff; }
+
+    .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+    .theme-btn {
+      width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .theme-btn:hover { border-color: var(--primary); }
+
+    /* Mobile Header */
+    .mobile-bar {
+      display: none; position: fixed; top: 0; left: 0; right: 0; height: 54px;
+      background: var(--bg-card); border-bottom: 1px solid var(--border);
+      padding: 0 16px; align-items: center; justify-content: space-between; z-index: 120;
+    }
+    .menu-btn {
+      background: var(--bg-subtle); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Main */
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 36px 40px 80px; max-width: 1120px; }
+
+    /* Hero */
+    .hero {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 32px; box-shadow: var(--shadow); margin-bottom: 32px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #0ea5e9, #059669, #d97706);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .pill { font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 99px; background: var(--primary-soft); color: var(--primary); }
+    .pill.neutral { background: var(--bg-subtle); color: var(--text-muted); }
+    .hero h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .hero-desc { color: var(--text-muted); font-size: 15px; max-width: 780px; margin-bottom: 18px; }
+    .guiding-quote {
+      border-left: 3.5px solid #0ea5e9; background: var(--primary-soft);
+      padding: 12px 16px; border-radius: 0 10px 10px 0; font-size: 14px; margin-bottom: 20px;
+    }
+    .obj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+    .obj-item { background: var(--bg-subtle); padding: 10px 12px; border-radius: 10px; font-size: 13px; display: flex; gap: 8px; }
+    .obj-check { color: var(--success); font-weight: 800; }
+
+    /* Sections & Cards */
+    section { margin-bottom: 44px; scroll-margin-top: 24px; }
+    .sec-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .sec-title { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; display: flex; align-items: center; gap: 10px; }
+    .sec-tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary); color: #fff; }
+    .mark-btn {
+      font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); cursor: pointer;
+    }
+    .mark-btn.done { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow); margin-bottom: 18px;
+    }
+    .card h3 { font-size: 16.5px; font-weight: 700; margin-bottom: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 18px; }
+    .formula-box {
+      background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 16px; margin: 10px 0; overflow-x: auto;
+    }
+    .callout { border-radius: 10px; padding: 12px 16px; font-size: 13.5px; margin-top: 12px; }
+    .callout.warn { background: var(--warning-bg); border-left: 3.5px solid var(--warning); }
+    .callout.info { background: var(--primary-soft); border-left: 3.5px solid var(--primary); }
+    .callout.good { background: var(--success-bg); border-left: 3.5px solid var(--success); }
+
+    /* Interactive OLS Lab */
+    .lab-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; align-items: start; }
+    .canvas-wrap { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    #olsCanvas { width: 100%; height: auto; display: block; cursor: grab; touch-action: none; }
+    #olsCanvas:active { cursor: grabbing; }
+    .canvas-hint {
+      font-size: 12px; color: var(--text-muted); padding: 8px 12px; border-top: 1px solid var(--border);
+      background: var(--bg-card); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px;
+    }
+    .controls-panel { display: flex; flex-direction: column; gap: 12px; }
+    .preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip-btn {
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text); cursor: pointer;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    .tab-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tab-btn {
+      padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text-muted); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .slider-box {
+      background: var(--bg-subtle); padding: 11px 12px; border-radius: 10px;
+      display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; font-weight: 600;
+    }
+    .slider-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .slider-row input[type="range"] { flex: 1; }
+    .telemetry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-box { background: var(--bg-subtle); padding: 9px 11px; border-radius: 9px; border: 1px solid var(--border); }
+    .stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; margin-top: 2px; }
+
+    /* Stepper */
+    .proof-steps { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .proof-step {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-subtle); opacity: 0.3; transition: all 0.25s;
+    }
+    .proof-step.revealed { opacity: 1; background: var(--bg-card); border-color: var(--primary); }
+    .proof-step .step-reason { font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    th {
+      background: var(--bg-subtle); font-weight: 700; font-size: 12.5px;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+    }
+
+    /* Solvers */
+    .solver-input {
+      width: 100%; padding: 8px 10px; border-radius: 7px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    }
+    .btn-primary {
+      padding: 9px 16px; border-radius: 8px; border: none; background: var(--primary);
+      color: #fff; font-weight: 600; font-size: 13.5px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      padding: 7px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text); font-weight: 600; font-size: 12.5px; cursor: pointer;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .solver-output {
+      margin-top: 12px; background: var(--bg-subtle); border-radius: 10px;
+      padding: 14px 16px; font-size: 13px; max-height: 460px; overflow-y: auto;
+    }
+    .step-line { padding: 7px 0; border-bottom: 1px dashed var(--border); }
+    .step-line:last-child { border-bottom: none; }
+    .mat-inline {
+      display: inline-grid; gap: 3px 9px; padding: 5px 10px;
+      border-left: 2px solid var(--text); border-right: 2px solid var(--text); border-radius: 5px;
+      font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; text-align: right;
+      vertical-align: middle; margin: 4px 0;
+    }
+
+    /* True/False & Exam Cards */
+    .tf-item, .exam-card {
+      border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+      margin-bottom: 14px; background: var(--bg-card);
+    }
+    .tf-meta { font-size: 11.5px; font-weight: 700; color: var(--accent-purple); margin-bottom: 4px; }
+    .tf-q { font-size: 14.5px; font-weight: 500; margin-bottom: 10px; }
+    .tf-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tf-btn {
+      padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-subtle); color: var(--text); font-weight: 700; font-size: 12.5px; cursor: pointer;
+    }
+    .tf-btn.selected-correct { background: var(--success); color: #fff; border-color: var(--success); }
+    .tf-btn.selected-wrong { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .tf-feedback { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 13px; display: none; }
+    .tf-feedback.show { display: block; }
+    .tf-feedback.correct { background: var(--success-bg); border-left: 3px solid var(--success); }
+    .tf-feedback.wrong { background: var(--danger-bg); border-left: 3px solid var(--danger); }
+
+    .exam-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .exam-badge { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--primary-soft); color: var(--primary); }
+    .exam-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .reveal-box {
+      margin-top: 12px; padding: 14px 16px; border-radius: 10px;
+      background: var(--bg-subtle); font-size: 13.5px; display: none;
+    }
+    .reveal-box.show { display: block; }
+
+    .lesson-footer {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding-top: 24px; border-top: 1px solid var(--border); margin-top: 40px;
+    }
+
+    @media (max-width: 960px) { .lab-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 820px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); top: 54px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; padding: 74px 18px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Bar -->
+  <div class="mobile-bar">
+    <strong>MATH 106 &middot; Lesson 9</strong>
+    <button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">Menu</button>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">L9</div>
+      <div>
+        <div class="brand-title">Linear Algebra</div>
+        <div class="brand-sub">MATH 106 / AST 107 &middot; DU IASDS</div>
+      </div>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson 9 Mastery</span>
+        <span id="progText">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <div class="nav-label">Lesson Sections</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#orientation" class="active"><span class="nav-num">0</span> Orientation</a></li>
+      <li><a href="#lab"><span class="nav-num">1</span> Two Pictures OLS Lab</a></li>
+      <li><a href="#two-routes"><span class="nav-num">2</span> Calculus vs. Projection</a></li>
+      <li><a href="#pythagoras"><span class="nav-num">3</span> Pythagoras &amp; $R^2$</a></li>
+      <li><a href="#dictionary"><span class="nav-num">4</span> Geometric Dictionary</a></li>
+      <li><a href="#solvers"><span class="nav-num">5</span> Interactive Solvers</a></li>
+      <li><a href="#exam-arena"><span class="nav-num">6</span> Practice &amp; Exam Arena</a></li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">Switch to Dark Mode</button>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center;">
+        Module 3 Finale &middot; Lesson 9 of 12
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- 0. Orientation -->
+    <section id="orientation" class="hero">
+      <div class="pill-row">
+        <span class="pill">Module 3: Orthogonality (Finale)</span>
+        <span class="pill neutral">Lesson 9 of 12</span>
+        <span class="pill neutral">Applied Statistics &amp; Data Science Core</span>
+        <span class="pill neutral">MATH106_LR &middot; Anton 6.4&ndash;6.5 &middot; Strang 4.3 &amp; 8.6</span>
+      </div>
+      <h1>Geometric Linear Regression (OLS as Projection)</h1>
+      <p class="hero-desc">
+        This is where Linear Algebra becomes Statistics. Ordinary Least Squares (OLS) is not just a calculus minimization
+        trick—it is the <strong>orthogonal projection</strong> of the response vector $\mathbf{y} \in \mathbb{R}^n$ onto the
+        column space $\text{Col}(X) = \text{span}\{\mathbf{1}, \mathbf{x}\}$. Master both pictures, derive the normal equations
+        $X^T X\hat{\boldsymbol{\beta}} = X^T\mathbf{y}$, and see why $R^2 = \cos^2\theta$.
+      </p>
+      <div class="guiding-quote">
+        <strong>One Idea, Two Languages (MATH106_LR):</strong> Setting the calculus derivatives to zero ($\partial S / \partial b_j = 0$) is
+        <strong>precisely</strong> making the residual vector perpendicular to every column of $X$ ($X^T \hat{\mathbf{u}} = \mathbf{0}$).
+      </div>
+      <div class="obj-grid">
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Distinguish the $\mathbb{R}^2$ Scatterplot Picture from the $\mathbb{R}^n$ Vector Picture</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Derive &amp; solve the Normal Equations $X^T X\hat{\boldsymbol{\beta}} = X^T\mathbf{y}$</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Prove orthogonality minimizes residual length via Pythagoras</span></div>
+        <div class="obj-item"><span class="obj-check">&#10003;</span><span>Decompose $\text{TSS} = \text{ESS} + \text{RSS}$ and interpret $R^2 = \cos^2\theta$</span></div>
+      </div>
+    </section>
+
+    <!-- 1. Visual Intuition Lab -->
+    <section id="lab">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">LAB</span> 1. Interactive OLS Lab: Scatterplot ($\mathbb{R}^2$) vs. Projection ($\mathbb{R}^3$)</h2>
+        <button class="mark-btn" data-sec="lab" onclick="toggleDone('lab', this)">Mark Complete</button>
+      </div>
+
+      <div class="card">
+        <div class="lab-layout">
+          <div>
+            <div class="tab-bar">
+              <button class="tab-btn active" id="tabScatter" onclick="setView('scatter')">Scatterplot Picture ($\mathbb{R}^2$)</button>
+              <button class="tab-btn" id="tabVec3" onclick="setView('vec3')">Vector Projection Picture ($\mathbb{R}^3$)</button>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="olsCanvas" width="560" height="430"></canvas>
+              <div class="canvas-hint" id="olsHint">
+                <span><strong>Drag any blue dot</strong> vertically or slide $(b_0, b_1)$ to beat OLS (you can't!).</span>
+                <span>Red vertical bars = Residuals $e_i$</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls-panel">
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">LECTURE DATASETS</div>
+              <div class="preset-row">
+                <button class="chip-btn" onclick="loadOLSData('lec3')">Lecture 3-Pt ($\mathbb{R}^3$)</button>
+                <button class="chip-btn" onclick="loadOLSData('lec5')">Lecture 5-Pt (Exam Scores)</button>
+                <button class="chip-btn" onclick="loadOLSData('perfect')">Perfect Line ($R^2=1$)</button>
+                <button class="chip-btn" onclick="loadOLSData('flat')">Flat Trend ($\hat{\beta}_1=0$)</button>
+              </div>
+            </div>
+
+            <div class="slider-box">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Candidate Line: $\hat{y} = b_0 + b_1 x$</span>
+                <button class="chip-btn" style="background:var(--primary); color:#fff; border-color:var(--primary);" onclick="snapToOLS()">Snap to Exact OLS</button>
+              </div>
+              <div class="slider-row"><span>$b_0$: <strong id="lblB0">1.0</strong></span><input type="range" id="slB0" min="-10" max="60" step="0.5" value="1" oninput="manualLine()"></div>
+              <div class="slider-row"><span>$b_1$: <strong id="lblB1">5.0</strong></span><input type="range" id="slB1" min="-5" max="10" step="0.25" value="5" oninput="manualLine()"></div>
+            </div>
+
+            <div class="telemetry">
+              <div class="stat-box">
+                <div class="stat-label">Candidate $\sum e_i^2 = \|\mathbf{u}\|^2$</div>
+                <div class="stat-val" id="statCandRSS" style="color:var(--accent-2);">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Minimum OLS RSS</div>
+                <div class="stat-val" id="statOptRSS" style="color:var(--success);">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Orthogonality $\mathbf{u}^T\mathbf{1}, \mathbf{u}^T\mathbf{x}$</div>
+                <div class="stat-val" id="statOrth">&mdash;</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Goodness of Fit $R^2 = \cos^2\theta$</div>
+                <div class="stat-val" id="statR2" style="color:var(--primary);">&mdash;</div>
+              </div>
+            </div>
+
+            <div class="callout info" style="margin-top:0; font-size:12.5px;" id="olsNote"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Calculus Route vs. Geometric Projection Route -->
+    <section id="two-routes">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">THEORY</span> 2. Two Pictures &amp; The Normal Equations</h2>
+        <button class="mark-btn" data-sec="routes" onclick="toggleDone('routes', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>2.1 Scatterplot ($\mathbb{R}^2$) vs. Vector Picture ($\mathbb{R}^n$)</h3>
+          <table style="margin-top:6px;">
+            <thead><tr><th>Scatterplot Picture</th><th>Vector Picture</th></tr></thead>
+            <tbody>
+              <tr><td>Lives in $\mathbb{R}^2$ ($x$-axis, $y$-axis)</td><td>Lives in $\mathbb{R}^n$ ($n$ = sample size)</td></tr>
+              <tr><td>One dot per observation ($n$ dots)</td><td>One arrow per variable ($\mathbf{1}, \mathbf{x}, \mathbf{y}$)</td></tr>
+              <tr><td>We fit a line $\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x$</td><td>We project $\mathbf{y}$ onto plane $\text{Col}(X) = \text{span}\{\mathbf{1}, \mathbf{x}\}$</td></tr>
+              <tr><td>Minimize $n$ vertical gaps $\sum e_i^2$</td><td>Minimize one squared length $\|\mathbf{y} - \hat{\boldsymbol{\mu}}\|^2$</td></tr>
+            </tbody>
+          </table>
+          <div class="callout good" style="font-size:12.5px;">
+            <strong>Key Distinction:</strong> $\hat{\boldsymbol{\mu}} = X\hat{\boldsymbol{\beta}} \in \mathbb{R}^n$ is the <em>projected point</em> on the plane $\text{Col}(X)$; $\hat{\boldsymbol{\beta}} \in \mathbb{R}^2$ are its <em>coordinates</em> in the basis $\{\mathbf{1}, \mathbf{x}\}$.
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>2.2 The Normal Equations ($X^T X\hat{\boldsymbol{\beta}} = X^T\mathbf{y}$)</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+            Stack the $n$ equations $y_i = \beta_0 + \beta_1 x_i + u_i$ into $\mathbf{y} = X\boldsymbol{\beta} + \mathbf{u}$ where $X = [\,\mathbf{1}\;\; \mathbf{x}\,] \in \mathbb{R}^{n\times 2}$.
+            Requiring the residual $\hat{\mathbf{u}} = \mathbf{y} - X\hat{\boldsymbol{\beta}}$ to be perpendicular to both columns of $X$:
+          </p>
+          <div class="formula-box">
+            $$\hat{\mathbf{u}} \perp \mathbf{1} \text{ and } \hat{\mathbf{u}} \perp \mathbf{x} \iff X^T(\mathbf{y} - X\hat{\boldsymbol{\beta}}) = \mathbf{0}$$
+            $$\iff \mathbf{X^T X\hat{\boldsymbol{\beta}} = X^T\mathbf{y}} \implies \hat{\boldsymbol{\beta}} = (X^T X)^{-1} X^T \mathbf{y}$$
+          </div>
+          <p style="font-size:13px; color:var(--text-muted);">
+            Solving this $2\times 2$ system gives the exact calculus formulas:
+            $$\hat{\beta}_1 = \frac{S_{xy}}{S_{xx}} = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}, \qquad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x}.$$
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive Proof Stepper: Why Projection Must Be Orthogonal -->
+      <div class="card">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div>
+            <strong>Interactive Proof: Why OLS Must Be an Orthogonal Projection</strong>
+            <span class="exam-badge" style="margin-left:6px;">MATH106_LR Slide 15 &middot; Anton Thm 6.4.1</span>
+            <p style="font-size:13px; color:var(--text-muted);">
+              Orthogonality is <em>not</em> an assumption—it is mathematically forced by minimizing distance!
+            </p>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-primary" onclick="nextProofStep()">Next Proof Step</button>
+            <button class="btn-outline" onclick="resetProof()">Reset</button>
+          </div>
+        </div>
+        <div class="proof-steps" id="proofSteps">
+          <div class="proof-step revealed">
+            <div class="step-reason">Step 1: Decompose the distance from $\mathbf{y}$ to any candidate fit $\mathbf{w} \in \text{Col}(X)$</div>
+            Let $\hat{\boldsymbol{\mu}} \in \text{Col}(X)$ satisfy $\mathbf{y} - \hat{\boldsymbol{\mu}} \perp \text{Col}(X)$, and let $\mathbf{w}$ be any other vector in $\text{Col}(X)$. Write:
+            $$\mathbf{y} - \mathbf{w} = \underbrace{(\mathbf{y} - \hat{\boldsymbol{\mu}})}_{\perp\;\text{Col}(X)} + \underbrace{(\hat{\boldsymbol{\mu}} - \mathbf{w})}_{\in\;\text{Col}(X)}.$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 2: Apply the Pythagorean Theorem in $\mathbb{R}^n$</div>
+            Because the two pieces are orthogonal, their cross-term dot product is $0$, leaving:
+            $$\|\mathbf{y} - \mathbf{w}\|^2 = \|\mathbf{y} - \hat{\boldsymbol{\mu}}\|^2 + \|\hat{\boldsymbol{\mu}} - \mathbf{w}\|^2.$$
+          </div>
+          <div class="proof-step">
+            <div class="step-reason">Step 3: Conclude unique global minimum</div>
+            Since $\|\hat{\boldsymbol{\mu}} - \mathbf{w}\|^2 \ge 0$ (with equality iff $\mathbf{w} = \hat{\boldsymbol{\mu}}$), we have $\|\mathbf{y} - \mathbf{w}\|^2 \ge \|\mathbf{y} - \hat{\boldsymbol{\mu}}\|^2$. Any non-perpendicular projection gives a strictly longer residual! $\blacksquare$
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Pythagoras, Hat Matrix & Goodness of Fit -->
+    <section id="pythagoras">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">GOODNESS OF FIT</span> 3. Pythagoras ($\text{TSS} = \text{ESS} + \text{RSS}$), $R^2$ &amp; Hat Matrix $H$</h2>
+        <button class="mark-btn" data-sec="pyth" onclick="toggleDone('pyth', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>3.1 Orthogonal Decomposition of Variance ($R^2 = \cos^2\theta$)</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+            Because $\mathbf{1} \in \text{Col}(X)$, the centered fitted vector $(\hat{\boldsymbol{\mu}} - \bar{y}\mathbf{1})$ lies inside $\text{Col}(X)$, so it is <strong>orthogonal</strong> to $\hat{\mathbf{u}}$:
+          </p>
+          <div class="formula-box">
+            $$\underbrace{\|\mathbf{y} - \bar{y}\mathbf{1}\|^2}_{\text{TSS}} = \underbrace{\|\hat{\boldsymbol{\mu}} - \bar{y}\mathbf{1}\|^2}_{\text{ESS}} + \underbrace{\|\hat{\mathbf{u}}\|^2}_{\text{RSS}}$$
+            $$R^2 = \frac{\text{ESS}}{\text{TSS}} = 1 - \frac{\text{RSS}}{\text{TSS}} = \cos^2\theta$$
+          </div>
+          <p style="font-size:13px; color:var(--text-muted);">
+            Here $\theta$ is the angle between the centered vectors $\mathbf{y} - \bar{y}\mathbf{1}$ and $\mathbf{x} - \bar{x}\mathbf{1}$. A good fit ($R^2 \approx 1$) means $\mathbf{y}$ lies almost flat inside $\text{Col}(X)$!
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>3.2 The Projection (Hat) Matrix $H = X(X^T X)^{-1} X^T$</h3>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:6px;">
+            Substituting $\hat{\boldsymbol{\beta}} = (X^T X)^{-1}X^T\mathbf{y}$ into $\hat{\boldsymbol{\mu}} = X\hat{\boldsymbol{\beta}}$ reveals the <strong>Hat Matrix</strong> $H$ (it puts the hat on $\mathbf{y}$!):
+          </p>
+          <div class="formula-box">
+            $$\hat{\boldsymbol{\mu}} = H\mathbf{y}, \qquad \hat{\mathbf{u}} = (I_n - H)\mathbf{y}, \qquad H = X(X^T X)^{-1}X^T$$
+          </div>
+          <ul style="padding-left:18px; font-size:13px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px;">
+            <li><strong>Symmetric &amp; Idempotent:</strong> $H^T = H$ and $H^2 = H$ (same for $I_n - H$!).</li>
+            <li><strong>Degrees of Freedom (Link to Lesson 7!):</strong> $\text{rank}(H) = \text{tr}(H) = k$ ($=2$ in simple regression) and $\text{rank}(I_n - H) = \text{tr}(I_n - H) = n - k$.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Geometric Dictionary -->
+    <section id="dictionary">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">MAP</span> 4. Lesson 9 Geometric Dictionary</h2>
+        <button class="mark-btn" data-sec="dictionary" onclick="toggleDone('dictionary', this)">Mark Complete</button>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <table>
+          <thead>
+            <tr>
+              <th>Statistical / Algebraic Object</th>
+              <th>Geometric Meaning in $\mathbb{R}^n$</th>
+              <th>Key Consequence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Design Space $\text{Col}(X) = \text{span}\{\mathbf{1}, \mathbf{x}\}$</td>
+              <td>2D plane through origin containing all achievable fitted vectors</td>
+              <td>Requires $S_{xx} &gt; 0$ ($\mathbf{x}$ not a multiple of $\mathbf{1}$)</td>
+            </tr>
+            <tr>
+              <td>Fitted Vector $\hat{\boldsymbol{\mu}} = X\hat{\boldsymbol{\beta}}$</td>
+              <td>Perpendicular shadow of $\mathbf{y}$ onto $\text{Col}(X)$</td>
+              <td>Closest point in $\text{Col}(X)$ to $\mathbf{y}$</td>
+            </tr>
+            <tr>
+              <td>Residual Vector $\hat{\mathbf{u}} = \mathbf{y} - \hat{\boldsymbol{\mu}}$</td>
+              <td>Perpendicular drop sticking straight out of $\text{Col}(X)$</td>
+              <td>$\sum e_i = 0$ ($\hat{\mathbf{u}}\perp\mathbf{1}$) and $\sum x_i e_i = 0$ ($\hat{\mathbf{u}}\perp\mathbf{x}$)</td>
+            </tr>
+            <tr>
+              <td>OLS Estimates $\hat{\boldsymbol{\beta}} = (\hat{\beta}_0, \hat{\beta}_1)^T$</td>
+              <td>Coordinates of $\hat{\boldsymbol{\mu}}$ in the (non-orthogonal) basis $\{\mathbf{1}, \mathbf{x}\}$</td>
+              <td>Found via $X^T X\hat{\boldsymbol{\beta}} = X^T\mathbf{y}$</td>
+            </tr>
+            <tr>
+              <td>Coefficient of Determination $R^2$</td>
+              <td>$\cos^2\theta$ where $\theta$ is angle between centered $\mathbf{y}$ and $\hat{\boldsymbol{\mu}}$</td>
+              <td>$0 \le R^2 \le 1$; $\text{TSS} = \text{ESS} + \text{RSS}$</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Interactive Solvers -->
+    <section id="solvers">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">TOOLS</span> 5. Interactive Step-by-Step Solvers</h2>
+        <button class="mark-btn" data-sec="solvers" onclick="toggleDone('solvers', this)">Mark Complete</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Solver A: Complete OLS & Normal Equations Solver -->
+        <div class="card">
+          <h3>Solver A: Complete OLS &amp; Normal Equations Solver</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            Enter comma-separated $x$ and $y$ observations ($n \ge 2$) to build $X^T X$, $X^T\mathbf{y}$, $\hat{\boldsymbol{\beta}}$, residuals, and $R^2$.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadOLSSolver('1, 2, 3', '7, 9, 17')">Lecture 3-Pt</button>
+            <button class="chip-btn" onclick="loadOLSSolver('2, 3, 5, 7, 8', '56, 58, 72, 78, 86')">Lecture 5-Pt</button>
+            <button class="chip-btn" onclick="loadOLSSolver('0, 1, 2, 3', '1, 2, 2, 4')">Strang 4.3 Ex.</button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+            <label style="font-size:12.5px; font-weight:600;">Explanatory $\mathbf{x}$: <input class="solver-input" id="solX" value="1, 2, 3"></label>
+            <label style="font-size:12.5px; font-weight:600;">Response $\mathbf{y}$: <input class="solver-input" id="solY" value="7, 9, 17"></label>
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runOLSSolver()">Solve Normal Equations &amp; Check Orthogonality</button>
+          <div class="solver-output" id="olsSolOut"></div>
+        </div>
+
+        <!-- Solver B: 3x3 Hat Matrix H Explorer -->
+        <div class="card">
+          <h3>Solver B: Projection (Hat) Matrix $H = X(X^T X)^{-1}X^T$</h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">
+            For 3 observations $(x_1, x_2, x_3)$ and $(y_1, y_2, y_3)$, computes the $3\times 3$ projection matrix $H$, checks $H^2=H$, and shows $\hat{\boldsymbol{\mu}} = H\mathbf{y}$.
+          </p>
+          <div class="preset-row" style="margin-bottom:10px;">
+            <button class="chip-btn" onclick="loadHatSolver('1, 2, 3', '7, 9, 17')">Lecture 3-Pt</button>
+            <button class="chip-btn" onclick="loadHatSolver('-1, 0, 1', '2, 5, 10')">Centered x = (-1,0,1)</button>
+            <button class="chip-btn" onclick="loadHatSolver('0, 1, 4', '1, 3, 7')">Uneven Spacing</button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+            <label style="font-size:12.5px; font-weight:600;">3 $x$-values: <input class="solver-input" id="hatX" value="1, 2, 3"></label>
+            <label style="font-size:12.5px; font-weight:600;">3 $y$-values: <input class="solver-input" id="hatY" value="7, 9, 17"></label>
+          </div>
+          <button class="btn-primary" style="width:100%;" onclick="runHatSolver()">Build Hat Matrix $H$ &amp; Verify Idempotency</button>
+          <div class="solver-output" id="hatOut"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Practice & Exam Arena -->
+    <section id="exam-arena">
+      <div class="sec-head">
+        <h2 class="sec-title"><span class="sec-tag">EXAM ARENA</span> 6. Conceptual Traps &amp; Worked Problems</h2>
+        <button class="mark-btn" data-sec="exam" onclick="toggleDone('exam', this)">Mark Complete</button>
+      </div>
+
+      <!-- Part A: True/False -->
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
+          <div>
+            <h3 style="margin-bottom:2px;">Part A: True / False Conceptual Traps</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Core geometric regression concepts from MATH106_LR, Anton 6.5 &amp; Strang 4.3.</p>
+          </div>
+          <div class="pill" id="tfScore">Score: 0 / 5</div>
+        </div>
+        <div id="tfContainer"></div>
+      </div>
+
+      <!-- Part B: Worked Problems -->
+      <h3 style="margin:22px 0 12px; font-size:18px;">Part B: Worked Lecture &amp; Textbook Problems</h3>
+
+      <!-- Problem 1: Lecture 3-Observation Example -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 1: Complete $\mathbb{R}^3$ Geometric Regression &amp; $R^2$</strong>
+          <span class="exam-badge">MATH106_LR Slides 17&ndash;24</span>
+        </div>
+        <p style="font-size:14px;">
+          Given three students with hours studied $\mathbf{x} = (1, 2, 3)^T$ and exam scores $\mathbf{y} = (7, 9, 17)^T$:
+          (a) Set up and solve $X^T X\hat{\boldsymbol{\beta}} = X^T\mathbf{y}$;
+          (b) Compute $\hat{\boldsymbol{\mu}}$ and $\hat{\mathbf{u}}$, and verify $\hat{\mathbf{u}} \perp \text{Col}(X)$;
+          (c) Compute TSS, ESS, RSS, and $R^2$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol1')">Show Full Solution</button>
+          <button class="btn-outline" onclick="loadOLSSolver('1, 2, 3', '7, 9, 17'); location.href='#solvers';">Verify in Solver A</button>
+        </div>
+        <div class="reveal-box" id="sol1">
+          <strong>Solution:</strong><br>
+          (a) $X = \begin{bmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix} \implies X^T X = \begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix}$, $X^T\mathbf{y} = \begin{bmatrix} 33 \\ 76 \end{bmatrix}$.
+          Solving $\begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix}\begin{bmatrix} \hat{\beta}_0 \\ \hat{\beta}_1 \end{bmatrix} = \begin{bmatrix} 33 \\ 76 \end{bmatrix}$ gives $\mathbf{\hat{\beta}_0 = 1,\; \hat{\beta}_1 = 5}$.<br>
+          (b) $\hat{\boldsymbol{\mu}} = 1\cdot\mathbf{1} + 5\cdot\mathbf{x} = (6, 11, 16)^T$ and $\hat{\mathbf{u}} = \mathbf{y} - \hat{\boldsymbol{\mu}} = (1, -2, 1)^T$.<br>
+          Orthogonality: $\hat{\mathbf{u}}^T\mathbf{1} = 1 - 2 + 1 = 0$ and $\hat{\mathbf{u}}^T\mathbf{x} = 1 - 4 + 3 = 0$. &#10003;<br>
+          (c) Here $\bar{y} = 11$: $\text{TSS} = (-4)^2+(-2)^2+6^2 = 56$, $\text{RSS} = 1^2+(-2)^2+1^2 = 6$, $\text{ESS} = (-5)^2+0^2+5^2 = 50$.
+          Check: $56 = 50 + 6$ and $R^2 = \frac{50}{56} \approx \mathbf{0.893}$.
+        </div>
+      </div>
+
+      <!-- Problem 2: Strang 4.3 Q12 (Projecting onto 1 gives the Sample Mean) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 2: Why the Sample Mean $\bar{y}$ Is an Orthogonal Projection!</strong>
+          <span class="exam-badge">Strang 4.3 Q12 (Statistics Foundation)</span>
+        </div>
+        <p style="font-size:14px;">
+          Project $\mathbf{y} = (y_1, \dots, y_n)^T$ onto the line through $\mathbf{1} = (1, \dots, 1)^T$ by solving the normal equation $\mathbf{1}^T\mathbf{1}\,\hat{c} = \mathbf{1}^T\mathbf{y}$.
+          Show that $\hat{c} = \bar{y}$ and that $\|\mathbf{y} - \hat{c}\mathbf{1}\|^2 = \sum (y_i - \bar{y})^2$.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol2')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol2">
+          <strong>Solution:</strong><br>
+          1. Compute the scalar products: $\mathbf{1}^T\mathbf{1} = 1^2 + \dots + 1^2 = n$ and $\mathbf{1}^T\mathbf{y} = \sum_{i=1}^n y_i$.<br>
+          2. Normal equation: $n\hat{c} = \sum_{i=1}^n y_i \implies \mathbf{\hat{c} = \frac{1}{n}\sum_{i=1}^n y_i = \bar{y}}$.<br>
+          3. Error vector: $\mathbf{e} = \mathbf{y} - \bar{y}\mathbf{1}$, whose squared length is $\|\mathbf{e}\|^2 = \sum_{i=1}^n (y_i - \bar{y})^2 = n s^2$ (the numerator of sample variance!).<br>
+          <em>Takeaway:</em> The sample mean $\bar{y}$ is the constant that minimizes the sum of squared deviations!
+        </div>
+      </div>
+
+      <!-- Problem 3: Anton 6.5 Q7 (When is X^T X invertible?) -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 3: Invertibility Condition for $X^T X$</strong>
+          <span class="exam-badge">Anton 6.5 Q7 &middot; MATH106_LR Slide 8</span>
+        </div>
+        <p style="font-size:14px;">
+          Prove that the $n\times 2$ design matrix $X = [\,\mathbf{1}\;\; \mathbf{x}\,]$ has linearly independent columns (and hence $X^T X$ is invertible)
+          if and only if at least two values among $x_1, x_2, \dots, x_n$ are distinct.
+        </p>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol3')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol3">
+          <strong>Solution:</strong><br>
+          Two nonzero vectors $\mathbf{1}$ and $\mathbf{x}$ are linearly dependent $\iff \mathbf{x}$ is a scalar multiple of $\mathbf{1}$, i.e., $x_1 = x_2 = \dots = x_n = c$ (all $x_i$ are identical, so $S_{xx} = 0$).<br>
+          Conversely, if at least two $x_i$ are distinct, $\mathbf{1}$ and $\mathbf{x}$ are linearly independent ($\text{rank}(X) = 2$).<br>
+          Direct determinant check:
+          $$\det(X^T X) = \begin{vmatrix} n & \sum x_i \\ \sum x_i & \sum x_i^2 \end{vmatrix} = n\sum x_i^2 - \left(\sum x_i\right)^2 = n\sum_{i=1}^n (x_i - \bar{x})^2 = n S_{xx} &gt; 0.$$
+          Hence $X^T X$ is invertible iff $S_{xx} &gt; 0$ (at least two distinct $x_i$). $\blacksquare$
+        </div>
+      </div>
+
+      <!-- Problem 4: Lecture 5-Observation Study Hours Dataset -->
+      <div class="exam-card">
+        <div class="exam-header">
+          <strong>Problem 4: Lecture 5-Observation Study Hours vs. Exam Score</strong>
+          <span class="exam-badge">MATH106_LR Slides 4&ndash;10</span>
+        </div>
+        <p style="font-size:14px;">
+          For the five students with hours studied $x = (2, 3, 5, 7, 8)$ and scores $y = (56, 58, 72, 78, 86)$, we have $\bar{x} = 5$, $\bar{y} = 70$, $S_{xy} = 130$, and $S_{xx} = 26$.
+          Find the OLS regression line $\hat{y} = \hat{\beta}_0 + \hat{\beta}_1 x$.
+        </p>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:600;">Quick check — enter $\hat{\beta}_0, \hat{\beta}_1$:</span>
+          <input type="text" id="ansOLS" class="solver-input" style="width:110px;" placeholder="b0, b1" />
+          <button class="btn-primary" onclick="checkOLS()">Check</button>
+          <span id="olsMsg" style="font-size:13px; font-weight:600;"></span>
+        </div>
+        <div class="exam-actions">
+          <button class="btn-outline" onclick="toggleBox('sol4')">Show Full Solution</button>
+        </div>
+        <div class="reveal-box" id="sol4">
+          <strong>Solution:</strong><br>
+          $$\hat{\beta}_1 = \frac{S_{xy}}{S_{xx}} = \frac{130}{26} = \mathbf{5}, \qquad \hat{\beta}_0 = \bar{y} - \hat{\beta}_1\bar{x} = 70 - 5(5) = \mathbf{45}.$$
+          Fitted line: $\mathbf{\hat{y} = 45 + 5x}$, with residuals $e = (+1, -2, +2, -2, +1)$ summing to $0$.
+        </div>
+      </div>
+    </section>
+
+    <footer class="lesson-footer">
+      <div style="font-size:13px; color:var(--text-muted);">
+        &larr; Lesson 8: Orthogonality, Gram-Schmidt &amp; Orthogonal Matrices
+      </div>
+      <div style="font-size:13px; font-weight:600; color:var(--primary);">
+        Module 4 starts next &rarr; Lesson 10: Eigenvalues, Eigenvectors, Diagonalization &amp; Cayley-Hamilton
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    /* ============== THEME TOGGLE ============== */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('themeBtn').textContent = isDark ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+      localStorage.setItem('la_theme', isDark ? 'light' : 'dark');
+      drawOLSLab();
+    }
+    (function initTheme(){
+      if (localStorage.getItem('la_theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('themeBtn').textContent = 'Switch to Light Mode';
+      }
+    })();
+
+    /* ============== PROGRESS TRACKER ============== */
+    const sections = ['lab', 'routes', 'pyth', 'dictionary', 'solvers', 'exam'];
+    let doneState = JSON.parse(localStorage.getItem('la_l9_done') || '{}');
+    function updateProgressUI() {
+      let count = 0;
+      sections.forEach(s => {
+        const btn = document.querySelector(`.mark-btn[data-sec="${s}"]`);
+        if (doneState[s]) { count++; if (btn) { btn.classList.add('done'); btn.textContent = 'Completed \u2713'; } }
+        else if (btn) { btn.classList.remove('done'); btn.textContent = 'Mark Complete'; }
+      });
+      const pct = Math.round((count / sections.length) * 100);
+      document.getElementById('progText').textContent = pct + '%';
+      document.getElementById('progFill').style.width = pct + '%';
+    }
+    function toggleDone(sec) {
+      doneState[sec] = !doneState[sec];
+      localStorage.setItem('la_l9_done', JSON.stringify(doneState));
+      updateProgressUI();
+    }
+    updateProgressUI();
+
+    /* ============== SCROLL SPY ============== */
+    const navAnchors = document.querySelectorAll('#navLinks a');
+    window.addEventListener('scroll', () => {
+      let cur = 'orientation';
+      document.querySelectorAll('main section').forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) cur = sec.id;
+      });
+      navAnchors.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+    });
+
+    /* ============== INTERACTIVE OLS LAB (SCATTER + 3D PROJECTION) ============== */
+    const canvas = document.getElementById('olsCanvas');
+    const ctx = canvas.getContext('2d');
+    let curView = 'scatter';
+    let pts = [{x:1,y:7}, {x:2,y:9}, {x:3,y:17}];
+    let candB0 = 1, candB1 = 5;
+    let dragIdx = -1;
+
+    function computeOLS(data) {
+      const n = data.length;
+      const mx = data.reduce((s,p)=>s+p.x,0)/n;
+      const my = data.reduce((s,p)=>s+p.y,0)/n;
+      let sxx = 0, sxy = 0, tss = 0;
+      data.forEach(p => { sxx += (p.x-mx)**2; sxy += (p.x-mx)*(p.y-my); tss += (p.y-my)**2; });
+      const b1 = sxx > 1e-9 ? sxy / sxx : 0;
+      const b0 = my - b1 * mx;
+      let rss = 0, ess = 0;
+      data.forEach(p => {
+        const yhat = b0 + b1 * p.x;
+        rss += (p.y - yhat)**2;
+        ess += (yhat - my)**2;
+      });
+      const r2 = tss > 1e-9 ? ess / tss : 1;
+      return { n, mx, my, sxx, sxy, b0, b1, tss, ess, rss, r2 };
+    }
+
+    function setView(v) {
+      curView = v;
+      document.getElementById('tabScatter').classList.toggle('active', v === 'scatter');
+      document.getElementById('tabVec3').classList.toggle('active', v === 'vec3');
+      document.getElementById('olsHint').innerHTML = v === 'scatter'
+        ? '<span><strong>Drag any blue dot</strong> vertically or slide (b<sub>0</sub>, b<sub>1</sub>) to beat OLS!</span><span>Red vertical bars = Residuals e<sub>i</sub></span>'
+        : '<span><strong>Schematic &Ropf;&sup3; View:</strong> y sticks out of Col(X) = span{1, x}; &mu;&#770; is its shadow; u&#770; is the 90&deg; drop!</span><span>Live orthogonality check</span>';
+      drawOLSLab();
+    }
+
+    function loadOLSData(key) {
+      if (key === 'lec3') pts = [{x:1,y:7}, {x:2,y:9}, {x:3,y:17}];
+      else if (key === 'lec5') pts = [{x:2,y:56}, {x:3,y:58}, {x:5,y:72}, {x:7,y:78}, {x:8,y:86}];
+      else if (key === 'perfect') pts = [{x:1,y:4}, {x:2,y:7}, {x:3,y:10}];
+      else if (key === 'flat') pts = [{x:1,y:12}, {x:2,y:8}, {x:3,y:12}];
+      snapToOLS();
+    }
+
+    function snapToOLS() {
+      const ols = computeOLS(pts);
+      candB0 = ols.b0; candB1 = ols.b1;
+      const s0 = document.getElementById('slB0'), s1 = document.getElementById('slB1');
+      s0.min = Math.floor(ols.b0 - 20); s0.max = Math.ceil(ols.b0 + 20); s0.value = ols.b0.toFixed(1);
+      s1.min = Math.floor(ols.b1 - 6); s1.max = Math.ceil(ols.b1 + 6); s1.value = ols.b1.toFixed(2);
+      drawOLSLab();
+    }
+
+    function manualLine() {
+      candB0 = parseFloat(document.getElementById('slB0').value);
+      candB1 = parseFloat(document.getElementById('slB1').value);
+      drawOLSLab();
+    }
+
+    function getBounds() {
+      const xs = pts.map(p=>p.x), ys = pts.map(p=>p.y);
+      const minX = Math.min(0, ...xs) - 1, maxX = Math.max(...xs) + 1.5;
+      const minY = Math.min(0, ...ys) - 4, maxY = Math.max(...ys) + 6;
+      return { minX, maxX, minY, maxY };
+    }
+    function mapPt(x, y, b) {
+      const pad = 48;
+      return {
+        cx: pad + ((x - b.minX) / (b.maxX - b.minX)) * (canvas.width - 2*pad),
+        cy: canvas.height - pad - ((y - b.minY) / (b.maxY - b.minY)) * (canvas.height - 2*pad)
+      };
+    }
+
+    function drawArrow2D(x1, y1, x2, y2, color, width = 2.8, dashed = false, label = '') {
+      const dx = x2 - x1, dy = y2 - y1;
+      if (Math.hypot(dx, dy) < 2) return;
+      const ang = Math.atan2(dy, dx);
+      ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+      if (dashed) ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - 8*Math.cos(ang), y2 - 8*Math.sin(ang)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 10*Math.cos(ang - 0.42), y2 - 10*Math.sin(ang - 0.42));
+      ctx.lineTo(x2 - 10*Math.cos(ang + 0.42), y2 - 10*Math.sin(ang + 0.42));
+      ctx.closePath(); ctx.fill();
+      if (label) { ctx.font = '700 12.5px Inter, sans-serif'; ctx.fillText(label, x2 + 8, y2 - 4); }
+      ctx.restore();
+    }
+
+    function drawOLSLab() {
+      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const ols = computeOLS(pts);
+      document.getElementById('lblB0').textContent = candB0.toFixed(1);
+      document.getElementById('lblB1').textContent = candB1.toFixed(2);
+
+      // Compute candidate residuals & orthogonality
+      let candRSS = 0, sumU = 0, sumXU = 0;
+      pts.forEach(p => {
+        const u = p.y - (candB0 + candB1 * p.x);
+        candRSS += u * u;
+        sumU += u;
+        sumXU += p.x * u;
+      });
+      const isOpt = Math.abs(candRSS - ols.rss) < 0.05;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (curView === 'scatter') {
+        const b = getBounds();
+        const gridCol = dark ? '#1e293b' : '#e2e8f0';
+        const axisCol = dark ? '#64748b' : '#94a3b8';
+        const cBlue = dark ? '#60a5fa' : '#2563eb';
+        const cRed = dark ? '#fb7185' : '#e11d48';
+        const cGreen = dark ? '#34d399' : '#059669';
+
+        // Plot frame & grid
+        ctx.strokeStyle = gridCol; ctx.lineWidth = 1;
+        for (let i = 0; i <= 6; i++) {
+          const gx = 48 + i * (canvas.width - 96) / 6;
+          const gy = 48 + i * (canvas.height - 96) / 6;
+          ctx.beginPath(); ctx.moveTo(gx, 48); ctx.lineTo(gx, canvas.height - 48); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(48, gy); ctx.lineTo(canvas.width - 48, gy); ctx.stroke();
+        }
+        ctx.strokeStyle = axisCol; ctx.lineWidth = 1.6;
+        ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
+
+        // Optimal OLS line (dashed green if candidate differs)
+        const opt1 = mapPt(b.minX, ols.b0 + ols.b1 * b.minX, b);
+        const opt2 = mapPt(b.maxX, ols.b0 + ols.b1 * b.maxX, b);
+        ctx.save(); ctx.strokeStyle = cGreen; ctx.lineWidth = isOpt ? 3 : 1.8;
+        if (!isOpt) ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(opt1.cx, opt1.cy); ctx.lineTo(opt2.cx, opt2.cy); ctx.stroke();
+        ctx.restore();
+
+        // Candidate line
+        if (!isOpt) {
+          const c1 = mapPt(b.minX, candB0 + candB1 * b.minX, b);
+          const c2 = mapPt(b.maxX, candB0 + candB1 * b.maxX, b);
+          ctx.strokeStyle = dark ? '#fbbf24' : '#d97706'; ctx.lineWidth = 2.8;
+          ctx.beginPath(); ctx.moveTo(c1.cx, c1.cy); ctx.lineTo(c2.cx, c2.cy); ctx.stroke();
+        }
+
+        // Mean point (xbar, ybar)
+        const pm = mapPt(ols.mx, ols.my, b);
+        ctx.beginPath(); ctx.arc(pm.cx, pm.cy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = cGreen; ctx.fill();
+
+        // Data points & vertical residual bars
+        pts.forEach((p, idx) => {
+          const pp = mapPt(p.x, p.y, b);
+          const pf = mapPt(p.x, candB0 + candB1 * p.x, b);
+          ctx.strokeStyle = cRed; ctx.lineWidth = 2.4;
+          ctx.beginPath(); ctx.moveTo(pp.cx, pp.cy); ctx.lineTo(pf.cx, pf.cy); ctx.stroke();
+
+          ctx.beginPath(); ctx.arc(pp.cx, pp.cy, 7, 0, Math.PI * 2);
+          ctx.fillStyle = cBlue; ctx.fill();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+          ctx.fillStyle = dark ? '#e2e8f0' : '#1e293b';
+          ctx.font = '600 11.5px JetBrains Mono, monospace';
+          ctx.fillText(`(${p.x},${p.y.toFixed(0)})`, pp.cx + 9, pp.cy - 6);
+        });
+
+        ctx.fillStyle = dark ? '#cbd5e1' : '#334155';
+        ctx.font = '700 12.5px Inter, sans-serif';
+        ctx.fillText(`OLS Fit: y\u0302 = ${ols.b0.toFixed(2)} + ${ols.b1.toFixed(2)}x`, 60, 32);
+      } else {
+        // Vector Projection Picture (Schematic R^n Plane Col(X))
+        const ox = 155, oy = 310;
+        const cBlue = dark ? '#60a5fa' : '#2563eb';
+        const cRed = dark ? '#fb7185' : '#e11d48';
+        const cGreen = dark ? '#34d399' : '#059669';
+        const cAmber = dark ? '#fbbf24' : '#d97706';
+
+        // Draw shaded plane Col(X) = span{1, x}
+        ctx.save();
+        ctx.fillStyle = dark ? 'rgba(59,130,246,0.16)' : 'rgba(37,99,235,0.11)';
+        ctx.strokeStyle = cBlue; ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(55, 345); ctx.lineTo(220, 210); ctx.lineTo(510, 210); ctx.lineTo(395, 345);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = cBlue; ctx.font = '700 13px Inter, sans-serif';
+        ctx.fillText('Col(X) = span{1, x}', 340, 332);
+        ctx.restore();
+
+        // Basis arrows 1 and x inside plane
+        drawArrow2D(ox, oy, ox + 110, oy - 60, dark ? '#94a3b8' : '#64748b', 2, false, '1');
+        drawArrow2D(ox, oy, ox + 135, oy + 5, dark ? '#94a3b8' : '#64748b', 2, false, 'x');
+
+        // Projection mu_hat on plane, and y above plane
+        const muX = 360, muY = 268;
+        const dropH = Math.min(185, Math.max(25, Math.sqrt(ols.rss) * 28));
+        const yX = muX, yY = muY - dropH;
+
+        drawArrow2D(ox, oy, muX, muY, cGreen, 3.2, false, 'μ̂ = Xβ̂ (OLS shadow)');
+        drawArrow2D(ox, oy, yX, yY, cBlue, 3.2, false, 'y (data vector)');
+        drawArrow2D(muX, muY, yX, yY, cRed, 2.8, true, 'û = y − μ̂ (⊥ plane)');
+
+        // Right-angle box at mu_hat
+        ctx.strokeStyle = cRed; ctx.lineWidth = 1.6;
+        ctx.strokeRect(muX - 14, muY - 14, 14, 14);
+
+        // If candidate line is not OLS, show a slanted non-orthogonal candidate w on the plane
+        if (!isOpt) {
+          const wX = muX - 75, wY = muY + 26;
+          drawArrow2D(ox, oy, wX, wY, cAmber, 2.4, true, 'w = Xb');
+          drawArrow2D(wX, wY, yX, yY, cAmber, 2.4, true, 'Longer residual!');
+        }
+      }
+
+      // Telemetry
+      document.getElementById('statCandRSS').textContent = candRSS.toFixed(2);
+      document.getElementById('statOptRSS').textContent = ols.rss.toFixed(2);
+      document.getElementById('statOrth').innerHTML = isOpt
+        ? `<span style="color:var(--success)">0.0, 0.0 (&#8869; &#10003;)</span>`
+        : `<span style="color:var(--danger)">${sumU.toFixed(1)}, ${sumXU.toFixed(1)}</span>`;
+      document.getElementById('statR2').textContent = `${ols.r2.toFixed(3)} (${(ols.r2*100).toFixed(1)}%)`;
+
+      document.getElementById('olsNote').innerHTML = isOpt
+        ? `<strong>Exact OLS Projection Reached!</strong> Notice u&#770;<sup>T</sup>1 = 0 and u&#770;<sup>T</sup>x = 0. Pythagoras: TSS (${ols.tss.toFixed(1)}) = ESS (${ols.ess.toFixed(1)}) + RSS (${ols.rss.toFixed(1)}).`
+        : `<strong>Non-Orthogonal Fit:</strong> Candidate RSS (${candRSS.toFixed(2)}) &gt; Minimum OLS RSS (${ols.rss.toFixed(2)}) by Pythagoras! Click <em>Snap to Exact OLS</em> to drop perpendicularly.`;
+    }
+
+    // Drag points vertically in scatter view
+    function getCanvasXY(e) {
+      const r = canvas.getBoundingClientRect();
+      const cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      const cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+      return { cx: cx * (canvas.width / r.width), cy: cy * (canvas.height / r.height) };
+    }
+    canvas.addEventListener('mousedown', e => {
+      if (curView !== 'scatter') return;
+      const p = getCanvasXY(e), b = getBounds();
+      pts.forEach((pt, idx) => {
+        const m = mapPt(pt.x, pt.y, b);
+        if (Math.hypot(p.cx - m.cx, p.cy - m.cy) < 16) dragIdx = idx;
+      });
+    });
+    window.addEventListener('mousemove', e => {
+      if (dragIdx < 0 || curView !== 'scatter') return;
+      const p = getCanvasXY(e), b = getBounds();
+      const newY = b.minY + ((canvas.height - 48 - p.cy) / (canvas.height - 96)) * (b.maxY - b.minY);
+      pts[dragIdx].y = Math.round(newY * 2) / 2;
+      snapToOLS();
+    });
+    window.addEventListener('mouseup', () => dragIdx = -1);
+
+    snapToOLS();
+
+    /* ============== PROOF STEPPER ============== */
+    let curStep = 1;
+    function nextProofStep() {
+      const steps = document.querySelectorAll('#proofSteps .proof-step');
+      if (curStep < steps.length) { steps[curStep].classList.add('revealed'); curStep++; }
+    }
+    function resetProof() {
+      document.querySelectorAll('#proofSteps .proof-step').forEach((el, i) => el.classList.toggle('revealed', i === 0));
+      curStep = 1;
+    }
+
+    function fmtN(n) {
+      if (Math.abs(n) < 1e-7) return '0';
+      if (Math.abs(n - Math.round(n)) < 1e-5) return String(Math.round(n));
+      return n.toFixed(3);
+    }
+    function matHTML(M) {
+      const cols = M[0].length;
+      let h = `<span class="mat-inline" style="grid-template-columns:repeat(${cols},auto);">`;
+      M.forEach(r => r.forEach(v => { h += `<span>${fmtN(v)}</span>`; }));
+      return h + '</span>';
+    }
+
+    /* ============== SOLVER A: COMPLETE OLS SOLVER ============== */
+    function loadOLSSolver(xs, ys) {
+      document.getElementById('solX').value = xs;
+      document.getElementById('solY').value = ys;
+      runOLSSolver();
+    }
+    function runOLSSolver() {
+      const xs = document.getElementById('solX').value.split(',').map(Number);
+      const ys = document.getElementById('solY').value.split(',').map(Number);
+      const out = document.getElementById('olsSolOut');
+      if (xs.some(isNaN) || ys.some(isNaN) || xs.length !== ys.length || xs.length < 2) {
+        out.innerHTML = '<span style="color:var(--danger)">Enter equal-length numeric lists (n &ge; 2).</span>';
+        return;
+      }
+      const data = xs.map((x, i) => ({ x, y: ys[i] }));
+      const ols = computeOLS(data);
+      if (ols.sxx < 1e-9) {
+        out.innerHTML = '<span style="color:var(--danger)">All x values are identical (S<sub>xx</sub> = 0). X<sup>T</sup>X is singular!</span>';
+        return;
+      }
+      const sumX = xs.reduce((a,b)=>a+b,0), sumX2 = xs.reduce((a,b)=>a+b*b,0);
+      const sumY = ys.reduce((a,b)=>a+b,0), sumXY = xs.reduce((a,x,i)=>a+x*ys[i],0);
+      const mu = xs.map(x => ols.b0 + ols.b1 * x);
+      const u = ys.map((y, i) => y - mu[i]);
+      const u1 = u.reduce((a,b)=>a+b,0);
+      const ux = u.reduce((a,v,i)=>a+v*xs[i],0);
+
+      out.innerHTML = `
+        <div class="step-line"><strong>1. Normal Equations X<sup>T</sup>X&beta;&#770; = X<sup>T</sup>y:</strong><br>
+          ${matHTML([[ols.n, sumX],[sumX, sumX2]])} &beta;&#770; = ${matHTML([[sumY],[sumXY]])}
+        </div>
+        <div class="step-line"><strong>2. OLS Estimates:</strong> <strong style="color:var(--primary);">&beta;&#770;<sub>0</sub> = ${fmtN(ols.b0)}, &nbsp; &beta;&#770;<sub>1</sub> = ${fmtN(ols.b1)}</strong></div>
+        <div class="step-line"><strong>3. Fitted &amp; Residual Vectors:</strong><br>
+          &mu;&#770; = (${mu.map(fmtN).join(', ')})<sup>T</sup><br>
+          u&#770; = (${u.map(fmtN).join(', ')})<sup>T</sup>
+        </div>
+        <div class="step-line"><strong>4. Orthogonality Check:</strong> u&#770;<sup>T</sup>1 = ${fmtN(u1)}, &nbsp; u&#770;<sup>T</sup>x = ${fmtN(ux)} <span style="color:var(--success)">&#10003;</span></div>
+        <div class="step-line"><strong>5. Pythagoras &amp; R&sup2;:</strong> TSS (${fmtN(ols.tss)}) = ESS (${fmtN(ols.ess)}) + RSS (${fmtN(ols.rss)}) &rArr; <strong>R&sup2; = ${ols.r2.toFixed(4)}</strong></div>
+      `;
+    }
+    runOLSSolver();
+
+    /* ============== SOLVER B: 3x3 HAT MATRIX ============== */
+    function loadHatSolver(xs, ys) {
+      document.getElementById('hatX').value = xs;
+      document.getElementById('hatY').value = ys;
+      runHatSolver();
+    }
+    function runHatSolver() {
+      const xs = document.getElementById('hatX').value.split(',').map(Number);
+      const ys = document.getElementById('hatY').value.split(',').map(Number);
+      const out = document.getElementById('hatOut');
+      if (xs.some(isNaN) || ys.some(isNaN) || xs.length !== 3 || ys.length !== 3) {
+        out.innerHTML = '<span style="color:var(--danger)">Please enter exactly 3 numbers for x and 3 numbers for y.</span>';
+        return;
+      }
+      const s1 = 3, sx = xs[0]+xs[1]+xs[2], sxx = xs[0]**2+xs[1]**2+xs[2]**2;
+      const det = s1*sxx - sx*sx;
+      if (Math.abs(det) < 1e-9) { out.innerHTML = '<span style="color:var(--danger)">X<sup>T</sup>X is singular!</span>'; return; }
+      const inv = [[sxx/det, -sx/det], [-sx/det, s1/det]];
+      // H = X * inv * X^T
+      const H = [0,1,2].map(i => [0,1,2].map(j => {
+        const t0 = 1*inv[0][0] + xs[i]*inv[1][0];
+        const t1 = 1*inv[0][1] + xs[i]*inv[1][1];
+        return t0*1 + t1*xs[j];
+      }));
+      const trH = H[0][0] + H[1][1] + H[2][2];
+      const Hy = [0,1,2].map(i => H[i][0]*ys[0] + H[i][1]*ys[1] + H[i][2]*ys[2]);
+      out.innerHTML = `
+        <div class="step-line"><strong>1. Projection (Hat) Matrix H = X(X<sup>T</sup>X)<sup>&minus;1</sup>X<sup>T</sup>:</strong><br>${matHTML(H)}</div>
+        <div class="step-line"><strong>2. Properties:</strong> Symmetric (H<sup>T</sup>=H &#10003;), Idempotent (H&sup2;=H &#10003;), <strong>tr(H) = rank(H) = ${fmtN(trH)}</strong></div>
+        <div class="step-line"><strong>3. Projected Vector &mu;&#770; = Hy:</strong> <strong style="color:var(--success);">(${Hy.map(fmtN).join(', ')})<sup>T</sup></strong></div>
+      `;
+    }
+    runHatSolver();
+
+    /* ============== TRUE / FALSE EXAM QUIZ ============== */
+    const tfData = [
+      {
+        src: "MATH106_LR Slide 11",
+        q: "In simple linear regression with n = 50 observations, the vector picture of OLS lives in R\u00B2.",
+        ans: false,
+        exp: "FALSE! The SCATTERPLOT lives in R\u00B2 (50 dots), whereas the VECTOR PICTURE lives in R\u2075\u2070 (3 arrows: 1, x, and y)."
+      },
+      {
+        src: "MATH106_LR Slide 16",
+        q: "Setting the partial derivatives of S(b\u2080, b\u2081) to zero produces the exact same equations as forcing the residual vector u\u0302 to be orthogonal to Col(X).",
+        ans: true,
+        exp: "TRUE. \u2202S/\u2202b\u2080 = 0 is u\u0302^T 1 = 0, and \u2202S/\u2202b\u2081 = 0 is u\u0302^T x = 0 \u2014 which combine into X^T u\u0302 = 0 \u21D4 X^T X \u03B2\u0302 = X^T y."
+      },
+      {
+        src: "Anton 6.5 Q7",
+        q: "In simple linear regression y = \u03B2\u2080 + \u03B2\u2081x + u, the matrix X^T X is invertible if and only if at least two x_i values are distinct.",
+        ans: true,
+        exp: "TRUE. det(X^T X) = n S_{xx}, which is strictly positive iff the x_i are not all identical."
+      },
+      {
+        src: "MATH106_LR Slide 24",
+        q: "Geometrically, R\u00B2 = ESS / TSS equals cos\u00B2(\u03B8), where \u03B8 is the angle between the centered vectors (y \u2212 y\u03041) and (x \u2212 x\u03041).",
+        ans: true,
+        exp: "TRUE. Because u\u0302 \u22A5 (\u03BC\u0302 \u2212 y\u03041), they form a right triangle with hypotenuse (y \u2212 y\u03041), so cos(\u03B8) = ||\u03BC\u0302 \u2212 y\u03041|| / ||y \u2212 y\u03041|| \u21D2 cos\u00B2(\u03B8) = ESS/TSS = R\u00B2."
+      },
+      {
+        src: "Projection Matrix (Hat Matrix)",
+        q: "The projection matrix H = X(X^T X)^{-1} X^T is always symmetric and idempotent, with trace equal to the number of columns of X.",
+        ans: true,
+        exp: "TRUE (assuming full column rank k). H^T = H, H\u00B2 = H, and tr(H) = rank(H) = k."
+      }
+    ];
+
+    let tfResults = {};
+    const tfContainer = document.getElementById('tfContainer');
+    tfData.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'tf-item';
+      div.innerHTML = `
+        <div class="tf-meta">${item.src}</div>
+        <div class="tf-q">${idx + 1}. ${item.q}</div>
+        <div class="tf-actions">
+          <button class="tf-btn" id="tf-${idx}-t" onclick="answerTF(${idx}, true)">True</button>
+          <button class="tf-btn" id="tf-${idx}-f" onclick="answerTF(${idx}, false)">False</button>
+        </div>
+        <div class="tf-feedback" id="tf-fb-${idx}"></div>
+      `;
+      tfContainer.appendChild(div);
+    });
+
+    function answerTF(idx, choice) {
+      const item = tfData[idx];
+      const isCorrect = choice === item.ans;
+      tfResults[idx] = isCorrect;
+      const btnT = document.getElementById(`tf-${idx}-t`), btnF = document.getElementById(`tf-${idx}-f`);
+      btnT.className = 'tf-btn'; btnF.className = 'tf-btn';
+      (choice ? btnT : btnF).classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+      const fb = document.getElementById(`tf-fb-${idx}`);
+      fb.className = `tf-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+      fb.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Not quite.'}</strong> ${item.exp}`;
+      const score = Object.values(tfResults).filter(Boolean).length;
+      document.getElementById('tfScore').textContent = `Score: ${score} / ${tfData.length}`;
+    }
+
+    function checkOLS() {
+      const raw = document.getElementById('ansOLS').value.replace(/\s/g, '');
+      const msg = document.getElementById('olsMsg');
+      if (raw === '45,5') {
+        msg.style.color = 'var(--success)'; msg.textContent = '\u2713 Correct! b\u2081 = 130/26 = 5, b\u2080 = 70 \u2212 5(5) = 45.';
+      } else {
+        msg.style.color = 'var(--danger)'; msg.textContent = '\u2717 Try again! Compute b\u2081 = S_xy/S_xx first, then b\u2080 = y\u0304 \u2212 b\u2081 x\u0304.';
+      }
+    }
+    function toggleBox(id) { document.getElementById(id).classList.toggle('show'); }
+  </script>
+</body>
+</html>

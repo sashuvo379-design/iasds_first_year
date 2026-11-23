@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 11: Bernoulli, Binomial &amp; Hypergeometric Distributions | AST 102 — Elements of Probability (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Playfair Display, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ivory: '#FAFAF7',
+            borderWarm: '#E7E5E0',
+            ink: '#1C1917',
+            muted: '#57534E',
+            tealPrimary: '#0F766E',
+            tealHover: '#115E59',
+            tealTint: '#F0FDFA',
+            amberHighlight: '#D97706',
+            amberTint: '#FFFBEB',
+            roseAlert: '#BE123C',
+            roseTint: '#FFF1F2',
+            indigoSec: '#4338CA',
+            indigoTint: '#EEF2FF',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX 0.16.9 CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #FAFAF7;
+      color: #1C1917;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    h1, h2, .font-editorial {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #0F766E;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+    }
+
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] > summary .details-chevron {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-[#F0FDFA] selection:text-[#0F766E]">
+
+  <!-- ===================================================================== -->
+  <!-- 1. STICKY TOP NAVIGATION & READING PROGRESS BAR                       -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E7E5E0] shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam-Weight Badges -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-[#E7E5E0]/70">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-[#57534E]">
+          <span class="inline-flex items-center gap-1.5 font-bold text-[#1C1917]">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+            Module 4 · Lesson 11 of 14
+          </span>
+          <span class="text-stone-300">—</span>
+          <span class="text-[#0F766E] font-semibold">Bernoulli, Binomial &amp; Hypergeometric</span>
+        </nav>
+
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F0FDFA] text-[#0F766E] border border-teal-200">
+            Year Final Core
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFFBEB] text-[#D97706] border border-amber-200">
+            2nd Incourse
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Smooth-Scroll Anchor Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#4338CA] hover:bg-[#EEF2FF] transition-colors">Proofs</a>
+        <a href="#exam-vault" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#D97706] hover:bg-[#FFFBEB] transition-colors">ISRT Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Quiz</a>
+      </nav>
+    </div>
+
+    <!-- Thin 3px Teal Reading Progress Bar -->
+    <div class="w-full h-[3px] bg-stone-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-[#0F766E] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- 2. HERO HEADER & INTERACTIVE LEARNING OBJECTIVES                      -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-[#1C1917] via-[#134E4A] to-[#0F766E] text-white py-12 sm:py-16 border-b border-teal-950">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#F0FDFA]">Module 4 Opener · Special Probability Distributions</span>
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-200">~45 min study</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+            Bernoulli, Binomial &amp; Hypergeometric Distributions
+          </h1>
+
+          <p class="text-teal-50/90 text-base sm:text-lg leading-relaxed">
+            From a single yes/no trial to counting successes with and without replacement. Grounded in <strong>AST 102 (ISRT, University of Dhaka)</strong>, <strong>Sheldon Ross Ch. 4</strong>, and authentic <strong>Year Final Papers (2022–2025)</strong>.
+          </p>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D97706] hover:bg-amber-500 text-white font-semibold text-sm shadow-lg shadow-black/25 transition-all">
+              Launch 4-Tab Distribution Lab
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="#exam-vault" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+              Jump to ISRT Exam Vault
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive 5-Item Learning Objectives Checklist -->
+        <div class="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-5 sm:p-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#F0FDFA]">Learning Objectives</span>
+            <span id="objCounter" class="font-mono text-xs font-bold text-amber-200">0 / 5 Completed</span>
+          </div>
+          <ul id="objectivesList" class="space-y-1.5 text-xs sm:text-sm text-teal-50">
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Check the four BINS conditions to verify when a count variable is Binomial.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Derive and apply Binomial PMF, Mean, Variance, MGF, Mode, and the recurrence ratio $P(X=i) = c P(X=i-1)$.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Use the reproductive property of independent Binomials ($X_1 + X_2$) and spot invalid parameter/difference traps.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Model sampling without replacement with the Hypergeometric distribution and its Finite Population Correction (FPC).</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Recognize when Hypergeometric converges to Binomial ($n/N \le 0.05$).</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- 3. SECTION 1: CORE CONCEPTS & INTUITION                             -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 01 • Core Theory</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">Sheldon Ross Ch. 4.6, 4.8.3 · ISRT Year Finals 2022–2025</p>
+      </div>
+
+      <!-- CARD 1: BERNOULLI TRIAL & DISTRIBUTION -->
+      <article class="bg-white rounded-2xl border border-[#E7E5E0] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1C1917] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">01</span>
+            Bernoulli Trial &amp; Distribution ($\text{Bernoulli}(p)$)
+          </h3>
+          <span class="text-xs font-semibold text-[#57534E]">The Atomic Building Block</span>
+        </div>
+
+        <p class="text-sm text-[#57534E] leading-relaxed">
+          A <strong>Bernoulli trial</strong> is a single random experiment with exactly two mutually exclusive outcomes: <em>Success</em> ($X = 1$, probability $p$) or <em>Failure</em> ($X = 0$, probability $q = 1 - p$), where $0 \le p \le 1$.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-center">
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E] mb-1">PMF ($x \in \{0,1\}$)</div>
+            <div class="text-sm font-semibold text-[#1C1917]">$p^x (1-p)^{1-x}$</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E] mb-1">Mean</div>
+            <div class="text-sm font-semibold text-[#1C1917]">$E(X) = p$</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+            <div class="text-[11px] font-bold uppercase text-[#D97706] mb-1">Variance</div>
+            <div class="text-sm font-semibold text-[#1C1917]">$V(X) = p(1-p) = pq$</div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+            <div class="text-[11px] font-bold uppercase text-[#4338CA] mb-1">MGF</div>
+            <div class="text-sm font-semibold text-[#1C1917]">$M_X(t) = q + pe^t$</div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 text-xs sm:text-sm text-[#1C1917] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span class="font-bold text-[#0F766E] uppercase tracking-wider text-[11px] block mb-0.5">Visual Indicator Connection</span>
+            <span>A Binomial random variable $X \sim B(n,p)$ is simply the sum of $n$ i.i.d. $\text{Bernoulli}(p)$ indicator variables:</span>
+          </div>
+          <div class="px-4 py-2 rounded-xl bg-white border border-teal-200 font-semibold text-center shrink-0">
+            $$X = \sum_{i=1}^{n} I_i, \quad I_i \stackrel{\text{i.i.d.}}{\sim} \text{Bern}(p)$$
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2: BINOMIAL DISTRIBUTION & BINS CONDITIONS -->
+      <article class="bg-white rounded-2xl border border-[#E7E5E0] p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1C1917] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">02</span>
+            The Binomial Distribution $B(n, p)$ &amp; BINS Conditions
+          </h3>
+          <span class="text-xs font-semibold text-[#57534E]">ISRT Year Final 2022 Q5 · 2025 Q7</span>
+        </div>
+
+        <!-- 4-Pill BINS Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#0F766E] text-white font-mono text-xs font-extrabold inline-flex items-center justify-center">B</span>
+              <span class="font-bold text-[#1C1917] text-sm">Binary Outcomes</span>
+            </div>
+            <p class="text-xs text-[#57534E] leading-relaxed">Each trial results in exactly two categories: Success ($1$) or Failure ($0$).</p>
+          </div>
+          <div class="p-4 rounded-xl bg-[#EEF2FF] border border-indigo-200 space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#4338CA] text-white font-mono text-xs font-extrabold inline-flex items-center justify-center">I</span>
+              <span class="font-bold text-[#1C1917] text-sm">Independent Trials</span>
+            </div>
+            <p class="text-xs text-[#57534E] leading-relaxed">The outcome of one trial does not influence the outcome of any other trial.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-[#FFFBEB] border border-amber-200 space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#D97706] text-white font-mono text-xs font-extrabold inline-flex items-center justify-center">N</span>
+              <span class="font-bold text-[#1C1917] text-sm">Number $n$ Fixed</span>
+            </div>
+            <p class="text-xs text-[#57534E] leading-relaxed">The total number of trials $n$ is predetermined in advance (no early stopping).</p>
+          </div>
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#0F766E] text-white font-mono text-xs font-extrabold inline-flex items-center justify-center">S</span>
+              <span class="font-bold text-[#1C1917] text-sm">Same Probability $p$</span>
+            </div>
+            <p class="text-xs text-[#57534E] leading-relaxed">The success probability $p$ remains strictly constant across every trial.</p>
+          </div>
+        </div>
+
+        <!-- Formulas Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] space-y-2">
+            <div class="font-bold text-[#0F766E] uppercase tracking-wider text-[11px]">PMF, Mean, Variance &amp; Generating Functions</div>
+            <div class="space-y-1.5 text-[#1C1917]">
+              <div>$P(X = x) = \dbinom{n}{x} p^x q^{n-x}, \quad x = 0, 1, \dots, n \;\;(q = 1-p)$</div>
+              <div>$E(X) = np, \qquad V(X) = npq, \qquad \gamma_1 = \dfrac{1 - 2p}{\sqrt{npq}}$</div>
+              <div>$M_X(t) = (q + pe^t)^n, \qquad P_X(t) = (q + pt)^n$</div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#FFFBEB]/70 border border-amber-200 space-y-2">
+            <div class="font-bold text-[#D97706] uppercase tracking-wider text-[11px]">Recurrence Ratio &amp; Mode</div>
+            <div class="space-y-1.5 text-[#1C1917]">
+              <div>$\dfrac{P(X = i)}{P(X = i - 1)} = \dfrac{n - i + 1}{i}\cdot\dfrac{p}{q}, \quad i = 1, 2, \dots, n$</div>
+              <div><strong>Mode:</strong> $m = \lfloor (n+1)p \rfloor$.</div>
+              <p class="text-xs text-[#57534E]">If $(n+1)p$ is an integer, the distribution is <strong>bimodal</strong> at $(n+1)p - 1$ and $(n+1)p$.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3: HYPERGEOMETRIC DISTRIBUTION -->
+      <article class="bg-white rounded-2xl border border-[#E7E5E0] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1C1917] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 font-mono text-xs font-bold inline-flex items-center justify-center">03</span>
+            The Hypergeometric Distribution $\text{Hyp}(N, K, n)$
+          </h3>
+          <span class="text-xs font-semibold text-[#57534E]">Sampling Without Replacement · 2022 Q2(c)</span>
+        </div>
+
+        <p class="text-sm text-[#57534E] leading-relaxed">
+          Consider a finite population of size $N$ containing $K$ successes (e.g., defective bulbs, tagged fish) and $N - K$ failures. Draw a random sample of size $n$ <strong>without replacement</strong>, and let $X$ be the number of successes in the sample.
+        </p>
+
+        <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] text-center">
+          $$P(X = x) = \frac{\dbinom{K}{x}\dbinom{N - K}{n - x}}{\dbinom{N}{n}}, \qquad \max(0,\, n - (N - K)) \le x \le \min(n,\, K)$$
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Mean (Identical to Binomial!)</div>
+            <div class="text-center py-1 text-base font-bold text-[#1C1917]">
+              $$E(X) = n\frac{K}{N} = np \qquad \left(\text{where } p = \frac{K}{N}\right)$$
+            </div>
+            <p class="text-xs text-[#57534E]">Even though draws are dependent, linearity of expectation preserves the exact same mean $np$.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#EEF2FF]/70 border border-indigo-200 space-y-1.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#4338CA]">Variance &amp; Finite Population Correction (FPC)</div>
+            <div class="text-center py-1 text-sm sm:text-base font-bold text-[#1C1917]">
+              $$V(X) = n\frac{K}{N}\left(1 - \frac{K}{N}\right)\underbrace{\left(\frac{N - n}{N - 1}\right)}_{\text{FPC} \le 1} = npq \cdot \text{FPC}$$
+            </div>
+            <p class="text-xs text-[#57534E]">
+              Because draws without replacement are <strong>negatively correlated</strong>, $V_{\text{Hyp}}(X) \le V_{\text{Bin}}(X)$ strictly for $n \ge 2$. As $N \to \infty$ (rule of thumb: $n/N \le 0.05$), $\text{FPC} \to 1$ and $\text{Hyp}(N,K,n) \to B(n, K/N)$.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- ROSE ISRT EXAM-TRAP SPOTLIGHT BOX -->
+      <div class="rounded-2xl border-2 border-[#BE123C]/40 bg-[#FFF1F2] p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#BE123C] text-white font-extrabold text-sm shadow-xs">!</span>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#BE123C]">ISRT Exam-Trap Spotlight</span>
+            <h3 class="text-lg font-bold text-[#1C1917]">Three High-Frequency AST 102 Traps</h3>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 1: Mean vs. Variance Bound</div>
+            <p class="text-[#57534E] leading-relaxed">
+              For any non-degenerate Binomial, $V(X) = npq &lt; np = E(X)$ strictly! In <strong>Year Final 2024 Q1(a)</strong>, $\mu = 100, \sigma = 50 \implies \sigma^2 = 2500 &gt; 100 \implies q = 25 &gt; 1$ (<strong>impossible!</strong>). In <strong>2025 Q7(b)</strong>, $\mu = \sigma^2 \implies q = 1 \implies p = 0$ (degenerate).
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 2: Stopping Early Breaks "N"</div>
+            <p class="text-[#57534E] leading-relaxed">
+              In <strong>Year Final 2025 Q7(d)</strong>, trying keys with replacement <em>until the treasure chest opens</em> (or up to 6 attempts) is <strong>NOT Binomial</strong> because the number of trials $n$ is random, not fixed!
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 3: $X_1 - X_2$ is NOT Binomial</div>
+            <p class="text-[#57534E] leading-relaxed">
+              For independent $X_1 \sim B(n_1, p)$ and $X_2 \sim B(n_2, p)$, the sum $X_1 + X_2 \sim B(n_1 + n_2, p)$, but the difference $X_1 - X_2$ can take <strong>negative values</strong> and is never Binomial!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDE-BY-SIDE COMPARISON TABLE -->
+      <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#1C1917] text-white flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold">Side-by-Side Comparison: Bernoulli vs. Binomial vs. Hypergeometric</h3>
+          <span class="text-xs text-teal-200">Quick Exam Reference</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-[#FAFAF7] border-b border-[#E7E5E0] text-[#57534E] uppercase text-[11px] tracking-wider">
+                <th class="py-3.5 px-4 font-bold">Property</th>
+                <th class="py-3.5 px-4 font-bold text-[#0F766E]">Bernoulli$(p)$</th>
+                <th class="py-3.5 px-4 font-bold text-[#D97706]">Binomial$(n, p)$</th>
+                <th class="py-3.5 px-4 font-bold text-[#4338CA]">Hypergeometric$(N, K, n)$</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100 text-[#1C1917]">
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Sampling Type</td>
+                <td class="py-3 px-4">Single trial</td>
+                <td class="py-3 px-4">With replacement / infinite pop.</td>
+                <td class="py-3 px-4">Without replacement (finite pop.)</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Parameters</td>
+                <td class="py-3 px-4">$p \in [0, 1]$</td>
+                <td class="py-3 px-4">$n \in \mathbb{N},\; p \in [0, 1]$</td>
+                <td class="py-3 px-4">Pop $N$, Successes $K$, Sample $n$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Support</td>
+                <td class="py-3 px-4">$\{0, 1\}$</td>
+                <td class="py-3 px-4">$\{0, 1, \dots, n\}$</td>
+                <td class="py-3 px-4">$\max(0, n-N+K) \le x \le \min(n, K)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">PMF</td>
+                <td class="py-3 px-4">$p^x q^{1-x}$</td>
+                <td class="py-3 px-4">$\dbinom{n}{x}p^x q^{n-x}$</td>
+                <td class="py-3 px-4">$\dfrac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Mean $E(X)$</td>
+                <td class="py-3 px-4">$p$</td>
+                <td class="py-3 px-4">$np$</td>
+                <td class="py-3 px-4">$n\dfrac{K}{N} = np$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Variance $V(X)$</td>
+                <td class="py-3 px-4">$pq$</td>
+                <td class="py-3 px-4">$npq$</td>
+                <td class="py-3 px-4">$npq\left(\dfrac{N-n}{N-1}\right)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-4 font-bold">Independence of Trials</td>
+                <td class="py-3 px-4">N/A (1 trial)</td>
+                <td class="py-3 px-4 text-[#0F766E] font-semibold">Yes (i.i.d. trials)</td>
+                <td class="py-3 px-4 text-[#BE123C] font-semibold">No (negatively correlated)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 4. SECTION 2: 4-TAB INTERACTIVE WORKBENCH                           -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 02 • Interactive Studio</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">4-Tab Interactive Distribution Workbench</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">High-DPI Canvas plots · Exact log-factorial math up to $N = 200$</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm overflow-hidden">
+        <!-- Pill Tab Bar -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-[#E7E5E0] bg-[#FAFAF7] p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="binom" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#0F766E] text-white shadow-sm">
+            1. Binomial PMF, CDF &amp; Mode
+          </button>
+          <button type="button" role="tab" data-tab="conv" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#57534E] hover:bg-stone-200/70">
+            2. Binomial vs. Hypergeometric
+          </button>
+          <button type="button" role="tab" data-tab="bins" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#57534E] hover:bg-stone-200/70">
+            3. BINS Diagnostic Classifier
+          </button>
+          <button type="button" role="tab" data-tab="urn" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#57534E] hover:bg-stone-200/70">
+            4. Live Urn Simulator
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: BINOMIAL PMF, CDF & MODE EXPLORER                        -->
+        <!-- =============================================================== -->
+        <div id="tab-binom" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E7E5E0]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1C1917]">Binomial PMF, Step-CDF &amp; Mode Explorer</h3>
+              <p class="text-xs sm:text-sm text-[#57534E]">Adjust $n, p$ and query bounds $[a, b]$. Hover over any bar for exact $P(X=x)$ and $F(x)$. Amber diamonds mark the Mode(s).</p>
+            </div>
+            <!-- 4 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-bpreset="marksman" class="bin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all">ISRT 2025 Marksman (n=10, p=0.8256)</button>
+              <button type="button" data-bpreset="redballs" class="bin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all">ISRT 2022 Red Balls (n=10, p=1/3)</button>
+              <button type="button" data-bpreset="fair20" class="bin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all">Symmetric Fair (n=20, p=0.5)</button>
+              <button type="button" data-bpreset="skew25" class="bin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all">Right-Skewed (n=25, p=0.1)</button>
+            </div>
+          </div>
+
+          <!-- Controls Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E0] text-xs">
+            <div class="lg:col-span-3 space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Trials $n$</span><span id="binValN" class="font-mono text-[#1C1917]">10</span></div>
+              <input id="binSliderN" type="range" min="1" max="40" step="1" value="10" class="w-full" />
+            </div>
+            <div class="lg:col-span-3 space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Prob $p$</span><span id="binValP" class="font-mono text-[#1C1917]">0.5000</span></div>
+              <input id="binSliderP" type="range" min="0.05" max="0.95" step="0.01" value="0.50" class="w-full" />
+            </div>
+            <div class="lg:col-span-4 grid grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#4338CA]">Lower $a$</span><span id="binValA" class="font-mono">3</span></div>
+                <input id="binSliderA" type="range" min="0" max="10" step="1" value="3" class="w-full" />
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#4338CA]">Upper $b$</span><span id="binValB" class="font-mono">7</span></div>
+                <input id="binSliderB" type="range" min="0" max="10" step="1" value="7" class="w-full" />
+              </div>
+            </div>
+            <div class="lg:col-span-2 flex items-center">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-[#E7E5E0] cursor-pointer w-full">
+                <input id="binCdfToggle" type="checkbox" class="w-4 h-4 accent-[#4338CA]" />
+                <span class="font-semibold text-[#1C1917]">Step-CDF</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Canvas with Floating Hover Tooltip -->
+          <div class="relative rounded-2xl border border-[#E7E5E0] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#57534E]">Binomial PMF $P(X=x)$</span>
+              <div class="flex flex-wrap items-center gap-3 text-[11px] font-semibold">
+                <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-3 h-3 rounded bg-[#0F766E]"></span>In $[a,b]$</span>
+                <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-2.5 h-2.5 rotate-45 bg-[#D97706] inline-block"></span>Mode</span>
+                <span class="inline-flex items-center gap-1 text-[#4338CA]"><span class="w-4 border-t-2 border-[#4338CA]"></span>Step-CDF $F(x)$</span>
+              </div>
+            </div>
+            <div id="binCanvasWrap" class="relative w-full">
+              <canvas id="binCanvas" class="cursor-crosshair" aria-label="Binomial PMF and Step-CDF chart"></canvas>
+              <div id="binTooltip" class="hidden pointer-events-none absolute z-20 px-3 py-2 rounded-xl bg-[#1C1917]/95 text-white font-mono text-[11px] shadow-lg whitespace-nowrap"></div>
+            </div>
+          </div>
+
+          <!-- Live Stats Strip -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+              <div class="text-[11px] font-bold text-[#57534E]">Mean $E(X)$</div>
+              <div id="binStatMean" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">5.000</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+              <div class="text-[11px] font-bold text-[#57534E]">Variance $V(X)$</div>
+              <div id="binStatVar" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">2.500</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+              <div class="text-[11px] font-bold text-[#57534E]">Std Dev $SD(X)$</div>
+              <div id="binStatSd" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">1.581</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FFFBEB] border border-amber-200">
+              <div class="text-[11px] font-bold text-[#D97706]">Mode(s)</div>
+              <div id="binStatMode" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">5</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0]">
+              <div class="text-[11px] font-bold text-[#57534E]">Skewness $\gamma_1$</div>
+              <div id="binStatSkew" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">0.000</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0F766E] text-white shadow-sm">
+              <div id="binStatIntLbl" class="text-[11px] font-bold text-teal-100">$P(3 \le X \le 7)$</div>
+              <div id="binStatProb" class="text-lg font-extrabold font-mono text-white mt-0.5">0.8906</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: BINOMIAL VS. HYPERGEOMETRIC CONVERGENCE LAB              -->
+        <!-- =============================================================== -->
+        <div id="tab-conv" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E7E5E0]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1C1917]">Binomial vs. Hypergeometric Convergence Lab</h3>
+              <p class="text-xs sm:text-sm text-[#57534E]">Compare exact sampling without replacement $\text{Hyp}(N,K,n)$ against Binomial $B(n, p=K/N)$. Watch them merge when $n/N \le 5\%$.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-cpreset="flash" class="conv-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">ISRT 2022 Flashbulbs (N=10, K=3, n=3)</button>
+              <button type="button" data-cpreset="fish" class="conv-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all">Tagged Fish (N=50, K=15, n=10)</button>
+              <button type="button" data-cpreset="large" class="conv-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all">Large Pop Convergence (N=200, K=60, n=10)</button>
+              <button type="button" data-cpreset="high" class="conv-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all">High Sampling Fraction (N=15, K=7, n=10)</button>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E0] text-xs">
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#1C1917]">Population Size $N$</span><span id="convValN" class="font-mono text-[#0F766E]">10</span></div>
+              <input id="convSliderN" type="range" min="10" max="200" step="1" value="10" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#1C1917]">Population Successes $K$</span><span id="convValK" class="font-mono text-[#0F766E]">3</span></div>
+              <input id="convSliderK" type="range" min="1" max="9" step="1" value="3" class="w-full" />
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#1C1917]">Sample Size $n$</span><span id="convValn" class="font-mono text-[#D97706]">3</span></div>
+              <input id="convSlidern" type="range" min="1" max="10" step="1" value="3" class="w-full" />
+            </div>
+          </div>
+
+          <!-- Paired Bar Chart Canvas -->
+          <div class="rounded-2xl border border-[#E7E5E0] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#57534E]">Paired PMF Comparison ($p = K/N$)</span>
+              <div class="flex items-center gap-4 text-[11px] font-bold">
+                <span class="inline-flex items-center gap-1.5 text-[#0F766E]"><span class="w-3 h-3 rounded bg-[#0F766E]"></span>Hypergeometric $\text{Hyp}(N,K,n)$</span>
+                <span class="inline-flex items-center gap-1.5 text-[#D97706]"><span class="w-3 h-3 rounded bg-[#D97706]"></span>Binomial $B(n, K/N)$</span>
+              </div>
+            </div>
+            <div id="convCanvasWrap" class="w-full">
+              <canvas id="convCanvas" aria-label="Paired Hypergeometric and Binomial PMF chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Live Diagnostic Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] space-y-1.5">
+              <div class="font-bold text-[#57534E] uppercase text-[10px]">Sampling Fraction $n/N$</div>
+              <div id="convStatFrac" class="text-xl font-extrabold font-mono text-[#1C1917]">30.00%</div>
+              <span id="convApproxBadge" class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFFBEB] text-[#D97706] border border-amber-200">Noticeable FPC Effect</span>
+            </div>
+            <div class="p-4 rounded-xl bg-[#EEF2FF]/60 border border-indigo-200 space-y-1.5">
+              <div class="font-bold text-[#4338CA] uppercase text-[10px]">FPC $\frac{N-n}{N-1}$</div>
+              <div id="convStatFpc" class="text-xl font-extrabold font-mono text-[#1C1917]">0.7778</div>
+              <div class="text-[11px] text-[#57534E]">Variance multiplier vs. Bin</div>
+            </div>
+            <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] space-y-1.5">
+              <div class="font-bold text-[#57534E] uppercase text-[10px]">Max Abs. Diff $\max|P_H - P_B|$</div>
+              <div id="convStatDiff" class="text-xl font-extrabold font-mono text-[#BE123C]">0.0840</div>
+              <div class="text-[11px] text-[#57534E]">Largest pointwise PMF gap</div>
+            </div>
+            <div class="p-4 rounded-xl bg-[#1C1917] text-white space-y-1 font-mono">
+              <div class="font-sans font-bold text-teal-300 uppercase text-[10px]">Mean &amp; Variance</div>
+              <div id="convStatMean">Mean: 0.900 vs 0.900</div>
+              <div id="convStatVar" class="text-amber-300">Var: 0.490 vs 0.630</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: BINS DIAGNOSTIC & DISTRIBUTION CLASSIFIER                -->
+        <!-- =============================================================== -->
+        <div id="tab-bins" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="pb-4 border-b border-[#E7E5E0]">
+            <h3 class="text-lg font-bold text-[#1C1917]">BINS Diagnostic &amp; Distribution Classifier</h3>
+            <p class="text-xs sm:text-sm text-[#57534E]">Select an ISRT / Ross scenario to test all four BINS conditions and identify the exact probability model.</p>
+          </div>
+
+          <!-- 5 Clickable Scenario Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5" id="binsScenarioGrid">
+            <button type="button" data-sc="0" class="bins-sc-btn text-left p-3 rounded-xl border-2 border-[#0F766E] bg-[#F0FDFA] text-xs font-bold text-[#1C1917] shadow-xs transition-all">
+              <span class="text-[10px] uppercase text-[#0F766E] block mb-0.5">2025 Q7(c)</span>
+              Marksman Shooting 10 Times
+            </button>
+            <button type="button" data-sc="1" class="bins-sc-btn text-left p-3 rounded-xl border border-[#E7E5E0] bg-[#FAFAF7] text-xs font-bold text-[#1C1917] hover:border-[#0F766E] transition-all">
+              <span class="text-[10px] uppercase text-[#BE123C] block mb-0.5">2025 Q7(d)</span>
+              Treasure Chest 8 Keys (Stop Early)
+            </button>
+            <button type="button" data-sc="2" class="bins-sc-btn text-left p-3 rounded-xl border border-[#E7E5E0] bg-[#FAFAF7] text-xs font-bold text-[#1C1917] hover:border-[#0F766E] transition-all">
+              <span class="text-[10px] uppercase text-[#4338CA] block mb-0.5">2022 Q2(c)</span>
+              10 Flashbulbs, Sample 3 w/o Rep.
+            </button>
+            <button type="button" data-sc="3" class="bins-sc-btn text-left p-3 rounded-xl border border-[#E7E5E0] bg-[#FAFAF7] text-xs font-bold text-[#1C1917] hover:border-[#0F766E] transition-all">
+              <span class="text-[10px] uppercase text-[#0F766E] block mb-0.5">2022 Q3(b)</span>
+              10 Red &amp; 20 Blue, 10 Draws w/ Rep.
+            </button>
+            <button type="button" data-sc="4" class="bins-sc-btn text-left p-3 rounded-xl border border-[#E7E5E0] bg-[#FAFAF7] text-xs font-bold text-[#1C1917] hover:border-[#0F766E] transition-all">
+              <span class="text-[10px] uppercase text-[#D97706] block mb-0.5">Special Case</span>
+              Single Coin Toss / Defective Check
+            </button>
+          </div>
+
+          <!-- 4-Letter B-I-N-S Status Cards -->
+          <div id="binsCardsWrap" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+          <!-- Final Distribution Verdict Banner -->
+          <div id="binsVerdictBanner" class="p-5 rounded-2xl border-2 space-y-2"></div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: LIVE URN SIMULATOR (WITH VS. WITHOUT REPLACEMENT)        -->
+        <!-- =============================================================== -->
+        <div id="tab-urn" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E7E5E0]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1C1917]">Live Urn Simulator (With vs. Without Replacement)</h3>
+              <p class="text-xs sm:text-sm text-[#57534E]">Draw live samples from a finite urn and watch the empirical histogram converge to the exact Hypergeometric or Binomial PMF.</p>
+            </div>
+            <div class="inline-flex rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] p-1 text-xs font-bold shrink-0">
+              <button type="button" data-umode="hyp" class="urn-mode-btn px-3.5 py-2 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all">Without Replacement (Hypergeometric)</button>
+              <button type="button" data-umode="bin" class="urn-mode-btn px-3.5 py-2 rounded-lg text-[#57534E] transition-all">With Replacement (Binomial)</button>
+            </div>
+          </div>
+
+          <!-- Sliders & Action Buttons -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E0] text-xs">
+            <div class="lg:col-span-6 grid grid-cols-3 gap-3">
+              <div>
+                <div class="flex justify-between font-bold mb-1"><span>Pop $N$</span><span id="urnValN" class="font-mono text-[#0F766E]">10</span></div>
+                <input id="urnSliderN" type="range" min="6" max="30" step="1" value="10" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between font-bold mb-1"><span>Success $K$</span><span id="urnValK" class="font-mono text-[#0F766E]">3</span></div>
+                <input id="urnSliderK" type="range" min="1" max="9" step="1" value="3" class="w-full" />
+              </div>
+              <div>
+                <div class="flex justify-between font-bold mb-1"><span>Sample $n$</span><span id="urnValn" class="font-mono text-[#D97706]">3</span></div>
+                <input id="urnSlidern" type="range" min="1" max="10" step="1" value="3" class="w-full" />
+              </div>
+            </div>
+            <div class="lg:col-span-6 flex flex-wrap items-center justify-end gap-2">
+              <button type="button" id="urnRun1" class="px-3.5 py-2 rounded-xl bg-[#0F766E] hover:bg-[#115E59] text-white font-bold shadow-xs transition-colors">Draw 1 Sample</button>
+              <button type="button" id="urnRun100" class="px-3.5 py-2 rounded-xl bg-[#4338CA] hover:bg-indigo-700 text-white font-bold shadow-xs transition-colors">+100 Samples</button>
+              <button type="button" id="urnRun1000" class="px-3.5 py-2 rounded-xl bg-[#D97706] hover:bg-amber-700 text-white font-bold shadow-xs transition-colors">+1,000 Samples</button>
+              <button type="button" id="urnReset" class="px-3 py-2 rounded-xl bg-white border border-[#E7E5E0] hover:bg-stone-100 text-[#1C1917] font-semibold transition-colors">Reset</button>
+            </div>
+          </div>
+
+          <!-- Visual Urn + Live Empirical vs Theoretical Plot -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <!-- Left: Visual Urn Display & Stats -->
+            <div class="lg:col-span-5 space-y-4">
+              <div class="p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E0] space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold uppercase tracking-wider text-[#57534E]">Visual Urn ($N$ Balls)</span>
+                  <span id="urnLastSampleTag" class="font-mono font-bold text-[#0F766E]">Click "Draw 1 Sample"</span>
+                </div>
+                <div id="urnBallsGrid" class="flex flex-wrap gap-2 justify-center py-2"></div>
+                <div class="flex justify-center gap-4 text-[11px] text-[#57534E] pt-1 border-t border-[#E7E5E0]">
+                  <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#0F766E]"></span>Success ($K$)</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-slate-300"></span>Failure ($N-K$)</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-full border-2 border-[#D97706] bg-white"></span>Drawn</span>
+                </div>
+              </div>
+
+              <!-- Stats Comparison -->
+              <div class="p-4 rounded-2xl bg-[#1C1917] text-white space-y-2 text-xs font-mono">
+                <div class="flex justify-between border-b border-stone-700 pb-1.5">
+                  <span class="text-stone-400">Total Simulated Trials:</span>
+                  <span id="urnTotalTrials" class="font-bold text-teal-300">0</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-stone-400">Empirical vs. Theory Mean:</span>
+                  <span id="urnCmpMean">— vs 0.900</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-stone-400">Empirical vs. Theory Var:</span>
+                  <span id="urnCmpVar" class="text-amber-300">— vs 0.490</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: High-DPI Empirical vs Theoretical Canvas -->
+            <div class="lg:col-span-7 rounded-2xl border border-[#E7E5E0] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#57534E]">Empirical Histogram vs. Exact Theory</span>
+                <div class="flex items-center gap-3 text-[11px] font-bold">
+                  <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-3 h-3 rounded bg-[#0F766E]/45 border border-[#0F766E]"></span>Empirical</span>
+                  <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-2.5 h-2.5 rounded-full bg-[#D97706]"></span>Theoretical PMF</span>
+                </div>
+              </div>
+              <div id="urnCanvasWrap" class="w-full">
+                <canvas id="urnCanvas" aria-label="Urn simulation empirical vs theoretical PMF chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 5. SECTION 3: PROOFS & DERIVATIONS DRAWER (<details>)               -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4338CA]">Section 03 • Exam Proofs</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">5 core AST 102 theorem proofs — click any card to expand</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 1 · ISRT Year Final 2025 Q7(a)</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Sum of Binomial Probabilities Equals 1</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E0] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p>For $X \sim B(n, p)$, clearly $P(X=x) = \binom{n}{x}p^x(1-p)^{n-x} \ge 0$ for all $x \in \{0, 1, \dots, n\}$. By the <strong>Binomial Theorem</strong> $(a + b)^n = \sum_{x=0}^n \binom{n}{x} a^x b^{n-x}$ with $a = p$ and $b = 1 - p$:</p>
+            <div class="bg-[#F0FDFA] p-3.5 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$\sum_{x=0}^{n} P(X = x) = \sum_{x=0}^{n} \binom{n}{x} p^x (1 - p)^{n-x} = \big(p + (1 - p)\big)^n = 1^n = 1 \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 2 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 2 · ISRT Year Final 2022 Q5(c) &amp; 2024 Q6(b)</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Mean &amp; Variance of $B(n, p)$ via MGF &amp; Indicator Variables</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E0] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p><strong>Method 1 (Via MGF):</strong> $M_X(t) = E[e^{tX}] = \sum_{x=0}^n \binom{n}{x}(pe^t)^x q^{n-x} = (q + pe^t)^n$. Differentiate at $t = 0$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E7E5E0] text-center text-[#1C1917] space-y-1">
+              $$M'_X(t) = n(q + pe^t)^{n-1}pe^t \implies E(X) = M'_X(0) = n(q+p)^{n-1}p = np$$
+              $$M''_X(t) = n(n-1)(q+pe^t)^{n-2}(pe^t)^2 + n(q+pe^t)^{n-1}pe^t \implies E(X^2) = n(n-1)p^2 + np$$
+              $$V(X) = E(X^2) - [E(X)]^2 = n^2p^2 - np^2 + np - n^2p^2 = np(1-p) = npq$$
+            </div>
+            <p><strong>Method 2 (Sleek Indicator Shortcut):</strong> Write $X = \sum_{i=1}^n I_i$ where $I_i \stackrel{\text{i.i.d.}}{\sim} \text{Bern}(p)$ with $E(I_i) = p$ and $V(I_i) = pq$. By linearity and independence:</p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$E(X) = \sum_{i=1}^n E(I_i) = np, \qquad V(X) = \sum_{i=1}^n V(I_i) = npq \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 3 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-[11px] font-bold mb-1">Proof 3 · ISRT Year Final Q6(c)</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Binomial Recurrence Relation &amp; Mode Formula</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E0] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p>For $i = 1, 2, \dots, n$, form the ratio $c = \dfrac{P(X = i)}{P(X = i - 1)}$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E7E5E0] text-center text-[#1C1917]">
+              $$c = \frac{\frac{n!}{i!(n-i)!}\,p^i q^{n-i}}{\frac{n!}{(i-1)!(n-i+1)!}\,p^{i-1} q^{n-i+1}} = \frac{(i-1)!(n-i+1)!}{i!(n-i)!}\cdot\frac{p}{q} = \mathbf{\frac{n - i + 1}{i}\cdot\frac{p}{1 - p}}$$
+            </div>
+            <p><strong>Deriving the Mode:</strong> $P(X = i) \ge P(X = i - 1) \iff c \ge 1$:</p>
+            <div class="bg-[#FFFBEB] p-3 rounded-xl border border-amber-200 text-center text-[#1C1917] font-semibold">
+              $$(n - i + 1)p \ge i(1 - p) \iff (n + 1)p - ip \ge i - ip \iff i \le (n + 1)p$$
+            </div>
+            <p>Thus $P(X=i)$ climbs until $i = \lfloor (n+1)p \rfloor$ and decreases afterward. If $(n+1)p$ is an exact integer, equality holds at $i = (n+1)p$, yielding two equal peaks (bimodal) at $(n+1)p - 1$ and $(n+1)p$. $\blacksquare$</p>
+          </div>
+        </details>
+
+        <!-- Proof 4 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 4 · ISRT Year Final 2022 Q7(c) &amp; 2024 Q6(c)</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Reproductive Property of Binomial ($X_1 + X_2$ vs. $X_1 - X_2$)</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E0] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p>Let $X_1 \sim B(n_1, p)$ and $X_2 \sim B(n_2, p)$ be independent. Their MGFs are $M_{X_1}(t) = (q+pe^t)^{n_1}$ and $M_{X_2}(t) = (q+pe^t)^{n_2}$.</p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$M_{X_1 + X_2}(t) = M_{X_1}(t)M_{X_2}(t) = (q + pe^t)^{n_1}(q + pe^t)^{n_2} = (q + pe^t)^{n_1 + n_2}$$
+            </div>
+            <p>By the MGF Uniqueness Theorem, $X_1 + X_2 \sim B(n_1 + n_2, p)$. Conversely, for the difference $X_1 - X_2$: $M_{X_1 - X_2}(t) = (q+pe^t)^{n_1}(q+pe^{-t})^{n_2}$, which cannot take the Binomial form $(q^* + p^*e^t)^N$ (and $X_1 - X_2$ can be negative). $\blacksquare$</p>
+          </div>
+        </details>
+
+        <!-- Proof 5 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-[11px] font-bold mb-1">Proof 5 · Hypergeometric Mean &amp; FPC Variance</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Mean &amp; Variance of $\text{Hyp}(N, K, n)$ via Indicator Variables</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E0] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p>Let $X = \sum_{i=1}^n I_i$, where $I_i = 1$ if the $i$-th drawn item is a success and $0$ otherwise. By symmetry of sampling without replacement, $P(I_i = 1) = \frac{K}{N} = p$, so $E(I_i) = p$ and $V(I_i) = pq$.</p>
+            <p><strong>Mean:</strong> $E(X) = \sum_{i=1}^n E(I_i) = n\frac{K}{N} = np$.</p>
+            <p><strong>Covariance for $i \neq j$:</strong> $E(I_i I_j) = P(I_i=1, I_j=1) = \frac{K}{N}\cdot\frac{K-1}{N-1}$. Therefore:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E7E5E0] text-center text-[#1C1917]">
+              $$\text{Cov}(I_i, I_j) = \frac{K(K-1)}{N(N-1)} - \frac{K^2}{N^2} = -\frac{K(N - K)}{N^2(N - 1)} = -\frac{pq}{N - 1}$$
+            </div>
+            <p>Summing all $n$ variances and $n(n-1)$ ordered covariance pairs:</p>
+            <div class="bg-[#EEF2FF] p-3 rounded-xl border border-indigo-200 text-center text-[#4338CA] font-semibold">
+              $$V(X) = n(pq) + n(n-1)\left(-\frac{pq}{N-1}\right) = npq\left(1 - \frac{n - 1}{N - 1}\right) = npq\left(\frac{N - n}{N - 1}\right) \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 6. SECTION 4: ISRT PAST EXAM VAULT                                  -->
+    <!-- =================================================================== -->
+    <section id="exam-vault" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#D97706]">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">ISRT Past Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">5 authentic Year Final problems (2022–2025) with full step-by-step solutions</p>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Exam 1: ISRT Year Final 2025, Q7(a, b, c, d) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-xs font-bold">ISRT Year Final 2025 · Q7(a, b, c, d) [12 Marks]</span>
+            <span class="text-xs text-[#57534E] font-medium">AST 102 · University of Dhaka</span>
+          </div>
+          <div class="space-y-1.5 text-sm text-[#1C1917] leading-relaxed">
+            <p><strong>(a)</strong> State the four conditions of a Binomial experiment (BINS) and show that $\sum_{x=0}^n P(X=x) = 1$.</p>
+            <p><strong>(b)</strong> Show that for $X \sim B(n, p)$, $\mu = \sigma^2$ occurs only in the degenerate case $p = 0$. Briefly describe the degenerate cases $p = 0$ and $p = 1$.</p>
+            <p><strong>(c)</strong> A marksman shoots $n = 10$ times with $V(X) = 1.44$. Find the possible values of $p$. Taking the higher $p$, find $P(X &gt; 8)$ and the minimum shots $n$ needed so $P(X \ge 1) &gt; 0.995$.</p>
+            <p><strong>(d)</strong> On a game show, 1 of 8 keys opens a treasure chest. A contestant tries keys with replacement, stopping as soon as the chest opens (or after 6 tries). Is the number of tries Binomial? Find $P(\text{chest opens in fewer than 4 tries})$.</p>
+          </div>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E0] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] text-sm text-[#57534E] space-y-3 leading-relaxed">
+              <p><strong>(a)</strong> BINS: Binary outcomes, Independent trials, Fixed $n$, Same $p$. Sum equals $(p + (1-p))^n = 1^n = 1$.</p>
+              <p><strong>(b)</strong> $\mu = \sigma^2 \implies np = np(1-p) \implies np^2 = 0 \implies p = 0$ (since $n \ge 1$). At $p = 0$, $P(X=0)=1$ (always 0 successes); at $p = 1$, $P(X=n)=1$ (always $n$ successes); both have $V(X)=0$.</p>
+              <p><strong>(c)</strong> $10p(1-p) = 1.44 \implies p^2 - p + 0.144 = 0 \implies p = \dfrac{1 \pm \sqrt{1 - 0.576}}{2} = \dfrac{1 \pm \sqrt{0.424}}{2} \approx \mathbf{0.8256}$ or $\mathbf{0.1744}$.
+                With $p = 0.8256$: $P(X &gt; 8) = P(X=9) + P(X=10) = 10(0.8256)^9(0.1744) + (0.8256)^{10} \approx 0.3110 + 0.1468 = \mathbf{0.4578}$.
+                For $P(X \ge 1) &gt; 0.995$: $1 - (0.1744)^n &gt; 0.995 \implies (0.1744)^n &lt; 0.005 \implies n &gt; \dfrac{\ln(0.005)}{\ln(0.1744)} \approx 3.034 \implies \mathbf{n \ge 4}$.
+              </p>
+              <p><strong>(d)</strong> <strong>Not Binomial</strong> — stopping early when the chest opens violates the fixed-$n$ condition ("N" in BINS); it is a truncated Geometric model.
+                $$P(\text{opens in } &lt; 4 \text{ tries}) = 1 - P(\text{first 3 fail}) = 1 - \left(\frac{7}{8}\right)^3 = 1 - \frac{343}{512} = \mathbf{\frac{169}{512} \approx 0.3301}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 2: ISRT Year Final 2022, Q2(c) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-xs font-bold">ISRT Year Final 2022 · Q2(c) [5 Marks]</span>
+            <span class="text-xs text-[#57534E] font-medium">Hypergeometric PMF Table · AST 102</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            A box of 10 flashbulbs contains 3 defective bulbs. A random sample of 3 is selected without replacement and tested. (i) Define the random variable $X$ for this problem. (ii) Find the probability distribution of $X$, verify it sums to 1, and compute $E(X)$ and $V(X)$.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E0] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] text-sm text-[#57534E] space-y-2.5 leading-relaxed">
+              <p><strong>(i)</strong> Let $X$ = number of defective bulbs in the sample of 3. Since sampling is without replacement, $X \sim \text{Hyp}(N=10, K=3, n=3)$, with $\binom{10}{3} = 120$.</p>
+              <p><strong>(ii) PMF Table:</strong></p>
+              <ul class="list-disc list-inside font-mono text-xs bg-white p-3 rounded-xl border border-[#E7E5E0] space-y-1 text-[#1C1917]">
+                <li>P(X = 0) = C(3,0)·C(7,3) / 120 = 35 / 120 ≈ 0.2917</li>
+                <li>P(X = 1) = C(3,1)·C(7,2) / 120 = 63 / 120 = 0.5250</li>
+                <li>P(X = 2) = C(3,2)·C(7,1) / 120 = 21 / 120 = 0.1750</li>
+                <li>P(X = 3) = C(3,3)·C(7,0) / 120 =  1 / 120 ≈ 0.0083</li>
+              </ul>
+              <p><strong>Check Sum:</strong> $\frac{35 + 63 + 21 + 1}{120} = \frac{120}{120} = 1$ ✓. &nbsp;
+                <strong>Mean &amp; Variance:</strong> $E(X) = 3\left(\frac{3}{10}\right) = \mathbf{0.9}$; &nbsp; $V(X) = 3(0.3)(0.7)\left(\frac{10-3}{10-1}\right) = 0.63 \times \frac{7}{9} = \mathbf{0.49}$.
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 3: ISRT Year Final 2024, Q1(a) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFF1F2] text-[#BE123C] border border-rose-200 text-xs font-bold">ISRT Year Final 2024 · Q1(a) [2 Marks]</span>
+            <span class="text-xs text-[#57534E] font-medium">Classic Parameter Trap · AST 102</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            "The mean and standard deviation of a binomial distribution are 100 and 50. Find the binomial distribution."
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E0] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] text-sm text-[#57534E] space-y-2.5 leading-relaxed">
+              <p><strong class="text-[#BE123C]">Mathematically Impossible!</strong> For $X \sim B(n, p)$, $\mu = np = 100$ and $\sigma = 50 \implies \sigma^2 = npq = 2500$.</p>
+              <div class="bg-white p-3 rounded-xl border border-rose-200 text-center text-[#1C1917]">
+                $$q = \frac{npq}{np} = \frac{2500}{100} = 25 &gt; 1 \implies p = 1 - 25 = -24 &lt; 0 \quad (\text{Contradiction!})$$
+              </div>
+              <p class="text-xs bg-[#FFFBEB] p-3 rounded-xl border border-amber-200 text-amber-950">
+                <strong>Exam-Hall Note:</strong> State clearly that no Binomial distribution exists as written because $V(X) = npq \le np = E(X)$ always holds. Then add: <em>"If 'standard deviation = 50' was a misprint for 'variance = 50', then $q = 50/100 = 0.5$, $p = 0.5$, and $n = 100/0.5 = 200$, giving $B(200, 0.5)$."</em>
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 4: ISRT Year Final 2022, Q2(b) & Q3(b) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">ISRT Year Final 2022 · Q2(b) &amp; Q3(b) [8 Marks]</span>
+            <span class="text-xs text-[#57534E] font-medium">Applied Binomial Problems · AST 102</span>
+          </div>
+          <div class="space-y-1.5 text-sm text-[#1C1917] leading-relaxed">
+            <p><strong>Q2(b) [4 Marks]:</strong> 5% of drivers show traces of alcohol and 10% do not wear seat belts (independent). An officer stops $n = 4$ drivers at random. Find (i) $P(\text{exactly 3 committed an offense})$ and (ii) $P(\text{at least 1 committed at least one offense})$.</p>
+            <p><strong>Q3(b) [4 Marks]:</strong> A box has 10 red and 20 blue balls. A ball is drawn, noted whether red, and returned 10 times. Calculate the expected value and standard deviation.</p>
+          </div>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E0] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] text-sm text-[#57534E] space-y-2.5 leading-relaxed">
+              <p><strong>Q2(b):</strong> For a single driver, $p = P(A \cup B) = P(A) + P(B) - P(A)P(B) = 0.05 + 0.10 - (0.05)(0.10) = \mathbf{0.145}$. Thus $X \sim B(4, 0.145)$:</p>
+              <ul class="list-disc list-inside space-y-1">
+                <li>(i) $P(X = 3) = \binom{4}{3}(0.145)^3(0.855)^1 \approx \mathbf{0.0104}$.</li>
+                <li>(ii) $P(X \ge 1) = 1 - P(X = 0) = 1 - (0.855)^4 \approx 1 - 0.5344 = \mathbf{0.4656}$.</li>
+              </ul>
+              <p class="pt-2 border-t border-[#E7E5E0]"><strong>Q3(b):</strong> With replacement, $X \sim B(n=10, p = 10/30 = 1/3)$:
+                $$E(X) = 10\left(\frac{1}{3}\right) = \mathbf{\frac{10}{3} \approx 3.3333}, \qquad SD(X) = \sqrt{10\left(\frac{1}{3}\right)\left(\frac{2}{3}\right)} = \sqrt{\frac{20}{9}} = \mathbf{\frac{\sqrt{20}}{3} \approx 1.4907}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 5: ISRT Year Final Q6(c) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">ISRT Year Final · Q6(c) [4 Marks]</span>
+            <span class="text-xs text-[#57534E] font-medium">Binomial Recurrence Relation · AST 102</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            If $X$ has a Binomial distribution $B(n, p)$ and $P[X = i] = c\,P[X = i - 1]$ for $i = 1, 2, \dots, n$, find the constant $c$. Demonstrate computing $P(X = 2)$ from $P(X = 1)$ when $n = 5$ and $p = 0.4$.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E0] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E0] text-sm text-[#57534E] space-y-2.5 leading-relaxed">
+              <p><strong>Derivation of $c$:</strong>
+                $$c = \frac{P(X = i)}{P(X = i - 1)} = \frac{\binom{n}{i} p^i (1-p)^{n-i}}{\binom{n}{i-1} p^{i-1} (1-p)^{n-i+1}} = \mathbf{\frac{n - i + 1}{i}\cdot\frac{p}{1 - p}}$$
+              </p>
+              <p><strong>Numerical Demo ($n = 5, p = 0.4, i = 2$):</strong> First, $P(X = 1) = \binom{5}{1}(0.4)^1(0.6)^4 = 5(0.4)(0.1296) = 0.2592$. The recurrence multiplier at $i = 2$ is $c = \frac{5 - 2 + 1}{2}\cdot\frac{0.4}{0.6} = 2 \cdot \frac{2}{3} = \frac{4}{3}$. Thus:
+                $$P(X = 2) = \frac{4}{3}(0.2592) = \mathbf{0.3456}$$
+                (Direct check: $\binom{5}{2}(0.4)^2(0.6)^3 = 10(0.16)(0.216) = 0.3456$ ✓)
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 7. SECTION 5: QUICK MASTERY CHECK (5-QUESTION QUIZ)                 -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-[#E7E5E0] shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E7E5E0]">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 05 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">Quick Mastery Check</h2>
+            <p class="text-sm text-[#57534E] mt-1">Verify your grasp of BINS, modes, FPC, and reproductive traps before moving to Lesson 12.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-[#1C1917] text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-teal-300">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-stone-200 text-[#1C1917] border border-[#E7E5E0] text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-stone-100 mt-4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- 8. FOOTER                                                             -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-[#E7E5E0] bg-white mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="text-[#57534E] font-medium">
+        <strong class="text-[#1C1917]">AST 102 · Elements of Probability</strong> · ISRT, University of Dhaka
+      </div>
+      <div class="flex flex-wrap items-center gap-2 font-semibold">
+        <span class="px-3.5 py-1.5 rounded-xl bg-[#FAFAF7] text-[#57534E] border border-[#E7E5E0]">← Lesson 10: Moments, PGF &amp; MGF</span>
+        <span class="text-stone-300">|</span>
+        <span class="px-3.5 py-1.5 rounded-xl bg-[#F0FDFA] text-[#0F766E] border border-teal-200">Lesson 12: Geometric &amp; Negative Binomial →</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT (VANILLA JS + LOG-FACTORIAL MATH)  -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         1. OVERFLOW-FREE LOG-FACTORIAL & EXACT DISTRIBUTION ENGINE
+      ------------------------------------------------------------------- */
+      const LOG_FACT = new Float64Array(251);
+      LOG_FACT[0] = 0;
+      for (let i = 1; i <= 250; i++) {
+        LOG_FACT[i] = LOG_FACT[i - 1] + Math.log(i);
+      }
+
+      function logChoose(n, k) {
+        if (k < 0 || k > n) return -Infinity;
+        return LOG_FACT[n] - LOG_FACT[k] - LOG_FACT[n - k];
+      }
+
+      function binomPMF(n, p, x) {
+        if (x < 0 || x > n) return 0;
+        if (p <= 0) return x === 0 ? 1 : 0;
+        if (p >= 1) return x === n ? 1 : 0;
+        return Math.exp(logChoose(n, x) + x * Math.log(p) + (n - x) * Math.log(1 - p));
+      }
+
+      function hyperPMF(N, K, n, x) {
+        const minX = Math.max(0, n - (N - K));
+        const maxX = Math.min(n, K);
+        if (x < minX || x > maxX) return 0;
+        return Math.exp(logChoose(K, x) + logChoose(N - K, n - x) - logChoose(N, n));
+      }
+
+      function getBinomModes(n, p) {
+        const val = (n + 1) * p;
+        const fl = Math.floor(val);
+        if (Math.abs(val - Math.round(val)) < 1e-9 && val > 0 && val <= n) {
+          const m = Math.round(val);
+          return [m - 1, m];
+        }
+        return [Math.min(n, Math.max(0, fl))];
+      }
+
+      /* -------------------------------------------------------------------
+         2. KATEX RENDER HELPER & HIGH-DPI CANVAS HELPER
+      ------------------------------------------------------------------- */
+      function renderMath(el) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(el || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\[', right: '\\]', display: true },
+                { left: '\\(', right: '\\)', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX render skipped:', err);
+        }
+      }
+
+      function setupHiDPI(canvas, wrapEl, aspect, minH, maxH) {
+        const w = Math.max(260, wrapEl.clientWidth);
+        const h = Math.max(minH, Math.min(maxH, Math.round(w * aspect)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      /* -------------------------------------------------------------------
+         3. READING PROGRESS BAR & LEARNING OBJECTIVES CHECKLIST
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const top = window.scrollY || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = height > 0 ? Math.min(100, Math.max(0, (top / height) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      const objBtns = document.querySelectorAll('.obj-btn');
+      const objChecked = new Array(objBtns.length).fill(false);
+      objBtns.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          objChecked[i] = !objChecked[i];
+          const box = btn.querySelector('.obj-box');
+          const txt = btn.querySelector('.obj-text');
+          if (objChecked[i]) {
+            box.textContent = '✓';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-300 bg-[#0F766E] text-white flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.add('line-through', 'opacity-70');
+          } else {
+            box.textContent = '';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.remove('line-through', 'opacity-70');
+          }
+          document.getElementById('objCounter').textContent = `${objChecked.filter(Boolean).length} / ${objBtns.length} Completed`;
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. TAB SWITCHING & RESPONSIVE CANVAS REDRAW
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      function redrawActiveTab() {
+        if (!document.getElementById('tab-binom').classList.contains('hidden')) renderBinomLab();
+        if (!document.getElementById('tab-conv').classList.contains('hidden')) renderConvLab();
+        if (!document.getElementById('tab-urn').classList.contains('hidden')) renderUrnCanvas();
+      }
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#0F766E]', 'text-white', 'shadow-sm');
+            t.classList.add('text-[#57534E]', 'hover:bg-stone-200/70');
+          });
+          tab.classList.add('bg-[#0F766E]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-[#57534E]', 'hover:bg-stone-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const activePanel = document.getElementById('tab-' + target);
+          if (activePanel) {
+            activePanel.classList.remove('hidden');
+            redrawActiveTab();
+            renderMath(activePanel);
+          }
+        });
+      });
+
+      window.addEventListener('resize', redrawActiveTab);
+
+      /* -------------------------------------------------------------------
+         5. TAB 1: BINOMIAL PMF, CDF & MODE EXPLORER
+      ------------------------------------------------------------------- */
+      const binState = { n: 10, p: 0.50, a: 3, b: 7, showCdf: false };
+      let binBarsMeta = [];
+
+      const binSliderN = document.getElementById('binSliderN');
+      const binSliderP = document.getElementById('binSliderP');
+      const binSliderA = document.getElementById('binSliderA');
+      const binSliderB = document.getElementById('binSliderB');
+      const binCdfToggle = document.getElementById('binCdfToggle');
+      const binCanvas = document.getElementById('binCanvas');
+      const binTooltip = document.getElementById('binTooltip');
+
+      function syncBinRangeBounds() {
+        binSliderA.max = binState.n;
+        binSliderB.max = binState.n;
+        if (binState.a > binState.n) binState.a = binState.n;
+        if (binState.b > binState.n) binState.b = binState.n;
+        if (binState.a > binState.b) binState.b = binState.a;
+        binSliderA.value = binState.a;
+        binSliderB.value = binState.b;
+      }
+
+      function renderBinomLab() {
+        syncBinRangeBounds();
+        const { n, p, a, b, showCdf } = binState;
+        const q = 1 - p;
+
+        document.getElementById('binValN').textContent = n;
+        document.getElementById('binValP').textContent = p.toFixed(4);
+        document.getElementById('binValA').textContent = a;
+        document.getElementById('binValB').textContent = b;
+
+        const pmfs = [];
+        const cdfs = [];
+        let cum = 0;
+        let intervalProb = 0;
+        for (let x = 0; x <= n; x++) {
+          const pr = binomPMF(n, p, x);
+          cum += pr;
+          pmfs.push(pr);
+          cdfs.push(Math.min(1, cum));
+          if (x >= a && x <= b) intervalProb += pr;
+        }
+
+        const mean = n * p;
+        const variance = n * p * q;
+        const sd = Math.sqrt(variance);
+        const modes = getBinomModes(n, p);
+        const skew = sd > 0 ? (1 - 2 * p) / sd : 0;
+
+        document.getElementById('binStatMean').textContent = mean.toFixed(3);
+        document.getElementById('binStatVar').textContent = variance.toFixed(3);
+        document.getElementById('binStatSd').textContent = sd.toFixed(3);
+        document.getElementById('binStatMode').textContent = modes.join(' & ');
+        document.getElementById('binStatSkew').textContent = skew.toFixed(3);
+        document.getElementById('binStatProb').textContent = intervalProb.toFixed(4);
+        const intLbl = document.getElementById('binStatIntLbl');
+        intLbl.innerHTML = `$P(${a} \\le X \\le ${b})$`;
+        renderMath(intLbl);
+
+        // Draw High-DPI Canvas
+        const { ctx, w, h } = setupHiDPI(binCanvas, document.getElementById('binCanvasWrap'), 0.42, 220, 290);
+        const padL = 44, padR = showCdf ? 42 : 18, padT = 24, padB = 34;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+
+        const maxP = Math.max(0.12, ...pmfs) * 1.18;
+        const slotW = plotW / (n + 1);
+        const barW = Math.max(4, Math.min(34, slotW * 0.72));
+        const toX = x => padL + (x + 0.5) * slotW;
+        const toY = v => padT + plotH * (1 - v / maxP);
+        const toYcdf = v => padT + plotH * (1 - v);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Horizontal Grid & Left Y-Axis Labels
+        ctx.strokeStyle = '#E7E5E0'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#57534E';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxP * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        // Right Y-axis for CDF if active
+        if (showCdf) {
+          ctx.fillStyle = '#4338CA'; ctx.textAlign = 'left';
+          [0, 0.25, 0.5, 0.75, 1].forEach(cv => {
+            ctx.fillText(cv.toFixed(2), padL + plotW + 6, toYcdf(cv));
+          });
+        }
+
+        // Draw PMF bars
+        binBarsMeta = [];
+        const labelStep = n > 24 ? 4 : (n > 14 ? 2 : 1);
+        for (let x = 0; x <= n; x++) {
+          const cx = toX(x);
+          const py = toY(pmfs[x]);
+          const bh = Math.max(0, toY(0) - py);
+          const inRange = (x >= a && x <= b);
+          const isMode = modes.includes(x);
+
+          binBarsMeta.push({ x, left: cx - slotW / 2, right: cx + slotW / 2, cx, py, pmf: pmfs[x], cdf: cdfs[x] });
+
+          ctx.fillStyle = inRange ? '#0F766E' : '#CBD5E1';
+          ctx.beginPath();
+          ctx.roundRect(cx - barW / 2, py, barW, bh, [4, 4, 0, 0]);
+          ctx.fill();
+
+          if (isMode) {
+            ctx.strokeStyle = '#D97706';
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
+            // Amber diamond above mode bar
+            const dy = Math.max(padT + 6, py - 9);
+            ctx.fillStyle = '#D97706';
+            ctx.beginPath();
+            ctx.moveTo(cx, dy - 5);
+            ctx.lineTo(cx + 5, dy);
+            ctx.lineTo(cx, dy + 5);
+            ctx.lineTo(cx - 5, dy);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          if (x % labelStep === 0 || x === n) {
+            ctx.fillStyle = inRange ? '#0F766E' : '#57534E';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(x, cx, padT + plotH + 8);
+          }
+        }
+
+        // Step-CDF Overlay
+        if (showCdf) {
+          ctx.strokeStyle = '#4338CA'; ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          for (let x = 0; x <= n; x++) {
+            const x1 = padL + x * slotW;
+            const x2 = padL + (x + 1) * slotW;
+            const cy = toYcdf(cdfs[x]);
+            if (x === 0) ctx.moveTo(x1, cy);
+            else ctx.lineTo(x1, cy);
+            ctx.lineTo(x2, cy);
+          }
+          ctx.stroke();
+        }
+
+        // Axes
+        ctx.strokeStyle = '#57534E'; ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH);
+        if (showCdf) { ctx.moveTo(padL + plotW, padT); ctx.lineTo(padL + plotW, padT + plotH); }
+        ctx.stroke();
+      }
+
+      binCanvas.addEventListener('mousemove', (e) => {
+        const rect = binCanvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const hit = binBarsMeta.find(b => mx >= b.left && mx <= b.right);
+        if (hit) {
+          binTooltip.classList.remove('hidden');
+          binTooltip.innerHTML = `x = ${hit.x} &nbsp;|&nbsp; P(X=${hit.x}) = ${hit.pmf.toFixed(4)} &nbsp;|&nbsp; F(${hit.x}) = ${hit.cdf.toFixed(4)}`;
+          const tipW = binTooltip.offsetWidth || 210;
+          const leftPos = Math.min(Math.max(8, hit.cx - tipW / 2), rect.width - tipW - 8);
+          binTooltip.style.left = leftPos + 'px';
+          binTooltip.style.top = Math.max(6, hit.py - 38) + 'px';
+        } else {
+          binTooltip.classList.add('hidden');
+        }
+      });
+      binCanvas.addEventListener('mouseleave', () => binTooltip.classList.add('hidden'));
+
+      binSliderN.addEventListener('input', () => { binState.n = parseInt(binSliderN.value, 10); renderBinomLab(); });
+      binSliderP.addEventListener('input', () => { binState.p = parseFloat(binSliderP.value); renderBinomLab(); });
+      binSliderA.addEventListener('input', () => {
+        binState.a = parseInt(binSliderA.value, 10);
+        if (binState.a > binState.b) binState.b = binState.a;
+        renderBinomLab();
+      });
+      binSliderB.addEventListener('input', () => {
+        binState.b = parseInt(binSliderB.value, 10);
+        if (binState.b < binState.a) binState.a = binState.b;
+        renderBinomLab();
+      });
+      binCdfToggle.addEventListener('change', () => { binState.showCdf = binCdfToggle.checked; renderBinomLab(); });
+
+      document.querySelectorAll('.bin-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-bpreset');
+          if (key === 'marksman') { binState.n = 10; binState.p = 0.8256; binState.a = 9; binState.b = 10; }
+          else if (key === 'redballs') { binState.n = 10; binState.p = 1 / 3; binState.a = 2; binState.b = 5; }
+          else if (key === 'fair20') { binState.n = 20; binState.p = 0.5; binState.a = 8; binState.b = 12; }
+          else if (key === 'skew25') { binState.n = 25; binState.p = 0.1; binState.a = 0; binState.b = 4; }
+          binSliderN.value = binState.n;
+          binSliderP.value = binState.p.toFixed(2);
+          document.querySelectorAll('.bin-preset').forEach(b => {
+            b.className = b === btn
+              ? 'bin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'bin-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all';
+          });
+          renderBinomLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 2: BINOMIAL VS. HYPERGEOMETRIC CONVERGENCE LAB
+      ------------------------------------------------------------------- */
+      const convSliderN = document.getElementById('convSliderN');
+      const convSliderK = document.getElementById('convSliderK');
+      const convSlidern = document.getElementById('convSlidern');
+
+      function renderConvLab() {
+        const N = parseInt(convSliderN.value, 10);
+        convSliderK.max = N - 1;
+        let K = Math.min(N - 1, Math.max(1, parseInt(convSliderK.value, 10)));
+        convSliderK.value = K;
+
+        const maxn = Math.min(30, N);
+        convSlidern.max = maxn;
+        let n = Math.min(maxn, Math.max(1, parseInt(convSlidern.value, 10)));
+        convSlidern.value = n;
+
+        document.getElementById('convValN').textContent = N;
+        document.getElementById('convValK').textContent = K;
+        document.getElementById('convValn').textContent = n;
+
+        const p = K / N;
+        const q = 1 - p;
+        const fpc = N > 1 ? (N - n) / (N - 1) : 0;
+        const frac = n / N;
+
+        const xs = [], hypVals = [], binVals = [];
+        let maxDiff = 0;
+        for (let x = 0; x <= n; x++) {
+          const ph = hyperPMF(N, K, n, x);
+          const pb = binomPMF(n, p, x);
+          if (ph > 0.0005 || pb > 0.0005 || n <= 12) {
+            xs.push(x);
+            hypVals.push(ph);
+            binVals.push(pb);
+          }
+          maxDiff = Math.max(maxDiff, Math.abs(ph - pb));
+        }
+
+        const mean = n * p;
+        const varBin = n * p * q;
+        const varHyp = varBin * fpc;
+
+        document.getElementById('convStatFrac').textContent = (frac * 100).toFixed(2) + '%';
+        const badge = document.getElementById('convApproxBadge');
+        if (frac <= 0.05) {
+          badge.textContent = 'Binomial Approx Valid (n/N ≤ 5%)';
+          badge.className = 'inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F0FDFA] text-[#0F766E] border border-teal-200';
+        } else {
+          badge.textContent = 'Noticeable FPC Effect';
+          badge.className = 'inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFFBEB] text-[#D97706] border border-amber-200';
+        }
+        document.getElementById('convStatFpc').textContent = fpc.toFixed(4);
+        document.getElementById('convStatDiff').textContent = maxDiff.toFixed(4);
+        document.getElementById('convStatMean').textContent = `Mean: ${mean.toFixed(3)} vs ${mean.toFixed(3)}`;
+        document.getElementById('convStatVar').textContent = `Var: ${varHyp.toFixed(3)} vs ${varBin.toFixed(3)}`;
+
+        // High-DPI Paired Bar Chart
+        const { ctx, w, h } = setupHiDPI(document.getElementById('convCanvas'), document.getElementById('convCanvasWrap'), 0.42, 220, 280);
+        const padL = 44, padR = 18, padT = 20, padB = 34;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxY = Math.max(0.15, ...hypVals, ...binVals) * 1.18;
+
+        const grpW = plotW / Math.max(1, xs.length);
+        const subBarW = Math.max(3, Math.min(22, grpW * 0.36));
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E7E5E0'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#57534E';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        // Paired Bars
+        xs.forEach((x, idx) => {
+          const cx = padL + (idx + 0.5) * grpW;
+          const pyH = toY(hypVals[idx]);
+          const pyB = toY(binVals[idx]);
+
+          // Hypergeometric (Teal - Left)
+          ctx.fillStyle = '#0F766E';
+          ctx.beginPath();
+          ctx.roundRect(cx - subBarW - 1, pyH, subBarW, Math.max(0, toY(0) - pyH), [3, 3, 0, 0]);
+          ctx.fill();
+
+          // Binomial (Amber - Right)
+          ctx.fillStyle = '#D97706';
+          ctx.beginPath();
+          ctx.roundRect(cx + 1, pyB, subBarW, Math.max(0, toY(0) - pyB), [3, 3, 0, 0]);
+          ctx.fill();
+
+          ctx.fillStyle = '#57534E'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+          ctx.fillText(x, cx, padT + plotH + 8);
+        });
+
+        // Axes
+        ctx.strokeStyle = '#57534E'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      [convSliderN, convSliderK, convSlidern].forEach(s => s.addEventListener('input', renderConvLab));
+      document.querySelectorAll('.conv-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-cpreset');
+          if (p === 'flash') { convSliderN.value = 10; convSliderK.max = 9; convSliderK.value = 3; convSlidern.max = 10; convSlidern.value = 3; }
+          else if (p === 'fish') { convSliderN.value = 50; convSliderK.max = 49; convSliderK.value = 15; convSlidern.max = 30; convSlidern.value = 10; }
+          else if (p === 'large') { convSliderN.value = 200; convSliderK.max = 199; convSliderK.value = 60; convSlidern.max = 30; convSlidern.value = 10; }
+          else if (p === 'high') { convSliderN.value = 15; convSliderK.max = 14; convSliderK.value = 7; convSlidern.max = 15; convSlidern.value = 10; }
+          document.querySelectorAll('.conv-preset').forEach(b => {
+            b.className = b === btn
+              ? 'conv-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'conv-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E0] hover:border-[#0F766E] transition-all';
+          });
+          renderConvLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. TAB 3: BINS DIAGNOSTIC & DISTRIBUTION CLASSIFIER
+      ------------------------------------------------------------------- */
+      const BINS_SCENARIOS = [
+        {
+          title: 'Marksman Shooting 10 Times (ISRT Year Final 2025 Q7c)',
+          checks: [
+            { letter: 'B', name: 'Binary', ok: true, desc: 'Each shot either hits the target (Success) or misses (Failure).' },
+            { letter: 'I', name: 'Independent', ok: true, desc: 'Each shot is taken independently of previous shots.' },
+            { letter: 'N', name: 'Fixed n', ok: true, desc: 'The marksman fires a fixed number of n = 10 shots.' },
+            { letter: 'S', name: 'Same p', ok: true, desc: 'Constant hit probability p across every shot.' }
+          ],
+          verdict: 'Binomial Distribution: $X \\sim B(10, p)$',
+          isBinom: true,
+          pmf: '$$P(X = x) = \\binom{10}{x} p^x (1 - p)^{10 - x}, \\qquad x = 0, 1, \\dots, 10$$'
+        },
+        {
+          title: 'Treasure Chest 8 Keys, Stop When Opened (ISRT Year Final 2025 Q7d)',
+          checks: [
+            { letter: 'B', name: 'Binary', ok: true, desc: 'Each key either opens the chest (Success) or does not (Failure).' },
+            { letter: 'I', name: 'Independent', ok: true, desc: 'Keys are tested WITH replacement, so attempts are independent.' },
+            { letter: 'N', name: 'Fixed n', ok: false, desc: 'FAILS! The contestant stops as soon as the chest opens, so the number of trials is random (1 to 6).' },
+            { letter: 'S', name: 'Same p', ok: true, desc: 'With replacement, P(correct key) = 1/8 stays constant.' }
+          ],
+          verdict: 'Truncated Geometric Distribution (NOT Binomial!)',
+          isBinom: false,
+          pmf: '$$P(T = k) = \\left(\\frac{7}{8}\\right)^{k-1}\\left(\\frac{1}{8}\\right) \\; (k=1,\\dots,5), \\quad P(T=6) = \\left(\\frac{7}{8}\\right)^5$$'
+        },
+        {
+          title: '10 Flashbulbs (3 Defective), Sample 3 Without Replacement (2022 Q2c)',
+          checks: [
+            { letter: 'B', name: 'Binary', ok: true, desc: 'Each bulb is either Defective (Success) or Good (Failure).' },
+            { letter: 'I', name: 'Independent', ok: false, desc: 'FAILS! Sampling without replacement makes subsequent draws dependent.' },
+            { letter: 'N', name: 'Fixed n', ok: true, desc: 'Exactly n = 3 flashbulbs are sampled and tested.' },
+            { letter: 'S', name: 'Same p', ok: false, desc: 'FAILS! Conditional probability of defective shifts after each bulb is removed.' }
+          ],
+          verdict: 'Hypergeometric Distribution: $X \\sim \\text{Hyp}(N=10, K=3, n=3)$',
+          isBinom: false,
+          pmf: '$$P(X = x) = \\frac{\\binom{3}{x}\\binom{7}{3 - x}}{\\binom{10}{3}}, \\qquad x = 0, 1, 2, 3$$'
+        },
+        {
+          title: '10 Red & 20 Blue Balls, 10 Draws With Replacement (2022 Q3b)',
+          checks: [
+            { letter: 'B', name: 'Binary', ok: true, desc: 'Each drawn ball is either Red (Success) or Blue (Failure).' },
+            { letter: 'I', name: 'Independent', ok: true, desc: 'Returning the ball restores the urn, making draws independent.' },
+            { letter: 'N', name: 'Fixed n', ok: true, desc: 'The draw-and-return process repeats a fixed n = 10 times.' },
+            { letter: 'S', name: 'Same p', ok: true, desc: 'Constant probability p = 10/30 = 1/3 on every single draw.' }
+          ],
+          verdict: 'Binomial Distribution: $X \\sim B(10,\\, 1/3)$',
+          isBinom: true,
+          pmf: '$$P(X = x) = \\binom{10}{x}\\left(\\frac{1}{3}\\right)^x\\left(\\frac{2}{3}\\right)^{10 - x}, \\qquad x = 0, 1, \\dots, 10$$'
+        },
+        {
+          title: 'Single Coin Toss / Single Defective Check',
+          checks: [
+            { letter: 'B', name: 'Binary', ok: true, desc: 'Exactly two outcomes: Head/Defective (1) or Tail/Good (0).' },
+            { letter: 'I', name: 'Independent', ok: true, desc: 'Vacuously satisfied for a single isolated trial.' },
+            { letter: 'N', name: 'Fixed n = 1', ok: true, desc: 'Fixed at exactly n = 1 trial (the special case of Binomial).' },
+            { letter: 'S', name: 'Same p', ok: true, desc: 'Single well-defined success probability p.' }
+          ],
+          verdict: 'Bernoulli Distribution: $X \\sim \\text{Bern}(p) \\equiv B(1, p)$',
+          isBinom: true,
+          pmf: '$$P(X = x) = p^x (1 - p)^{1 - x}, \\qquad x \\in \\{0, 1\\}$$'
+        }
+      ];
+
+      function renderBinsScenario(idx) {
+        const sc = BINS_SCENARIOS[idx];
+        const cardsWrap = document.getElementById('binsCardsWrap');
+        cardsWrap.innerHTML = sc.checks.map(c => `
+          <div class="p-4 rounded-2xl border-2 transition-all ${c.ok ? 'bg-[#F0FDFA] border-teal-300' : 'bg-[#FFF1F2] border-rose-300'}">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg font-mono text-xs font-extrabold text-white inline-flex items-center justify-center ${c.ok ? 'bg-[#0F766E]' : 'bg-[#BE123C]'}">${c.letter}</span>
+                <span class="font-bold text-sm text-[#1C1917]">${c.name}</span>
+              </div>
+              <span class="text-base font-extrabold ${c.ok ? 'text-[#0F766E]' : 'text-[#BE123C]'}">${c.ok ? '✓' : '✗'}</span>
+            </div>
+            <p class="text-xs text-[#57534E] leading-relaxed">${c.desc}</p>
+          </div>
+        `).join('');
+
+        const banner = document.getElementById('binsVerdictBanner');
+        banner.className = sc.isBinom
+          ? 'p-5 rounded-2xl border-2 border-teal-400 bg-[#F0FDFA] space-y-2'
+          : 'p-5 rounded-2xl border-2 border-amber-400 bg-[#FFFBEB] space-y-2';
+        banner.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider ${sc.isBinom ? 'text-[#0F766E]' : 'text-[#D97706]'}">Distribution Verdict · ${sc.title}</span>
+            <span class="px-3 py-0.5 rounded-full text-xs font-bold text-white ${sc.isBinom ? 'bg-[#0F766E]' : 'bg-[#D97706]'}">${sc.isBinom ? 'ALL BINS MET' : 'BINS VIOLATED'}</span>
+          </div>
+          <div class="text-base sm:text-lg font-extrabold text-[#1C1917]">${sc.verdict}</div>
+          <div class="bg-white rounded-xl p-3 border border-[#E7E5E0] text-center text-[#1C1917]">${sc.pmf}</div>
+        `;
+        renderMath(document.getElementById('tab-bins'));
+      }
+
+      document.querySelectorAll('.bins-sc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-sc'), 10);
+          document.querySelectorAll('.bins-sc-btn').forEach(b => {
+            b.className = b === btn
+              ? 'bins-sc-btn text-left p-3 rounded-xl border-2 border-[#0F766E] bg-[#F0FDFA] text-xs font-bold text-[#1C1917] shadow-xs transition-all'
+              : 'bins-sc-btn text-left p-3 rounded-xl border border-[#E7E5E0] bg-[#FAFAF7] text-xs font-bold text-[#1C1917] hover:border-[#0F766E] transition-all';
+          });
+          renderBinsScenario(idx);
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         8. TAB 4: LIVE URN SIMULATOR (WITH VS. WITHOUT REPLACEMENT)
+      ------------------------------------------------------------------- */
+      let urnMode = 'hyp'; // 'hyp' | 'bin'
+      let urnCounts = [];
+      let urnTotal = 0;
+      let urnSumX = 0;
+      let urnSumX2 = 0;
+      let urnLastDrawnIdx = new Set();
+      let urnLastX = null;
+
+      const urnSliderN = document.getElementById('urnSliderN');
+      const urnSliderK = document.getElementById('urnSliderK');
+      const urnSlidern = document.getElementById('urnSlidern');
+
+      function resetUrnSim() {
+        const N = parseInt(urnSliderN.value, 10);
+        urnSliderK.max = N - 1;
+        const K = Math.min(N - 1, Math.max(1, parseInt(urnSliderK.value, 10)));
+        urnSliderK.value = K;
+        urnSlidern.max = Math.min(15, N);
+        const n = Math.min(Math.min(15, N), Math.max(1, parseInt(urnSlidern.value, 10)));
+        urnSlidern.value = n;
+
+        document.getElementById('urnValN').textContent = N;
+        document.getElementById('urnValK').textContent = K;
+        document.getElementById('urnValn').textContent = n;
+
+        urnCounts = new Array(n + 1).fill(0);
+        urnTotal = 0;
+        urnSumX = 0;
+        urnSumX2 = 0;
+        urnLastDrawnIdx = new Set();
+        urnLastX = null;
+        document.getElementById('urnLastSampleTag').textContent = 'Click "Draw 1 Sample"';
+        renderUrnBalls();
+        renderUrnCanvas();
+      }
+
+      function runUrnSamples(trials) {
+        const N = parseInt(urnSliderN.value, 10);
+        const K = parseInt(urnSliderK.value, 10);
+        const n = parseInt(urnSlidern.value, 10);
+
+        let lastSet = new Set();
+        let lastX = 0;
+
+        for (let t = 0; t < trials; t++) {
+          let x = 0;
+          if (urnMode === 'hyp') {
+            // Partial Fisher-Yates shuffle on indices 0..N-1 (0..K-1 are successes)
+            const arr = Array.from({ length: N }, (_, i) => i);
+            if (t === trials - 1) lastSet = new Set();
+            for (let i = 0; i < n; i++) {
+              const j = i + Math.floor(Math.random() * (N - i));
+              const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+              if (arr[i] < K) x++;
+              if (t === trials - 1) lastSet.add(arr[i]);
+            }
+          } else {
+            if (t === trials - 1) lastSet = new Set();
+            for (let i = 0; i < n; i++) {
+              const pick = Math.floor(Math.random() * N);
+              if (pick < K) x++;
+              if (t === trials - 1) lastSet.add(pick);
+            }
+          }
+          urnCounts[x]++;
+          urnTotal++;
+          urnSumX += x;
+          urnSumX2 += x * x;
+          if (t === trials - 1) lastX = x;
+        }
+
+        urnLastDrawnIdx = lastSet;
+        urnLastX = lastX;
+        document.getElementById('urnLastSampleTag').textContent = `Last Sample: x = ${lastX} success${lastX === 1 ? '' : 'es'}`;
+        renderUrnBalls();
+        renderUrnCanvas();
+      }
+
+      function renderUrnBalls() {
+        const N = parseInt(urnSliderN.value, 10);
+        const K = parseInt(urnSliderK.value, 10);
+        const grid = document.getElementById('urnBallsGrid');
+        let html = '';
+        for (let i = 0; i < N; i++) {
+          const isSucc = i < K;
+          const isDrawn = urnLastDrawnIdx.has(i);
+          html += `<span class="w-6 h-6 rounded-full inline-flex items-center justify-center text-[10px] font-mono font-bold transition-all ${
+            isSucc ? 'bg-[#0F766E] text-white' : 'bg-slate-200 text-slate-600'
+          } ${isDrawn ? 'ring-2 ring-offset-2 ring-[#D97706] scale-110 shadow-sm' : ''}">${isSucc ? 'S' : 'F'}</span>`;
+        }
+        grid.innerHTML = html;
+      }
+
+      function renderUrnCanvas() {
+        const N = parseInt(urnSliderN.value, 10);
+        const K = parseInt(urnSliderK.value, 10);
+        const n = parseInt(urnSlidern.value, 10);
+        const p = K / N;
+        const theoMean = n * p;
+        const theoVar = urnMode === 'hyp' ? n * p * (1 - p) * ((N - n) / (N - 1)) : n * p * (1 - p);
+
+        document.getElementById('urnTotalTrials').textContent = urnTotal.toLocaleString();
+        if (urnTotal > 0) {
+          const empMean = urnSumX / urnTotal;
+          const empVar = Math.max(0, urnSumX2 / urnTotal - empMean * empMean);
+          document.getElementById('urnCmpMean').textContent = `${empMean.toFixed(3)} vs ${theoMean.toFixed(3)}`;
+          document.getElementById('urnCmpVar').textContent = `${empVar.toFixed(3)} vs ${theoVar.toFixed(3)}`;
+        } else {
+          document.getElementById('urnCmpMean').textContent = `— vs ${theoMean.toFixed(3)}`;
+          document.getElementById('urnCmpVar').textContent = `— vs ${theoVar.toFixed(3)}`;
+        }
+
+        const empProbs = [];
+        const theoProbs = [];
+        for (let x = 0; x <= n; x++) {
+          empProbs.push(urnTotal > 0 ? urnCounts[x] / urnTotal : 0);
+          theoProbs.push(urnMode === 'hyp' ? hyperPMF(N, K, n, x) : binomPMF(n, p, x));
+        }
+
+        const { ctx, w, h } = setupHiDPI(document.getElementById('urnCanvas'), document.getElementById('urnCanvasWrap'), 0.46, 210, 260);
+        const padL = 42, padR = 16, padT = 20, padB = 32;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxY = Math.max(0.2, ...empProbs, ...theoProbs) * 1.18;
+        const slotW = plotW / (n + 1);
+        const barW = Math.max(6, Math.min(34, slotW * 0.65));
+        const toX = x => padL + (x + 0.5) * slotW;
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E7E5E0'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#57534E';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        // Empirical Bars + Theoretical Amber Stems/Dots
+        for (let x = 0; x <= n; x++) {
+          const cx = toX(x);
+          const pyE = toY(empProbs[x]);
+          const pyT = toY(theoProbs[x]);
+
+          // Empirical Bar
+          if (urnTotal > 0) {
+            ctx.fillStyle = 'rgba(15, 118, 110, 0.35)';
+            ctx.strokeStyle = '#0F766E'; ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.roundRect(cx - barW / 2, pyE, barW, Math.max(0, toY(0) - pyE), [4, 4, 0, 0]);
+            ctx.fill(); ctx.stroke();
+          }
+
+          // Theoretical Amber Stem & Dot
+          ctx.strokeStyle = '#D97706'; ctx.lineWidth = 2.2;
+          ctx.beginPath(); ctx.moveTo(cx, toY(0)); ctx.lineTo(cx, pyT); ctx.stroke();
+          ctx.fillStyle = '#D97706';
+          ctx.beginPath(); ctx.arc(cx, pyT, 4.5, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = '#57534E'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+          ctx.fillText(x, cx, padT + plotH + 8);
+        }
+
+        // Axes
+        ctx.strokeStyle = '#57534E'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      [urnSliderN, urnSliderK, urnSlidern].forEach(s => s.addEventListener('input', resetUrnSim));
+      document.getElementById('urnRun1').addEventListener('click', () => runUrnSamples(1));
+      document.getElementById('urnRun100').addEventListener('click', () => runUrnSamples(100));
+      document.getElementById('urnRun1000').addEventListener('click', () => runUrnSamples(1000));
+      document.getElementById('urnReset').addEventListener('click', resetUrnSim);
+
+      document.querySelectorAll('.urn-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          urnMode = btn.getAttribute('data-umode');
+          document.querySelectorAll('.urn-mode-btn').forEach(b => {
+            b.className = b === btn
+              ? 'urn-mode-btn px-3.5 py-2 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'urn-mode-btn px-3.5 py-2 rounded-lg text-[#57534E] transition-all';
+          });
+          resetUrnSim();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         9. SECTION 5: QUICK MASTERY CHECK (5-QUESTION QUIZ)
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. Why is it mathematically impossible for a Binomial distribution to have mean $\\mu = 12$ and variance $\\sigma^2 = 15$?',
+          options: [
+            'Because $n$ would have to be an odd number.',
+            'Because for a Binomial, $q = \\sigma^2 / \\mu = 15/12 = 1.25 > 1$, which violates $0 \\le q \\le 1$ (since $V(X) = npq \\le np = E(X)$ always).',
+            'Because Binomial variances can never exceed $10$.',
+            'Because the mean and variance of a Binomial must always be equal.'
+          ],
+          correct: 1,
+          explanation: 'In any Binomial distribution, $q = 1 - p \\le 1$, which strictly forces $V(X) = npq \\le np = E(X)$. Having $\\sigma^2 = 15 > 12 = \\mu$ gives $q = 1.25 > 1$, impossible!'
+        },
+        {
+          q: '2. In the ISRT 2025 Treasure Chest problem (trying 8 keys with replacement, stopping as soon as the chest opens or after 6 tries), which BINS condition fails?',
+          options: [
+            'B — Binary outcomes',
+            'I — Independent trials',
+            'N — Fixed number of trials $n$',
+            'S — Same probability $p$'
+          ],
+          correct: 2,
+          explanation: 'Because the contestant stops early as soon as the correct key opens the chest, the number of trials is random rather than fixed—violating "N" in BINS.'
+        },
+        {
+          q: '3. Comparing $X \\sim B(n, K/N)$ and $Y \\sim \\text{Hyp}(N, K, n)$ for $2 \\le n \\le N$, how do their means and variances relate?',
+          options: [
+            '$E(Y) = E(X)$ and $V(Y) < V(X)$ because of the Finite Population Correction $\\frac{N-n}{N-1} < 1$.',
+            '$E(Y) < E(X)$ and $V(Y) = V(X)$.',
+            '$E(Y) = E(X)$ and $V(Y) > V(X)$.',
+            '$E(Y) = E(X)$ and $V(Y) = V(X)$ identically.'
+          ],
+          correct: 0,
+          explanation: 'Both distributions share the exact same mean $n(K/N)$, but sampling without replacement introduces negative correlation between draws, multiplying variance by $\\text{FPC} = \\frac{N-n}{N-1} < 1$.'
+        },
+        {
+          q: '4. What is the mode of $X \\sim B(11, 0.5)$?',
+          options: [
+            'Unimodal at $x = 5$',
+            'Unimodal at $x = 6$',
+            'Bimodal at $x = 5$ and $x = 6$',
+            'Unimodal at $x = 5.5$'
+          ],
+          correct: 2,
+          explanation: 'Since $(n + 1)p = (11 + 1)(0.5) = 6$ is an exact integer, $P(X = 5) = P(X = 6)$ are tied for the maximum, making $B(11, 0.5)$ bimodal at $5$ and $6$.'
+        },
+        {
+          q: '5. If $X_1 \\sim B(6, 0.4)$ and $X_2 \\sim B(4, 0.4)$ are independent, what are the distributions of $X_1 + X_2$ and $X_1 - X_2$?',
+          options: [
+            '$X_1 + X_2 \\sim B(10, 0.4)$ and $X_1 - X_2 \\sim B(2, 0.4)$',
+            '$X_1 + X_2 \\sim B(10, 0.8)$ and $X_1 - X_2 \\sim B(2, 0.4)$',
+            '$X_1 + X_2 \\sim B(10, 0.4)$, while $X_1 - X_2$ is NOT Binomial (can be negative)',
+            'Neither $X_1 + X_2$ nor $X_1 - X_2$ is Binomial'
+          ],
+          correct: 2,
+          explanation: 'By the reproductive property via MGFs, $X_1 + X_2 \\sim B(6+4, 0.4) = B(10, 0.4)$. However, $X_1 - X_2$ takes values in $\\{-4, \\dots, 6\\}$ and is NOT Binomial.'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-[#FAFAF7] border-[#E7E5E0] text-[#1C1917] hover:border-[#0F766E] hover:bg-[#F0FDFA]';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-[#F0FDFA] border-[#0F766E] text-[#0F766E] font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-[#FFF1F2] border-[#BE123C] text-[#BE123C] font-semibold';
+              else cls = 'bg-stone-50 border-stone-200 text-stone-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-[#F0FDFA] border-teal-300 text-[#0F766E]' : 'bg-[#FFF1F2] border-rose-300 text-[#BE123C]'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-[#1C1917] text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        renderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         10. INITIALIZATION ON DOMCONTENTLOADED & WINDOW LOAD
+      ------------------------------------------------------------------- */
+      function initAll() {
+        renderBinomLab();
+        renderConvLab();
+        renderBinsScenario(0);
+        resetUrnSim();
+        renderQuiz();
+        updateScrollProgress();
+        renderMath(document.body);
+      }
+
+      document.addEventListener('DOMContentLoaded', initAll);
+      window.addEventListener('load', () => {
+        redrawActiveTab();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

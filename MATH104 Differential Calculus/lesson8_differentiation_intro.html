@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 8: Differentiation I — Tangents, Rates &amp; Differentiability | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8 0%, #7c3aed 55%, #db2777 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.86rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 8: Differentiation I</h2>
+      <p>Module 3 of 5 &bull; Tangents &amp; Derivatives</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Definitions &amp; Basic Rules</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 8.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">2nd Incourse 2024</span>
+      <span class="source-pill">Year Final 2024</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 8 of 15</span>
+        <span class="hero-badge">High Yield: 2nd In-course Q1 &amp; Final Q4</span>
+        <span class="hero-badge">Interactive Web Lab</span>
+      </div>
+      <h1>Tangent Lines, Rates of Change, Differentiability &amp; The Derivative Function</h1>
+      <p>
+        Enter Module 3! Watch secant lines pivot into tangent lines as $h \to 0$, zoom in with a magnifying glass to
+        see why corners and vertical tangents break differentiability, trace $f(x)$ alongside $f'(x)$ in real time,
+        and master the fundamental differentiation theorems.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-secant', this)">Secant-to-Tangent Slider</button>
+          <button class="tab-btn" onclick="switchTab('tab-zoom', this)">Local Linearity Magnifier</button>
+          <button class="tab-btn" onclick="switchTab('tab-sync', this)">Dual-Graph Sync ($f$ vs. $f'$)</button>
+        </div>
+
+        <!-- TAB 1: SECANT TO TANGENT -->
+        <div id="tab-secant" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="secCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="secFunc">Choose Lecture 8 / Exam Curve</label>
+                <select id="secFunc" onchange="drawSecCanvas()">
+                  <option value="x2">Ex 1 &amp; 2: y = x&sup2; at P(1, 1)</option>
+                  <option value="recip2">2nd Incourse 2024: y = 2/x at P(2, 1)</option>
+                  <option value="sqrt">Final 2024: y = &radic;x at P(4, 2)</option>
+                  <option value="x3">Ex 11: y = x&sup3; at P(1, 1)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Step $h = x - x_0$ (Drag $Q \to P$!)</span><span id="hVal">1.50</span></label>
+                <input type="range" id="hSlider" min="-1.5" max="2.5" step="0.05" value="1.5" oninput="drawSecCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="animateH()">Animate $h \to 0$</button>
+                <button class="btn btn-outline" onclick="setH(0.05)">Snap $h = 0.05$</button>
+              </div>
+              <div class="readout-card" id="secReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: LOCAL LINEARITY MAGNIFIER -->
+        <div id="tab-zoom" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="zoomCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="zoomMode">Inspect Point $P$ (Lecture 8 Magnifying Glass)</label>
+                <select id="zoomMode" onchange="drawZoomCanvas()">
+                  <option value="smooth">Smooth Curve: f(x) = x&sup2; at (1, 1) — Differentiable</option>
+                  <option value="corner">Corner Point: f(x) = |x| at (0, 0) — NOT Diff.</option>
+                  <option value="vtan">Vertical Tangency: f(x) = &sup3;&radic;x at (0, 0) — NOT Diff.</option>
+                  <option value="ex48">Ex 48 Piecewise: {x&sup2;+2, x+2} at (1, 3) — Corner!</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Magnification Zoom Level</span><span id="magVal">1&times;</span></label>
+                <input type="range" id="magSlider" min="1" max="50" step="1" value="1" oninput="drawZoomCanvas()" />
+              </div>
+              <div class="readout-card" id="zoomReadout"></div>
+              <p style="font-size: 0.79rem; color: var(--text-muted);">
+                <strong>Local Linearity Test:</strong> Zoom to $50\times$! A differentiable curve flattens into a single non-vertical straight line. A corner stays sharp forever; a vertical tangent turns into a vertical wall (infinite slope).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: DUAL GRAPH SYNC -->
+        <div id="tab-sync" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="syncCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="syncFunc">Choose $f(x)$ &amp; $f'(x)$ Pair</label>
+                <select id="syncFunc" onchange="drawSyncCanvas()">
+                  <option value="ex2">Lecture 8 Ex 2: f(x) = x&sup3; - x &rarr; f'(x) = 3x&sup2; - 1</option>
+                  <option value="quad">Parabola: f(x) = x&sup2; - 2x &rarr; f'(x) = 2x - 2</option>
+                  <option value="sin">Sine Wave: f(x) = sin(x) &rarr; f'(x) = cos(x)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Slide $x_0$ to Trace Slope on $f'(x)$</span><span id="syncXVal">0.00</span></label>
+                <input type="range" id="syncSlider" min="-1.8" max="1.8" step="0.05" value="0" oninput="drawSyncCanvas()" />
+              </div>
+              <div class="readout-card" id="syncReadout"></div>
+              <p style="font-size: 0.79rem; color: var(--text-muted);">
+                <strong>Key:</strong> <span style="color:#2563eb; font-weight:700;">Blue</span> = $f(x)$ with amber tangent segment;
+                <span style="color:#7c3aed; font-weight:700;">Purple</span> = $f'(x)$ whose height equals the exact tangent slope!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Definitions, Theorems &amp; Basic Rules (Lecture 8)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Tangent Lines (Def 2.1.1) &amp; Rates of Change</h3>
+        <p>
+          <strong>Definition 2.1.1:</strong> The <strong>tangent line</strong> to $y = f(x)$ at $P(x_0, f(x_0))$ is $y - f(x_0) = m_{\tan}(x - x_0)$, where the slope is given by two equivalent limits (setting $h = x - x_0$):
+          $$m_{\tan} = \lim_{x \to x_0} \frac{f(x) - f(x_0)}{x - x_0} = \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h}$$
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Quantity</th>
+                <th>Formula ($x_0, x_1$ form)</th>
+                <th>Formula ($h$ form)</th>
+                <th>Geometric Meaning</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Average Rate of Change ($r_{\text{ave}}$)</strong></td>
+                <td>$\dfrac{f(x_1) - f(x_0)}{x_1 - x_0}$</td>
+                <td>$\dfrac{f(x_0 + h) - f(x_0)}{h}$</td>
+                <td>Slope of the <strong>secant line</strong> joining $P$ and $Q$</td>
+              </tr>
+              <tr>
+                <td><strong>Instantaneous Rate ($r_{\text{inst}}$)</strong></td>
+                <td>$\displaystyle\lim_{x_1 \to x_0} \frac{f(x_1) - f(x_0)}{x_1 - x_0}$</td>
+                <td>$\displaystyle\lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h}$</td>
+                <td>Slope of the <strong>tangent line</strong> $m_{\tan}$ at $x_0$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Differentiability (Def 2.2.2) &amp; Continuity (Theorem 2.2.3)</h3>
+        <p>
+          <strong>Definition 2.2.1 &amp; 2.2.2:</strong> $f$ is <strong>differentiable at $x_0$</strong> if the limit
+          $$f'(x_0) = \lim_{h \to 0} \frac{f(x_0 + h) - f(x_0)}{h}$$
+          exists finitely. The function $f'(x) = \lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$ is the <strong>derivative function</strong>.
+        </p>
+        <div class="callout warn">
+          <strong>3 Ways Differentiability Fails at $x_0$:</strong>
+          1. <strong>Corner point / Cusp:</strong> Left-hand derivative $\ne$ Right-hand derivative (e.g., $f(x) = |x|$ at $x = 0$).<br />
+          2. <strong>Point of vertical tangency:</strong> Tangent slope tends to $+\infty$ or $-\infty$ (e.g., $f(x) = \sqrt[3]{x}$ at $x = 0$).<br />
+          3. <strong>Discontinuity:</strong> By Theorem 2.2.3, if $f$ is discontinuous at $x_0$, it can <em>never</em> be differentiable at $x_0$.
+        </div>
+        <div class="callout note-bn">
+          <strong>Theorem 2.2.3 (Differentiable $\implies$ Continuous, NOT Vice Versa!):</strong>
+          যদি $f$ কোনো বিন্দু $x_0$-তে differentiable হয়, তবে সেটি অবশ্যই continuous হবে। কিন্তু continuous হলেই differentiable হতে হবে এমন কোনো কথা নেই (যেমন: $y = |x|$ at $x=0$ continuous, কিন্তু corner point থাকায় differentiable না!)।
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.3 Basic Techniques of Differentiation (Theorems 2.3.1–2.3.5)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Theorem</th>
+                <th>Rule Formula</th>
+                <th>Quick Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>2.3.1 Constant Rule</strong></td>
+                <td>$\dfrac{d}{dx}[c] = 0$</td>
+                <td>$\dfrac{d}{dx}[7] = 0$</td>
+              </tr>
+              <tr>
+                <td><strong>2.3.2 Power Rule</strong></td>
+                <td>$\dfrac{d}{dx}[x^n] = n x^{n-1}$</td>
+                <td>$\dfrac{d}{dx}[x^5] = 5x^4$, &nbsp; $\dfrac{d}{dx}[\sqrt{x}] = \dfrac{1}{2\sqrt{x}}$</td>
+              </tr>
+              <tr>
+                <td><strong>2.3.4 Constant Multiple</strong></td>
+                <td>$\dfrac{d}{dx}[c f(x)] = c \dfrac{d}{dx}[f(x)]$</td>
+                <td>$\dfrac{d}{dx}[4x^3] = 4(3x^2) = 12x^2$</td>
+              </tr>
+              <tr>
+                <td><strong>2.3.5 Sum &amp; Difference</strong></td>
+                <td>$\dfrac{d}{dx}[f(x) \pm g(x)] = f'(x) \pm g'(x)$</td>
+                <td>$\dfrac{d}{dx}[x^3 - x] = 3x^2 - 1$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Lecture 8 Slides)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: Lecture 8 Example 6 -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Lecture 8 &bull; Example 6</span>
+            <h3 style="margin-top: 6px;">Example 1: Prove $f(x) = |x|$ is NOT Differentiable at $x = 0$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Show using Definition 2.2.2 that $f'(0)$ does not exist for $f(x) = |x|$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Write the Difference Quotient at $x_0 = 0$:</strong> $f'(0) = \lim_{h \to 0} \dfrac{f(0+h) - f(0)}{h} = \lim_{h \to 0} \dfrac{|h| - |0|}{h} = \lim_{h \to 0} \dfrac{|h|}{h}$.</div>
+          <div class="step-item"><strong>Step 2 — Split by Sign of $h$:</strong> $\dfrac{|h|}{h} = \begin{cases} 1, & h > 0 \\ -1, & h < 0 \end{cases}$.</div>
+          <div class="step-item"><strong>Step 3 — Compare One-Sided Limits:</strong> $\lim_{h \to 0^-} \dfrac{|h|}{h} = -1$ and $\lim_{h \to 0^+} \dfrac{|h|}{h} = 1$. Since $-1 \ne 1$, the two-sided limit does not exist, so $f(x) = |x|$ is <strong>not differentiable at $x = 0$</strong>.</div>
+        </div>
+      </div>
+
+      <!-- Example 2: Lecture 8 Exercise 48 -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 8 &bull; Exercise 48</span>
+            <h3 style="margin-top: 6px;">Example 2: Continuous But Not Differentiable at $x = 1$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Show that $f(x) = \begin{cases} x^2 + 2, & x \le 1 \\ x + 2, & x > 1 \end{cases}$ is continuous at $x = 1$, but NOT differentiable at $x = 1$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Check Continuity at $x = 1$:</strong> $f(1) = 1^2 + 2 = 3$. $\text{LHL} = \lim_{x\to 1^-}(x^2+2) = 3$, $\text{RHL} = \lim_{x\to 1^+}(x+2) = 3$. Since $\text{LHL} = \text{RHL} = f(1) = 3$, $f$ is <strong>continuous</strong> at $x = 1$.</div>
+          <div class="step-item"><strong>Step 2 — Left-Hand Derivative ($h \to 0^-$):</strong> For $h < 0$, $1 + h < 1$, so $f'_-(1) = \lim_{h\to 0^-}\dfrac{[(1+h)^2+2] - 3}{h} = \lim_{h\to 0^-}\dfrac{2h + h^2}{h} = 2$.</div>
+          <div class="step-item"><strong>Step 3 — Right-Hand Derivative ($h \to 0^+$):</strong> For $h > 0$, $1 + h > 1$, so $f'_+(1) = \lim_{h\to 0^+}\dfrac{[(1+h)+2] - 3}{h} = \lim_{h\to 0^+}\dfrac{h}{h} = 1$.</div>
+          <div class="step-item"><strong>Step 4 — Conclusion:</strong> Since $f'_-(1) = 2 \ne 1 = f'_+(1)$, there is a corner at $(1, 3)$ and $f$ is <strong>not differentiable at $x = 1$</strong>.</div>
+        </div>
+      </div>
+
+      <!-- Example 3: Lecture 8 Example 2 (Derivative Function) -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 8 &bull; Derivative Function Example 2</span>
+            <h3 style="margin-top: 6px;">Example 3: Compute $f'(x)$ for $f(x) = x^3 - x$ from First Principles</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Use Definition 2.2.1 to find $f'(x)$ for $f(x) = x^3 - x$ and connect the graphs of $f$ and $f'$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Substitute into Definition 2.2.1:</strong> $f'(x) = \lim_{h \to 0} \dfrac{[(x+h)^3 - (x+h)] - [x^3 - x]}{h}$.</div>
+          <div class="step-item"><strong>Step 2 — Expand $(x + h)^3$:</strong> Numerator becomes $(x^3 + 3x^2h + 3xh^2 + h^3 - x - h) - (x^3 - x) = 3x^2h + 3xh^2 + h^3 - h$.</div>
+          <div class="step-item"><strong>Step 3 — Factor &amp; Cancel $h$:</strong> $\lim_{h \to 0} (3x^2 + 3xh + h^2 - 1) = \mathbf{3x^2 - 1}$.</div>
+          <div class="step-item"><strong>Step 4 — Graph Connection:</strong> Wherever $f$ has a horizontal tangent ($x = \pm 1/\sqrt{3}$), $f'(x) = 0$. Where $f$ rises, $f' > 0$; where $f$ falls, $f' < 0$. *(Check this live in Tab 3!)*</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Filtered MATH104)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: 2nd Incourse 2024 Q1 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">2nd In-course Exam 2024 &bull; Q1</span>
+          <span class="pill pill-amber">2 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Find an equation for the tangent line to the curve $y = \dfrac{2}{x}$ at the point $(2, 1)$ on this curve.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> Compute $m_{\tan}$ at $x_0 = 2$ (using Definition 2.1.1 or $y' = -2/x^2$), then plug into $y - 1 = m_{\tan}(x - 2)$.
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Full Solution (First Principles):</strong><br />
+          $$m_{\tan} = \lim_{x \to 2} \frac{\frac{2}{x} - 1}{x - 2} = \lim_{x \to 2} \frac{2 - x}{x(x - 2)} = \lim_{x \to 2} \frac{-1}{x} = -\frac{1}{2}$$
+          Equation of the tangent line at $(2, 1)$:
+          $$y - 1 = -\frac{1}{2}(x - 2) \implies y = -\frac{1}{2}x + 2 \quad (\text{or } x + 2y = 4)$$
+        </div>
+      </div>
+
+      <!-- Exam Q2: Year Final 2024 Q4 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2024 &bull; Q4 (Also Lecture 8 Ex 9)</span>
+          <span class="pill pill-amber">3 + 4 = 7 Marks</span>
+        </div>
+        <p>
+          <strong>(a)</strong> Find the slopes of the tangent lines to the curve $y = \sqrt{x}$ at $x_0 = 1$, $x_0 = 4$, and $x_0 = 9$.<br />
+          <strong>(b)</strong> Let $y = x^2 + 1$. (i) Find the average rate of change of $y$ with respect to $x$ over $[3, 5]$. (ii) Find the instantaneous rate of change of $y$ with respect to $x$ when $x = -4$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Part (a):</strong><br />
+          Using Definition 2.1.1 (rationalizing numerator):
+          $$m_{\tan}(x_0) = \lim_{x \to x_0} \frac{\sqrt{x} - \sqrt{x_0}}{x - x_0} = \lim_{x \to x_0} \frac{1}{\sqrt{x} + \sqrt{x_0}} = \frac{1}{2\sqrt{x_0}}$$
+          &bull; At $x_0 = 1$: $m = \mathbf{\dfrac{1}{2}}$ &nbsp;&nbsp; &bull; At $x_0 = 4$: $m = \mathbf{\dfrac{1}{4}}$ &nbsp;&nbsp; &bull; At $x_0 = 9$: $m = \mathbf{\dfrac{1}{6}}$.<br /><br />
+          <strong>Part (b):</strong><br />
+          (i) $r_{\text{ave}} = \dfrac{f(5) - f(3)}{5 - 3} = \dfrac{(25 + 1) - (9 + 1)}{2} = \dfrac{26 - 10}{2} = \mathbf{8}$.<br />
+          (ii) $r_{\text{inst}} = \lim_{x_1 \to -4} \dfrac{(x_1^2 + 1) - 17}{x_1 - (-4)} = \lim_{x_1 \to -4} \dfrac{(x_1 - 4)(x_1 + 4)}{x_1 + 4} = \mathbf{-8}$.
+        </div>
+      </div>
+
+      <!-- Exam Q3: Year Final 2024 Theorem 2.2.3 Proof -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2024 &bull; Theorem 2.2.3 Proof</span>
+          <span class="pill pill-amber">3 Marks (Must-Know Proof!)</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Show that if a function $f$ is differentiable at $x_0$, then $f$ is continuous at $x_0$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Complete Exam Proof</button>
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Proof:</strong><br />
+          We are given that $f$ is differentiable at $x_0$, so $f'(x_0) = \lim_{x \to x_0} \dfrac{f(x) - f(x_0)}{x - x_0}$ exists finitely.<br />
+          To prove continuity at $x_0$, we must show $\lim_{x \to x_0} f(x) = f(x_0)$, which is equivalent to showing $\lim_{x \to x_0} [f(x) - f(x_0)] = 0$.<br />
+          For $x \ne x_0$, multiply and divide by $(x - x_0)$:
+          $$\lim_{x \to x_0} [f(x) - f(x_0)] = \lim_{x \to x_0} \left[\frac{f(x) - f(x_0)}{x - x_0} \cdot (x - x_0)\right] = \left(\lim_{x \to x_0} \frac{f(x) - f(x_0)}{x - x_0}\right)\left(\lim_{x \to x_0} (x - x_0)\right) = f'(x_0) \cdot 0 = 0$$
+          Therefore, $\lim_{x \to x_0} f(x) = f(x_0)$, so $f$ is continuous at $x_0$. $\blacksquare$
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawSecCanvas();
+      drawZoomCanvas();
+      drawSyncCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-secant') drawSecCanvas();
+      if (id === 'tab-zoom') drawZoomCanvas();
+      if (id === 'tab-sync') drawSyncCanvas();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    /* ================= CANVAS HELPERS ================= */
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        amber: '#d97706',
+        red: '#dc2626'
+      };
+    }
+
+    function drawAxes(ctx, w, h, xMin, xMax, yMin, yMax, xStep = 1, yStep = 1) {
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      ctx.strokeStyle = c.grid;
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+      }
+
+      ctx.strokeStyle = c.axis;
+      ctx.lineWidth = 1.8;
+      if (yMin <= 0 && yMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
+      }
+      if (xMin <= 0 && xMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+      }
+
+      ctx.fillStyle = c.text;
+      ctx.font = '11px Inter, sans-serif';
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        if (Math.abs(x) > 1e-6) ctx.fillText(Math.round(x * 100) / 100, toX(x) - 6, toY(0) + 14);
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        if (Math.abs(y) > 1e-6) ctx.fillText(Math.round(y * 100) / 100, toX(0) + 6, toY(y) + 4);
+      }
+      return { toX, toY };
+    }
+
+    function plotFn(ctx, fn, xMin, xMax, yMin, yMax, toX, toY, color, width = 2.8, dashed = false) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      if (dashed) ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      let started = false;
+      const dx = (xMax - xMin) / 500;
+      const span = yMax - yMin;
+      for (let x = xMin; x <= xMax; x += dx) {
+        const y = fn(x);
+        if (y !== null && isFinite(y) && y >= yMin - span && y <= yMax + span) {
+          if (!started) { ctx.moveTo(toX(x), toY(y)); started = true; }
+          else ctx.lineTo(toX(x), toY(y));
+        } else { started = false; }
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ================= TAB 1: SECANT TO TANGENT ================= */
+    const secPresets = {
+      x2: {
+        name: 'y = x²', x0: 1, fn: x => x*x, df: x => 2*x,
+        xMin: -1.5, xMax: 4.5, yMin: -1, yMax: 9, xStep: 1, yStep: 2
+      },
+      recip2: {
+        name: 'y = 2 / x', x0: 2, fn: x => x > 0.1 ? 2 / x : null, df: x => -2 / (x*x),
+        xMin: 0, xMax: 5.5, yMin: -0.5, yMax: 4.5, xStep: 1, yStep: 1
+      },
+      sqrt: {
+        name: 'y = √x', x0: 4, fn: x => x >= 0 ? Math.sqrt(x) : null, df: x => 1 / (2 * Math.sqrt(x)),
+        xMin: -0.5, xMax: 7.5, yMin: -0.5, yMax: 4, xStep: 1, yStep: 1
+      },
+      x3: {
+        name: 'y = x³', x0: 1, fn: x => x*x*x, df: x => 3*x*x,
+        xMin: -1.5, xMax: 3.5, yMin: -2, yMax: 8, xStep: 1, yStep: 2
+      }
+    };
+
+    let hAnim = null;
+    function setH(v) {
+      document.getElementById('hSlider').value = v;
+      drawSecCanvas();
+    }
+    function animateH() {
+      if (hAnim) cancelAnimationFrame(hAnim);
+      let h = 2.0;
+      const step = () => {
+        h *= 0.94;
+        if (h < 0.04) { setH(0.05); return; }
+        setH(h);
+        hAnim = requestAnimationFrame(step);
+      };
+      step();
+    }
+
+    function drawSecCanvas() {
+      const canvas = document.getElementById('secCanvas');
+      const ctx = canvas.getContext('2d');
+      const key = document.getElementById('secFunc').value;
+      const P = secPresets[key];
+      let h = parseFloat(document.getElementById('hSlider').value);
+      if (Math.abs(h) < 0.04) h = 0.04;
+      if (P.x0 + h <= 0.15 && (key === 'recip2' || key === 'sqrt')) h = -P.x0 + 0.3;
+      document.getElementById('hVal').textContent = h.toFixed(2);
+
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, P.xMin, P.xMax, P.yMin, P.yMax, P.xStep, P.yStep);
+      const c = getColors();
+
+      // Curve
+      plotFn(ctx, P.fn, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.blue, 3);
+
+      const x0 = P.x0, y0 = P.fn(x0);
+      const x1 = x0 + h, y1 = P.fn(x1);
+      const mTan = P.df(x0);
+      const mSec = (y1 - y0) / h;
+
+      // Exact Tangent Line (purple)
+      plotFn(ctx, x => y0 + mTan * (x - x0), P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.purple, 2.4, true);
+
+      // Secant Line (amber)
+      plotFn(ctx, x => y0 + mSec * (x - x0), P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.amber, 2.4, false);
+
+      // Points P and Q
+      ctx.fillStyle = c.purple; ctx.beginPath(); ctx.arc(toX(x0), toY(y0), 6.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = c.amber; ctx.beginPath(); ctx.arc(toX(x1), toY(y1), 6, 0, Math.PI*2); ctx.fill();
+
+      ctx.fillStyle = c.text; ctx.font = 'bold 12px Inter, sans-serif';
+      ctx.fillText('P', toX(x0) - 14, toY(y0) - 8);
+      ctx.fillText('Q', toX(x1) + 8, toY(y1) - 8);
+
+      const bTan = y0 - mTan * x0;
+      const tanEq = `y = ${mTan.toFixed(2)}x ${bTan >= 0 ? '+ ' + bTan.toFixed(2) : '- ' + Math.abs(bTan).toFixed(2)}`;
+
+      document.getElementById('secReadout').innerHTML = `
+        <div class="readout-row"><span>Secant Slope m_sec (Amber):</span><strong style="color:var(--warning);">${mSec.toFixed(4)}</strong></div>
+        <div class="readout-row"><span>Exact Tangent m_tan (Purple):</span><strong style="color:var(--accent);">${mTan.toFixed(4)}</strong></div>
+        <div class="readout-row"><span>Difference |m_sec - m_tan|:</span><span class="pill ${Math.abs(mSec-mTan)<0.08 ? 'pill-green' : 'pill-blue'}">${Math.abs(mSec - mTan).toFixed(4)}</span></div>
+        <div class="readout-row"><span>Tangent Equation:</span><strong>${tanEq}</strong></div>
+      `;
+    }
+
+    /* ================= TAB 2: LOCAL LINEARITY MAGNIFIER ================= */
+    function drawZoomCanvas() {
+      const canvas = document.getElementById('zoomCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('zoomMode').value;
+      const mag = parseInt(document.getElementById('magSlider').value);
+      document.getElementById('magVal').textContent = `${mag}×`;
+
+      const configs = {
+        smooth: { cx: 1, cy: 1, fn: x => x*x, status: 'Differentiable (LHD = RHD = 2)', badge: 'pill-green', note: 'At 50× zoom, y = x² looks indistinguishable from the straight line y = 2x - 1.' },
+        corner: { cx: 0, cy: 0, fn: x => Math.abs(x), status: 'NOT Differentiable (Corner!)', badge: 'pill-red', note: 'No matter how far you zoom in, the sharp V-corner never flattens! LHD = -1 ≠ +1 = RHD.' },
+        vtan: { cx: 0, cy: 0, fn: x => Math.cbrt(x), status: 'NOT Differentiable (Vertical Tangent!)', badge: 'pill-red', note: 'Zooming in turns y = ∛x into a vertical line — its slope blows up to +∞.' },
+        ex48: { cx: 1, cy: 3, fn: x => x <= 1 ? x*x + 2 : x + 2, status: 'NOT Differentiable (Corner at x=1)', badge: 'pill-red', note: 'Continuous (both sides = 3), but left slope = 2 while right slope = 1 — kink remains at 50×!' }
+      };
+      const cfg = configs[mode];
+      const half = 2.5 / mag;
+      const xMin = cfg.cx - half, xMax = cfg.cx + half;
+      const yMin = cfg.cy - half * 0.75, yMax = cfg.cy + half * 0.75;
+      const step = half / 2;
+
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, xMin, xMax, yMin, yMax, step, step);
+      const c = getColors();
+
+      plotFn(ctx, cfg.fn, xMin, xMax, yMin, yMax, toX, toY, c.blue, 3.2);
+
+      // Highlight center point P
+      ctx.fillStyle = c.red;
+      ctx.beginPath(); ctx.arc(toX(cfg.cx), toY(cfg.cy), 6, 0, Math.PI*2); ctx.fill();
+
+      // Magnifying glass ring overlay
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, 155, 0, Math.PI*2); ctx.stroke();
+
+      document.getElementById('zoomReadout').innerHTML = `
+        <div class="readout-row"><span>Point P:</span><strong>(${cfg.cx}, ${cfg.cy})</strong></div>
+        <div class="readout-row"><span>Window Width:</span><strong>±${half.toFixed(3)}</strong></div>
+        <div class="readout-row"><span>Verdict:</span><span class="pill ${cfg.badge}">${cfg.status}</span></div>
+        <div style="margin-top:6px; font-size:0.8rem; color:var(--text-muted);">${cfg.note}</div>
+      `;
+    }
+
+    /* ================= TAB 3: DUAL GRAPH SYNC ================= */
+    const syncPresets = {
+      ex2: { fName: 'x³ - x', dfName: '3x² - 1', f: x => x*x*x - x, df: x => 3*x*x - 1, xMin: -2, xMax: 2, yMin: -3, yMax: 3.5 },
+      quad: { fName: 'x² - 2x', dfName: '2x - 2', f: x => x*x - 2*x, df: x => 2*x - 2, xMin: -1.5, xMax: 3.5, yMin: -3, yMax: 4 },
+      sin: { fName: 'sin(x)', dfName: 'cos(x)', f: x => Math.sin(x), df: x => Math.cos(x), xMin: -3.2, xMax: 3.2, yMin: -2, yMax: 2 }
+    };
+
+    function drawSyncCanvas() {
+      const canvas = document.getElementById('syncCanvas');
+      const ctx = canvas.getContext('2d');
+      const key = document.getElementById('syncFunc').value;
+      const P = syncPresets[key];
+      const sl = document.getElementById('syncSlider');
+      sl.min = P.xMin + 0.2; sl.max = P.xMax - 0.2;
+      let x0 = parseFloat(sl.value);
+      if (x0 < P.xMin || x0 > P.xMax) x0 = 0;
+      document.getElementById('syncXVal').textContent = x0.toFixed(2);
+
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, P.xMin, P.xMax, P.yMin, P.yMax, 1, 1);
+      const c = getColors();
+
+      // Plot f(x) and f'(x)
+      plotFn(ctx, P.f, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.blue, 3);
+      plotFn(ctx, P.df, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.purple, 2.8);
+
+      const y0 = P.f(x0);
+      const slope = P.df(x0);
+
+      // Vertical alignment line at x0
+      ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = c.axis; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(toX(x0), 0); ctx.lineTo(toX(x0), canvas.height); ctx.stroke();
+      ctx.restore();
+
+      // Short tangent segment at (x0, y0)
+      const dx = 0.55;
+      ctx.strokeStyle = c.amber; ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      ctx.moveTo(toX(x0 - dx), toY(y0 - slope * dx));
+      ctx.lineTo(toX(x0 + dx), toY(y0 + slope * dx));
+      ctx.stroke();
+
+      // Points on f and f'
+      ctx.fillStyle = c.blue; ctx.beginPath(); ctx.arc(toX(x0), toY(y0), 6, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = c.purple; ctx.beginPath(); ctx.arc(toX(x0), toY(slope), 6, 0, Math.PI*2); ctx.fill();
+
+      const trend = Math.abs(slope) < 0.08
+        ? '<span class="pill pill-amber">Horizontal Tangent (f\' = 0)</span>'
+        : (slope > 0 ? '<span class="pill pill-green">f Increasing (f\' &gt; 0)</span>' : '<span class="pill pill-red">f Decreasing (f\' &lt; 0)</span>');
+
+      document.getElementById('syncReadout').innerHTML = `
+        <div class="readout-row"><span>f(x) = ${P.fName} [Blue]:</span><strong>f(${x0.toFixed(2)}) = ${y0.toFixed(2)}</strong></div>
+        <div class="readout-row"><span>f'(x) = ${P.dfName} [Purple]:</span><strong style="color:var(--accent);">f'(${x0.toFixed(2)}) = ${slope.toFixed(2)}</strong></div>
+        <div class="readout-row"><span>Relationship:</span>${trend}</div>
+      `;
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. What is the equation of the tangent line to y = 2/x at the point (2, 1)? (2nd Incourse 2024 Q1)',
+        opts: ['y = -½x + 2', 'y = ½x', 'y = -2x + 5', 'y = -x + 3'],
+        ans: 0,
+        exp: 'm_tan = -2/x² at x = 2 gives -1/2. Thus y - 1 = -½(x - 2) ⇒ y = -½x + 2.'
+      },
+      {
+        q: '2. For y = x² + 1, what are (i) the average rate of change over [3, 5] and (ii) the instantaneous rate at x = -4? (Final 2024)',
+        opts: ['8 and -8', '4 and -8', '8 and 8', '16 and -4'],
+        ans: 0,
+        exp: 'r_ave = (26 - 10)/(5 - 3) = 8; r_inst = 2(-4) = -8.'
+      },
+      {
+        q: '3. Which statement accurately describes Theorem 2.2.3?',
+        opts: [
+          'If f is continuous at x₀, then f is differentiable at x₀',
+          'If f is differentiable at x₀, then f is continuous at x₀',
+          'A function can be differentiable at a jump discontinuity',
+          'Corners are always differentiable'
+        ],
+        ans: 1,
+        exp: 'Differentiability always implies continuity, but continuity does NOT guarantee differentiability (e.g., y = |x| at x = 0).'
+      },
+      {
+        q: '4. Why is f(x) = { x² + 2 (x ≤ 1), x + 2 (x > 1) } NOT differentiable at x = 1? (Lecture 8 Ex 48)',
+        opts: [
+          'It is discontinuous at x = 1',
+          'It has a vertical asymptote at x = 1',
+          'Its left-hand derivative (2) does not equal its right-hand derivative (1)',
+          'f(1) is undefined'
+        ],
+        ans: 2,
+        exp: 'Both sides meet at (1, 3) so it is continuous, but the slope jumps from 2 on the left to 1 on the right (a corner).'
+      },
+      {
+        q: '5. Using Definition 2.2.1 on f(x) = √x, what is the slope of the tangent line at x₀ = 9? (Year Final 2024)',
+        opts: ['1/2', '1/3', '1/6', '3'],
+        ans: 2,
+        exp: 'f\'(x) = 1 / (2√x). Evaluating at x₀ = 9 gives 1 / (2·3) = 1/6.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      drawSecCanvas();
+      drawZoomCanvas();
+      drawSyncCanvas();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

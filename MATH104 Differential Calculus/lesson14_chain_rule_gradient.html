@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 14: Multivariable Chain Rule, Directional Derivatives &amp; Gradient | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #e11d48 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 14: Chain Rule &amp; Gradient</h2>
+      <p>Module 5 of 5 &bull; Directional Rates</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Core Theory &amp; Theorems</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 14.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">Year Final 2025 Q6(b)</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 14 of 15</span>
+        <span class="hero-badge">High Yield: Directional Derivatives, Gradient &amp; Euler's Theorem</span>
+        <span class="hero-badge">Interactive Web Lab</span>
+      </div>
+      <h1>Multivariable Chain Rule, Directional Derivatives &amp; The Gradient Vector</h1>
+      <p>
+        Spin a compass needle on a live contour map to see why the gradient $\nabla f$ is always perpendicular to level
+        curves and points in the exact direction of steepest ascent. Then animate two orbiting objects to apply the
+        Multivariable Chain Rule in real time.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-grad', this)">Gradient &amp; Contour Compass</button>
+          <button class="tab-btn" onclick="switchTab('tab-orbits', this)">Elliptical Orbits Chain Rule</button>
+          <button class="tab-btn" onclick="switchTab('tab-3dgrad', this)">3D Gradient &amp; Normalization Calculator</button>
+        </div>
+
+        <!-- TAB 1: GRADIENT & CONTOUR COMPASS -->
+        <div id="tab-grad" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="gradCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="gradPreset">Choose Lecture 14 Contour Example</label>
+                <select id="gradPreset" onchange="setupGradPreset()">
+                  <option value="ex6">Ex 6: f(x,y) = x eʸ at P(2, 0) [∇f = ⟨1, 2⟩]</option>
+                  <option value="ex4">Ex 4: f(x,y) = x&sup2;y&sup3; - 4y at P(2, -1) [∇f = ⟨-4, 8⟩]</option>
+                  <option value="ex2">Ex 2: f(x,y) = x&sup3; - 3xy + 4y&sup2; at P(1, 2) [∇f = ⟨-3, 13⟩]</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Spin Unit Vector $\mathbf{u} = \langle\cos\theta, \sin\theta\rangle$</span><span id="uAngVal">127&deg;</span></label>
+                <input type="range" id="uAngSlider" min="0" max="360" step="1" value="127" oninput="drawGradCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="snapGradDir('max')">Steepest Ascent (+&nabla;f)</button>
+                <button class="btn btn-outline" onclick="snapGradDir('zero')">Along Level Curve (0)</button>
+                <button class="btn btn-outline" onclick="snapGradDir('min')">Steepest Descent (-&nabla;f)</button>
+              </div>
+              <div class="readout-card" id="gradReadout"></div>
+              <p style="font-size: 0.78rem; color: var(--text-muted);">
+                <strong>Vector Key:</strong> <span style="color:#059669; font-weight:700;">Green arrow</span> = Gradient $\nabla f$ (always $\perp$ to purple contour);
+                <span style="color:#d97706; font-weight:700;">Amber arrow</span> = Your unit direction $\mathbf{u}$.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: TWO-OBJECT ELLIPTICAL ORBITS -->
+        <div id="tab-orbits" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="orbitCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label><span>Ashraful's Notes: Two Orbiting Objects</span></label>
+                <div class="readout-card" style="font-size:0.82rem;">
+                  Obj 1 (Blue): $x_1 = 4\cos t,\; y_1 = 2\sin t$<br />
+                  Obj 2 (Purple): $x_2 = 2\sin 2t,\; y_2 = 3\cos 2t$
+                </div>
+              </div>
+              <div class="control-group">
+                <label><span>Time $t$ (radians)</span><span id="orbTVal">3.14 (&pi;)</span></label>
+                <input type="range" id="orbSlider" min="0" max="6.28" step="0.02" value="3.14" oninput="drawOrbitCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="snapOrbitPi()">Snap to Exam Time $t = \pi$</button>
+              </div>
+              <div class="readout-card" id="orbitReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: 3D GRADIENT CALCULATOR -->
+        <div id="tab-3dgrad" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="readout-card" style="background: var(--surface); border-radius: 12px; padding: 20px;" id="calc3dBox"></div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="ex3dSelect">Choose Lecture 14 3D Example</label>
+                <select id="ex3dSelect" onchange="render3dGrad()">
+                  <option value="ex5">Ex 5: f(x,y,z) = x sin(yz) at (1, 3, 0), v = ⟨1, 2, -1⟩</option>
+                  <option value="ex7">Ex 7: Temp T(x,y,z) = 80/(1+x&sup2;+2y&sup2;+3z&sup2;) at (1, 1, -2)</option>
+                </select>
+              </div>
+              <div class="readout-card" id="ex3dSummary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory &amp; Theorems (Lecture 14 + Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Multivariable Chain Rule &amp; Euler's Homogeneous Theorem</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Case</th>
+                <th>Dependency Tree</th>
+                <th>Formula</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1 Independent Variable ($t$)</strong></td>
+                <td>$w(x, y)$ with $x(t), y(t)$</td>
+                <td>$$\frac{dw}{dt} = \frac{\partial w}{\partial x}\frac{dx}{dt} + \frac{\partial w}{\partial y}\frac{dy}{dt}$$</td>
+              </tr>
+              <tr>
+                <td><strong>2 Independent Variables ($u, v$)</strong></td>
+                <td>$w(x, y)$ with $x(u, v), y(u, v)$</td>
+                <td>$$\frac{\partial w}{\partial u} = \frac{\partial w}{\partial x}\frac{\partial x}{\partial u} + \frac{\partial w}{\partial y}\frac{\partial y}{\partial u}$$ (and similarly for $\partial w/\partial v$)</td>
+              </tr>
+              <tr>
+                <td><strong>Euler's Theorem (Homogeneous)</strong></td>
+                <td>$f(tx, ty) = t^n f(x, y)$ (degree $n$)</td>
+                <td>$$x f_x(x, y) + y f_y(x, y) = n f(x, y)$$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Directional Derivatives &amp; The Gradient Vector (Lecture 14)</h3>
+        <p>
+          Partial derivatives $f_x$ and $f_y$ measure slopes only along $\hat{i}$ and $\hat{j}$. To find the rate of change in <strong>any direction</strong> given by a <strong>unit vector</strong> $\mathbf{u} = \langle a, b\rangle = \langle \cos\theta, \sin\theta\rangle$ ($\|\mathbf{u}\| = 1$):
+          $$D_{\mathbf{u}} f(x, y) = f_x(x, y)a + f_y(x, y)b = \nabla f(x, y) \cdot \mathbf{u}$$
+          where the <strong>gradient vector</strong> (Definition 8) is:
+          $$\nabla f(x, y) = \langle f_x, f_y\rangle = \frac{\partial f}{\partial x}\hat{i} + \frac{\partial f}{\partial y}\hat{j} \qquad \text{or in 3D:} \qquad \nabla f(x, y, z) = \langle f_x, f_y, f_z\rangle$$
+        </p>
+        <div class="callout warn">
+          <strong>#1 Exam Mistake — Always Normalize $\mathbf{v}$ First!</strong>
+          If a problem gives a non-unit vector $\mathbf{v}$ (like $\mathbf{v} = 2\hat{i} + 5\hat{j}$) or two points $P \to Q$, you <strong>MUST</strong> divide by its length first: $\mathbf{u} = \dfrac{\mathbf{v}}{\|\mathbf{v}\|}$ before taking $\nabla f \cdot \mathbf{u}$!
+        </div>
+        <div class="callout note-bn">
+          <strong>Theorem 15 — Maximizing the Directional Derivative (Ashraful's Note):</strong>
+          Since $D_{\mathbf{u}} f = \nabla f \cdot \mathbf{u} = \|\nabla f\|\cdot 1 \cdot \cos\phi$:
+          <ul style="margin-left: 20px; margin-top: 6px;">
+            <li><strong>Maximum rate of increase (Steepest Ascent):</strong> Occurs in the direction of <strong>$+\nabla f$</strong> ($\phi = 0$), with value <strong>$+\|\nabla f\|$</strong> (<em>gradient-এর দিক বরাবর সবচেয়ে বেশি rate of change হবে</em>).</li>
+            <li><strong>Maximum rate of decrease (Steepest Descent):</strong> Occurs in the direction of <strong>$-\nabla f$</strong> ($\phi = \pi$), with value <strong>$-\|\nabla f\|$</strong>.</li>
+            <li><strong>Zero rate of change:</strong> Occurs perpendicular to $\nabla f$ ($\phi = \frac{\pi}{2}$), i.e., <strong>tangent to the level curve</strong>!</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Lecture 14 Slides &amp; Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: Lecture 14 Example 6 -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 14 &bull; Example 6 (Also Ashraful's Notes)</span>
+            <h3 style="margin-top: 6px;">Example 1: $f(x, y) = x e^y$ from $P(2, 0)$ to $Q(\frac{1}{2}, 2)$ &amp; Steepest Ascent</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>(a) Find the rate of change of $f(x, y) = x e^y$ at $P(2, 0)$ toward $Q(\frac{1}{2}, 2)$. (b) In what direction does $f$ increase fastest, and what is the maximum rate?</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Gradient at $P(2, 0)$:</strong> $\nabla f(x, y) = \langle e^y, x e^y\rangle \implies \nabla f(2, 0) = \langle e^0, 2e^0\rangle = \langle 1, 2\rangle$.</div>
+          <div class="step-item"><strong>Step 2 — Unit Vector from $P$ to $Q$:</strong> $\overrightarrow{PQ} = \langle \frac{1}{2} - 2,\; 2 - 0\rangle = \langle -\frac{3}{2}, 2\rangle$. Length: $\|\overrightarrow{PQ}\| = \sqrt{\frac{9}{4} + 4} = \frac{5}{2}$. Thus $\mathbf{u} = \dfrac{\overrightarrow{PQ}}{5/2} = \left\langle -\dfrac{3}{5}, \dfrac{4}{5}\right\rangle$.</div>
+          <div class="step-item"><strong>Step 3 — Directional Derivative:</strong> $D_{\mathbf{u}} f(2, 0) = \langle 1, 2\rangle \cdot \left\langle -\frac{3}{5}, \frac{4}{5}\right\rangle = -\frac{3}{5} + \frac{8}{5} = \mathbf{1}$.</div>
+          <div class="step-item"><strong>Step 4 — Maximum Rate of Change (Thm 15):</strong> Fastest increase is in the direction of <strong>$\nabla f(2, 0) = \langle 1, 2\rangle$</strong>, with maximum rate $\|\nabla f(2, 0)\| = \sqrt{1^2 + 2^2} = \mathbf{\sqrt{5}}$.</div>
+        </div>
+      </div>
+
+      <!-- Example 2: Lecture 14 Example 4 -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 14 &bull; Example 4</span>
+            <h3 style="margin-top: 6px;">Example 2: $D_{\mathbf{u}} f(2, -1)$ for $f(x, y) = x^2 y^3 - 4y$ along $\mathbf{v} = 2\hat{i} + 5\hat{j}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Find the directional derivative at $(2, -1)$ in the direction of $\mathbf{v} = 2\hat{i} + 5\hat{j}$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Gradient at $(2, -1)$:</strong> $\nabla f(x, y) = \langle 2xy^3,\; 3x^2 y^2 - 4\rangle \implies \nabla f(2, -1) = \langle -4, 8\rangle$.</div>
+          <div class="step-item"><strong>Step 2 — Normalize $\mathbf{v}$:</strong> $\|\mathbf{v}\| = \sqrt{2^2 + 5^2} = \sqrt{29} \implies \mathbf{u} = \left\langle \dfrac{2}{\sqrt{29}},\; \dfrac{5}{\sqrt{29}}\right\rangle$.</div>
+          <div class="step-item"><strong>Step 3 — Dot Product:</strong> $D_{\mathbf{u}} f(2, -1) = \dfrac{(-4)(2) + (8)(5)}{\sqrt{29}} = \mathbf{\dfrac{32}{\sqrt{29}}}$.</div>
+        </div>
+      </div>
+
+      <!-- Example 3: Ashraful's Two-Object Elliptical Orbits -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Multivariable Chain Rule</span>
+            <h3 style="margin-top: 6px;">Example 3: Rate of Distance Change Between Two Orbiting Objects</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Object 1 moves along $x_1 = 4\cos t, y_1 = 2\sin t$; Object 2 moves along $x_2 = 2\sin 2t, y_2 = 3\cos 2t$. At what rate is the distance $s$ between them changing at $t = \pi$?</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Positions &amp; Distance at $t = \pi$:</strong> $(x_1, y_1) = (-4, 0)$ and $(x_2, y_2) = (0, 3)$. Distance $s = \sqrt{(0 - (-4))^2 + (3 - 0)^2} = \sqrt{16 + 9} = 5$.</div>
+          <div class="step-item"><strong>Step 2 — Velocities at $t = \pi$:</strong> $\frac{dx_1}{dt} = -4\sin\pi = 0$, $\frac{dy_1}{dt} = 2\cos\pi = -2$; &nbsp; $\frac{dx_2}{dt} = 4\cos 2\pi = 4$, $\frac{dy_2}{dt} = -6\sin 2\pi = 0$.</div>
+          <div class="step-item"><strong>Step 3 — Partial Derivatives of $s$:</strong> $\frac{\partial s}{\partial x_1} = -\frac{4}{5}$, $\frac{\partial s}{\partial y_1} = -\frac{3}{5}$, $\frac{\partial s}{\partial x_2} = \frac{4}{5}$, $\frac{\partial s}{\partial y_2} = \frac{3}{5}$.</div>
+          <div class="step-item"><strong>Step 4 — Apply 4-Variable Chain Rule:</strong> $\dfrac{ds}{dt} = \left(-\frac{4}{5}\right)(0) + \left(-\frac{3}{5}\right)(-2) + \left(\frac{4}{5}\right)(4) + \left(\frac{3}{5}\right)(0) = \dfrac{6 + 16}{5} = \mathbf{\dfrac{22}{5} = 4.4}$.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam &amp; Lecture 14 Vault</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: Year Final 2025 Q6(b) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2025 &bull; Q6(b)</span>
+          <span class="pill pill-amber">5 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Show that the function $f(x, y) = e^{x/y}$ is a <strong>homogeneous function</strong> of degree $n$ and show that $x f_x(x, y) + y f_y(x, y) = n f(x, y)$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> Replace $(x, y)$ by $(tx, ty)$ in $f(x, y)$: the $t$'s cancel inside $e^{(tx)/(ty)} = t^0 e^{x/y}$, so the degree of homogeneity is $n = 0$!
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          <strong>1. Check Homogeneity:</strong> For any scalar $t > 0$:
+          $$f(tx, ty) = e^{(tx)/(ty)} = e^{x/y} = t^0 f(x, y)$$
+          Thus $f(x, y) = e^{x/y}$ is homogeneous of degree <strong>$n = 0$</strong>.<br /><br />
+          <strong>2. Verify Euler's Theorem ($x f_x + y f_y = 0 \cdot f$):</strong><br />
+          Compute partial derivatives:<br />
+          &bull; $f_x(x, y) = \dfrac{1}{y} e^{x/y}$<br />
+          &bull; $f_y(x, y) = -\dfrac{x}{y^2} e^{x/y}$<br />
+          Substitute into $x f_x + y f_y$:
+          $$x f_x(x, y) + y f_y(x, y) = x\left(\frac{1}{y} e^{x/y}\right) + y\left(-\frac{x}{y^2} e^{x/y}\right) = \frac{x}{y}e^{x/y} - \frac{x}{y}e^{x/y} = 0 = 0 \cdot f(x, y) \quad \blacksquare$$
+        </div>
+      </div>
+
+      <!-- Exam Q2: Lecture 14 Example 7 (3D Temperature Gradient) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-blue">Lecture 14 Slide &bull; Example 7</span>
+          <span class="pill pill-purple">3D Steepest Ascent</span>
+        </div>
+        <p>
+          <strong>Question:</strong> The temperature in space is $T(x, y, z) = \dfrac{80}{1 + x^2 + 2y^2 + 3z^2}$ ($^\circ\text{C}$). In which direction does $T$ increase fastest at $(1, 1, -2)$, and what is the maximum rate of increase?
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          Let $D = 1 + x^2 + 2y^2 + 3z^2$. Using the Chain Rule:
+          $$\nabla T = \frac{-80}{D^2}\langle 2x, 4y, 6z\rangle = \frac{160}{D^2}\langle -x, -2y, -3z\rangle$$
+          At $(1, 1, -2)$: $D = 1 + 1 + 2 + 12 = 16 \implies D^2 = 256$, and $\dfrac{160}{256} = \dfrac{5}{8}$:
+          $$\nabla T(1, 1, -2) = \frac{5}{8}\langle -1, -2, 6\rangle$$
+          &bull; <strong>Fastest increase direction:</strong> $\langle -1, -2, 6\rangle$ (or unit vector $\frac{\langle -1, -2, 6\rangle}{\sqrt{41}}$).<br />
+          &bull; <strong>Maximum rate of increase:</strong> $\|\nabla T(1, 1, -2)\| = \dfrac{5}{8}\sqrt{1 + 4 + 36} = \mathbf{\dfrac{5}{8}\sqrt{41} \approx 4.00^\circ\text{C/m}}$.
+        </div>
+      </div>
+
+      <!-- Exam Q3: Lecture 14 Exercises 7 & 11 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-blue">Lecture 14 Slides &bull; Exercises 7 &amp; 11</span>
+          <span class="pill pill-purple">Quick Drill</span>
+        </div>
+        <p>
+          <strong>(Ex 7)</strong> Find $\nabla f(2, 1)$ and $D_{\mathbf{u}} f(2, 1)$ for $f(x, y) = \dfrac{x}{y}$ with $\mathbf{u} = \frac{3}{5}\hat{i} + \frac{4}{5}\hat{j}$.<br />
+          <strong>(Ex 11)</strong> Find the directional derivative of $f(x, y) = e^x \sin y$ at $(0, \frac{\pi}{3})$ in the direction of $\mathbf{v} = \langle -6, 8\rangle$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Solutions</button>
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Ex 7:</strong> $\nabla f(x, y) = \left\langle \frac{1}{y}, -\frac{x}{y^2}\right\rangle \implies \nabla f(2, 1) = \langle 1, -2\rangle$. Since $\|\mathbf{u}\| = 1$: $D_{\mathbf{u}} f(2, 1) = 1\left(\frac{3}{5}\right) - 2\left(\frac{4}{5}\right) = \mathbf{-1}$.<br /><br />
+          <strong>Ex 11:</strong> $\nabla f(x, y) = \langle e^x\sin y,\; e^x\cos y\rangle \implies \nabla f(0, \frac{\pi}{3}) = \left\langle \frac{\sqrt{3}}{2}, \frac{1}{2}\right\rangle$. Normalize $\mathbf{v} = \langle -6, 8\rangle$ ($\|\mathbf{v}\| = 10$): $\mathbf{u} = \left\langle -\frac{3}{5}, \frac{4}{5}\right\rangle$.<br />
+          Dot product: $D_{\mathbf{u}} f = \dfrac{\sqrt{3}}{2}\left(-\dfrac{3}{5}\right) + \dfrac{1}{2}\left(\dfrac{4}{5}\right) = \mathbf{\dfrac{4 - 3\sqrt{3}}{10}}$.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawGradCanvas();
+      drawOrbitCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-grad') drawGradCanvas();
+      if (id === 'tab-orbits') drawOrbitCanvas();
+      if (id === 'tab-3dgrad') render3dGrad();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        amber: '#d97706',
+        red: '#dc2626',
+        contour: dark ? 'rgba(167, 139, 250, 0.35)' : 'rgba(124, 58, 237, 0.28)'
+      };
+    }
+
+    /* ================= TAB 1: GRADIENT & CONTOUR COMPASS ================= */
+    const gradPresets = {
+      ex6: {
+        name: 'f(x,y) = x eʸ', pt: [2, 0], grad: [1, 2], initDeg: 127,
+        f: (x, y) => x * Math.exp(y),
+        levels: [0.5, 1, 2, 3.5, 5.5, 8.5, 13],
+        xMin: -0.5, xMax: 4.5, yMin: -1.5, yMax: 2.5
+      },
+      ex4: {
+        name: 'f(x,y) = x²y³ - 4y', pt: [2, -1], grad: [-4, 8], initDeg: 68,
+        f: (x, y) => x*x*y*y*y - 4*y,
+        levels: [-12, -6, -2, 0, 2, 6, 12],
+        xMin: -0.5, xMax: 4.5, yMin: -2.6, yMax: 1.4
+      },
+      ex2: {
+        name: 'f(x,y) = x³ - 3xy + 4y²', pt: [1, 2], grad: [-3, 13], initDeg: 30,
+        f: (x, y) => x*x*x - 3*x*y + 4*y*y,
+        levels: [2, 6, 11, 16, 22, 30],
+        xMin: -1.5, xMax: 3.5, yMin: -0.2, yMax: 3.8
+      }
+    };
+
+    function setupGradPreset() {
+      const P = gradPresets[document.getElementById('gradPreset').value];
+      document.getElementById('uAngSlider').value = P.initDeg;
+      drawGradCanvas();
+    }
+
+    function snapGradDir(mode) {
+      const P = gradPresets[document.getElementById('gradPreset').value];
+      let gDeg = Math.atan2(P.grad[1], P.grad[0]) * 180 / Math.PI;
+      if (gDeg < 0) gDeg += 360;
+      let target = gDeg;
+      if (mode === 'zero') target = (gDeg + 90) % 360;
+      if (mode === 'min') target = (gDeg + 180) % 360;
+      document.getElementById('uAngSlider').value = Math.round(target);
+      drawGradCanvas();
+    }
+
+    function drawArrow2D(ctx, x1, y1, x2, y2, color, width = 3) {
+      const ang = Math.atan2(y2 - y1, x2 - x1);
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 11*Math.cos(ang - 0.35), y2 - 11*Math.sin(ang - 0.35));
+      ctx.lineTo(x2 - 11*Math.cos(ang + 0.35), y2 - 11*Math.sin(ang + 0.35));
+      ctx.closePath(); ctx.fill();
+    }
+
+    function drawGradCanvas() {
+      const canvas = document.getElementById('gradCanvas');
+      const ctx = canvas.getContext('2d');
+      const P = gradPresets[document.getElementById('gradPreset').value];
+      const deg = parseFloat(document.getElementById('uAngSlider').value);
+      const rad = deg * Math.PI / 180;
+      document.getElementById('uAngVal').textContent = `${Math.round(deg)}°`;
+
+      const c = getColors();
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const toX = x => ((x - P.xMin) / (P.xMax - P.xMin)) * canvas.width;
+      const toY = y => canvas.height - ((y - P.yMin) / (P.yMax - P.yMin)) * canvas.height;
+
+      // Grid & Axes
+      ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
+      for (let x = Math.ceil(P.xMin); x <= P.xMax; x++) { ctx.beginPath(); ctx.moveTo(toX(x),0); ctx.lineTo(toX(x),canvas.height); ctx.stroke(); }
+      for (let y = Math.ceil(P.yMin); y <= P.yMax; y++) { ctx.beginPath(); ctx.moveTo(0,toY(y)); ctx.lineTo(canvas.width,toY(y)); ctx.stroke(); }
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 1.6;
+      if (P.yMin <= 0 && P.yMax >= 0) { ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(canvas.width, toY(0)); ctx.stroke(); }
+      if (P.xMin <= 0 && P.xMax >= 0) { ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), canvas.height); ctx.stroke(); }
+
+      // Draw approximate level curves via cell sign-crossing
+      const cols = 70, rows = 45;
+      const dx = (P.xMax - P.xMin) / cols, dy = (P.yMax - P.yMin) / rows;
+      ctx.strokeStyle = c.contour; ctx.lineWidth = 1.6;
+      P.levels.forEach(L => {
+        ctx.beginPath();
+        for (let i = 0; i < cols; i++) {
+          for (let j = 0; j < rows; j++) {
+            const x = P.xMin + i*dx, y = P.yMin + j*dy;
+            const v00 = P.f(x, y) - L, v10 = P.f(x+dx, y) - L, v01 = P.f(x, y+dy) - L;
+            if ((v00 > 0) !== (v10 > 0)) {
+              const t = v00 / (v00 - v10);
+              ctx.moveTo(toX(x + t*dx) - 2, toY(y)); ctx.lineTo(toX(x + t*dx) + 2, toY(y));
+            }
+            if ((v00 > 0) !== (v01 > 0)) {
+              const t = v00 / (v00 - v01);
+              ctx.moveTo(toX(x), toY(y + t*dy) - 2); ctx.lineTo(toX(x), toY(y + t*dy) + 2);
+            }
+          }
+        }
+        ctx.stroke();
+      });
+
+      const [px, py] = P.pt;
+      const [gx, gy] = P.grad;
+      const gMag = Math.hypot(gx, gy);
+      const ux = Math.cos(rad), uy = Math.sin(rad);
+      const Duf = gx * ux + gy * uy;
+
+      const sx = toX(px), sy = toY(py);
+      const vLen = 95;
+      // Draw Gradient (Green)
+      drawArrow2D(ctx, sx, sy, sx + (gx / gMag) * vLen, sy - (gy / gMag) * vLen, c.green, 3.2);
+      // Draw Unit Vector u (Amber)
+      drawArrow2D(ctx, sx, sy, sx + ux * vLen * 0.85, sy - uy * vLen * 0.85, c.amber, 3);
+
+      // Point P
+      ctx.fillStyle = c.red; ctx.beginPath(); ctx.arc(sx, sy, 6, 0, Math.PI*2); ctx.fill();
+
+      const status = Math.abs(Duf - gMag) < 0.08
+        ? '<span class="pill pill-green">MAX Ascent (+||∇f||)!</span>'
+        : Math.abs(Duf + gMag) < 0.08
+          ? '<span class="pill pill-red">MAX Descent (-||∇f||)!</span>'
+          : Math.abs(Duf) < 0.12
+            ? '<span class="pill pill-purple">Zero Change (Tangent to Contour!)</span>'
+            : `<span class="pill pill-blue">${Duf > 0 ? 'Climbing (+)' : 'Descending (-)'}</span>`;
+
+      document.getElementById('gradReadout').innerHTML = `
+        <div class="readout-row"><span>Gradient ∇f(${px}, ${py}):</span><strong style="color:var(--success);">⟨${gx}, ${gy}⟩ (||∇f|| = ${gMag.toFixed(3)})</strong></div>
+        <div class="readout-row"><span>Unit Vector u:</span><strong>⟨${ux.toFixed(2)}, ${uy.toFixed(2)}⟩</strong></div>
+        <div class="readout-row"><span>Directional Deriv D_u f:</span><strong>${Duf.toFixed(3)}</strong></div>
+        <div class="readout-row"><span>Behavior:</span>${status}</div>
+      `;
+    }
+
+    /* ================= TAB 2: TWO-OBJECT ELLIPTICAL ORBITS ================= */
+    function snapOrbitPi() {
+      document.getElementById('orbSlider').value = Math.PI.toFixed(2);
+      drawOrbitCanvas();
+    }
+
+    function drawOrbitCanvas() {
+      const canvas = document.getElementById('orbitCanvas');
+      const ctx = canvas.getContext('2d');
+      const t = parseFloat(document.getElementById('orbSlider').value);
+      document.getElementById('orbTVal').textContent = Math.abs(t - Math.PI) < 0.02 ? '3.14 (π)' : t.toFixed(2);
+
+      const c = getColors();
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const xMin = -5.5, xMax = 5.5, yMin = -3.8, yMax = 3.8;
+      const toX = x => ((x - xMin) / (xMax - xMin)) * canvas.width;
+      const toY = y => canvas.height - ((y - yMin) / (yMax - yMin)) * canvas.height;
+
+      // Axes
+      ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
+      for (let x = -5; x <= 5; x++) { ctx.beginPath(); ctx.moveTo(toX(x),0); ctx.lineTo(toX(x),canvas.height); ctx.stroke(); }
+      for (let y = -3; y <= 3; y++) { ctx.beginPath(); ctx.moveTo(0,toY(y)); ctx.lineTo(canvas.width,toY(y)); ctx.stroke(); }
+      ctx.strokeStyle = c.axis; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(canvas.width, toY(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), canvas.height); ctx.stroke();
+
+      // Orbit 1: (4 cos t, 2 sin t)
+      ctx.strokeStyle = 'rgba(37, 99, 235, 0.35)'; ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      for (let i = 0; i <= 150; i++) {
+        const a = (i/150)*Math.PI*2;
+        if (i === 0) ctx.moveTo(toX(4*Math.cos(a)), toY(2*Math.sin(a)));
+        else ctx.lineTo(toX(4*Math.cos(a)), toY(2*Math.sin(a)));
+      }
+      ctx.stroke();
+
+      // Orbit 2: (2 sin 2t, 3 cos 2t)
+      ctx.strokeStyle = 'rgba(124, 58, 237, 0.35)'; ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      for (let i = 0; i <= 150; i++) {
+        const a = (i/150)*Math.PI*2;
+        if (i === 0) ctx.moveTo(toX(2*Math.sin(a)), toY(3*Math.cos(a)));
+        else ctx.lineTo(toX(2*Math.sin(a)), toY(3*Math.cos(a)));
+      }
+      ctx.stroke();
+
+      const x1 = 4*Math.cos(t), y1 = 2*Math.sin(t);
+      const x2 = 2*Math.sin(2*t), y2 = 3*Math.cos(2*t);
+      const dx1 = -4*Math.sin(t), dy1 = 2*Math.cos(t);
+      const dx2 = 4*Math.cos(2*t), dy2 = -6*Math.sin(2*t);
+      const s = Math.hypot(x2 - x1, y2 - y1);
+      const dsdt = ((x2 - x1)*(dx2 - dx1) + (y2 - y1)*(dy2 - dy1)) / (s || 1);
+
+      // Connecting distance segment
+      ctx.save(); ctx.setLineDash([6, 4]); ctx.strokeStyle = c.amber; ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.moveTo(toX(x1), toY(y1)); ctx.lineTo(toX(x2), toY(y2)); ctx.stroke();
+      ctx.restore();
+
+      // Objects
+      ctx.fillStyle = c.blue; ctx.beginPath(); ctx.arc(toX(x1), toY(y1), 7, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = c.purple; ctx.beginPath(); ctx.arc(toX(x2), toY(y2), 7, 0, Math.PI*2); ctx.fill();
+
+      document.getElementById('orbitReadout').innerHTML = `
+        <div class="readout-row"><span>Obj 1 (Blue) / Obj 2 (Purple):</span><strong>(${x1.toFixed(1)}, ${y1.toFixed(1)}) &amp; (${x2.toFixed(1)}, ${y2.toFixed(1)})</strong></div>
+        <div class="readout-row"><span>Distance s(t):</span><strong>${s.toFixed(3)}</strong></div>
+        <div class="readout-row"><span>Chain Rule Rate ds/dt:</span><span class="pill ${dsdt >= 0 ? 'pill-green' : 'pill-red'}">${dsdt.toFixed(3)} ${dsdt >= 0 ? '(Moving Apart)' : '(Closer)'}</span></div>
+        <div class="readout-row"><span>Exact at t = π:</span><strong>s = 5, ds/dt = 22/5 = 4.400</strong></div>
+      `;
+    }
+
+    /* ================= TAB 3: 3D GRADIENT CALCULATOR ================= */
+    function render3dGrad() {
+      const mode = document.getElementById('ex3dSelect').value;
+      const box = document.getElementById('calc3dBox');
+      const sum = document.getElementById('ex3dSummary');
+      if (mode === 'ex5') {
+        box.innerHTML = `
+          <h4 style="margin-bottom:10px;">Lecture 14 Example 5: f(x, y, z) = x sin(yz)</h4>
+          <div class="readout-row"><span>1. Gradient ∇f(x, y, z):</span><strong>⟨sin(yz), xz cos(yz), xy cos(yz)⟩</strong></div>
+          <div class="readout-row"><span>2. Evaluate at (1, 3, 0):</span><span class="pill pill-blue">∇f(1, 3, 0) = ⟨0, 0, 3⟩</span></div>
+          <div class="readout-row"><span>3. Normalize v = ⟨1, 2, -1⟩:</span><strong>u = ⟨1/√6, 2/√6, -1/√6⟩</strong></div>
+          <div class="readout-row"><span>4. Dot Product ∇f · u:</span><span class="pill pill-purple">3(-1/√6) = -√(3/2) ≈ -1.225</span></div>
+        `;
+        sum.innerHTML = '<strong>Key Takeaway:</strong> Notice that because ∇f(1, 3, 0) only has a k-component (3), only the z-component of u contributes to the directional derivative!';
+      } else {
+        box.innerHTML = `
+          <h4 style="margin-bottom:10px;">Lecture 14 Example 7: T(x, y, z) = 80 / (1 + x² + 2y² + 3z²)</h4>
+          <div class="readout-row"><span>1. Gradient ∇T:</span><strong>[160 / (1+x²+2y²+3z²)²] ⟨-x, -2y, -3z⟩</strong></div>
+          <div class="readout-row"><span>2. At (1, 1, -2) [D = 16]:</span><span class="pill pill-green">∇T = (5/8) ⟨-1, -2, 6⟩</span></div>
+          <div class="readout-row"><span>3. Fastest Direction:</span><strong>u = ⟨-1, -2, 6⟩ / √41</strong></div>
+          <div class="readout-row"><span>4. Max Increase Rate ||∇T||:</span><span class="pill pill-amber">(5/8)√41 ≈ 4.002 °C/m</span></div>
+        `;
+        sum.innerHTML = '<strong>Key Takeaway:</strong> Temperature is hottest at the origin (0,0,0) where T = 80°C, so the gradient at (1, 1, -2) points back toward the origin!';
+      }
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. For f(x, y) = x eʸ at P(2, 0), what is the direction and value of the MAXIMUM rate of change? (Lecture 14 Ex 6)',
+        opts: ['Direction ⟨1, 2⟩, value √5', 'Direction ⟨2, 1⟩, value √5', 'Direction ⟨-3/5, 4/5⟩, value 1', 'Direction ⟨1, 0⟩, value 1'],
+        ans: 0,
+        exp: '∇f(2, 0) = ⟨e⁰, 2e⁰⟩ = ⟨1, 2⟩. By Theorem 15, max rate is ||∇f|| = √(1² + 2²) = √5 in the direction of ⟨1, 2⟩.'
+      },
+      {
+        q: '2. What is the first mandatory step when computing D_u f in the direction of v = 2i + 5j?',
+        opts: [
+          'Take the cross product ∇f × v',
+          'Divide v by its length ||v|| = √29 to obtain a unit vector u',
+          'Set v = 0',
+          'Multiply v by ||∇f||'
+        ],
+        ans: 1,
+        exp: 'The formula D_u f = ∇f · u ONLY works when u is a unit vector (||u|| = 1), so you must normalize v first.'
+      },
+      {
+        q: '3. Geometrically, how is the gradient vector ∇f(x₀, y₀) oriented relative to the level curve f(x, y) = c passing through (x₀, y₀)?',
+        opts: [
+          'Tangent (parallel) to the level curve',
+          'Perpendicular (normal) to the level curve',
+          'Always pointing along the x-axis',
+          'At a 45° angle to the level curve'
+        ],
+        ans: 1,
+        exp: 'Along a level curve f is constant (D_u f = 0), so ∇f · u = 0, meaning ∇f is perpendicular to the level curve.'
+      },
+      {
+        q: '4. What is the degree of homogeneity n of f(x, y) = e^(x/y), and what does Euler\'s Theorem give for x f_x + y f_y? (Final 2025 Q6b)',
+        opts: ['n = 1; x f_x + y f_y = f', 'n = 0; x f_x + y f_y = 0', 'n = 2; x f_x + y f_y = 2f', 'Not homogeneous'],
+        ans: 1,
+        exp: 'f(tx, ty) = e^(tx/ty) = t⁰ f(x, y), so n = 0 and x f_x + y f_y = 0.'
+      },
+      {
+        q: '5. If w = x²y - y² with x = sin t and y = eᵗ, what is dw/dt at t = 0? (Ashraful\'s Notes)',
+        opts: ['0', '2', '-2', '1'],
+        ans: 2,
+        exp: 'At t = 0: x = 0, y = 1, dx/dt = 1, dy/dt = 1. dw/dt = (2xy)(1) + (x² - 2y)(1) = 0 + (0 - 2) = -2.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      setupGradPreset();
+      drawOrbitCanvas();
+      render3dGrad();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

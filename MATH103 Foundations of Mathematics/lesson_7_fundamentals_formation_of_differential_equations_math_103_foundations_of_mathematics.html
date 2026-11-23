@@ -1,0 +1,1981 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 7: Fundamentals &amp; Formation of Differential Equations | MATH 103 — Foundations of Mathematics</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            primary: '#4f46e5',
+            secondary: '#0ea5e9',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- CSS Variables for Light & Dark Theme Continuity -->
+  <style>
+    :root {
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --accent-primary: #4f46e5;
+      --accent-secondary: #0ea5e9;
+    }
+    html.dark {
+      --bg-page: #020617;
+      --bg-card: #0f172a;
+      --text-main: #f1f5f9;
+      --accent-primary: #818cf8;
+      --accent-secondary: #38bdf8;
+    }
+  </style>
+
+  <!-- Persist Theme Before First Paint (Default: Light Mode) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('math103_theme');
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100 transition-colors duration-200">
+
+  <!-- ==================== TOP STICKY HEADER (MOBILE + DESKTOP) ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Hamburger Toggle + Course Title -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-sky-500 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              MATH 103 · ISRT, DU · Group B
+            </p>
+            <h1 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+              Lesson 7: Fundamentals &amp; Formation of Differential Equations
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Module Badge + Progress Pill + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300 border border-sky-200 dark:border-sky-800/70">
+          <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+          Module 2 · Lesson 7 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+        </div>
+
+        <button
+          id="topbar-theme-toggle"
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle light or dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <svg class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR (280px desktop) ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 lg:w-[280px] bg-white dark:bg-slate-900 lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white text-sm">MATH 103 · Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Course Badge, Theme Toggle & Live Lesson Progress -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400">
+                MATH 103 · ISRT, DU
+              </span>
+              <div class="text-xs font-bold text-slate-900 dark:text-white mt-1">
+                Module 2 · Group B: Differential Equations
+              </div>
+            </div>
+            <button
+              type="button"
+              onclick="toggleTheme()"
+              title="Toggle Light / Dark Theme"
+              class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-indigo-500 transition shrink-0"
+            >
+              <svg class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+              </svg>
+              <svg class="w-4 h-4 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson 7 Progress</span>
+              <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-sky-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="sidebar-progress-detail" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+              0/6 sections · 0/3 labs · 0/5 quiz
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. In-Page Table of Contents (Scroll-Spy) -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-xs sm:text-sm">
+            <li><a href="#sec-7-1" data-spy="sec-7-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">7.1</span> ODE vs. PDE</a></li>
+            <li><a href="#sec-7-2" data-spy="sec-7-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">7.2</span> Order &amp; Degree Traps</a></li>
+            <li><a href="#sec-7-3" data-spy="sec-7-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">7.3</span> Linear vs. Nonlinear</a></li>
+            <li><a href="#lab-classifier" data-spy="lab-classifier" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 1: DE Classifier Drill</a></li>
+            <li><a href="#sec-7-4" data-spy="sec-7-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">7.4</span> Solutions &amp; IVPs</a></li>
+            <li><a href="#sec-7-5" data-spy="sec-7-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">7.5</span> Formation of DEs</a></li>
+            <li><a href="#lab-curves" data-spy="lab-curves" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 2: Curve-Family Plotter</a></li>
+            <li><a href="#sec-7-6" data-spy="sec-7-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">7.6</span> Applications in Stats</a></li>
+            <li><a href="#lab-verhulst" data-spy="lab-verhulst" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 3: Verhulst Logistic</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" data-spy="exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault (6)</a>
+            </li>
+            <li>
+              <a href="#quick-quiz" data-spy="quick-quiz" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-1">Module 1 · Group A (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L01</span><span class="truncate">Real Numbers, Divisibility &amp; NT</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L02</span><span class="truncate">Congruences &amp; Diophantine</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L03</span><span class="truncate">Inequalities &amp; Series</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L04</span><span class="truncate">Complex Numbers &amp; Unity</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L05</span><span class="truncate">Theory of Equations</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L06</span><span class="truncate">Gamma &amp; Beta Functions</span></div>
+                <span class="shrink-0 font-bold">✓</span>
+              </div>
+            </div>
+
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-2">Module 2 · Group B: Differential Equations</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <span class="font-mono">L07</span>
+                <span class="truncate">Fundamentals &amp; Formation</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L08</span><span class="truncate">Separable, Homog. &amp; Reducible</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L09</span><span class="truncate">Exact, IF &amp; Bernoulli DEs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L10</span><span class="truncate">Higher-Order Linear DEs</span></div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Module 3 · Group C: Discrete Math &amp; Games</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L11</span><span class="truncate">Logic &amp; Counting Principles</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L12</span><span class="truncate">Recurrences &amp; Gen. Funcs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L13</span><span class="truncate">Graph Theory &amp; Dijkstra</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L14</span><span class="truncate">Game Theory</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT ==================== -->
+    <main class="flex-1 min-w-0 max-w-[960px] mx-auto w-full space-y-10 pb-20">
+
+      <!-- HERO ORIENTATION BANNER -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-sky-400/20 text-sky-100 border border-sky-300/30">
+              Module 2 · Group B: Differential Equations
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              Lesson 7 of 14
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              ⏱ Est. Study Time: ~55 min
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30">
+              ★ 1st Incourse &amp; Group B Final Q1/Q5
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
+            Lesson 7: Fundamentals &amp; Formation of Differential Equations
+          </h2>
+
+          <p class="mt-3 text-sm sm:text-base text-indigo-100 leading-relaxed">
+            Welcome to <strong>Module 2 (Group B)</strong>! Learn how to classify ODEs vs. PDEs, avoid ISRT's classic order/degree and linearity traps, distinguish general/particular/singular solutions, form differential equations by eliminating arbitrary constants, and model real-world statistical &amp; population dynamics.
+          </p>
+
+          <div class="mt-5 p-3.5 rounded-2xl bg-white/10 border border-white/15 text-xs sm:text-sm text-indigo-100">
+            <strong class="text-white">Prerequisites:</strong> Calculus I differentiation &amp; basic algebra · Connected to ISRT Incourse-1 (2022, 2024, 2025) &amp; Finals (2019, 2020, 2023, 2024).
+          </div>
+
+          <!-- Quick-Jump Action Buttons -->
+          <div class="mt-5 flex flex-wrap gap-3">
+            <a href="#lab-classifier" class="px-4 py-2.5 rounded-xl bg-white text-indigo-700 font-bold text-xs sm:text-sm shadow-sm hover:bg-indigo-50 transition inline-flex items-center gap-2">
+              <span>🧪</span> Jump to Interactive Labs
+            </a>
+            <a href="#exam-vault" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 font-semibold text-xs sm:text-sm transition inline-flex items-center gap-2">
+              <span>🏛️</span> ISRT Past-Exam Vault
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 7.1: WHAT IS A DIFFERENTIAL EQUATION? ODE VS. PDE           -->
+      <!-- =================================================================== -->
+      <section id="sec-7-1" data-track-sec="sec-7-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 7.1</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              What Is a Differential Equation? ODE vs. PDE
+            </h3>
+          </div>
+          <span id="badge-sec-7-1" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Definition 7.1 · Differential Equation</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            A <strong>differential equation (DE)</strong> is any equation that involves one or more derivatives (ordinary or partial) of an unknown <strong>dependent variable</strong> (e.g., $y$ or $u$) with respect to one or more <strong>independent variables</strong> (e.g., $x, t$, or $x, y$).
+          </p>
+        </div>
+
+        <!-- ODE vs PDE Comparison Table -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-4 py-3">Feature</th>
+                <th class="px-4 py-3 text-indigo-700 dark:text-indigo-300">Ordinary Differential Equation (ODE)</th>
+                <th class="px-4 py-3 text-sky-700 dark:text-sky-300">Partial Differential Equation (PDE)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="px-4 py-3 font-semibold">Independent Variables</td>
+                <td class="px-4 py-3"><strong>Single</strong> independent variable (e.g., $x$ or $t$)</td>
+                <td class="px-4 py-3"><strong>Two or more</strong> independent variables (e.g., $x$ and $y$)</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-semibold">Derivative Notation</td>
+                <td class="px-4 py-3">Ordinary derivatives: $\dfrac{dy}{dx}, \dfrac{d^2y}{dx^2}, y', \dot{x}$</td>
+                <td class="px-4 py-3">Partial derivatives: $\dfrac{\partial u}{\partial x}, \dfrac{\partial^2 u}{\partial y^2}, \dfrac{\partial^4 u}{\partial x^2 \partial y^2}$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-semibold">ISRT Exam Examples</td>
+                <td class="px-4 py-3">$\dfrac{d^3y}{dx^3} + 4\dfrac{d^2y}{dx^2} - 5\dfrac{dy}{dx} + 3y = \sin x$<br/>$x^2 dy + y^2 dx = 0$</td>
+                <td class="px-4 py-3">$\dfrac{\partial^4 u}{\partial x^2 \partial y^2} + \dfrac{\partial^2 u}{\partial x^2} + \dfrac{\partial^2 u}{\partial y^2} + u = 0$<br/><span class="text-xs text-slate-500">(ISRT Incourse-1 2022 &amp; 2024)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 7.2: ORDER, DEGREE & UNDEFINED-DEGREE TRAPS                 -->
+      <!-- =================================================================== -->
+      <section id="sec-7-2" data-track-sec="sec-7-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 7.2</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Order, Degree &amp; Undefined-Degree Traps
+            </h3>
+          </div>
+          <span id="badge-sec-7-2" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/70 space-y-2">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Definition 7.2 · Order</div>
+            <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              The <strong>order</strong> of a differential equation is the order of the <strong>highest-order derivative</strong> appearing in the equation. Every differential equation has a well-defined positive integer order.
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/35 border border-sky-200 dark:border-sky-900/70 space-y-2">
+            <div class="text-xs font-mono font-bold text-sky-600 dark:text-sky-400 uppercase">Definition 7.3 · Degree</div>
+            <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              The <strong>degree</strong> is the positive integer power (exponent) of the <strong>highest-order derivative</strong> <em>after</em> the equation has been cleared of all radicals and fractional powers in its derivatives—provided it is a <strong>polynomial</strong> in all derivatives.
+            </p>
+          </div>
+        </div>
+
+        <!-- Highlighted Exam-Trap Callout -->
+        <div class="p-5 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">⚠️</span>
+            <h4 class="font-bold text-rose-900 dark:text-rose-200 text-sm uppercase tracking-wider">ISRT Exam-Trap Callouts: Radicals &amp; Undefined Degrees</h4>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+            <div class="p-4 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-rose-200 dark:border-rose-900 space-y-2">
+              <div class="font-bold text-rose-700 dark:text-rose-300">Trap 1 · The Radical Trap (ISRT 2020, 2022, 2024)</div>
+              <div class="py-1 text-center">$$\left(\frac{dr}{ds}\right)^3 = \sqrt{\frac{d^2r}{ds^2} + 1}$$</div>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                Squaring both sides clears the square root: $\left(\frac{dr}{ds}\right)^6 = \frac{d^2r}{ds^2} + 1$. The highest derivative is $\frac{d^2r}{ds^2}$, which has exponent $1$. Therefore: <strong>Order = 2, Degree = 1</strong> (NOT $6$ and NOT $1/2$!).
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-rose-200 dark:border-rose-900 space-y-2">
+              <div class="font-bold text-rose-700 dark:text-rose-300">Trap 2 · Undefined Degree (Transcendental Derivatives)</div>
+              <div class="py-1 text-center">$$\frac{d^2y}{dx^2} + \sin\!\left(\frac{dy}{dx}\right) = 0 \quad \text{or} \quad e^{y'} + y = x$$</div>
+              <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                Because $\sin(y')$ and $e^{y'}$ expand into infinite power series in $y'$, these equations <strong>cannot</strong> be written as a finite polynomial in their derivatives. Thus Order = 2 (or 1), but <strong>Degree is NOT defined</strong>!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 7.3: LINEAR VS. NONLINEAR DEs (THE 3-CHECK RULE)            -->
+      <!-- =================================================================== -->
+      <section id="sec-7-3" data-track-sec="sec-7-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 7.3</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Linear vs. Nonlinear Differential Equations (The 3-Check Rule)
+            </h3>
+          </div>
+          <span id="badge-sec-7-3" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Standard $n$-th Order Linear ODE</h4>
+          <div class="py-1 text-center overflow-x-auto">
+            $$a_n(x)\frac{d^ny}{dx^n} + a_{n-1}(x)\frac{d^{n-1}y}{dx^{n-1}} + \dots + a_1(x)\frac{dy}{dx} + a_0(x)y = g(x)$$
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+            Notice that the coefficient functions $a_k(x)$ and the forcing term $g(x)$ may be <em>arbitrarily nonlinear functions of the independent variable $x$</em> (like $\sin x, e^x, x^5$)!
+          </p>
+        </div>
+
+        <!-- The 3-Check Rule -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60">
+            <div class="font-mono font-bold text-emerald-700 dark:text-emerald-400 mb-1">CHECK 1 · POWER 1</div>
+            <p class="text-slate-700 dark:text-slate-300">The dependent variable $y$ and every derivative $y^{(k)}$ appear <strong>only to the 1st power</strong> (so every linear DE has Degree 1).</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60">
+            <div class="font-mono font-bold text-emerald-700 dark:text-emerald-400 mb-1">CHECK 2 · NO PRODUCTS</div>
+            <p class="text-slate-700 dark:text-slate-300"><strong>No products</strong> of $y$ and/or its derivatives (such as $y\cdot y'$ or $y^{(4)}\cdot y^{(3)}$).</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60">
+            <div class="font-mono font-bold text-emerald-700 dark:text-emerald-400 mb-1">CHECK 3 · NO NONLINEAR $f(y)$</div>
+            <p class="text-slate-700 dark:text-slate-300"><strong>No nonlinear functions</strong> of $y$ or its derivatives (such as $\sin y$, $y^2$, $e^y$, $\sqrt{y'}$).</p>
+          </div>
+        </div>
+
+        <!-- Classic ISRT Trap Table -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-4 py-3">ISRT Exam Equation</th>
+                <th class="px-4 py-3">Linearity</th>
+                <th class="px-4 py-3">Exact Reason (3-Check Rule)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="px-4 py-3">$\dfrac{d^2y}{dx^2} + y\sin x = 0$</td>
+                <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">Linear</span></td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">$\sin x$ depends only on the <em>independent</em> variable $x$; $y$ and $y''$ are power 1.</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">$x^2\,dy + y^2\,dx = 0$</td>
+                <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">Nonlinear</span></td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">Rewriting as $x^2\frac{dy}{dx} + y^2 = 0$ reveals the $y^2$ term (fails Check 1).</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3">$\dfrac{d^6x}{dt^6} + \left(\dfrac{d^4x}{dt^4}\right)\left(\dfrac{d^3x}{dt^3}\right) + x = t$</td>
+                <td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200">Nonlinear</span></td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-300">Contains the product of two derivatives $\left(\frac{d^4x}{dt^4}\right)\left(\frac{d^3x}{dt^3}\right)$ (fails Check 2).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 1: INTERACTIVE ISRT DIFFERENTIAL EQUATION CLASSIFIER DRILL      -->
+      <!-- =================================================================== -->
+      <section id="lab-classifier" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">ISRT Differential Equation Classifier Drill (10 Equations)</h3>
+          </div>
+          <div class="flex items-center gap-2 text-xs font-mono">
+            <span class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 font-bold text-indigo-600 dark:text-indigo-400">
+              Score: <span id="drill-score">0</span>/<span id="drill-attempts">0</span>
+            </span>
+            <span class="px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 font-bold text-amber-700 dark:text-amber-300">
+              🔥 Streak: <span id="drill-streak">0</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Equation Display Card -->
+        <div class="p-6 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-center">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span id="drill-counter" class="font-mono font-bold text-slate-500 dark:text-slate-400">Equation 1 of 10</span>
+            <span id="drill-tag" class="px-2.5 py-0.5 rounded-full font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Incourse-1 2022 &amp; 2024</span>
+          </div>
+          <div id="drill-eq" class="py-3 text-lg sm:text-xl overflow-x-auto"></div>
+        </div>
+
+        <!-- 4 Classification Selectors -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div id="wrap-type" class="p-3.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 transition">
+            <label for="sel-type" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">1. Type</label>
+            <select id="sel-type" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="">-- Select --</option>
+              <option value="ODE">ODE (Ordinary)</option>
+              <option value="PDE">PDE (Partial)</option>
+            </select>
+          </div>
+
+          <div id="wrap-order" class="p-3.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 transition">
+            <label for="sel-order" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">2. Order</label>
+            <select id="sel-order" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="">-- Select --</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+
+          <div id="wrap-degree" class="p-3.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 transition">
+            <label for="sel-degree" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">3. Degree</label>
+            <select id="sel-degree" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="">-- Select --</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="Undefined">Undefined</option>
+            </select>
+          </div>
+
+          <div id="wrap-linearity" class="p-3.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 transition">
+            <label for="sel-linearity" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">4. Linearity</label>
+            <select id="sel-linearity" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-sm font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="">-- Select --</option>
+              <option value="Linear">Linear</option>
+              <option value="Nonlinear">Nonlinear</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Drill Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button type="button" onclick="checkDrill()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-xs transition">
+            ✓ Check Classification
+          </button>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="navDrill(-1)" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 text-xs sm:text-sm font-semibold transition">← Previous</button>
+            <button type="button" onclick="navDrill(1)" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 text-xs sm:text-sm font-semibold transition">Next →</button>
+            <button type="button" onclick="randomDrill()" class="px-3.5 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs sm:text-sm font-semibold transition">🎲 Randomize</button>
+          </div>
+        </div>
+
+        <!-- Feedback Box -->
+        <div id="drill-feedback" class="hidden p-4 rounded-2xl text-xs sm:text-sm leading-relaxed"></div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 7.4: TYPES OF SOLUTIONS & INITIAL VALUE PROBLEMS (IVP)      -->
+      <!-- =================================================================== -->
+      <section id="sec-7-4" data-track-sec="sec-7-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 7.4</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Types of Solutions &amp; Initial Value Problems (IVP)
+            </h3>
+          </div>
+          <span id="badge-sec-7-4" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">General Solution</div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              A solution of an $n$-th order ODE containing exactly <strong>$n$ essential arbitrary constants</strong> (e.g., $y = A\cos x + B\sin x$ for $y'' + y = 0$). Represents an entire family of integral curves.
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">Particular Solution</div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              Obtained from the general solution by assigning specific numeric values to the arbitrary constants using <strong>initial conditions</strong> (at a single point $x_0$) or boundary conditions.
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 uppercase">Singular Solution</div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              A valid solution (often an <em>envelope</em>) that <strong>cannot</strong> be obtained for any choice of constants in the general solution. Example: Clairaut's DE $y = xy' + (y')^2$ has general solution $y = cx + c^2$ and singular solution $y = -x^2/4$.
+            </p>
+          </div>
+        </div>
+
+        <!-- Collapsible Worked Verification: ISRT Final 2023 Q6(a) -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button type="button" onclick="toggleCollapsible('proof-ivp-2023')" class="w-full px-5 py-4 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Worked IVP &amp; Verification · ISRT Final 2023 Q6(a) [4 Marks]</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Solve $\dfrac{dx}{dt} = 5x - 3$ with initial condition $x(2) = 1$, and explicitly verify the solution.
+              </p>
+            </div>
+            <span id="icon-proof-ivp-2023" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-ivp-2023" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <p><strong>Step 1 (Separate &amp; Integrate):</strong> $\dfrac{dx}{5x - 3} = dt \implies \frac{1}{5}\ln|5x - 3| = t + C_1 \implies 5x - 3 = Ce^{5t} \implies x(t) = \dfrac{3}{5} + Ke^{5t}$.</p>
+            <p><strong>Step 2 (Apply $x(2) = 1$):</strong> $1 = \frac{3}{5} + Ke^{10} \implies Ke^{10} = \frac{2}{5} \implies K = \frac{2}{5}e^{-10}$. Hence the particular solution is:
+            $$x(t) = \frac{3}{5} + \frac{2}{5}e^{5(t - 2)}$$</p>
+            <p><strong>Step 3 (Verify Both the ODE &amp; Initial Condition):</strong></p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><em>ODE Check:</em> $\text{LHS} = \frac{dx}{dt} = \frac{2}{5}\cdot 5 e^{5(t-2)} = 2e^{5(t-2)}$. Meanwhile $\text{RHS} = 5x - 3 = 5\left(\frac{3}{5} + \frac{2}{5}e^{5(t-2)}\right) - 3 = 3 + 2e^{5(t-2)} - 3 = 2e^{5(t-2)} = \text{LHS}$ ✓</li>
+              <li><em>IC Check:</em> $x(2) = \frac{3}{5} + \frac{2}{5}e^{5(2-2)} = \frac{3}{5} + \frac{2}{5}(1) = 1$ ✓ $\blacksquare$</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 7.5: FORMATION OF DIFFERENTIAL EQUATIONS                    -->
+      <!-- =================================================================== -->
+      <section id="sec-7-5" data-track-sec="sec-7-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 7.5</span>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Formation of Differential Equations (Eliminating Arbitrary Constants)
+            </h3>
+          </div>
+          <span id="badge-sec-7-5" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">The Golden Rule of Formation</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            If a family of curves $F(x, y, c_1, c_2, \dots, c_n) = 0$ contains <strong>$n$ essential (independent) arbitrary constants</strong>, differentiate the equation <strong>$n$ times</strong> with respect to $x$, producing $n + 1$ equations in total, and algebraically eliminate $c_1, \dots, c_n$. The resulting differential equation has <strong>order $n$</strong>.
+          </p>
+        </div>
+
+        <!-- Warning Box: Redundant Arbitrary Constants -->
+        <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800/70 flex gap-3.5">
+          <div class="text-2xl shrink-0">⚠️</div>
+          <div class="space-y-1.5 text-sm">
+            <h4 class="font-bold text-amber-950 dark:text-amber-200">Watch Out for Redundant Constants!</h4>
+            <p class="text-amber-900 dark:text-amber-200/90 leading-relaxed">
+              Always simplify constants <em>before</em> counting! For example, $y = c_1 e^{x + c_2}$ looks like it has 2 constants, but $y = (c_1 e^{c_2}) e^x = C e^x$ has only <strong>1 essential constant $C$</strong>! Therefore its DE is <strong>1st-order</strong>: $\dfrac{dy}{dx} = y$ (NOT 2nd-order).
+            </p>
+          </div>
+        </div>
+
+        <!-- 4 Collapsible Step-by-Step ISRT Derivations -->
+        <div class="space-y-3">
+          <!-- Derivation 1: Parabola -->
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('form-1')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Derivation 1 · ISRT Final 2019 &amp; Incourse-1 2022</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Parabola $y^2 = 4ax \;\longrightarrow\; 2x\dfrac{dy}{dx} = y$</p>
+              </div>
+              <span id="icon-form-1" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Steps</span>
+            </button>
+            <div id="form-1" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p><strong>1. Count:</strong> 1 arbitrary constant ($a$) $\implies$ differentiate once.</p>
+              <p><strong>2. Differentiate:</strong> $2y\frac{dy}{dx} = 4a \implies 4a = 2y\frac{dy}{dx}$.</p>
+              <p><strong>3. Eliminate $4a$:</strong> Substitute into $y^2 = 4ax$: $y^2 = \left(2y\frac{dy}{dx}\right)x \implies \mathbf{2x\dfrac{dy}{dx} = y}$ (for $y \neq 0$). $\blacksquare$</p>
+            </div>
+          </div>
+
+          <!-- Derivation 2: Circles through Origin -->
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('form-2')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Derivation 2 · ISRT Final 2020 &amp; Final 2024</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Origin-Passing Circles $(x-a)^2 + y^2 = a^2 \;\longrightarrow\; (x^2 - y^2)dx + 2xy\,dy = 0$</p>
+              </div>
+              <span id="icon-form-2" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Steps</span>
+            </button>
+            <div id="form-2" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p><strong>1. Expand:</strong> $x^2 - 2ax + a^2 + y^2 = a^2 \implies x^2 + y^2 = 2ax$ (1 constant $a$).</p>
+              <p><strong>2. Differentiate:</strong> $2x + 2y\frac{dy}{dx} = 2a \implies 2a = 2x + 2y\frac{dy}{dx}$.</p>
+              <p><strong>3. Eliminate $2a$:</strong> Substitute into $x^2 + y^2 = 2ax$: $x^2 + y^2 = \left(2x + 2y\frac{dy}{dx}\right)x = 2x^2 + 2xy\frac{dy}{dx}$. Rearranging gives $2xy\frac{dy}{dx} = y^2 - x^2$, or $\mathbf{(x^2 - y^2)dx + 2xy\,dy = 0}$. $\blacksquare$</p>
+            </div>
+          </div>
+
+          <!-- Derivation 3: Exponential Family -->
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('form-3')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Derivation 3 · ISRT Final 2019 Q5(b)(ii)</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">$y = Ae^x + Be^{-x} \;\longrightarrow\; \dfrac{d^2y}{dx^2} - y = 0$</p>
+              </div>
+              <span id="icon-form-3" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Steps</span>
+            </button>
+            <div id="form-3" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p><strong>1. Count:</strong> 2 essential arbitrary constants ($A, B$) $\implies$ differentiate twice.</p>
+              <p><strong>2. Differentiate Twice:</strong> $\frac{dy}{dx} = Ae^x - Be^{-x}$, and $\frac{d^2y}{dx^2} = Ae^x + Be^{-x}$.</p>
+              <p><strong>3. Eliminate $A, B$:</strong> Recognize the right-hand side is $y$ itself! Thus $\frac{d^2y}{dx^2} = y \implies \mathbf{\dfrac{d^2y}{dx^2} - y = 0}$. $\blacksquare$</p>
+            </div>
+          </div>
+
+          <!-- Derivation 4: Harmonic Waves -->
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <button type="button" onclick="toggleCollapsible('form-4')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Derivation 4 · ISRT Final 2020, 2024 &amp; Incourse-1 2025</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">$y = A\cos x + B\sin x \;\longrightarrow\; \dfrac{d^2y}{dx^2} + y = 0$</p>
+              </div>
+              <span id="icon-form-4" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Steps</span>
+            </button>
+            <div id="form-4" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p><strong>1. Count:</strong> 2 essential arbitrary constants ($A, B$) $\implies$ differentiate twice.</p>
+              <p><strong>2. Differentiate Twice:</strong> $\frac{dy}{dx} = -A\sin x + B\cos x$, and $\frac{d^2y}{dx^2} = -A\cos x - B\sin x = -(A\cos x + B\sin x)$.</p>
+              <p><strong>3. Eliminate $A, B$:</strong> Since $A\cos x + B\sin x = y$, we get $\frac{d^2y}{dx^2} = -y \implies \mathbf{\dfrac{d^2y}{dx^2} + y = 0}$. $\blacksquare$</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 2: CURVE-FAMILY PLOTTER & CONSTANT-ELIMINATION VISUALIZER       -->
+      <!-- =================================================================== -->
+      <section id="lab-curves" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Curve-Family Plotter &amp; Constant-Elimination Visualizer</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-fam="parabola" onclick="selectFamily('parabola')" class="fam-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">Parabolas</button>
+            <button type="button" data-fam="circle" onclick="selectFamily('circle')" class="fam-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">Origin Circles</button>
+            <button type="button" data-fam="harmonic" onclick="selectFamily('harmonic')" class="fam-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">Harmonic Waves</button>
+            <button type="button" data-fam="exp" onclick="selectFamily('exp')" class="fam-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">Exponentials</button>
+          </div>
+        </div>
+
+        <!-- Sliders Row -->
+        <div id="fam-controls" class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- SVG Curve Family Grid -->
+          <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
+              <span id="fam-svg-title" class="font-semibold text-slate-500 dark:text-slate-400">Family Plot</span>
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-indigo-600"></span> Active Curve</span>
+                <span id="fam-tangent-legend" class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-emerald-500"></span> Tangent at $x_0$</span>
+              </div>
+            </div>
+            <svg id="fam-svg" viewBox="0 0 440 320" class="w-full h-auto"></svg>
+          </div>
+
+          <!-- Side Panel: 3-Step Elimination + Live LHS=RHS Check -->
+          <div class="lg:col-span-5 space-y-4">
+            <div id="fam-elim-panel" class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 text-xs sm:text-sm"></div>
+            <div id="fam-verify-box" class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1.5 font-mono text-xs text-emerald-900 dark:text-emerald-200"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 7.6: APPLICATIONS IN STATISTICS & SCIENCE                   -->
+      <!-- =================================================================== -->
+      <section id="sec-7-6" data-track-sec="sec-7-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 7.6</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2023 Q1(c) &amp; Q6(b)</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">
+              Applications of Differential Equations in Statistics &amp; Science
+            </h3>
+          </div>
+          <span id="badge-sec-7-6" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-1.5">
+            <div class="font-bold text-indigo-800 dark:text-indigo-300">1. Population Dynamics</div>
+            <p class="text-slate-700 dark:text-slate-300"><strong>Malthusian:</strong> $\dfrac{dP}{dt} = rP$ (unlimited growth).<br/><strong>Verhulst Logistic:</strong> $\dfrac{dP}{dt} = rP\left(1 - \dfrac{P}{K}\right)$ with carrying capacity $K$.</p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="font-bold text-slate-900 dark:text-white">2. Radioactive Decay</div>
+            <p class="text-slate-700 dark:text-slate-300">Rate of decay is proportional to remaining mass $N(t)$: $\dfrac{dN}{dt} = -\lambda N \implies N(t) = N_0 e^{-\lambda t}$ (carbon dating).</p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="font-bold text-slate-900 dark:text-white">3. Newton's Law of Cooling</div>
+            <p class="text-slate-700 dark:text-slate-300">Temperature $T(t)$ approaches ambient temperature $T_a$: $\dfrac{dT}{dt} = -k(T - T_a)$ ($k > 0$).</p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="font-bold text-slate-900 dark:text-white">4. Continuous Compounding</div>
+            <p class="text-slate-700 dark:text-slate-300">Account balance $A(t)$ with interest rate $r$: $\dfrac{dA}{dt} = rA \implies A(t) = A_0 e^{rt}$ (financial math).</p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/35 border border-sky-200 dark:border-sky-900/70 space-y-1.5 md:col-span-2">
+            <div class="font-bold text-sky-900 dark:text-sky-200">5. Statistical Distributions (Pearson System &amp; Normal PDF)</div>
+            <p class="text-slate-700 dark:text-slate-300">
+              In Applied Statistics, the Normal density $f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$ satisfies the 1st-order linear ODE $f'(x) = -\dfrac{x - \mu}{\sigma^2}f(x)$—a special case of Karl Pearson's differential equation generating the Beta, Gamma, $t$, and Normal families!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 3: IVP & VERHULST LOGISTIC POPULATION SIMULATOR                 -->
+      <!-- =================================================================== -->
+      <section id="lab-verhulst" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03 · ISRT Final 2023 Q6(b)
+            </span>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">IVP &amp; Verhulst Logistic Population Simulator</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setVerhulstPreset(0.10, 5000, 100, 6)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition">🐇 ISRT 2023 Rabbits</button>
+            <button type="button" onclick="setVerhulstPreset(0.12, 5000, 7000, 10)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Overshoot Decay</button>
+            <button type="button" onclick="setVerhulstPreset(0.30, 2000, 50, 12)" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Fast S-Curve</button>
+          </div>
+        </div>
+
+        <!-- 4 Sliders -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
+          <div>
+            <div class="flex justify-between font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="vh-r">Growth Rate $r$</label>
+              <span id="vh-r-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0.10</span>
+            </div>
+            <input id="vh-r" type="range" min="0.02" max="0.50" step="0.01" value="0.10" oninput="updateVerhulstLab(true)" class="w-full accent-indigo-600" />
+          </div>
+          <div>
+            <div class="flex justify-between font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="vh-K">Carrying Capacity $K$</label>
+              <span id="vh-K-val" class="font-mono font-bold text-sky-600 dark:text-sky-400">5000</span>
+            </div>
+            <input id="vh-K" type="range" min="500" max="10000" step="100" value="5000" oninput="updateVerhulstLab(true)" class="w-full accent-sky-500" />
+          </div>
+          <div>
+            <div class="flex justify-between font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="vh-P0">Initial $P_0$</label>
+              <span id="vh-P0-val" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">100</span>
+            </div>
+            <input id="vh-P0" type="range" min="20" max="8000" step="20" value="100" oninput="updateVerhulstLab(true)" class="w-full accent-emerald-500" />
+          </div>
+          <div>
+            <div class="flex justify-between font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="vh-t">Query Time $t^*$</label>
+              <span id="vh-t-val" class="font-mono font-bold text-amber-600 dark:text-amber-400">6 mo</span>
+            </div>
+            <input id="vh-t" type="range" min="0" max="60" step="1" value="6" oninput="updateVerhulstLab(true)" class="w-full accent-amber-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- SVG Population Plot -->
+          <div class="lg:col-span-8 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
+              <span class="font-semibold text-slate-500 dark:text-slate-400">Logistic $P(t)$ vs. Malthusian $P_0 e^{rt}$</span>
+              <div class="flex flex-wrap items-center gap-3">
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-indigo-600"></span> Logistic</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 border-t-2 border-dashed border-rose-500"></span> Malthusian</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 border-t-2 border-dashed border-sky-500"></span> $y = K$</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> $(t^*, P(t^*))$</span>
+              </div>
+            </div>
+            <svg id="verhulst-svg" viewBox="0 0 500 270" class="w-full h-auto"></svg>
+          </div>
+
+          <!-- Live Readout Panel -->
+          <div id="verhulst-readout" class="lg:col-span-4 p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-xs sm:text-sm"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT (6 AUTHENTIC WORKED PROBLEMS)                  -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Past Papers (2019–2025)</span>
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 7)</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Try solving each question on paper first, then reveal the Hint or Full Step-by-Step Solution independently.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Vault 1 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2019 Q5(a) &amp; Final 2024 Q1(b)</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. Define differential equation. What do you understand by the terms <em>order</em> and <em>degree</em> of a differential equation?
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> For full marks on <em>degree</em>, always mention clearing radicals and fractional powers in derivatives and the polynomial requirement.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Differential Equation:</strong> An equation involving derivatives (ordinary or partial) of one or more dependent variables with respect to one or more independent variables.</p>
+              <p><strong>Order:</strong> The order of the highest derivative present in the differential equation.</p>
+              <p><strong>Degree:</strong> The power (positive integer exponent) of the highest-order derivative present in the equation <em>after</em> it has been made rational and integral (free from radicals and fractional powers) as far as derivatives are concerned, provided it is a polynomial in all its derivatives.</p>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Incourse-1 2024 Q1 &amp; Incourse-1 2022 Q2</span>
+              <span class="text-xs font-mono text-slate-400">[4–8 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. Classify each equation (ODE/PDE, Order, Degree, Linear/Nonlinear): (i) $\left(\frac{dr}{ds}\right)^3 = \sqrt{\frac{d^2r}{ds^2}+1}$, &nbsp;(ii) $\frac{d^2y}{dx^2} + y\sin x = 0$, &nbsp;(iii) $x^2 dy + y^2 dx = 0$, &nbsp;(iv) $\frac{d^6x}{dt^6} + \left(\frac{d^4x}{dt^4}\right)\left(\frac{d^3x}{dt^3}\right) + x = t$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Square (i) first; check which variable is inside $\sin x$ in (ii); divide (iii) by $dx$; spot the derivative product in (iv).
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p><strong>(i)</strong> Squaring gives $(dr/ds)^6 = d^2r/ds^2 + 1 \implies$ <strong>ODE, Order 2, Degree 1, Nonlinear</strong> (due to $(dr/ds)^6$).</p>
+              <p><strong>(ii)</strong> $\frac{d^2y}{dx^2} + (\sin x)y = 0 \implies$ <strong>ODE, Order 2, Degree 1, Linear</strong> ($\sin x$ depends on independent variable $x$).</p>
+              <p><strong>(iii)</strong> $x^2 \frac{dy}{dx} + y^2 = 0 \implies$ <strong>ODE, Order 1, Degree 1, Nonlinear</strong> (due to $y^2$).</p>
+              <p><strong>(iv)</strong> Highest derivative is $d^6x/dt^6$ to power 1 $\implies$ <strong>ODE, Order 6, Degree 1, Nonlinear</strong> (product of $x^{(4)}$ and $x^{(3)}$).</p>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020 Q1(a)(i) &amp; Final 2024</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. Form the differential equation of the family of all circles passing through the origin and having their centers on the $x$-axis.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> A circle centered at $(a, 0)$ passing through $(0, 0)$ has radius $|a|$, giving $(x - a)^2 + y^2 = a^2 \implies x^2 + y^2 = 2ax$.
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Equation of the family: $(x - a)^2 + y^2 = a^2 \implies x^2 + y^2 = 2ax$ (1 arbitrary constant $a$).</p>
+              <p>Differentiating with respect to $x$: $2x + 2y\frac{dy}{dx} = 2a$.</p>
+              <p>Substituting $2a$ back into $x^2 + y^2 = 2ax$: $x^2 + y^2 = \left(2x + 2y\frac{dy}{dx}\right)x = 2x^2 + 2xy\frac{dy}{dx}$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $2xy\dfrac{dy}{dx} = y^2 - x^2$ &nbsp;or&nbsp; $(x^2 - y^2)dx + 2xy\,dy = 0$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020 Q1(a)(ii), Final 2024 &amp; Incourse-1 2025 Q4</span>
+              <span class="text-xs font-mono text-slate-400">[3 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. Form the differential equation of $y = A\cos x + B\sin x$ (and contrast with $y = Ae^x + Be^{-x}$).
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Both have 2 essential constants ($A, B$), so differentiate twice and express $y''$ directly in terms of $y$.
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>For $y = A\cos x + B\sin x$:</strong> $y' = -A\sin x + B\cos x$ and $y'' = -A\cos x - B\sin x = -y \implies \mathbf{\dfrac{d^2y}{dx^2} + y = 0}$.</p>
+              <p><strong>Contrast with $y = Ae^x + Be^{-x}$:</strong> $y' = Ae^x - Be^{-x}$ and $y'' = Ae^x + Be^{-x} = +y \implies \mathbf{\dfrac{d^2y}{dx^2} - y = 0}$. (Only the sign before $y$ flips!) $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2023 (MATH 103) · Q6(a)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. Solve the ODE $\dfrac{dx}{dt} = 5x - 3$ combined with initial condition $x(2) = 1$, and verify the solution.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Separate variables $\int \frac{dx}{5x-3} = \int dt$, solve for $x(t)$, plug in $t=2, x=1$ to find the constant, then differentiate to verify.
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Separating variables: $\frac{dx}{5x-3} = dt \implies \frac{1}{5}\ln|5x-3| = t + C_1 \implies x(t) = \frac{3}{5} + Ke^{5t}$.</p>
+              <p>Applying $x(2) = 1$: $1 = \frac{3}{5} + Ke^{10} \implies K = \frac{2}{5}e^{-10}$, giving <strong class="text-emerald-700 dark:text-emerald-400">$x(t) = \dfrac{3}{5} + \dfrac{2}{5}e^{5(t-2)}$</strong>.</p>
+              <p>Verification: $\frac{dx}{dt} = 2e^{5(t-2)} = 5\left(\frac{3}{5} + \frac{2}{5}e^{5(t-2)}\right) - 3 = 5x - 3$, and $x(2) = \frac{3}{5} + \frac{2}{5}e^0 = 1$ ✓. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2023 (MATH 103) · Q6(b)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. A population of rabbits in a forest is modeled by the Verhulst equation $\dfrac{dP}{dt} = rP\left(1 - \dfrac{P}{K}\right)$ with $r = 0.1$/month, $K = 5000$, and $P(0) = 100$. Find $P(t)$ and the population after $6$ months.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Use partial fractions $\frac{1}{P(1-P/K)} = \frac{1}{P} + \frac{1}{K-P}$ to derive $P(t) = \frac{K}{1 + \left(\frac{K-P_0}{P_0}\right)e^{-rt}}$, then evaluate at $t = 6$.
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Separating variables and applying partial fractions:
+              $$\left(\frac{1}{P} + \frac{1}{K-P}\right)dP = r\,dt \implies \ln\left|\frac{P}{K-P}\right| = rt + C \implies \frac{K-P}{P} = Ae^{-rt}$$
+              With $P(0) = P_0 = 100$ and $K = 5000$, we get $A = \frac{K - P_0}{P_0} = \frac{4900}{100} = 49$.</p>
+              <p>Thus the population function is: $P(t) = \dfrac{5000}{1 + 49e^{-0.1t}}$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">After $t = 6$ months: $P(6) = \dfrac{5000}{1 + 49e^{-0.6}} = \dfrac{5000}{1 + 49(0.54881)} \approx \mathbf{178.98 \approx 179\text{ rabbits}}$. $\blacksquare$</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- INTERACTIVE QUICK-CHECK QUIZ (5 EXAM-STYLE MCQS)                    -->
+      <!-- =================================================================== -->
+      <section id="quick-quiz" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Self-Assessment</span>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <p>MATH 103: Foundations of Mathematics · ISRT, University of Dhaka (Lesson 7 of 14)</p>
+        <p>Next up: <strong>Lesson 8 — First-Order DEs: Separable, Homogeneous &amp; Reducible</strong></p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX RENDERING HELPER
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    /* =========================================================================
+       2. THEME, SIDEBAR, COLLAPSIBLES & PROGRESS TRACKING (14 MILESTONES)
+       ========================================================================= */
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('math103_theme', isDark ? 'dark' : 'light');
+      updateFamilyLab(false);
+      updateVerhulstLab(false);
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', openSidebar);
+    document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      document.getElementById('roadmap-list').classList.toggle('hidden');
+      document.getElementById('roadmap-chevron').classList.toggle('rotate-180');
+    }
+
+    function toggleCollapsible(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById('icon-' + id);
+      const isHidden = el.classList.toggle('hidden');
+      if (icon) icon.textContent = isHidden ? (id.startsWith('form-') ? 'Show Steps' : 'Show Proof') : 'Hide';
+      if (!isHidden) renderMath(el);
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    const viewedSections = new Set();
+    const exploredLabs = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function markLabExplored(labId) {
+      if (!exploredLabs.has(labId)) {
+        exploredLabs.add(labId);
+        updateOverallProgress();
+      }
+    }
+
+    function updateOverallProgress() {
+      const total = 6 + 3 + 5; // 6 sections + 3 labs + 5 quiz questions = 14 milestones
+      const done = viewedSections.size + exploredLabs.size + quizAnsweredCount;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('header-progress-text').textContent = pct + '%';
+      document.getElementById('sidebar-progress-pct').textContent = pct + '%';
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${viewedSections.size}/6 sections · ${exploredLabs.size}/3 labs · ${quizAnsweredCount}/5 quiz`;
+    }
+
+    function initObservers() {
+      // Scroll-spy for TOC
+      const spyTargets = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link[data-spy]');
+      const spyObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              tocLinks.forEach((link) => {
+                if (link.dataset.spy === id) {
+                  link.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                } else {
+                  link.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
+      );
+      spyTargets.forEach((sec) => spyObs.observe(sec));
+
+      // Section viewed observer
+      const secObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const secId = entry.target.dataset.trackSec;
+              if (secId && !viewedSections.has(secId)) {
+                viewedSections.add(secId);
+                const badge = document.getElementById('badge-' + secId);
+                if (badge) {
+                  badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300';
+                  badge.textContent = '✓ Viewed';
+                }
+                updateOverallProgress();
+              }
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      document.querySelectorAll('section[data-track-sec]').forEach((s) => secObs.observe(s));
+    }
+
+    /* =========================================================================
+       3. LAB 1: INTERACTIVE ISRT DE CLASSIFIER DRILL (10 EQUATIONS)
+       ========================================================================= */
+    const drillBank = [
+      {
+        tex: '\\frac{\\partial^4 u}{\\partial x^2 \\partial y^2} + \\frac{\\partial^2 u}{\\partial x^2} + \\frac{\\partial^2 u}{\\partial y^2} + u = 0',
+        tag: 'ISRT Incourse-1 2022 & 2024',
+        type: 'PDE', order: '4', degree: '1', linearity: 'Linear',
+        exp: 'Contains partial derivatives with respect to $x$ and $y$ (PDE). Highest derivative is 4th order ($\\partial^4 u / \\partial x^2\\partial y^2$) to the 1st power, and $u$ and all its partial derivatives appear linearly.'
+      },
+      {
+        tex: '\\frac{d^3y}{dx^3} + 4\\frac{d^2y}{dx^2} - 5\\frac{dy}{dx} + 3y = \\sin x',
+        tag: 'ISRT Final 2019 & Incourse-1 2022, 2024',
+        type: 'ODE', order: '3', degree: '1', linearity: 'Linear',
+        exp: 'Single independent variable $x$ (ODE). Highest derivative is $y^{\'\'\'}$ (Order 3) to power 1 (Degree 1). The forcing term $\\sin x$ depends only on $x$, so it is Linear.'
+      },
+      {
+        tex: '\\frac{d^2y}{dx^2} + 5\\left(\\frac{dy}{dx}\\right)^5 + 7y^2 = 0',
+        tag: 'ISRT Incourse-1 2022 & 2024',
+        type: 'ODE', order: '2', degree: '1', linearity: 'Nonlinear',
+        exp: 'Highest derivative is $d^2y/dx^2$ (Order 2), whose exponent is $1$ (Degree 1 — ignore the exponent $5$ on the lower derivative $dy/dx$!). Nonlinear due to $(y\')^5$ and $y^2$.'
+      },
+      {
+        tex: '\\left(\\frac{dr}{ds}\\right)^3 = \\sqrt{\\frac{d^2r}{ds^2} + 1}',
+        tag: 'ISRT Final 2020 & Incourse-1 2022, 2024',
+        type: 'ODE', order: '2', degree: '1', linearity: 'Nonlinear',
+        exp: 'Square both sides to clear the radical: $(dr/ds)^6 = d^2r/ds^2 + 1$. Highest derivative is $d^2r/ds^2$ (Order 2) with exponent $1$ (Degree 1). Nonlinear due to $(dr/ds)^6$.'
+      },
+      {
+        tex: 'x^2\\,dy + y^2\\,dx = 0',
+        tag: 'ISRT Final 2019 & Incourse-1 2022, 2024',
+        type: 'ODE', order: '1', degree: '1', linearity: 'Nonlinear',
+        exp: 'Dividing by $dx$ gives $x^2\\frac{dy}{dx} + y^2 = 0$. Highest derivative is $dy/dx$ (Order 1, Degree 1). Nonlinear because the dependent variable $y$ is squared ($y^2$).'
+      },
+      {
+        tex: '\\frac{d^4y}{dx^4} + 3\\left(\\frac{d^2y}{dx^2}\\right)^5 + 5y = 0',
+        tag: 'ISRT Final 2019 & Incourse-1 2022, 2024',
+        type: 'ODE', order: '4', degree: '1', linearity: 'Nonlinear',
+        exp: 'Highest derivative is $d^4y/dx^4$ (Order 4) with exponent $1$ (Degree 1). Nonlinear because the second derivative is raised to the 5th power.'
+      },
+      {
+        tex: '\\frac{d^2y}{dx^2} + y\\sin x = 0',
+        tag: 'ISRT Final 2019 & Incourse-1 2022, 2024',
+        type: 'ODE', order: '2', degree: '1', linearity: 'Linear',
+        exp: 'Classic ISRT trap! $\\sin x$ is a function of the independent variable $x$, NOT $y$. Both $y^{\'\'}$ and $y$ appear linearly to power 1.'
+      },
+      {
+        tex: '\\frac{d^6x}{dt^6} + \\left(\\frac{d^4x}{dt^4}\\right)\\left(\\frac{d^3x}{dt^3}\\right) + x = t',
+        tag: 'ISRT Final 2019 & Incourse-1 2022, 2024',
+        type: 'ODE', order: '6', degree: '1', linearity: 'Nonlinear',
+        exp: 'Dependent variable $x(t)$ has highest derivative $d^6x/dt^6$ (Order 6, Degree 1). Nonlinear because of the product of derivatives $(d^4x/dt^4)(d^3x/dt^3)$.'
+      },
+      {
+        tex: '\\frac{d^2y}{dx^2} + \\sin\\!\\left(\\frac{dy}{dx}\\right) = 0',
+        tag: 'Bonus Concept Trap · Undefined Degree',
+        type: 'ODE', order: '2', degree: 'Undefined', linearity: 'Nonlinear',
+        exp: 'Order is 2, but because $dy/dx$ is trapped inside $\\sin(\\cdot)$, the equation cannot be expressed as a polynomial in its derivatives—so Degree is Undefined (and it is Nonlinear).'
+      },
+      {
+        tex: 'e^{y\'\'} + y = x^2',
+        tag: 'Bonus Concept Trap · Undefined Degree',
+        type: 'ODE', order: '2', degree: 'Undefined', linearity: 'Nonlinear',
+        exp: 'Highest derivative is $y^{\'\'}$ (Order 2). Because $e^{y^{\'\'}}$ is transcendental in $y^{\'\'}$, the Degree is Undefined and the ODE is Nonlinear.'
+      }
+    ];
+
+    let drillIdx = 0;
+    let drillScore = 0;
+    let drillAttempts = 0;
+    let drillStreak = 0;
+
+    function loadDrill(idx) {
+      drillIdx = (idx + drillBank.length) % drillBank.length;
+      const item = drillBank[drillIdx];
+      document.getElementById('drill-counter').textContent = `Equation ${drillIdx + 1} of ${drillBank.length}`;
+      document.getElementById('drill-tag').textContent = item.tag;
+      const eqEl = document.getElementById('drill-eq');
+      eqEl.innerHTML = `$$${item.tex}$$`;
+      renderMath(eqEl);
+
+      ['type', 'order', 'degree', 'linearity'].forEach((f) => {
+        document.getElementById('sel-' + f).value = '';
+        document.getElementById('wrap-' + f).className = 'p-3.5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-800 transition';
+      });
+      document.getElementById('drill-feedback').classList.add('hidden');
+    }
+
+    function navDrill(delta) {
+      loadDrill(drillIdx + delta);
+    }
+
+    function randomDrill() {
+      let next = Math.floor(Math.random() * drillBank.length);
+      if (next === drillIdx) next = (next + 1) % drillBank.length;
+      loadDrill(next);
+    }
+
+    function checkDrill() {
+      markLabExplored('lab-classifier');
+      const item = drillBank[drillIdx];
+      const fields = ['type', 'order', 'degree', 'linearity'];
+      const vals = {};
+      for (const f of fields) {
+        vals[f] = document.getElementById('sel-' + f).value;
+        if (!vals[f]) {
+          const fb = document.getElementById('drill-feedback');
+          fb.className = 'p-4 rounded-2xl text-xs sm:text-sm bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800';
+          fb.textContent = 'Please select a value for all 4 classification fields before checking!';
+          fb.classList.remove('hidden');
+          return;
+        }
+      }
+
+      let allRight = true;
+      fields.forEach((f) => {
+        const ok = vals[f] === item[f];
+        if (!ok) allRight = false;
+        document.getElementById('wrap-' + f).className = ok
+          ? 'p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-500 transition'
+          : 'p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-500 transition';
+      });
+
+      drillAttempts++;
+      if (allRight) {
+        drillScore++;
+        drillStreak++;
+      } else {
+        drillStreak = 0;
+      }
+      document.getElementById('drill-score').textContent = drillScore;
+      document.getElementById('drill-attempts').textContent = drillAttempts;
+      document.getElementById('drill-streak').textContent = drillStreak;
+
+      const fb = document.getElementById('drill-feedback');
+      fb.classList.remove('hidden');
+      fb.className = allRight
+        ? 'p-4 rounded-2xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-4 rounded-2xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      fb.innerHTML = `
+        <strong>${allRight ? '✓ Perfect Classification!' : `✕ Answer: ${item.type} · Order ${item.order} · Degree ${item.degree} · ${item.linearity}.`}</strong>
+        <span class="block mt-1">${item.exp}</span>
+      `;
+      renderMath(fb);
+    }
+
+    /* =========================================================================
+       4. LAB 2: CURVE-FAMILY PLOTTER & CONSTANT-ELIMINATION VISUALIZER
+       ========================================================================= */
+    const famState = {
+      family: 'parabola',
+      a: 1.5,
+      A: 1.5,
+      B: 1.0,
+      u: 0.55 // normalized probe position in [0.15, 0.85]
+    };
+
+    function selectFamily(fam) {
+      famState.family = fam;
+      document.querySelectorAll('.fam-btn').forEach((btn) => {
+        const active = btn.dataset.fam === fam;
+        btn.className = active
+          ? 'fam-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition'
+          : 'fam-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition';
+      });
+      renderFamilyControls();
+      updateFamilyLab(true);
+    }
+
+    function renderFamilyControls() {
+      const box = document.getElementById('fam-controls');
+      const f = famState.family;
+      if (f === 'parabola' || f === 'circle') {
+        box.innerHTML = `
+          <div class="sm:col-span-2">
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="fam-a">Arbitrary Constant $a \\in [-3, 3]\\; (a \\neq 0)$</label>
+              <span id="fam-a-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">a = ${famState.a.toFixed(1)}</span>
+            </div>
+            <input id="fam-a" type="range" min="-3" max="3" step="0.5" value="${famState.a}" oninput="setFamParam('a', +this.value)" class="w-full accent-indigo-600" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label for="fam-u">Probe Point $x_0$</label>
+              <span id="fam-u-val" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">x₀</span>
+            </div>
+            <input id="fam-u" type="range" min="0.15" max="0.85" step="0.02" value="${famState.u}" oninput="setFamParam('u', +this.value)" class="w-full accent-emerald-500" />
+          </div>
+        `;
+      } else {
+        const lim = f === 'exp' ? 2 : 3;
+        box.innerHTML = `
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Constant $A$</label>
+              <span id="fam-A-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">A = ${famState.A.toFixed(1)}</span>
+            </div>
+            <input type="range" min="${-lim}" max="${lim}" step="0.5" value="${Math.max(-lim, Math.min(lim, famState.A))}" oninput="setFamParam('A', +this.value)" class="w-full accent-indigo-600" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Constant $B$</label>
+              <span id="fam-B-val" class="font-mono font-bold text-sky-600 dark:text-sky-400">B = ${famState.B.toFixed(1)}</span>
+            </div>
+            <input type="range" min="${-lim}" max="${lim}" step="0.5" value="${Math.max(-lim, Math.min(lim, famState.B))}" oninput="setFamParam('B', +this.value)" class="w-full accent-sky-500" />
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              <label>Probe Point $x_0$</label>
+              <span id="fam-u-val" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">x₀</span>
+            </div>
+            <input type="range" min="0.15" max="0.85" step="0.02" value="${famState.u}" oninput="setFamParam('u', +this.value)" class="w-full accent-emerald-500" />
+          </div>
+        `;
+      }
+      renderMath(box);
+    }
+
+    function setFamParam(key, val) {
+      if (key === 'a' && Math.abs(val) < 0.25) val = famState.a >= 0 ? -0.5 : 0.5;
+      famState[key] = val;
+      if (key === 'a') {
+        const el = document.getElementById('fam-a');
+        if (el) el.value = val;
+      }
+      updateFamilyLab(true);
+    }
+
+    function updateFamilyLab(userTriggered) {
+      if (userTriggered) markLabExplored('lab-curves');
+      const f = famState.family;
+      const a = Math.abs(famState.a) < 0.25 ? 1.5 : famState.a;
+      const A = famState.A;
+      const B = famState.B;
+      const u = famState.u;
+
+      const aLbl = document.getElementById('fam-a-val');
+      if (aLbl) aLbl.textContent = `a = ${a.toFixed(1)}`;
+      const ALbl = document.getElementById('fam-A-val');
+      if (ALbl) ALbl.textContent = `A = ${A.toFixed(1)}`;
+      const BLbl = document.getElementById('fam-B-val');
+      if (BLbl) BLbl.textContent = `B = ${B.toFixed(1)}`;
+
+      const svg = document.getElementById('fam-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridCol = isDark ? '#1e293b' : '#f1f5f9';
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+      const faintCol = isDark ? '#334155' : '#cbd5e1';
+
+      const W = 440, H = 320;
+      const xRange = f === 'exp' ? 3.2 : 6.5;
+      const yRange = f === 'exp' ? 6.5 : 5.0;
+      const sx = (x) => W / 2 + (x / xRange) * (W / 2 - 22);
+      const sy = (y) => H / 2 - (y / yRange) * (H / 2 - 20);
+
+      let grid = '';
+      for (let gx = -Math.floor(xRange); gx <= Math.floor(xRange); gx++) {
+        grid += `<line x1="${sx(gx)}" y1="12" x2="${sx(gx)}" y2="${H - 12}" stroke="${gridCol}" stroke-width="1" />`;
+      }
+      for (let gy = -Math.floor(yRange); gy <= Math.floor(yRange); gy++) {
+        grid += `<line x1="12" y1="${sy(gy)}" x2="${W - 12}" y2="${sy(gy)}" stroke="${gridCol}" stroke-width="1" />`;
+      }
+      grid += `
+        <line x1="12" y1="${sy(0)}" x2="${W - 12}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+        <line x1="${sx(0)}" y1="12" x2="${sx(0)}" y2="${H - 12}" stroke="${axisCol}" stroke-width="1.6" />
+      `;
+
+      let faintSVG = '';
+      let activeSVG = '';
+      let probeSVG = '';
+      let elimHTML = '';
+      let verifyHTML = '';
+      const tanLeg = document.getElementById('fam-tangent-legend');
+
+      if (f === 'parabola') {
+        document.getElementById('fam-svg-title').textContent = 'Parabola Family: y² = 4ax (DE: 2xy\' = y)';
+        tanLeg.classList.remove('hidden');
+
+        const drawPara = (paramA, color, sw, op) => {
+          const ptsTop = [], ptsBot = [];
+          const sign = paramA > 0 ? 1 : -1;
+          for (let i = 0; i <= 70; i++) {
+            const x = sign * (i / 70) * xRange;
+            const y = Math.sqrt(Math.max(0, 4 * paramA * x));
+            if (y <= yRange + 0.3) {
+              ptsTop.push(`${ptsTop.length ? 'L' : 'M'} ${sx(x).toFixed(1)} ${sy(y).toFixed(1)}`);
+              ptsBot.push(`${ptsBot.length ? 'L' : 'M'} ${sx(x).toFixed(1)} ${sy(-y).toFixed(1)}`);
+            }
+          }
+          return `<path d="${ptsTop.join(' ')}" fill="none" stroke="${color}" stroke-width="${sw}" opacity="${op}" />
+                  <path d="${ptsBot.join(' ')}" fill="none" stroke="${color}" stroke-width="${sw}" opacity="${op}" />`;
+        };
+
+        [-2.5, -1, 0.5, 1, 2.5].forEach((pa) => { faintSVG += drawPara(pa, faintCol, 1.4, 0.7); });
+        activeSVG = drawPara(a, '#4f46e5', 2.8, 1);
+
+        const x0 = (a > 0 ? 1 : -1) * (0.4 + u * 4.2);
+        const y0 = Math.sqrt(4 * a * x0);
+        const slope = y0 / (2 * x0);
+        const dx = 1.4;
+        probeSVG = `
+          <line x1="${sx(x0 - dx)}" y1="${sy(y0 - slope * dx)}" x2="${sx(x0 + dx)}" y2="${sy(y0 + slope * dx)}" stroke="#10b981" stroke-width="2.2" />
+          <circle cx="${sx(x0)}" cy="${sy(y0)}" r="5.5" fill="#10b981" stroke="${isDark ? '#020617' : '#fff'}" stroke-width="2" />
+        `;
+        document.getElementById('fam-u-val').textContent = `x₀ = ${x0.toFixed(2)}`;
+
+        elimHTML = `
+          <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">3-Step Constant Elimination (1 Constant: $a$)</div>
+          <p><strong>1. Family:</strong> $y^2 = 4ax$</p>
+          <p><strong>2. Differentiate once:</strong> $2y y' = 4a$</p>
+          <p><strong>3. Substitute $4a$:</strong> $y^2 = (2yy')x \\implies \\mathbf{2xy' = y}$</p>
+        `;
+        verifyHTML = `
+          <div class="font-sans font-bold uppercase text-[11px] text-emerald-700 dark:text-emerald-300">Live DE Verification at (x₀=${x0.toFixed(2)}, y₀=${y0.toFixed(2)})</div>
+          <div>Slope y'(x₀) = ${slope.toFixed(4)}</div>
+          <div>LHS = 2·x₀·y' = ${(2 * x0 * slope).toFixed(4)}</div>
+          <div>RHS = y₀ &nbsp;&nbsp;&nbsp;&nbsp;= ${y0.toFixed(4)} &nbsp;<strong>✓ EXACT MATCH!</strong></div>
+        `;
+      } else if (f === 'circle') {
+        document.getElementById('fam-svg-title').textContent = 'Origin Circles: x² + y² = 2ax (DE: 2xyy\' = y² − x²)';
+        tanLeg.classList.remove('hidden');
+
+        // Keep aspect ratio 1:1 for circles using uniform scale
+        const cScale = Math.min((W / 2 - 22) / xRange, (H / 2 - 20) / yRange);
+        const csx = (x) => W / 2 + x * cScale;
+        const csy = (y) => H / 2 - y * cScale;
+
+        grid = '';
+        for (let gx = -6; gx <= 6; gx++) grid += `<line x1="${csx(gx)}" y1="12" x2="${csx(gx)}" y2="${H - 12}" stroke="${gridCol}" stroke-width="1" />`;
+        for (let gy = -4; gy <= 4; gy++) grid += `<line x1="12" y1="${csy(gy)}" x2="${W - 12}" y2="${csy(gy)}" stroke="${gridCol}" stroke-width="1" />`;
+        grid += `<line x1="12" y1="${csy(0)}" x2="${W - 12}" y2="${csy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+                 <line x1="${csx(0)}" y1="12" x2="${csx(0)}" y2="${H - 12}" stroke="${axisCol}" stroke-width="1.6" />`;
+
+        [-2.5, -1.5, 1, 2, 3].forEach((pa) => {
+          faintSVG += `<circle cx="${csx(pa)}" cy="${csy(0)}" r="${Math.abs(pa) * cScale}" fill="none" stroke="${faintCol}" stroke-width="1.4" opacity="0.7" />`;
+        });
+        activeSVG = `<circle cx="${csx(a)}" cy="${csy(0)}" r="${Math.abs(a) * cScale}" fill="#4f46e5" fill-opacity="0.06" stroke="#4f46e5" stroke-width="2.8" />`;
+
+        const x0 = 2 * a * u;
+        const y0 = Math.sqrt(Math.max(0.001, 2 * a * x0 - x0 * x0));
+        const slope = (y0 * y0 - x0 * x0) / (2 * x0 * y0);
+        const dx = 1.0 / Math.sqrt(1 + slope * slope);
+        probeSVG = `
+          <line x1="${csx(x0 - dx)}" y1="${csy(y0 - slope * dx)}" x2="${csx(x0 + dx)}" y2="${csy(y0 + slope * dx)}" stroke="#10b981" stroke-width="2.2" />
+          <circle cx="${csx(x0)}" cy="${csy(y0)}" r="5.5" fill="#10b981" stroke="${isDark ? '#020617' : '#fff'}" stroke-width="2" />
+        `;
+        document.getElementById('fam-u-val').textContent = `x₀ = ${x0.toFixed(2)}`;
+
+        elimHTML = `
+          <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">3-Step Constant Elimination (1 Constant: $a$)</div>
+          <p><strong>1. Family:</strong> $(x-a)^2 + y^2 = a^2 \\implies x^2 + y^2 = 2ax$</p>
+          <p><strong>2. Differentiate once:</strong> $2x + 2yy' = 2a$</p>
+          <p><strong>3. Substitute $2a$:</strong> $x^2 + y^2 = (2x + 2yy')x \\implies \\mathbf{2xyy' = y^2 - x^2}$</p>
+        `;
+        verifyHTML = `
+          <div class="font-sans font-bold uppercase text-[11px] text-emerald-700 dark:text-emerald-300">Live DE Verification at (x₀=${x0.toFixed(2)}, y₀=${y0.toFixed(2)})</div>
+          <div>LHS = 2·x₀·y₀·y' = ${(2 * x0 * y0 * slope).toFixed(4)}</div>
+          <div>RHS = y₀² − x₀² &nbsp;= ${(y0 * y0 - x0 * x0).toFixed(4)} &nbsp;<strong>✓ EXACT MATCH!</strong></div>
+        `;
+      } else if (f === 'harmonic') {
+        document.getElementById('fam-svg-title').textContent = 'Harmonic Waves: y = A cos x + B sin x (DE: y\'\' + y = 0)';
+        tanLeg.classList.add('hidden');
+
+        const drawWave = (cA, cB, color, sw, op) => {
+          let d = '';
+          for (let i = 0; i <= 120; i++) {
+            const x = -xRange + (i / 120) * (2 * xRange);
+            const y = cA * Math.cos(x) + cB * Math.sin(x);
+            d += `${i === 0 ? 'M' : 'L'} ${sx(x).toFixed(1)} ${sy(y).toFixed(1)} `;
+          }
+          return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${sw}" opacity="${op}" />`;
+        };
+
+        [[2, 0], [0, 2], [-1.5, 1.5], [1, -2], [-2, -1]].forEach(([cA, cB]) => {
+          faintSVG += drawWave(cA, cB, faintCol, 1.3, 0.65);
+        });
+        activeSVG = drawWave(A, B, '#4f46e5', 2.8, 1);
+
+        const x0 = -4.5 + u * 9.0;
+        const y0 = A * Math.cos(x0) + B * Math.sin(x0);
+        const y2 = -A * Math.cos(x0) - B * Math.sin(x0);
+        probeSVG = `<circle cx="${sx(x0)}" cy="${sy(y0)}" r="5.5" fill="#10b981" stroke="${isDark ? '#020617' : '#fff'}" stroke-width="2" />`;
+        document.getElementById('fam-u-val').textContent = `x₀ = ${x0.toFixed(2)}`;
+
+        elimHTML = `
+          <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">3-Step Constant Elimination (2 Constants: $A, B$)</div>
+          <p><strong>1. Family:</strong> $y = A\\cos x + B\\sin x$</p>
+          <p><strong>2. Differentiate twice:</strong> $y' = -A\\sin x + B\\cos x$, $y'' = -A\\cos x - B\\sin x$</p>
+          <p><strong>3. Eliminate $A, B$:</strong> $y'' = -y \\implies \\mathbf{y'' + y = 0}$</p>
+        `;
+        verifyHTML = `
+          <div class="font-sans font-bold uppercase text-[11px] text-emerald-700 dark:text-emerald-300">Live 2nd-Order Check at x₀ = ${x0.toFixed(2)}</div>
+          <div>y(x₀) &nbsp;&nbsp;= ${y0.toFixed(4)}</div>
+          <div>y''(x₀) = ${y2.toFixed(4)}</div>
+          <div>LHS = y'' + y = ${(y2 + y0).toFixed(4)} = 0 &nbsp;<strong>✓ EXACT!</strong></div>
+        `;
+      } else {
+        document.getElementById('fam-svg-title').textContent = 'Exponential Family: y = Aeˣ + Be⁻ˣ (DE: y\'\' − y = 0)';
+        tanLeg.classList.add('hidden');
+
+        const drawExp = (cA, cB, color, sw, op) => {
+          let d = '', pen = false;
+          for (let i = 0; i <= 120; i++) {
+            const x = -xRange + (i / 120) * (2 * xRange);
+            const y = cA * Math.exp(x) + cB * Math.exp(-x);
+            if (Math.abs(y) <= yRange + 0.5) {
+              d += `${pen ? 'L' : 'M'} ${sx(x).toFixed(1)} ${sy(y).toFixed(1)} `;
+              pen = true;
+            } else pen = false;
+          }
+          return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${sw}" opacity="${op}" />`;
+        };
+
+        [[1, 1], [-1, -1], [0.5, -0.5], [1, -1], [-0.5, 1]].forEach(([cA, cB]) => {
+          faintSVG += drawExp(cA, cB, faintCol, 1.3, 0.65);
+        });
+        activeSVG = drawExp(A, B, '#4f46e5', 2.8, 1);
+
+        const x0 = -1.6 + u * 3.2;
+        const y0 = A * Math.exp(x0) + B * Math.exp(-x0);
+        const y2 = y0;
+        const yPlot = Math.max(-yRange, Math.min(yRange, y0));
+        probeSVG = `<circle cx="${sx(x0)}" cy="${sy(yPlot)}" r="5.5" fill="#10b981" stroke="${isDark ? '#020617' : '#fff'}" stroke-width="2" />`;
+        document.getElementById('fam-u-val').textContent = `x₀ = ${x0.toFixed(2)}`;
+
+        elimHTML = `
+          <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">3-Step Constant Elimination (2 Constants: $A, B$)</div>
+          <p><strong>1. Family:</strong> $y = Ae^x + Be^{-x}$</p>
+          <p><strong>2. Differentiate twice:</strong> $y' = Ae^x - Be^{-x}$, $y'' = Ae^x + Be^{-x}$</p>
+          <p><strong>3. Eliminate $A, B$:</strong> $y'' = y \\implies \\mathbf{y'' - y = 0}$</p>
+        `;
+        verifyHTML = `
+          <div class="font-sans font-bold uppercase text-[11px] text-emerald-700 dark:text-emerald-300">Live 2nd-Order Check at x₀ = ${x0.toFixed(2)}</div>
+          <div>y(x₀) &nbsp;&nbsp;= ${y0.toFixed(4)}</div>
+          <div>y''(x₀) = ${y2.toFixed(4)}</div>
+          <div>LHS = y'' − y = ${(y2 - y0).toFixed(4)} = 0 &nbsp;<strong>✓ EXACT!</strong></div>
+        `;
+      }
+
+      svg.innerHTML = grid + faintSVG + activeSVG + probeSVG;
+      const elimEl = document.getElementById('fam-elim-panel');
+      elimEl.innerHTML = elimHTML;
+      renderMath(elimEl);
+      document.getElementById('fam-verify-box').innerHTML = verifyHTML;
+    }
+
+    /* =========================================================================
+       5. LAB 3: IVP & VERHULST LOGISTIC POPULATION SIMULATOR
+       ========================================================================= */
+    function setVerhulstPreset(r, K, P0, tStar) {
+      document.getElementById('vh-r').value = r;
+      document.getElementById('vh-K').value = K;
+      document.getElementById('vh-P0').value = P0;
+      document.getElementById('vh-t').value = tStar;
+      updateVerhulstLab(true);
+    }
+
+    function updateVerhulstLab(userTriggered) {
+      const r = parseFloat(document.getElementById('vh-r').value);
+      const K = parseFloat(document.getElementById('vh-K').value);
+      const P0 = parseFloat(document.getElementById('vh-P0').value);
+      const tStar = parseFloat(document.getElementById('vh-t').value);
+      if (userTriggered) markLabExplored('lab-verhulst');
+
+      document.getElementById('vh-r-val').textContent = r.toFixed(2);
+      document.getElementById('vh-K-val').textContent = K;
+      document.getElementById('vh-P0-val').textContent = P0;
+      document.getElementById('vh-t-val').textContent = `${tStar} mo`;
+
+      const A = (K - P0) / P0;
+      const P = (t) => K / (1 + A * Math.exp(-r * t));
+      const pStar = P(tStar);
+      const mStar = P0 * Math.exp(r * tStar);
+      const dPdt = r * pStar * (1 - pStar / K);
+
+      // Inflection point exists on t > 0 iff P0 < K / 2
+      const hasInflection = P0 < K / 2;
+      const tInf = hasInflection ? Math.log(A) / r : null;
+
+      // Render SVG
+      const svg = document.getElementById('verhulst-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#475569' : '#cbd5e1';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 500, H = 270, padL = 52, padR = 18, padT = 18, padB = 30;
+      const tMax = 60;
+      const yMax = Math.max(K, P0) * 1.18;
+
+      const sx = (t) => padL + (t / tMax) * (W - padL - padR);
+      const sy = (v) => padT + (1 - v / yMax) * (H - padT - padB);
+
+      // Logistic curve
+      let logD = '';
+      for (let i = 0; i <= 140; i++) {
+        const t = (i / 140) * tMax;
+        logD += `${i === 0 ? 'M' : 'L'} ${sx(t).toFixed(1)} ${sy(P(t)).toFixed(1)} `;
+      }
+
+      // Malthusian curve clipped to yMax
+      let malD = '';
+      for (let i = 0; i <= 140; i++) {
+        const t = (i / 140) * tMax;
+        const mv = P0 * Math.exp(r * t);
+        if (mv <= yMax) {
+          malD += `${malD ? 'L' : 'M'} ${sx(t).toFixed(1)} ${sy(mv).toFixed(1)} `;
+        } else break;
+      }
+
+      // Ticks
+      let ticks = '';
+      for (let t = 0; t <= 60; t += 10) {
+        ticks += `<text x="${sx(t)}" y="${H - 10}" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="${txtCol}">${t}</text>`;
+      }
+      [0, K / 2, K].forEach((yv) => {
+        ticks += `<text x="${padL - 6}" y="${sy(yv) + 3}" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">${Math.round(yv)}</text>`;
+      });
+
+      let infSVG = '';
+      if (hasInflection && tInf >= 0 && tInf <= tMax) {
+        infSVG = `
+          <circle cx="${sx(tInf)}" cy="${sy(K / 2)}" r="4.8" fill="#10b981" stroke="${isDark ? '#020617' : '#fff'}" stroke-width="1.8" />
+          <text x="${Math.min(W - 75, sx(tInf) + 8)}" y="${sy(K / 2) + 14}" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#10b981">Inflection (K/2)</text>
+        `;
+      }
+
+      svg.innerHTML = `
+        <line x1="${padL}" y1="${sy(0)}" x2="${W - padR}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+        <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.6" />
+        <!-- Carrying capacity line y = K -->
+        <line x1="${padL}" y1="${sy(K)}" x2="${W - padR}" y2="${sy(K)}" stroke="#0ea5e9" stroke-width="1.6" stroke-dasharray="6 4" />
+        <text x="${W - padR - 4}" y="${sy(K) - 5}" text-anchor="end" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#0ea5e9">K = ${K}</text>
+        <!-- Malthusian dashed -->
+        <path d="${malD}" fill="none" stroke="#f43f5e" stroke-width="1.8" stroke-dasharray="5 4" opacity="0.8" />
+        <!-- Logistic solid -->
+        <path d="${logD}" fill="none" stroke="#4f46e5" stroke-width="2.8" />
+        <!-- Inflection point -->
+        ${infSVG}
+        <!-- Query point (t*, P(t*)) -->
+        <line x1="${sx(tStar)}" y1="${sy(0)}" x2="${sx(tStar)}" y2="${sy(pStar)}" stroke="#f59e0b" stroke-width="1.4" stroke-dasharray="3 3" />
+        <circle cx="${sx(tStar)}" cy="${sy(pStar)}" r="6" fill="#f59e0b" stroke="${isDark ? '#020617' : '#fff'}" stroke-width="2" />
+        ${ticks}
+        <text x="${W - 22}" y="${H - 10}" font-family="Inter" font-size="10" font-weight="700" fill="${txtCol}">t</text>
+      `;
+
+      // Readout Panel
+      const readout = document.getElementById('verhulst-readout');
+      readout.innerHTML = `
+        <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Exact Closed-Form Solution</div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-x-auto text-center">
+          $$P(t) = \\frac{${K}}{1 + (${A.toFixed(2)})e^{-${r.toFixed(2)}t}}$$
+        </div>
+        <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-1 font-mono text-xs">
+          <div class="font-sans font-bold text-amber-800 dark:text-amber-300">Target Readout at t* = ${tStar}</div>
+          <div class="text-base font-extrabold text-slate-900 dark:text-white">P(${tStar}) = ${pStar.toFixed(2)}</div>
+          <div class="text-slate-600 dark:text-slate-400">Slope dP/dt = ${dPdt >= 0 ? '+' : ''}${dPdt.toFixed(2)} / mo</div>
+          <div class="text-rose-600 dark:text-rose-400">Malthusian: ${mStar > 999999 ? '>10⁶' : mStar.toFixed(1)}</div>
+        </div>
+        <div class="text-xs text-slate-600 dark:text-slate-400">
+          ${hasInflection
+            ? `<strong>Max Growth Rate:</strong> Occurs at $P = K/2 = ${K / 2}$ ($t \\approx ${tInf.toFixed(1)}$ mo).`
+            : (P0 > K
+              ? `<strong>Overshoot Decay:</strong> Since $P_0 > K$, $dP/dt < 0$ and the population decays smoothly down to $K = ${K}$.`
+              : `<strong>Concave Growth:</strong> Since $K/2 \\le P_0 \\le K$, growth decelerates monotonically toward $K$.`)}
+        </div>
+      `;
+      renderMath(readout);
+    }
+
+    /* =========================================================================
+       6. QUICK-CHECK INTERACTIVE QUIZ (5 EXAM-STYLE MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. What are the order and degree of the differential equation $\\left(\\dfrac{dr}{ds}\\right)^3 = \\sqrt{\\dfrac{d^2r}{ds^2} + 1}$ (ISRT 2020, 2022, 2024)?',
+        options: [
+          'Order $2$, Degree $1/2$',
+          'Order $2$, Degree $6$',
+          'Order $2$, Degree $1$',
+          'Order $1$, Degree $3$'
+        ],
+        answer: 2,
+        explanation: 'Squaring both sides clears the radical: $(dr/ds)^6 = d^2r/ds^2 + 1$. The highest-order derivative is $d^2r/ds^2$ (Order 2) raised to exponent $1$ (Degree 1).'
+      },
+      {
+        q: '2. Which of the following differential equations is <strong>LINEAR</strong>?',
+        options: [
+          '$x^2\\,dy + y^2\\,dx = 0$',
+          '$\\dfrac{d^2y}{dx^2} + y\\sin x = 0$',
+          '$\\dfrac{d^2y}{dx^2} + \\sin y = 0$',
+          '$\\dfrac{d^6x}{dt^6} + \\left(\\dfrac{d^4x}{dt^4}\\right)\\left(\\dfrac{d^3x}{dt^3}\\right) + x = t$'
+        ],
+        answer: 1,
+        explanation: 'In $\\frac{d^2y}{dx^2} + (\\sin x)y = 0$, the nonlinear function $\\sin x$ depends only on the independent variable $x$; $y$ and $y^{\'\'}$ appear strictly to power 1 with no products.'
+      },
+      {
+        q: '3. What is the order of the differential equation formed by eliminating the arbitrary constants from $y = c_1 e^{x + c_2}$?',
+        options: [
+          'Order $1$',
+          'Order $2$',
+          'Order $3$',
+          'Cannot be formed'
+        ],
+        answer: 0,
+        explanation: 'Beware redundant constants! $y = c_1 e^{x + c_2} = (c_1 e^{c_2})e^x = Ce^x$ has only <strong>1 essential arbitrary constant</strong> $C$, so its differential equation is 1st-order: $dy/dx = y$.'
+      },
+      {
+        q: '4. What is the differential equation of the family of all circles passing through the origin with centers on the $x$-axis (ISRT Final 2020 & 2024)?',
+        options: [
+          '$2x\\dfrac{dy}{dx} = y$',
+          '$(x^2 - y^2)dx + 2xy\\,dy = 0$',
+          '$(x^2 + y^2)dx - 2xy\\,dy = 0$',
+          '$\\dfrac{d^2y}{dx^2} + y = 0$'
+        ],
+        answer: 1,
+        explanation: 'Starting from $(x-a)^2 + y^2 = a^2 \\implies x^2 + y^2 = 2ax$, differentiating gives $2a = 2x + 2yy\'$. Substituting back yields $x^2 + y^2 = 2x^2 + 2xyy\'$, or $(x^2 - y^2)dx + 2xy\\,dy = 0$.'
+      },
+      {
+        q: '5. A solution of a differential equation that cannot be obtained from the general solution for any choice of the arbitrary constants is called a:',
+        options: [
+          'Particular solution',
+          'Complementary solution',
+          'Singular solution',
+          'Initial value solution'
+        ],
+        answer: 2,
+        explanation: 'A singular solution (such as the envelope $y = -x^2/4$ of Clairaut\'s equation $y = xy\' + (y\')^2$) satisfies the DE but cannot be produced by assigning values to the arbitrary constants in the general solution.'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       7. INITIALIZATION ON DOMCONTENTLOADED
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadDrill(0);
+      selectFamily('parabola');
+      updateVerhulstLab(false);
+      renderQuiz();
+      updateOverallProgress();
+      initObservers();
+
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

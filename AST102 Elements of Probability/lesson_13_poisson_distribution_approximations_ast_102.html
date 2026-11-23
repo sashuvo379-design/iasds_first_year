@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 13: Poisson Distribution &amp; Approximations | AST 102 (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Playfair Display, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            ivory: '#FAFAF7',
+            ink: '#1C1917',
+            muted: '#57534E',
+            borderWarm: '#E7E5E4',
+            tealPrimary: '#0F766E',
+            tealSoft: '#F0FDFA',
+            amberAccent: '#D97706',
+            amberSoft: '#FFFBEB',
+            roseTrap: '#BE123C',
+            roseSoft: '#FFF1F2',
+            indigoSec: '#4338CA',
+            indigoSoft: '#EEF2FF',
+            emeraldOk: '#059669',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX v0.16.11 via jsDelivr CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #FAFAF7;
+      color: #1C1917;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    h1, h2, .font-editorial {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Prevent display math horizontal overflow on mobile */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #0F766E;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+    }
+
+    /* Details/summary disclosure arrow */
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+    details[open] > summary .details-chevron {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-[#F0FDFA] selection:text-[#0F766E]">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP NAVIGATION BAR & LIVE READING PROGRESS BAR                 -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E7E5E4] shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam Weight Pills -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-stone-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-[#57534E]">
+          <span class="inline-flex items-center gap-1.5 font-bold text-[#1C1917]">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+            Module 4 · Lesson 13 of 14
+          </span>
+          <span class="text-stone-300">—</span>
+          <span class="text-[#0F766E] font-semibold">Poisson Distribution &amp; Approximations</span>
+        </nav>
+
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F0FDFA] text-[#0F766E] border border-teal-200">
+            Year Final Core
+          </span>
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#FFFBEB] text-[#D97706] border border-amber-200">
+            MGF &amp; Approximations
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Quick-Jump Nav Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#0F766E] hover:bg-[#F0FDFA] transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#4338CA] hover:bg-[#EEF2FF] transition-colors">Proofs</a>
+        <a href="#exam-vault" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#D97706] hover:bg-[#FFFBEB] transition-colors">Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-[#57534E] hover:text-[#059669] hover:bg-emerald-50 transition-colors">Mastery Quiz</a>
+      </nav>
+    </div>
+
+    <!-- Live Scroll Reading Progress Bar -->
+    <div class="w-full h-[3px] bg-stone-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-[#0F766E] via-teal-500 to-[#D97706] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO SECTION & INTERACTIVE LEARNING OBJECTIVES                        -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-[#1C1917] via-[#134E4A] to-[#0F766E] text-white py-12 sm:py-16 border-b border-teal-950">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#F0FDFA]">AST 102 · Module 4 · Lesson 13 of 14</span>
+            <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-amber-200">~45 min study</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
+            Lesson 13: Poisson Distribution &amp; Approximations
+          </h1>
+
+          <p class="text-teal-50/90 text-base sm:text-lg leading-relaxed">
+            Master the <strong>Law of Rare Events</strong>, Poisson arrival processes, equidispersion ($E[X] = V(X) = \lambda$), ISRT's central moment recurrence relation, and both the Binomial $\to$ Poisson and Poisson $\to$ Normal approximations.
+          </p>
+
+          <div class="text-xs text-teal-100/85 bg-black/20 rounded-xl px-3.5 py-2.5 border border-white/10 leading-relaxed">
+            <strong class="text-white">Sources:</strong> Sheldon Ross Ch. 4.7 &amp; Ch. 8 · ISRT AST 102 Year Final Papers (2022–2024) · Lecture Notes.
+          </div>
+
+          <div class="flex flex-wrap gap-3 pt-2">
+            <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#D97706] hover:bg-amber-500 text-white font-semibold text-sm shadow-lg shadow-black/25 transition-all">
+              Launch 4-Tab Poisson Lab
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="#exam-vault" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+              ISRT Past Exam Vault
+            </a>
+          </div>
+        </div>
+
+        <!-- Interactive 5-Item Learning Objectives Checklist -->
+        <div class="lg:col-span-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-5 sm:p-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[#F0FDFA]">Learning Objectives</span>
+            <span id="objCounter" class="font-mono text-xs font-bold text-amber-200">0 / 5 Checked</span>
+          </div>
+          <ul class="space-y-1.5 text-xs sm:text-sm text-teal-50">
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Identify Poisson process conditions and scale $\lambda$ accurately across time or space intervals ($N(t) \sim \text{Pois}(\lambda t)$).</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Derive $M_X(t) = e^{\lambda(e^t - 1)}$, CGF $K_X(t) = \lambda(e^t - 1)$, equidispersion ($\mu = \sigma^2 = \lambda$), skewness $\gamma_1$, kurtosis $\gamma_2$, and mode(s).</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Prove and apply the central moment recurrence relation $\mu_{r+1} = r\lambda\mu_{r-1} + \lambda\frac{d\mu_r}{d\lambda}$.</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Apply the Poisson approximation to Binomial ($n \ge 20, p \le 0.05$) and the Normal approximation to Poisson ($\lambda \ge 20$).</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="obj-btn w-full text-left flex items-start gap-2.5 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <span class="obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0"></span>
+                <span class="obj-text">Use the reproductive property $X_1 + X_2 \sim \text{Pois}(\lambda_1 + \lambda_2)$ and avoid the $X_1 - X_2$ difference trap.</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: CORE CONCEPTS & INTUITION                                -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 01 • Core Theory</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">Sheldon Ross Ch. 4.7, 8 · ISRT Year Finals 2022–2024</p>
+      </div>
+
+      <!-- 1.1 POISSON RANDOM VARIABLE & PROCESS AXIOMS -->
+      <article class="bg-white rounded-2xl border border-[#E7E5E4] p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1C1917] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">01</span>
+            The Poisson Random Variable &amp; Process Axioms
+          </h3>
+          <span class="text-xs font-semibold text-[#57534E]">Counts in Time or Space · $X \sim \text{Pois}(\lambda)$</span>
+        </div>
+
+        <p class="text-sm text-[#57534E] leading-relaxed">
+          A discrete random variable $X$ follows a <strong>Poisson distribution</strong> with rate parameter $\lambda > 0$ if it models the number of rare events occurring in a fixed interval of time, length, area, or volume:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-center space-y-1">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-[#0F766E]">Probability Mass Function (PMF)</div>
+            $$P(X = x) = \frac{e^{-\lambda}\,\lambda^x}{x!}, \qquad x = 0, 1, 2, \dots \;\; (\lambda > 0)$$
+          </div>
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 text-center space-y-1">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-[#0F766E]">Rate Scaling Over Interval $t$</div>
+            $$N(t) \sim \text{Pois}(\lambda t) \implies P(N(t) = x) = \frac{e^{-\lambda t}(\lambda t)^x}{x!}$$
+            <p class="text-xs text-[#57534E]">If arrivals average $\lambda$ per hour, then in $t$ hours the mean is $\lambda t$.</p>
+          </div>
+        </div>
+
+        <!-- 4-Pill Poisson Process Conditions -->
+        <div class="space-y-2.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-[#57534E]">Four Axioms of a Homogeneous Poisson Process</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1">
+              <div class="font-bold text-[#0F766E] text-sm">1. Independent Increments</div>
+              <p class="text-xs text-[#57534E] leading-relaxed">Counts of events in non-overlapping (disjoint) time or space intervals are statistically independent.</p>
+            </div>
+            <div class="p-4 rounded-xl bg-[#EEF2FF] border border-indigo-200 space-y-1">
+              <div class="font-bold text-[#4338CA] text-sm">2. Stationary Increments</div>
+              <p class="text-xs text-[#57534E] leading-relaxed">The distribution of the count in an interval depends only on its length $t$, not on where it starts.</p>
+            </div>
+            <div class="p-4 rounded-xl bg-[#FFFBEB] border border-amber-200 space-y-1">
+              <div class="font-bold text-[#D97706] text-sm">3. Orderliness (One-at-a-Time)</div>
+              <p class="text-xs text-[#57534E] leading-relaxed">In an infinitesimal interval $h$, $P(N(h) \ge 2) = o(h)$—two events cannot occur simultaneously.</p>
+            </div>
+            <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1">
+              <div class="font-bold text-[#0F766E] text-sm">4. Constant Rate $\lambda$</div>
+              <p class="text-xs text-[#57534E] leading-relaxed">Average intensity $\lambda > 0$ is constant per unit interval, with $P(N(h) = 1) = \lambda h + o(h)$.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1.2 EQUIDISPERSION, MOMENTS, CUMULANTS & MODE -->
+      <article class="bg-white rounded-2xl border border-[#E7E5E4] p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1C1917] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">02</span>
+            Equidispersion, Moments, Cumulants &amp; Mode
+          </h3>
+          <span class="text-xs font-semibold text-[#57534E]">ISRT Year Final 2024 Q7(b,c)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1.5">
+            <div class="text-[11px] font-bold uppercase text-[#0F766E]">Equidispersion</div>
+            <div class="text-center font-bold text-base text-[#1C1917] py-1">$E[X] = V(X) = \lambda$</div>
+            <p class="text-xs text-[#57534E]">Unlike Binomial ($V < E$), the Poisson distribution has its mean <strong>strictly equal</strong> to its variance.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] space-y-1.5">
+            <div class="text-[11px] font-bold uppercase text-[#4338CA]">MGF &amp; CGF (All Cumulants $= \lambda$)</div>
+            <div class="text-center text-[#1C1917] py-1 space-y-1">
+              <div>$M_X(t) = e^{\lambda(e^t - 1)}$</div>
+              <div>$K_X(t) = \lambda(e^t - 1) \implies \kappa_r = \lambda$</div>
+            </div>
+            <p class="text-xs text-[#57534E]">Every cumulant $\kappa_1, \kappa_2, \kappa_3, \kappa_4, \dots$ equals $\lambda$!</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-[#FFFBEB] border border-amber-200 space-y-1.5">
+            <div class="text-[11px] font-bold uppercase text-[#D97706]">Shape &amp; Mode Rule</div>
+            <div class="text-center text-[#1C1917] py-1 space-y-1">
+              <div>$\gamma_1 = \dfrac{1}{\sqrt{\lambda}}, \qquad \gamma_2 = \dfrac{1}{\lambda}$</div>
+              <div class="text-xs font-semibold">Mode: $\lfloor \lambda \rfloor$ (or bimodal $\lambda - 1, \lambda$ if $\lambda \in \mathbb{Z}^+$)</div>
+            </div>
+            <p class="text-xs text-[#57534E]">Always right-skewed &amp; leptokurtic; becomes symmetric ($\gamma_1, \gamma_2 \to 0$) as $\lambda \to \infty$.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 1.3 TWO FUNDAMENTAL APPROXIMATIONS (SIDE-BY-SIDE CARDS) -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-[#1C1917] flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 font-mono text-xs font-bold inline-flex items-center justify-center">03</span>
+            Two Fundamental Approximations
+          </h3>
+          <span class="text-xs font-semibold text-[#57534E]">Connecting Binomial, Poisson &amp; Normal</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <!-- Card A: Poisson Approximation to Binomial -->
+          <article class="bg-white rounded-2xl border-t-4 border-t-[#0F766E] border-x border-b border-[#E7E5E4] p-6 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-xs font-bold">(a) Law of Rare Events</span>
+              <span class="font-mono text-xs font-bold text-[#0F766E]">$B(n, p) \approx \text{Pois}(\lambda = np)$</span>
+            </div>
+            <h4 class="text-lg font-bold text-[#1C1917]">Poisson Approximation to the Binomial</h4>
+            <p class="text-xs sm:text-sm text-[#57534E] leading-relaxed">
+              When the number of trials $n$ is <strong>large</strong> and the success probability $p$ is <strong>small</strong> such that $\lambda = np$ stays moderate, Binomial probabilities converge to Poisson:
+            </p>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-center text-xs sm:text-sm">
+              $$\binom{n}{x} p^x (1 - p)^{n-x} \approx \frac{e^{-\lambda}\,\lambda^x}{x!}, \qquad \lambda = np$$
+            </div>
+            <p class="text-xs text-[#0F766E] font-semibold">
+              Rule of Thumb: Accurate when $n \ge 20$ and $p \le 0.05$ (excellent when $n \ge 100$ and $np \le 10$).
+            </p>
+          </article>
+
+          <!-- Card B: Normal Approximation to Poisson -->
+          <article class="bg-white rounded-2xl border-t-4 border-t-[#4338CA] border-x border-b border-[#E7E5E4] p-6 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-xs font-bold">(b) Large-Rate CLT Limit</span>
+              <span class="font-mono text-xs font-bold text-[#4338CA]">$\text{Pois}(\lambda) \approx N(\lambda, \lambda)$</span>
+            </div>
+            <h4 class="text-lg font-bold text-[#1C1917]">Normal Approximation to the Poisson</h4>
+            <p class="text-xs sm:text-sm text-[#57534E] leading-relaxed">
+              Because $\text{Pois}(\lambda)$ can be decomposed as a sum of $\lambda$ i.i.d. $\text{Pois}(1)$ variables, the Central Limit Theorem applies for large $\lambda$ ($\lambda \ge 20$):
+            </p>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-center text-xs sm:text-sm">
+              $$P(X \ge k) \approx P\!\left(Z \ge \frac{(k - 0.5) - \lambda}{\sqrt{\lambda}}\right) = 1 - \Phi\!\left(\frac{k - 0.5 - \lambda}{\sqrt{\lambda}}\right)$$
+            </div>
+            <p class="text-xs text-[#4338CA] font-semibold">
+              Continuity Correction: Use $k - 0.5$ for $P(X \ge k)$ and $k + 0.5$ for $P(X \le k)$ when $\lambda \ge 20$.
+            </p>
+          </article>
+        </div>
+      </div>
+
+      <!-- 1.4 ROSE EXAM-TRAP SPOTLIGHT BOX -->
+      <div class="rounded-2xl border-2 border-[#BE123C]/40 bg-[#FFF1F2] p-6 shadow-sm space-y-4">
+        <div class="flex items-center gap-2.5">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#BE123C] text-white font-extrabold text-sm shadow-xs">!</span>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#BE123C]">ISRT Exam-Trap Spotlight</span>
+            <h3 class="text-lg font-bold text-[#1C1917]">Three Traps That Frequently Cost Marks</h3>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 1: Forgetting to Scale $\lambda$</div>
+            <p class="text-[#57534E] leading-relaxed">
+              Always match the time/area unit of $\lambda$ to the question! If customers arrive at $4$ per hour, then for a $30$-minute window you MUST use $\lambda_{\text{new}} = 4 \times 0.5 = 2$, not $4$.
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 2: Strict vs. Inclusive Tails</div>
+            <p class="text-[#57534E] leading-relaxed">
+              In <strong>ISRT 2024 Q7(d)</strong>, $P(X &gt; 5) = 1 - P(X \le 5)$ (subtracting $x = 0,1,2,3,4,5$), <strong>NOT</strong> $1 - P(X \le 4)$! By contrast, $P(X \ge 5) = 1 - P(X \le 4)$.
+            </p>
+          </div>
+          <div class="bg-white rounded-xl p-4 border border-rose-200 space-y-1.5">
+            <div class="font-bold text-[#BE123C]">Trap 3: $X_1 - X_2$ is NOT Poisson</div>
+            <p class="text-[#57534E] leading-relaxed">
+              For independent $X_1 \sim \text{Pois}(\lambda_1)$ and $X_2 \sim \text{Pois}(\lambda_2)$, the sum is $X_1 + X_2 \sim \text{Pois}(\lambda_1 + \lambda_2)$, but $X_1 - X_2$ can take <strong>negative values</strong> (Skellam distribution), so it is never Poisson!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.5 QUICK-REFERENCE FORMULA TABLE -->
+      <div class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-[#1C1917] text-white flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base sm:text-lg font-bold">Quick-Reference Formula Table: $\text{Poisson}(\lambda)$</h3>
+          <span class="text-xs text-teal-200">Parameter $\lambda > 0$</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <tbody class="divide-y divide-stone-100 text-[#1C1917]">
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-5 font-bold text-[#0F766E] w-1/3">PMF &amp; Support</td>
+                <td class="py-3 px-5">$P(X = x) = \dfrac{e^{-\lambda}\lambda^x}{x!}, \qquad x \in \{0, 1, 2, 3, \dots\}$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-5 font-bold text-[#0F766E]">Mean &amp; Variance</td>
+                <td class="py-3 px-5">$E[X] = \lambda, \qquad V(X) = \lambda, \qquad SD(X) = \sqrt{\lambda}$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-5 font-bold text-[#4338CA]">MGF, PGF &amp; CGF</td>
+                <td class="py-3 px-5">$M_X(t) = e^{\lambda(e^t - 1)}, \qquad P_X(t) = e^{\lambda(t - 1)}, \qquad K_X(t) = \lambda(e^t - 1)$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-5 font-bold text-[#D97706]">Skewness &amp; Excess Kurtosis</td>
+                <td class="py-3 px-5">$\gamma_1 = \dfrac{1}{\sqrt{\lambda}} &gt; 0, \qquad \gamma_2 = \dfrac{1}{\lambda} &gt; 0$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-5 font-bold text-[#D97706]">Mode(s)</td>
+                <td class="py-3 px-5">Unique mode at $\lfloor \lambda \rfloor$ if $\lambda \notin \mathbb{Z}^+$; bimodal at $\lambda - 1$ and $\lambda$ if $\lambda \in \mathbb{Z}^+$</td>
+              </tr>
+              <tr class="hover:bg-[#FAFAF7]">
+                <td class="py-3 px-5 font-bold text-[#059669]">Reproductive Property</td>
+                <td class="py-3 px-5">Independent $X_i \sim \text{Pois}(\lambda_i) \implies \displaystyle\sum_{i=1}^k X_i \sim \text{Pois}\!\left(\sum_{i=1}^k \lambda_i\right)$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: 4-TAB HIGH-DPI INTERACTIVE POISSON WORKBENCH             -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#0F766E]">Section 02 • Interactive Studio</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">4-Tab Interactive Poisson Workbench</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">High-DPI Canvas plots · Overflow-free log-factorial engine ($n \le 500$)</p>
+      </div>
+
+      <div id="labWorkbenchContainer" class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm overflow-hidden">
+        <!-- Tab Bar -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-[#E7E5E4] bg-[#FAFAF7] p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="pmf" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#0F766E] text-white shadow-sm">
+            1. PMF, Mode &amp; Shape
+          </button>
+          <button type="button" role="tab" data-tab="approx" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#57534E] hover:bg-stone-200/70">
+            2. Binomial → Poisson Lab
+          </button>
+          <button type="button" role="tab" data-tab="process" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#57534E] hover:bg-stone-200/70">
+            3. Process &amp; Sums
+          </button>
+          <button type="button" role="tab" data-tab="moments" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-[#57534E] hover:bg-stone-200/70">
+            4. Central Moments &amp; Recurrence
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: POISSON PMF, MODE & SHAPE EXPLORER                       -->
+        <!-- =============================================================== -->
+        <div id="tab-pmf" class="lab-panel p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E7E5E4]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1C1917]">Poisson PMF, Mode &amp; Shape Explorer</h3>
+              <p class="text-xs sm:text-sm text-[#57534E]">Slide $\lambda$ to watch skewness decay and toggle the Normal$(\lambda, \lambda)$ bell curve. Hover bars for exact $P(X=x)$ and $F(x)$.</p>
+            </div>
+            <!-- 4 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-ppreset="cafe" class="pois-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">ISRT Cafe Arrivals (λ=4, x=6)</button>
+              <button type="button" data-ppreset="web" class="pois-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E4] hover:border-[#0F766E] transition-all">ISRT 2024 Website (λ=3.5, X&gt;5)</button>
+              <button type="button" data-ppreset="rare" class="pois-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E4] hover:border-[#0F766E] transition-all">Rare Misprints (λ=0.8)</button>
+              <button type="button" data-ppreset="large" class="pois-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E4] hover:border-[#0F766E] transition-all">Large Rate Near-Normal (λ=18)</button>
+            </div>
+          </div>
+
+          <!-- Sliders & Normal Overlay Checkbox -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E4] text-xs">
+            <div class="lg:col-span-4 space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Rate $\lambda$</span><span id="pmfValLam" class="font-mono text-[#1C1917]">4.0</span></div>
+              <input id="pmfSliderLam" type="range" min="0.2" max="25.0" step="0.1" value="4.0" class="w-full" />
+            </div>
+            <div class="lg:col-span-5 grid grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#D97706]">Lower $a$</span><span id="pmfValA" class="font-mono">6</span></div>
+                <input id="pmfSliderA" type="range" min="0" max="18" step="1" value="6" class="w-full" />
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#D97706]">Upper $b$</span><span id="pmfValB" class="font-mono">6</span></div>
+                <input id="pmfSliderB" type="range" min="0" max="18" step="1" value="6" class="w-full" />
+              </div>
+            </div>
+            <div class="lg:col-span-3">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-[#E7E5E4] cursor-pointer">
+                <input id="pmfNormToggle" type="checkbox" class="w-4 h-4 accent-[#4338CA]" />
+                <span class="font-semibold text-[#1C1917]">Overlay $N(\lambda, \lambda)$ Bell</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- High-DPI Canvas + Hover Tooltip -->
+          <div class="relative rounded-2xl border border-[#E7E5E4] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#57534E]">Poisson$(\lambda)$ PMF Bar Chart</span>
+              <div class="flex flex-wrap items-center gap-3 text-[11px] font-semibold">
+                <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-3 h-3 rounded bg-[#0F766E]"></span>PMF</span>
+                <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-3 h-3 rounded bg-[#D97706]"></span>In $[a,b]$ &amp; Mode ◆</span>
+                <span class="inline-flex items-center gap-1 text-[#4338CA]"><span class="w-4 border-t-2 border-[#4338CA]"></span>$N(\lambda,\lambda)$ Curve</span>
+              </div>
+            </div>
+            <div id="pmfCanvasWrap" class="relative w-full">
+              <canvas id="pmfCanvas" class="cursor-crosshair" aria-label="Poisson PMF and Normal overlay chart"></canvas>
+              <div id="pmfTooltip" class="hidden pointer-events-none absolute z-20 px-3 py-2 rounded-xl bg-[#1C1917]/95 text-white font-mono text-[11px] shadow-lg whitespace-nowrap"></div>
+            </div>
+          </div>
+
+          <!-- Live Stat Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
+            <div class="p-3 rounded-xl bg-[#F0FDFA] border border-teal-200">
+              <div class="text-[11px] font-bold text-[#0F766E]">$E[X] = V(X)$</div>
+              <div id="pmfStatMean" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">4.00</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4]">
+              <div class="text-[11px] font-bold text-[#57534E]">$SD = \sqrt{\lambda}$</div>
+              <div id="pmfStatSd" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">2.000</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4]">
+              <div class="text-[11px] font-bold text-[#57534E]">Skew $\gamma_1$</div>
+              <div id="pmfStatG1" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">0.500</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4]">
+              <div class="text-[11px] font-bold text-[#57534E]">Kurt $\gamma_2$</div>
+              <div id="pmfStatG2" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">0.250</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FFFBEB] border border-amber-200">
+              <div class="text-[11px] font-bold text-[#D97706]">Mode(s)</div>
+              <div id="pmfStatMode" class="text-lg font-extrabold font-mono text-[#1C1917] mt-0.5">3 &amp; 4</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0F766E] text-white shadow-sm">
+              <div id="pmfStatRangeLbl" class="text-[11px] font-bold text-teal-100">$P(6 \le X \le 6)$</div>
+              <div id="pmfStatProb" class="text-lg font-extrabold font-mono text-white mt-0.5">0.1042</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: BINOMIAL -> POISSON CONVERGENCE LAB                      -->
+        <!-- =============================================================== -->
+        <div id="tab-approx" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col gap-3 pb-4 border-b border-[#E7E5E4]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1C1917]">Binomial → Poisson Convergence Lab</h3>
+              <p class="text-xs sm:text-sm text-[#57534E]">Compare exact $B(n, p)$ against $\text{Pois}(\lambda = np)$. Lock $\lambda$ and raise $n$ to watch the Poisson Limit Theorem in action.</p>
+            </div>
+            <!-- 3 Presets -->
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-apreset="rare" class="approx-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all">Rare Events (n=200, p=0.0175, λ=3.5)</button>
+              <button type="button" data-apreset="good" class="approx-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E4] hover:border-[#0F766E] transition-all">Good Approx (n=100, p=0.03)</button>
+              <button type="button" data-apreset="poor" class="approx-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E4] hover:border-[#BE123C] transition-all">Poor Approx (n=15, p=0.40)</button>
+            </div>
+          </div>
+
+          <!-- Sliders + Lock Lambda -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E4] text-xs">
+            <div class="lg:col-span-4 space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Trials $n$</span><span id="apValN" class="font-mono text-[#1C1917]">200</span></div>
+              <input id="apSliderN" type="range" min="10" max="500" step="1" value="200" class="w-full" />
+            </div>
+            <div class="lg:col-span-4 space-y-1">
+              <div class="flex justify-between font-bold"><span class="text-[#D97706]">Success Prob $p$</span><span id="apValP" class="font-mono text-[#1C1917]">0.0175</span></div>
+              <input id="apSliderP" type="range" min="0.002" max="0.40" step="0.0005" value="0.0175" class="w-full" />
+            </div>
+            <div class="lg:col-span-4">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-[#E7E5E4] cursor-pointer">
+                <input id="apLockLam" type="checkbox" class="w-4 h-4 accent-[#0F766E]" />
+                <span class="font-semibold text-[#1C1917]">Lock $\lambda = np$ (raise $n \Rightarrow$ lower $p$)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Paired Bar Chart Canvas + Tooltip -->
+          <div class="relative rounded-2xl border border-[#E7E5E4] bg-white p-4 shadow-inner space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span class="font-bold uppercase tracking-wider text-[#57534E]">Paired PMF Comparison (Hover Bars for Pointwise Error)</span>
+              <div class="flex items-center gap-4 text-[11px] font-bold">
+                <span class="inline-flex items-center gap-1.5 text-[#0F766E]"><span class="w-3 h-3 rounded bg-[#0F766E]"></span>Exact Binomial $B(n,p)$</span>
+                <span class="inline-flex items-center gap-1.5 text-[#D97706]"><span class="w-3 h-3 rounded bg-[#D97706]"></span>Poisson$(\lambda = np)$</span>
+              </div>
+            </div>
+            <div id="apCanvasWrap" class="relative w-full">
+              <canvas id="apCanvas" class="cursor-crosshair" aria-label="Paired Binomial and Poisson PMF comparison chart"></canvas>
+              <div id="apTooltip" class="hidden pointer-events-none absolute z-20 px-3 py-2 rounded-xl bg-[#1C1917]/95 text-white font-mono text-[11px] shadow-lg whitespace-nowrap"></div>
+            </div>
+          </div>
+
+          <!-- Live Diagnostic Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <div class="p-4 rounded-xl bg-[#F0FDFA] border border-teal-200 space-y-1">
+              <div class="font-bold text-[#0F766E] uppercase text-[10px]">Matched Rate $\lambda = np$</div>
+              <div id="apStatLam" class="text-xl font-extrabold font-mono text-[#1C1917]">3.500</div>
+              <div id="apStatVars" class="text-[11px] font-mono text-[#57534E]">V_Bin=3.439 vs V_Pois=3.500</div>
+            </div>
+            <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] space-y-1">
+              <div class="font-bold text-[#57534E] uppercase text-[10px]">Max Abs. Error $\max|P_B - P_P|$</div>
+              <div id="apStatMaxErr" class="text-xl font-extrabold font-mono text-[#1C1917]">0.0020</div>
+              <div class="text-[11px] text-[#57534E]">Largest single-bar discrepancy</div>
+            </div>
+            <div class="p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] space-y-1">
+              <div class="font-bold text-[#57534E] uppercase text-[10px]">Total Variation $\frac{1}{2}\sum|P_B - P_P|$</div>
+              <div id="apStatTvd" class="text-xl font-extrabold font-mono text-[#4338CA]">0.0061</div>
+              <div class="text-[11px] text-[#57534E]">Worst-case error over ANY event</div>
+            </div>
+            <div id="apVerdictCard" class="p-4 rounded-xl border-2 flex flex-col justify-center"></div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: POISSON PROCESS & SUM OF POISSONS                        -->
+        <!-- =============================================================== -->
+        <div id="tab-process" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E7E5E4]">
+            <div>
+              <h3 class="text-lg font-bold text-[#1C1917]">Poisson Process Scaling &amp; Reproductive Sums</h3>
+              <p class="text-xs sm:text-sm text-[#57534E]">Simulate continuous-time arrivals over $[0, t]$ or combine two independent Poisson rates $\lambda_1 + \lambda_2$.</p>
+            </div>
+            <div class="inline-flex rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] p-1 text-xs font-bold shrink-0">
+              <button type="button" data-prmode="scaling" class="proc-mode-btn px-3.5 py-2 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all">Time-Interval Scaling $N(t)$</button>
+              <button type="button" data-prmode="sum" class="proc-mode-btn px-3.5 py-2 rounded-lg text-[#57534E] transition-all">Sum of Poissons $X_1 + X_2$</button>
+            </div>
+          </div>
+
+          <!-- Sub-panel A: Time-Interval Scaling N(t) ~ Pois(lam0 * t) -->
+          <div id="procScalingPanel" class="space-y-5">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E4] text-xs">
+              <div class="lg:col-span-4 space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Base Rate $\lambda_0$ (per hr)</span><span id="procValL0" class="font-mono text-[#1C1917]">4.0</span></div>
+                <input id="procSliderL0" type="range" min="0.5" max="10.0" step="0.5" value="4.0" class="w-full" />
+              </div>
+              <div class="lg:col-span-4 space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#D97706]">Time Window $t$ (hrs)</span><span id="procValT" class="font-mono text-[#1C1917]">1.50</span></div>
+                <input id="procSliderT" type="range" min="0.25" max="4.0" step="0.25" value="1.50" class="w-full" />
+              </div>
+              <div class="lg:col-span-4 flex items-center justify-between gap-2">
+                <div class="px-3 py-1.5 rounded-xl bg-white border border-teal-200 font-mono font-bold text-[#0F766E]">
+                  $\lambda_0 t =$ <span id="procValLamT">6.00</span>
+                </div>
+                <button type="button" id="procSimBtn" class="px-4 py-2 rounded-xl bg-[#D97706] hover:bg-amber-600 text-white font-bold shadow-xs transition-colors">
+                  Simulate Arrivals
+                </button>
+              </div>
+            </div>
+
+            <!-- 1D Timeline Canvas -->
+            <div class="rounded-2xl border border-[#E7E5E4] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#57534E]">Live 1D Arrival Timeline over $[0, t]$ (Exponential Inter-Arrivals)</span>
+                <span id="procCountBadge" class="px-2.5 py-0.5 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 font-mono font-bold">Observed Count N(t) = 6</span>
+              </div>
+              <div id="procTimelineWrap" class="w-full">
+                <canvas id="procTimelineCanvas" aria-label="1D Poisson arrival timeline"></canvas>
+              </div>
+            </div>
+
+            <!-- Theoretical PMF Highlighting Simulated Count -->
+            <div class="rounded-2xl border border-[#E7E5E4] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#0F766E]">Theoretical $\text{Pois}(\lambda_0 t)$ PMF (Amber Bar = Simulated Count)</span>
+              </div>
+              <div id="procPmfWrap" class="w-full">
+                <canvas id="procPmfCanvas" aria-label="Scaled Poisson PMF chart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-panel B: Sum of Independent Poissons X1 + X2 -->
+          <div id="procSumPanel" class="hidden space-y-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E4] text-xs">
+              <div class="space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#0F766E]">Rate $\lambda_1$ ($X_1$)</span><span id="sumValL1" class="font-mono text-[#1C1917]">3.0</span></div>
+                <input id="sumSliderL1" type="range" min="0.5" max="10.0" step="0.5" value="3.0" class="w-full" />
+              </div>
+              <div class="space-y-1">
+                <div class="flex justify-between font-bold"><span class="text-[#4338CA]">Rate $\lambda_2$ ($X_2$)</span><span id="sumValL2" class="font-mono text-[#1C1917]">4.5</span></div>
+                <input id="sumSliderL2" type="range" min="0.5" max="10.0" step="0.5" value="4.5" class="w-full" />
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-[#E7E5E4] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#57534E]">Overlaid PMFs: $X_1$, $X_2$, and $X_1 + X_2 \sim \text{Pois}(\lambda_1 + \lambda_2)$</span>
+                <div class="flex flex-wrap items-center gap-3 text-[11px] font-bold">
+                  <span class="inline-flex items-center gap-1 text-[#0F766E]"><span class="w-3 h-3 rounded-full bg-[#0F766E]"></span>$X_1$</span>
+                  <span class="inline-flex items-center gap-1 text-[#4338CA]"><span class="w-3 h-3 rounded-full bg-[#4338CA]"></span>$X_2$</span>
+                  <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-3 h-3 rounded bg-[#D97706]"></span>Sum $X_1+X_2$</span>
+                </div>
+              </div>
+              <div id="sumCanvasWrap" class="w-full">
+                <canvas id="sumCanvas" aria-label="Sum of two independent Poisson distributions chart"></canvas>
+              </div>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-[#1C1917] text-white space-y-2 text-center">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-teal-300">Live MGF Product Verification (Reproductive Property)</div>
+              <div id="sumMgfBox" class="text-xs sm:text-sm overflow-x-auto py-1"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: CENTRAL MOMENTS & RECURRENCE VERIFIER                    -->
+        <!-- =============================================================== -->
+        <div id="tab-moments" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="pb-4 border-b border-[#E7E5E4]">
+            <h3 class="text-lg font-bold text-[#1C1917]">Central Moments &amp; Recurrence Relation Verifier (ISRT 2024 Q7c)</h3>
+            <p class="text-xs sm:text-sm text-[#57534E]">Slide $\lambda$ to verify $\mu_{r+1} = r\lambda\mu_{r-1} + \lambda\frac{d\mu_r}{d\lambda}$ and watch $\gamma_1(\lambda) = 1/\sqrt{\lambda}$ and $\gamma_2(\lambda) = 1/\lambda$ decay toward $0$.</p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E4] space-y-2 text-xs">
+            <div class="flex justify-between font-bold">
+              <span class="text-[#0F766E]">Rate Parameter $\lambda$</span>
+              <span id="momValLam" class="font-mono text-base text-[#1C1917]">4.0</span>
+            </div>
+            <input id="momSliderLam" type="range" min="0.5" max="15.0" step="0.1" value="4.0" class="w-full" />
+          </div>
+
+          <!-- 6 Live Moment & Shape Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center font-mono">
+            <div class="p-3 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4]">
+              <div class="font-sans text-[11px] font-bold text-[#57534E]">$\mu_1$</div>
+              <div class="text-lg font-extrabold text-[#1C1917] mt-0.5">0</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#F0FDFA] border border-teal-200">
+              <div class="font-sans text-[11px] font-bold text-[#0F766E]">$\mu_2 = \lambda$</div>
+              <div id="momOutM2" class="text-lg font-extrabold text-[#1C1917] mt-0.5">4.00</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#F0FDFA] border border-teal-200">
+              <div class="font-sans text-[11px] font-bold text-[#0F766E]">$\mu_3 = \lambda$</div>
+              <div id="momOutM3" class="text-lg font-extrabold text-[#1C1917] mt-0.5">4.00</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#FFFBEB] border border-amber-200">
+              <div class="font-sans text-[11px] font-bold text-[#D97706]">$\mu_4 = \lambda + 3\lambda^2$</div>
+              <div id="momOutM4" class="text-lg font-extrabold text-[#1C1917] mt-0.5">52.00</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#EEF2FF] border border-indigo-200">
+              <div class="font-sans text-[11px] font-bold text-[#4338CA]">$\gamma_1 = 1/\sqrt{\lambda}$</div>
+              <div id="momOutG1" class="text-lg font-extrabold text-[#4338CA] mt-0.5">0.500</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#1C1917] text-white">
+              <div class="font-sans text-[11px] font-bold text-amber-300">$\gamma_2 = 1/\lambda$</div>
+              <div id="momOutG2" class="text-lg font-extrabold text-white mt-0.5">0.250</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <!-- Step-by-Step Recurrence Substitution -->
+            <div class="lg:col-span-5 p-4 rounded-2xl bg-[#FAFAF7] border border-[#E7E5E4] space-y-2.5 text-xs leading-relaxed">
+              <div class="font-bold uppercase tracking-wider text-[#0F766E]">Live Recurrence Substitution</div>
+              <div class="p-2.5 rounded-xl bg-white border border-[#E7E5E4] text-center font-semibold text-[#1C1917]">
+                $$\mu_{r+1} = r\lambda\,\mu_{r-1} + \lambda\frac{d\mu_r}{d\lambda}$$
+              </div>
+              <div id="momRecSteps" class="space-y-2 font-mono text-[11px] text-[#1C1917]"></div>
+            </div>
+
+            <!-- High-DPI Decay Curve Canvas -->
+            <div class="lg:col-span-7 rounded-2xl border border-[#E7E5E4] bg-white p-4 shadow-inner space-y-2">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-bold uppercase tracking-wider text-[#57534E]">Shape Convergence Toward Normal ($\gamma_1, \gamma_2 \to 0$)</span>
+                <div class="flex items-center gap-3 text-[11px] font-bold">
+                  <span class="inline-flex items-center gap-1 text-[#4338CA]"><span class="w-3 h-0.5 bg-[#4338CA] inline-block"></span>Skewness $\gamma_1 = 1/\sqrt{\lambda}$</span>
+                  <span class="inline-flex items-center gap-1 text-[#D97706]"><span class="w-3 h-0.5 bg-[#D97706] inline-block"></span>Kurtosis $\gamma_2 = 1/\lambda$</span>
+                </div>
+              </div>
+              <div id="momCanvasWrap" class="w-full">
+                <canvas id="momCanvas" aria-label="Poisson skewness and excess kurtosis decay curves"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: PROOFS & DERIVATIONS DRAWER (5 <details> CARDS)          -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4338CA]">Section 03 • Exam Proofs</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">5 core AST 102 theorem proofs — click any card to expand</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 1 · Maclaurin Series Verification</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Valid PMF Verification: $\displaystyle\sum_{x=0}^{\infty} \frac{e^{-\lambda}\lambda^x}{x!} = 1$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E4] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p>For $\lambda > 0$ and $x \in \{0, 1, 2, \dots\}$, clearly $P(X = x) = \frac{e^{-\lambda}\lambda^x}{x!} > 0$ (non-negativity holds). Factoring $e^{-\lambda}$ outside the sum and applying the Maclaurin series $e^{\lambda} = \sum_{x=0}^{\infty} \frac{\lambda^x}{x!}$:</p>
+            <div class="bg-[#F0FDFA] p-3.5 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold">
+              $$\sum_{x=0}^{\infty} P(X = x) = e^{-\lambda} \sum_{x=0}^{\infty} \frac{\lambda^x}{x!} = e^{-\lambda} \cdot e^{\lambda} = e^{0} = 1 \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 2 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 2 · ISRT Year Final 2022 Q7(b) &amp; 2024 Q7(b)</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">MGF, CGF, Mean, Variance, Skewness &amp; Excess Kurtosis of $\text{Poisson}(\lambda)$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E4] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p><strong>1. MGF Derivation:</strong></p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E7E5E4] text-center text-[#1C1917]">
+              $$M_X(t) = E[e^{tX}] = \sum_{x=0}^{\infty} e^{tx}\frac{e^{-\lambda}\lambda^x}{x!} = e^{-\lambda}\sum_{x=0}^{\infty}\frac{(\lambda e^t)^x}{x!} = e^{-\lambda}\,e^{\lambda e^t} = \mathbf{e^{\lambda(e^t - 1)}}$$
+            </div>
+            <p><strong>2. CGF &amp; Cumulants:</strong> Take $\ln$ to obtain $K_X(t) = \ln M_X(t) = \lambda(e^t - 1)$. Differentiating $r$ times yields $K_X^{(r)}(t) = \lambda e^t$, so at $t = 0$:
+              $$\kappa_r = K_X^{(r)}(0) = \lambda \qquad \text{for all } r = 1, 2, 3, 4, \dots$$
+            </p>
+            <div class="bg-[#F0FDFA] p-3 rounded-xl border border-teal-200 text-center text-[#0F766E] font-semibold space-y-1">
+              $$E[X] = \kappa_1 = \lambda, \qquad V(X) = \kappa_2 = \lambda$$
+              $$\gamma_1 = \frac{\kappa_3}{\kappa_2^{3/2}} = \frac{\lambda}{\lambda^{3/2}} = \mathbf{\frac{1}{\sqrt{\lambda}}}, \qquad \gamma_2 = \frac{\kappa_4}{\kappa_2^2} = \frac{\lambda}{\lambda^2} = \mathbf{\frac{1}{\lambda}} \quad \blacksquare$$
+            </div>
+          </div>
+        </details>
+
+        <!-- Proof 3 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-[11px] font-bold mb-1">Proof 3 · ISRT Year Final 2024 Q7(c)</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Recurrence Relation of Central Moments: $\mu_{r+1} = r\lambda\mu_{r-1} + \lambda\dfrac{d\mu_r}{d\lambda}$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E4] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p>By definition, $\mu_r = \sum_{x=0}^{\infty} (x - \lambda)^r \dfrac{e^{-\lambda}\lambda^x}{x!}$. Differentiate both sides with respect to $\lambda$ using the product rule:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E7E5E4] text-center text-[#1C1917] space-y-1.5">
+              $$\frac{d\mu_r}{d\lambda} = \sum_{x=0}^{\infty} \left[ -r(x-\lambda)^{r-1}\frac{e^{-\lambda}\lambda^x}{x!} + (x-\lambda)^r \frac{(-e^{-\lambda}\lambda^x + x e^{-\lambda}\lambda^{x-1})}{x!} \right]$$
+              $$= -r\mu_{r-1} + \frac{1}{\lambda}\sum_{x=0}^{\infty} (x - \lambda)^{r+1}\frac{e^{-\lambda}\lambda^x}{x!} = -r\mu_{r-1} + \frac{\mu_{r+1}}{\lambda}$$
+            </div>
+            <p>Multiplying through by $\lambda$ and rearranging gives the recurrence relation:</p>
+            <div class="bg-[#FFFBEB] p-3 rounded-xl border border-amber-200 text-center text-[#1C1917] font-semibold">
+              $$\mu_{r+1} = r\lambda\,\mu_{r-1} + \lambda\frac{d\mu_r}{d\lambda}$$
+            </div>
+            <p><strong>Deriving $\mu_2, \mu_3, \mu_4$ from $\mu_0 = 1, \mu_1 = 0$:</strong></p>
+            <ul class="list-disc list-inside space-y-1 font-mono text-xs text-[#1C1917]">
+              <li>r = 1: μ₂ = 1·λ·(1) + λ·d(0)/dλ = λ</li>
+              <li>r = 2: μ₃ = 2·λ·(0) + λ·d(λ)/dλ = λ</li>
+              <li>r = 3: μ₄ = 3·λ·(λ) + λ·d(λ)/dλ = 3λ² + λ = λ + 3λ²  ∎</li>
+            </ul>
+          </div>
+        </details>
+
+        <!-- Proof 4 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-[11px] font-bold mb-1">Proof 4 · Ross Section 4.7</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">Poisson Limit Theorem: $B(n, p) \longrightarrow \text{Pois}(\lambda)$ as $n \to \infty, p \to 0, np = \lambda$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E4] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p>Substitute $p = \lambda / n$ into the Binomial PMF for fixed $x \ge 0$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E7E5E4] text-center text-[#1C1917] space-y-1.5">
+              $$P(X = x) = \frac{n(n-1)\cdots(n-x+1)}{x!}\left(\frac{\lambda}{n}\right)^x \left(1 - \frac{\lambda}{n}\right)^{n-x}$$
+              $$= \frac{\lambda^x}{x!} \cdot \underbrace{1\left(1 - \frac{1}{n}\right)\cdots\left(1 - \frac{x-1}{n}\right)}_{\longrightarrow\, 1} \cdot \underbrace{\left(1 - \frac{\lambda}{n}\right)^n}_{\longrightarrow\, e^{-\lambda}} \cdot \underbrace{\left(1 - \frac{\lambda}{n}\right)^{-x}}_{\longrightarrow\, 1}$$
+            </div>
+            <p>Taking the limit as $n \to \infty$ gives $\displaystyle\lim_{n\to\infty} P(X=x) = \frac{e^{-\lambda}\lambda^x}{x!}$. $\blacksquare$</p>
+          </div>
+        </details>
+
+        <!-- Proof 5 -->
+        <details class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm overflow-hidden">
+          <summary class="flex items-center justify-between gap-4 p-5 cursor-pointer hover:bg-[#FAFAF7] transition-colors">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-[11px] font-bold mb-1">Proof 5 · Reproductive Property &amp; Mode Ratio</span>
+              <div class="font-bold text-[#1C1917] text-sm sm:text-base">$X_1 + X_2 \sim \text{Pois}(\lambda_1 + \lambda_2)$ via MGF &amp; Mode Proof via $P(X=x)/P(X=x-1) = \lambda/x$</div>
+            </div>
+            <svg class="details-chevron w-5 h-5 text-[#57534E] shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 border-t border-[#E7E5E4] pt-4 text-sm text-[#57534E] space-y-3 leading-relaxed">
+            <p><strong>1. Reproductive Property:</strong> For independent $X_1 \sim \text{Pois}(\lambda_1)$ and $X_2 \sim \text{Pois}(\lambda_2)$:</p>
+            <div class="bg-[#FAFAF7] p-3 rounded-xl border border-[#E7E5E4] text-center text-[#1C1917]">
+              $$M_{X_1+X_2}(t) = M_{X_1}(t)M_{X_2}(t) = e^{\lambda_1(e^t-1)}\,e^{\lambda_2(e^t-1)} = e^{(\lambda_1+\lambda_2)(e^t-1)}$$
+            </div>
+            <p>By the MGF Uniqueness Theorem, $X_1 + X_2 \sim \text{Pois}(\lambda_1 + \lambda_2)$.</p>
+            <p><strong>2. Mode Proof:</strong> For $x \ge 1$, the ratio of consecutive probabilities is:
+              $$\frac{P(X = x)}{P(X = x - 1)} = \frac{e^{-\lambda}\lambda^x / x!}{e^{-\lambda}\lambda^{x-1}/(x-1)!} = \frac{\lambda}{x}$$
+              Thus $P(X=x) \ge P(X=x-1) \iff \frac{\lambda}{x} \ge 1 \iff x \le \lambda$. Hence $P(X=x)$ increases up to $\lfloor \lambda \rfloor$; if $\lambda$ is an exact positive integer, equality holds at $x = \lambda$, making it bimodal at $\lambda - 1$ and $\lambda$. $\blacksquare$
+            </p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: AUTHENTIC ISRT AST 102 PAST EXAM VAULT                   -->
+    <!-- =================================================================== -->
+    <section id="exam-vault" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#D97706]">Section 04 • Authentic Archive</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">ISRT Past Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-[#57534E]">5 authentic Year Final &amp; Ross Ch. 8 problems with verified solutions</p>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Exam 1: ISRT Year Final 2024 Q7(d) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">ISRT Year Final 2024 · Q7(d)</span>
+            <span class="text-xs text-[#57534E] font-medium">Poisson Approximation to Binomial · Website Hits</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            Suppose 1 in 1,000 visitors to a website subscribe to a newsletter. If the website received $n = 3{,}500$ hits yesterday, use the Poisson approximation to find the probability that <strong>more than 5</strong> visitors subscribed.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E4] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-sm text-[#57534E] space-y-2.5 leading-relaxed">
+              <p>Here $X \sim B(n = 3500, p = 0.001)$. Since $n$ is very large and $p$ is very small, approximate by $\text{Pois}(\lambda)$ with $\lambda = np = 3500 \times 0.001 = \mathbf{3.5}$.</p>
+              <p>Careful with the strict inequality $X &gt; 5$: $P(X &gt; 5) = 1 - P(X \le 5) = 1 - \sum_{x=0}^{5} \dfrac{e^{-3.5}(3.5)^x}{x!}$:</p>
+              <div class="bg-white p-3 rounded-xl border border-[#E7E5E4] font-mono text-xs text-[#1C1917] space-y-1">
+                <div>e⁻³·⁵ ≈ 0.030197</div>
+                <div>Sum(x=0..5) = 1 + 3.5 + 6.125 + 7.1458 + 6.2526 + 4.3768 = 28.4003</div>
+                <div>P(X ≤ 5) = 0.030197 × 28.4003 ≈ 0.8576</div>
+              </div>
+              <p>Therefore: $P(X &gt; 5) = 1 - 0.8576 = \mathbf{0.1424}$.</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 2: ISRT Year Final 2024 Q7(b) & (c) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#FFFBEB] text-[#D97706] border border-amber-200 text-xs font-bold">ISRT Year Final 2024 · Q7(b) &amp; (c)</span>
+            <span class="text-xs text-[#57534E] font-medium">MGF, Skewness, Kurtosis &amp; Central Moment Recurrence</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            <strong>(b)</strong> Derive the MGF of a Poisson$(\lambda)$ random variable and use it to find $\gamma_1 = \dfrac{1}{\sqrt{\lambda}}$ and $\gamma_2 = \dfrac{1}{\lambda}$.<br/>
+            <strong>(c)</strong> Establish the recurrence relation for central moments: $\mu_{r+1} = r\lambda\mu_{r-1} + \lambda\dfrac{d\mu_r}{d\lambda}$.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E4] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-sm text-[#57534E] space-y-2.5 leading-relaxed">
+              <p><strong>(b)</strong> $M_X(t) = e^{\lambda(e^t - 1)} \implies K_X(t) = \lambda(e^t - 1)$. Differentiating at $t=0$ gives $\kappa_1 = \kappa_2 = \kappa_3 = \kappa_4 = \lambda$. Thus $\gamma_1 = \frac{\kappa_3}{\kappa_2^{3/2}} = \mathbf{\frac{1}{\sqrt{\lambda}}}$ and $\gamma_2 = \frac{\kappa_4}{\kappa_2^2} = \mathbf{\frac{1}{\lambda}}$.</p>
+              <p><strong>(c)</strong> Differentiate $\mu_r = \sum_{x=0}^{\infty} (x-\lambda)^r \frac{e^{-\lambda}\lambda^x}{x!}$ with respect to $\lambda$ to get $\frac{d\mu_r}{d\lambda} = -r\mu_{r-1} + \frac{\mu_{r+1}}{\lambda}$, then multiply by $\lambda$: $\mu_{r+1} = r\lambda\mu_{r-1} + \lambda\frac{d\mu_r}{d\lambda}$. (Full line-by-line steps in Proofs 2 &amp; 3 above.)</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 3: ISRT Year Final Q7(a) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-xs font-bold">ISRT Year Final · Q7(a) [4 Marks]</span>
+            <span class="text-xs text-[#57534E] font-medium">Poisson Definition, Properties &amp; Cafe Arrivals</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            Define a Poisson random variable and state its properties. In a cafe, customers arrive at a mean rate of $4$ per hour. Find the probability of arrival of $6$ customers in the next one hour.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E4] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-sm text-[#57534E] space-y-2 leading-relaxed">
+              <p><strong>Definition &amp; Properties:</strong> $X \sim \text{Pois}(\lambda)$ has PMF $e^{-\lambda}\lambda^x/x!$ ($x=0,1,2,\dots$); properties: equidispersion ($E[X]=V(X)=\lambda$), positively skewed ($\gamma_1 = 1/\sqrt{\lambda}$), reproductive under independent sums, limiting case of Binomial.</p>
+              <p><strong>Cafe Calculation ($\lambda = 4$, $t = 1$ hr, $x = 6$):</strong>
+                $$P(X = 6) = \frac{e^{-4} \cdot 4^6}{6!} = \frac{0.018316 \times 4096}{720} = \mathbf{0.1042}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 4: ISRT Year Final Q7(b) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#F0FDFA] text-[#0F766E] border border-teal-200 text-xs font-bold">ISRT Year Final · Q7(b) [4 Marks]</span>
+            <span class="text-xs text-[#57534E] font-medium">Sum of i.i.d. Poissons &amp; Scaling</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            Suppose $X_1, X_2, X_3, X_4$ are identically and independently distributed Poisson random variables with parameter $\lambda$. Let $Y = \sum_{i=1}^4 X_i$. Find $E(Y)$ and $E(kY)$ where $k$ is any constant.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E4] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-sm text-[#57534E] space-y-2 leading-relaxed">
+              <p>By the reproductive property of independent Poissons, $Y = X_1 + X_2 + X_3 + X_4 \sim \text{Pois}(4\lambda)$.</p>
+              <p>By linearity of expectation:
+                $$E(Y) = E(X_1) + E(X_2) + E(X_3) + E(X_4) = \lambda + \lambda + \lambda + \lambda = \mathbf{4\lambda}$$
+                $$E(kY) = k\,E(Y) = \mathbf{4k\lambda}$$
+              </p>
+            </div>
+          </details>
+        </div>
+
+        <!-- Exam 5: Ross Ch. 8 Classic (Final Prep) -->
+        <div class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm p-5 sm:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full bg-[#EEF2FF] text-[#4338CA] border border-indigo-200 text-xs font-bold">Ross Ch. 8 Classic · Final Prep</span>
+            <span class="text-xs text-[#57534E] font-medium">Normal Approximation to Poisson with Continuity Correction</span>
+          </div>
+          <p class="text-sm text-[#1C1917] leading-relaxed">
+            The number of students enrolling in an introductory psychology course is a Poisson random variable $X \sim \text{Pois}(100)$. Using the Normal approximation with continuity correction, estimate $P(X \ge 120)$.
+          </p>
+          <details class="mt-4">
+            <summary class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-[#F0FDFA] text-[#0F766E] border border-[#E7E5E4] text-xs font-bold cursor-pointer transition-colors">
+              <span>Toggle Step-by-Step Solution</span>
+              <svg class="details-chevron w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="mt-4 p-4 rounded-xl bg-[#FAFAF7] border border-[#E7E5E4] text-sm text-[#57534E] space-y-2 leading-relaxed">
+              <p>Since $\lambda = 100 \ge 20$, approximate $X$ by $Y \sim N(\mu = 100, \sigma^2 = 100)$, so $\sigma = \sqrt{100} = 10$.</p>
+              <p>Apply the continuity correction for $X \ge 120$ (replace $120$ with $119.5$):</p>
+              <div class="bg-white p-3 rounded-xl border border-[#E7E5E4] text-center text-[#1C1917] font-semibold">
+                $$P(X \ge 120) \approx P(Y \ge 119.5) = P\!\left(Z \ge \frac{119.5 - 100}{10}\right) = 1 - \Phi(1.95) = 1 - 0.9744 = \mathbf{0.0256}$$
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 5: INTERACTIVE 5-QUESTION MASTERY QUIZ                      -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-[#E7E5E4] shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E7E5E4]">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#059669]">Section 05 • Self-Assessment</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-[#1C1917] mt-1">5-Question Mastery Quiz</h2>
+            <p class="text-sm text-[#57534E] mt-1">Test rate scaling, strict tails, modes, reproductive traps, and approximation rules before Lesson 14.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-[#1C1917] text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-teal-300">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-[#FAFAF7] hover:bg-stone-200 text-[#1C1917] border border-[#E7E5E4] text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-stone-100 mt-4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-[#E7E5E4] bg-white mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <div class="px-4 py-2 rounded-xl bg-[#FAFAF7] text-[#57534E] font-semibold border border-[#E7E5E4]">
+        ← Lesson 12: Geometric &amp; Negative Binomial
+      </div>
+      <div class="text-[#57534E] text-center">
+        <strong class="text-[#1C1917]">AST 102 · Elements of Probability</strong> · ISRT, University of Dhaka
+      </div>
+      <div class="px-4 py-2 rounded-xl bg-[#F0FDFA] text-[#0F766E] font-bold border border-teal-200">
+        Lesson 14: Uniform, Exponential &amp; Normal →
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         1. OVERFLOW-FREE LOG-FACTORIAL & EXACT DISTRIBUTION FUNCTIONS
+      ------------------------------------------------------------------- */
+      const LOG_FACT = new Float64Array(601);
+      LOG_FACT[0] = 0;
+      for (let i = 1; i <= 600; i++) LOG_FACT[i] = LOG_FACT[i - 1] + Math.log(i);
+
+      function logChoose(n, k) {
+        if (k < 0 || k > n) return -Infinity;
+        return LOG_FACT[n] - LOG_FACT[k] - LOG_FACT[n - k];
+      }
+
+      function poisPMF(lam, x) {
+        if (x < 0 || lam <= 0) return 0;
+        if (x === 0) return Math.exp(-lam);
+        return Math.exp(-lam + x * Math.log(lam) - LOG_FACT[x]);
+      }
+
+      function binomPMF(n, p, x) {
+        if (x < 0 || x > n) return 0;
+        if (p <= 0) return x === 0 ? 1 : 0;
+        if (p >= 1) return x === n ? 1 : 0;
+        return Math.exp(logChoose(n, x) + x * Math.log(p) + (n - x) * Math.log(1 - p));
+      }
+
+      function normPDF(x, mu, sigma) {
+        const z = (x - mu) / sigma;
+        return Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
+      }
+
+      function getPoisModes(lam) {
+        const r = Math.round(lam);
+        if (r >= 1 && Math.abs(lam - r) < 1e-6) return [r - 1, r];
+        return [Math.floor(lam)];
+      }
+
+      /* -------------------------------------------------------------------
+         2. KATEX & HIGH-DPI CANVAS HELPERS
+      ------------------------------------------------------------------- */
+      function renderMath(el) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(el || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\[', right: '\\]', display: true },
+                { left: '\\(', right: '\\)', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX auto-render skipped:', err);
+        }
+      }
+
+      function renderKatexTo(el, tex, displayMode) {
+        try {
+          if (typeof katex !== 'undefined' && el) {
+            katex.render(tex, el, { displayMode: !!displayMode, throwOnError: false });
+          } else if (el) {
+            el.textContent = tex;
+          }
+        } catch (err) {
+          if (el) el.textContent = tex;
+        }
+      }
+
+      function setupHiDPI(canvas, wrapEl, aspect, minH, maxH) {
+        const w = Math.max(260, wrapEl.clientWidth);
+        const h = Math.max(minH, Math.min(maxH, Math.round(w * aspect)));
+        const dpr = window.devicePixelRatio || 1;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      /* -------------------------------------------------------------------
+         3. READING PROGRESS BAR & LEARNING OBJECTIVES CHECKLIST
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const top = window.scrollY || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = height > 0 ? Math.min(100, Math.max(0, (top / height) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      const objBtns = document.querySelectorAll('.obj-btn');
+      const objDone = new Array(objBtns.length).fill(false);
+      objBtns.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          objDone[i] = !objDone[i];
+          const box = btn.querySelector('.obj-box');
+          const txt = btn.querySelector('.obj-text');
+          if (objDone[i]) {
+            box.textContent = '✓';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-300 bg-[#0F766E] text-white flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.add('line-through', 'opacity-70');
+          } else {
+            box.textContent = '';
+            box.className = 'obj-box mt-0.5 w-5 h-5 rounded-md border border-teal-200/70 bg-white/5 flex items-center justify-center text-xs font-bold shrink-0';
+            txt.classList.remove('line-through', 'opacity-70');
+          }
+          document.getElementById('objCounter').textContent = `${objDone.filter(Boolean).length} / ${objBtns.length} Checked`;
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. TAB SWITCHING & RESIZE OBSERVER
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      function redrawVisibleCanvases() {
+        if (!document.getElementById('tab-pmf').classList.contains('hidden')) renderPmfLab();
+        if (!document.getElementById('tab-approx').classList.contains('hidden')) renderApproxLab();
+        if (!document.getElementById('tab-process').classList.contains('hidden')) {
+          if (procMode === 'scaling') renderProcScaling();
+          else renderProcSum();
+        }
+        if (!document.getElementById('tab-moments').classList.contains('hidden')) renderMomentsLab();
+      }
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#0F766E]', 'text-white', 'shadow-sm');
+            t.classList.add('text-[#57534E]', 'hover:bg-stone-200/70');
+          });
+          tab.classList.add('bg-[#0F766E]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-[#57534E]', 'hover:bg-stone-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const active = document.getElementById('tab-' + target);
+          if (active) {
+            active.classList.remove('hidden');
+            redrawVisibleCanvases();
+            renderMath(active);
+          }
+        });
+      });
+
+      if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => redrawVisibleCanvases());
+        ro.observe(document.getElementById('labWorkbenchContainer'));
+      }
+      window.addEventListener('resize', redrawVisibleCanvases);
+
+      /* -------------------------------------------------------------------
+         5. TAB 1: POISSON PMF, MODE & SHAPE EXPLORER
+      ------------------------------------------------------------------- */
+      const pmfState = { lam: 4.0, a: 6, b: 6, showNorm: false };
+      let pmfBarsMeta = [];
+
+      const pmfSliderLam = document.getElementById('pmfSliderLam');
+      const pmfSliderA   = document.getElementById('pmfSliderA');
+      const pmfSliderB   = document.getElementById('pmfSliderB');
+      const pmfNormToggle = document.getElementById('pmfNormToggle');
+      const pmfCanvas    = document.getElementById('pmfCanvas');
+      const pmfTooltip   = document.getElementById('pmfTooltip');
+
+      function getPmfMaxX(lam) {
+        return Math.min(55, Math.max(10, Math.ceil(lam + 4 * Math.sqrt(lam) + 2)));
+      }
+
+      function renderPmfLab() {
+        const lam = pmfState.lam;
+        const maxX = getPmfMaxX(lam);
+        pmfSliderA.max = maxX;
+        pmfSliderB.max = maxX;
+        if (pmfState.a > maxX) pmfState.a = maxX;
+        if (pmfState.b > maxX) pmfState.b = maxX;
+        if (pmfState.a > pmfState.b) pmfState.b = pmfState.a;
+        pmfSliderA.value = pmfState.a;
+        pmfSliderB.value = pmfState.b;
+
+        const { a, b, showNorm } = pmfState;
+
+        document.getElementById('pmfValLam').textContent = lam.toFixed(1);
+        document.getElementById('pmfValA').textContent = a;
+        document.getElementById('pmfValB').textContent = b;
+
+        const pmfs = [];
+        const cdfs = [];
+        let cum = 0;
+        let rangeProb = 0;
+        for (let x = 0; x <= maxX; x++) {
+          const pr = poisPMF(lam, x);
+          cum += pr;
+          pmfs.push(pr);
+          cdfs.push(Math.min(1, cum));
+          if (x >= a && x <= b) rangeProb += pr;
+        }
+        // If upper bound reaches right edge of display, include tiny remaining tail for accurate P(X >= a)
+        if (b === maxX && a > 0) {
+          rangeProb = Math.max(0, 1 - cdfs[a - 1]);
+        } else if (b === maxX && a === 0) {
+          rangeProb = 1;
+        }
+
+        const sd = Math.sqrt(lam);
+        const modes = getPoisModes(lam);
+
+        document.getElementById('pmfStatMean').textContent = lam.toFixed(2);
+        document.getElementById('pmfStatSd').textContent = sd.toFixed(3);
+        document.getElementById('pmfStatG1').textContent = (1 / sd).toFixed(3);
+        document.getElementById('pmfStatG2').textContent = (1 / lam).toFixed(3);
+        document.getElementById('pmfStatMode').textContent = modes.join(' & ');
+        document.getElementById('pmfStatProb').textContent = rangeProb.toFixed(4);
+
+        const rngLbl = document.getElementById('pmfStatRangeLbl');
+        rngLbl.innerHTML = (b === maxX && a > 0) ? `$P(X \\ge ${a})$` : `$P(${a} \\le X \\le ${b})$`;
+        renderMath(rngLbl);
+
+        // Draw Canvas
+        const { ctx, w, h } = setupHiDPI(pmfCanvas, document.getElementById('pmfCanvasWrap'), 0.42, 220, 290);
+        const padL = 44, padR = 18, padT = 26, padB = 34;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxNormPeak = showNorm ? normPDF(lam, lam, sd) : 0;
+        const maxY = Math.max(0.12, ...pmfs, maxNormPeak) * 1.18;
+        const slotW = plotW / (maxX + 1);
+        const barW = Math.max(3, Math.min(30, slotW * 0.72));
+        const toX = x => padL + (x + 0.5) * slotW;
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E7E5E4'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#57534E';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, py);
+        }
+
+        // Bars
+        pmfBarsMeta = [];
+        const labelStep = maxX > 36 ? 5 : (maxX > 20 ? 3 : (maxX > 12 ? 2 : 1));
+        for (let x = 0; x <= maxX; x++) {
+          const cx = toX(x);
+          const py = toY(pmfs[x]);
+          const bh = Math.max(0, toY(0) - py);
+          const inRange = (x >= a && x <= b);
+          const isMode = modes.includes(x);
+
+          pmfBarsMeta.push({ x, left: cx - slotW / 2, right: cx + slotW / 2, cx, py, pmf: pmfs[x], cdf: cdfs[x] });
+
+          ctx.fillStyle = inRange ? '#D97706' : '#0F766E';
+          ctx.beginPath();
+          ctx.roundRect(cx - barW / 2, py, barW, bh, [3, 3, 0, 0]);
+          ctx.fill();
+
+          if (isMode) {
+            const dy = Math.max(padT + 6, py - 9);
+            ctx.fillStyle = '#D97706';
+            ctx.beginPath();
+            ctx.moveTo(cx, dy - 5); ctx.lineTo(cx + 5, dy); ctx.lineTo(cx, dy + 5); ctx.lineTo(cx - 5, dy);
+            ctx.closePath(); ctx.fill();
+          }
+
+          if (x % labelStep === 0 || x === maxX) {
+            ctx.fillStyle = inRange ? '#D97706' : '#57534E';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(x, cx, padT + plotH + 8);
+          }
+        }
+
+        // Dashed Mean Line
+        const meanX = toX(lam);
+        ctx.save();
+        ctx.setLineDash([5, 3]);
+        ctx.strokeStyle = '#1C1917'; ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.moveTo(meanX, padT); ctx.lineTo(meanX, padT + plotH); ctx.stroke();
+        ctx.restore();
+        ctx.fillStyle = '#1C1917'; ctx.font = '700 10px JetBrains Mono, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillText(`λ=${lam.toFixed(1)}`, meanX, padT - 4);
+
+        // Optional Normal(λ, λ) Bell Curve
+        if (showNorm) {
+          ctx.strokeStyle = '#4338CA';
+          ctx.lineWidth = 2.6;
+          ctx.beginPath();
+          for (let i = 0; i <= 200; i++) {
+            const xv = -0.5 + (maxX + 1) * (i / 200);
+            const yv = normPDF(xv, lam, sd);
+            const px = toX(xv), py = toY(yv);
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+
+        // Axes
+        ctx.strokeStyle = '#57534E'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      pmfCanvas.addEventListener('mousemove', e => {
+        const rect = pmfCanvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const hit = pmfBarsMeta.find(b => mx >= b.left && mx <= b.right);
+        if (hit) {
+          pmfTooltip.classList.remove('hidden');
+          pmfTooltip.textContent = `x = ${hit.x} | P(X=${hit.x}) = ${hit.pmf.toFixed(4)} | F(${hit.x}) = ${hit.cdf.toFixed(4)}`;
+          const tw = pmfTooltip.offsetWidth || 210;
+          pmfTooltip.style.left = Math.min(Math.max(8, hit.cx - tw / 2), rect.width - tw - 8) + 'px';
+          pmfTooltip.style.top = Math.max(6, hit.py - 36) + 'px';
+        } else {
+          pmfTooltip.classList.add('hidden');
+        }
+      });
+      pmfCanvas.addEventListener('mouseleave', () => pmfTooltip.classList.add('hidden'));
+
+      pmfSliderLam.addEventListener('input', () => { pmfState.lam = parseFloat(pmfSliderLam.value); renderPmfLab(); });
+      pmfSliderA.addEventListener('input', () => {
+        pmfState.a = parseInt(pmfSliderA.value, 10);
+        if (pmfState.a > pmfState.b) pmfState.b = pmfState.a;
+        renderPmfLab();
+      });
+      pmfSliderB.addEventListener('input', () => {
+        pmfState.b = parseInt(pmfSliderB.value, 10);
+        if (pmfState.b < pmfState.a) pmfState.a = pmfState.b;
+        renderPmfLab();
+      });
+      pmfNormToggle.addEventListener('change', () => { pmfState.showNorm = pmfNormToggle.checked; renderPmfLab(); });
+
+      document.querySelectorAll('.pois-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-ppreset');
+          if (p === 'cafe') { pmfState.lam = 4.0; pmfState.a = 6; pmfState.b = 6; pmfState.showNorm = false; }
+          else if (p === 'web') { pmfState.lam = 3.5; pmfState.a = 6; pmfState.b = getPmfMaxX(3.5); pmfState.showNorm = false; }
+          else if (p === 'rare') { pmfState.lam = 0.8; pmfState.a = 0; pmfState.b = 2; pmfState.showNorm = false; }
+          else if (p === 'large') { pmfState.lam = 18.0; pmfState.a = 14; pmfState.b = 22; pmfState.showNorm = true; }
+          pmfSliderLam.value = pmfState.lam.toFixed(1);
+          pmfNormToggle.checked = pmfState.showNorm;
+          document.querySelectorAll('.pois-preset').forEach(b => {
+            b.className = b === btn
+              ? 'pois-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'pois-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E4] hover:border-[#0F766E] transition-all';
+          });
+          renderPmfLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 2: BINOMIAL -> POISSON CONVERGENCE LAB
+      ------------------------------------------------------------------- */
+      const apSliderN = document.getElementById('apSliderN');
+      const apSliderP = document.getElementById('apSliderP');
+      const apLockLam = document.getElementById('apLockLam');
+      const apCanvas  = document.getElementById('apCanvas');
+      const apTooltip = document.getElementById('apTooltip');
+      let apLockedLamVal = 3.5;
+      let apBarsMeta = [];
+
+      function renderApproxLab() {
+        const n = parseInt(apSliderN.value, 10);
+        const p = parseFloat(apSliderP.value);
+        const lam = n * p;
+
+        document.getElementById('apValN').textContent = n;
+        document.getElementById('apValP').textContent = p.toFixed(4);
+        document.getElementById('apStatLam').textContent = lam.toFixed(3);
+        document.getElementById('apStatVars').textContent = `V_Bin=${(n*p*(1-p)).toFixed(3)} vs V_Pois=${lam.toFixed(3)}`;
+
+        // Compute full error metrics over support
+        const checkMax = Math.min(n, Math.max(20, Math.ceil(lam + 5 * Math.sqrt(lam) + 5)));
+        let maxErr = 0;
+        let tvdSum = 0;
+        const xs = [], binVals = [], poisVals = [];
+        const dispMin = Math.max(0, Math.floor(lam - 3.5 * Math.sqrt(lam) - 1));
+        const dispMax = Math.min(Math.max(12, Math.ceil(lam + 3.5 * Math.sqrt(lam) + 2)), dispMin + 26);
+
+        for (let x = 0; x <= checkMax; x++) {
+          const pb = binomPMF(n, p, x);
+          const pp = poisPMF(lam, x);
+          const diff = Math.abs(pb - pp);
+          maxErr = Math.max(maxErr, diff);
+          tvdSum += diff;
+          if (x >= dispMin && x <= dispMax) {
+            xs.push(x);
+            binVals.push(pb);
+            poisVals.push(pp);
+          }
+        }
+        const tvd = 0.5 * tvdSum;
+
+        document.getElementById('apStatMaxErr').textContent = maxErr.toFixed(4);
+        document.getElementById('apStatTvd').textContent = tvd.toFixed(4);
+
+        const vCard = document.getElementById('apVerdictCard');
+        if (tvd < 0.015) {
+          vCard.className = 'p-4 rounded-xl border-2 border-emerald-400 bg-emerald-50 flex flex-col justify-center';
+          vCard.innerHTML = `<div class="text-[10px] font-bold uppercase text-[#059669]">Approximation Quality</div><div class="text-base font-extrabold text-emerald-950">EXCELLENT ✓</div><div class="text-[11px] text-emerald-800">TVD &lt; 1.5% (n large, p small)</div>`;
+        } else if (tvd < 0.05) {
+          vCard.className = 'p-4 rounded-xl border-2 border-amber-300 bg-[#FFFBEB] flex flex-col justify-center';
+          vCard.innerHTML = `<div class="text-[10px] font-bold uppercase text-[#D97706]">Approximation Quality</div><div class="text-base font-extrabold text-amber-950">MODERATE</div><div class="text-[11px] text-amber-800">Visible gap; lower p improves fit</div>`;
+        } else {
+          vCard.className = 'p-4 rounded-xl border-2 border-rose-300 bg-[#FFF1F2] flex flex-col justify-center';
+          vCard.innerHTML = `<div class="text-[10px] font-bold uppercase text-[#BE123C]">Approximation Quality</div><div class="text-base font-extrabold text-rose-950">POOR ✕</div><div class="text-[11px] text-rose-800">p too large (V_Bin ≪ λ)</div>`;
+        }
+
+        // Draw Paired Bar Chart
+        const { ctx, w, h } = setupHiDPI(apCanvas, document.getElementById('apCanvasWrap'), 0.42, 220, 285);
+        const padL = 44, padR = 18, padT = 20, padB = 34;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxY = Math.max(0.12, ...binVals, ...poisVals) * 1.18;
+        const grpW = plotW / Math.max(1, xs.length);
+        const subW = Math.max(3, Math.min(20, grpW * 0.38));
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E7E5E4'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#57534E';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          ctx.beginPath(); ctx.moveTo(padL, toY(yv)); ctx.lineTo(padL + plotW, toY(yv)); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, toY(yv));
+        }
+
+        apBarsMeta = [];
+        const labelStep = xs.length > 18 ? 2 : 1;
+        xs.forEach((x, idx) => {
+          const cx = padL + (idx + 0.5) * grpW;
+          const pyB = toY(binVals[idx]), pyP = toY(poisVals[idx]);
+
+          // Binomial (Teal left)
+          ctx.fillStyle = '#0F766E';
+          ctx.beginPath(); ctx.roundRect(cx - subW - 1, pyB, subW, Math.max(0, toY(0) - pyB), [3, 3, 0, 0]); ctx.fill();
+
+          // Poisson (Amber right)
+          ctx.fillStyle = '#D97706';
+          ctx.beginPath(); ctx.roundRect(cx + 1, pyP, subW, Math.max(0, toY(0) - pyP), [3, 3, 0, 0]); ctx.fill();
+
+          apBarsMeta.push({
+            x, left: cx - grpW / 2, right: cx + grpW / 2, cx,
+            py: Math.min(pyB, pyP),
+            pb: binVals[idx], pp: poisVals[idx]
+          });
+
+          if (idx % labelStep === 0 || idx === xs.length - 1) {
+            ctx.fillStyle = '#57534E'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(x, cx, padT + plotH + 8);
+          }
+        });
+
+        ctx.strokeStyle = '#57534E'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      apCanvas.addEventListener('mousemove', e => {
+        const rect = apCanvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const hit = apBarsMeta.find(b => mx >= b.left && mx <= b.right);
+        if (hit) {
+          apTooltip.classList.remove('hidden');
+          apTooltip.textContent = `x=${hit.x} | Bin=${hit.pb.toFixed(4)} | Pois=${hit.pp.toFixed(4)} | |Δ|=${Math.abs(hit.pb - hit.pp).toFixed(4)}`;
+          const tw = apTooltip.offsetWidth || 240;
+          apTooltip.style.left = Math.min(Math.max(8, hit.cx - tw / 2), rect.width - tw - 8) + 'px';
+          apTooltip.style.top = Math.max(6, hit.py - 36) + 'px';
+        } else {
+          apTooltip.classList.add('hidden');
+        }
+      });
+      apCanvas.addEventListener('mouseleave', () => apTooltip.classList.add('hidden'));
+
+      apSliderN.addEventListener('input', () => {
+        if (apLockLam.checked) {
+          const n = parseInt(apSliderN.value, 10);
+          const newP = Math.min(0.40, Math.max(0.002, apLockedLamVal / n));
+          apSliderP.value = newP.toFixed(4);
+        } else {
+          apLockedLamVal = parseInt(apSliderN.value, 10) * parseFloat(apSliderP.value);
+        }
+        renderApproxLab();
+      });
+
+      apSliderP.addEventListener('input', () => {
+        apLockedLamVal = parseInt(apSliderN.value, 10) * parseFloat(apSliderP.value);
+        renderApproxLab();
+      });
+
+      apLockLam.addEventListener('change', () => {
+        if (apLockLam.checked) {
+          apLockedLamVal = parseInt(apSliderN.value, 10) * parseFloat(apSliderP.value);
+        }
+      });
+
+      document.querySelectorAll('.approx-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const k = btn.getAttribute('data-apreset');
+          apLockLam.checked = false;
+          if (k === 'rare') { apSliderN.value = '200'; apSliderP.value = '0.0175'; apLockedLamVal = 3.5; }
+          else if (k === 'good') { apSliderN.value = '100'; apSliderP.value = '0.0300'; apLockedLamVal = 3.0; }
+          else if (k === 'poor') { apSliderN.value = '15'; apSliderP.value = '0.4000'; apLockedLamVal = 6.0; }
+          document.querySelectorAll('.approx-preset').forEach(b => {
+            b.className = b === btn
+              ? 'approx-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'approx-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#FAFAF7] text-[#1C1917] border border-[#E7E5E4] hover:border-[#0F766E] transition-all';
+          });
+          renderApproxLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. TAB 3: POISSON PROCESS & SUM OF POISSONS
+      ------------------------------------------------------------------- */
+      let procMode = 'scaling'; // 'scaling' | 'sum'
+      let simulatedArrivals = [];
+
+      const procSliderL0 = document.getElementById('procSliderL0');
+      const procSliderT  = document.getElementById('procSliderT');
+      const sumSliderL1  = document.getElementById('sumSliderL1');
+      const sumSliderL2  = document.getElementById('sumSliderL2');
+
+      function simulatePoissonArrivals() {
+        const l0 = parseFloat(procSliderL0.value);
+        const t = parseFloat(procSliderT.value);
+        const times = [];
+        let cur = 0;
+        while (true) {
+          const u = Math.max(1e-12, Math.random());
+          cur += -Math.log(u) / l0;
+          if (cur > t) break;
+          times.push(cur);
+          if (times.length > 150) break;
+        }
+        simulatedArrivals = times;
+        renderProcScaling();
+      }
+
+      function renderProcScaling() {
+        const l0 = parseFloat(procSliderL0.value);
+        const t = parseFloat(procSliderT.value);
+        const lamT = l0 * t;
+        const obsCount = simulatedArrivals.length;
+
+        document.getElementById('procValL0').textContent = l0.toFixed(1);
+        document.getElementById('procValT').textContent = t.toFixed(2);
+        document.getElementById('procValLamT').textContent = lamT.toFixed(2);
+        document.getElementById('procCountBadge').textContent = `Observed Count N(${t.toFixed(2)}) = ${obsCount}`;
+
+        // 1. 1D Timeline Canvas
+        const { ctx: tCtx, w: tw, h: th } = setupHiDPI(document.getElementById('procTimelineCanvas'), document.getElementById('procTimelineWrap'), 0.14, 78, 95);
+        const padL = 28, padR = 28, midY = th * 0.48;
+        const lineW = tw - padL - padR;
+
+        tCtx.clearRect(0, 0, tw, th);
+        tCtx.strokeStyle = '#CBD5E1'; tCtx.lineWidth = 4; tCtx.lineCap = 'round';
+        tCtx.beginPath(); tCtx.moveTo(padL, midY); tCtx.lineTo(padL + lineW, midY); tCtx.stroke();
+
+        // Draw arrival ticks
+        simulatedArrivals.forEach(at => {
+          const x = padL + (at / t) * lineW;
+          tCtx.strokeStyle = '#D97706'; tCtx.lineWidth = 2.2;
+          tCtx.beginPath(); tCtx.moveTo(x, midY - 14); tCtx.lineTo(x, midY + 14); tCtx.stroke();
+          tCtx.fillStyle = '#0F766E';
+          tCtx.beginPath(); tCtx.arc(x, midY, 4, 0, Math.PI * 2); tCtx.fill();
+        });
+
+        // Endpoint labels
+        tCtx.fillStyle = '#57534E'; tCtx.font = '600 10px JetBrains Mono, monospace';
+        tCtx.textAlign = 'center'; tCtx.textBaseline = 'top';
+        [0, 0.25 * t, 0.5 * t, 0.75 * t, t].forEach(v => {
+          const x = padL + (v / t) * lineW;
+          tCtx.fillText(`${v.toFixed(2)}h`, x, midY + 18);
+        });
+
+        // 2. Theoretical Pois(lamT) PMF highlighting obsCount
+        const maxX = Math.max(obsCount + 2, getPmfMaxX(lamT));
+        const pmfs = [];
+        for (let x = 0; x <= maxX; x++) pmfs.push(poisPMF(lamT, x));
+
+        const { ctx: pCtx, w: pw, h: ph } = setupHiDPI(document.getElementById('procPmfCanvas'), document.getElementById('procPmfWrap'), 0.34, 185, 230);
+        const pPadL = 42, pPadR = 16, pPadT = 18, pPadB = 30;
+        const plotW = pw - pPadL - pPadR, plotH = ph - pPadT - pPadB;
+        const maxY = Math.max(0.12, ...pmfs) * 1.18;
+        const slotW = plotW / (maxX + 1);
+        const barW = Math.max(3, Math.min(26, slotW * 0.72));
+        const toX = x => pPadL + (x + 0.5) * slotW;
+        const toY = v => pPadT + plotH * (1 - v / maxY);
+
+        pCtx.clearRect(0, 0, pw, ph);
+        pCtx.strokeStyle = '#E7E5E4'; pCtx.lineWidth = 1;
+        pCtx.font = '600 10px JetBrains Mono, monospace'; pCtx.fillStyle = '#57534E';
+        pCtx.textAlign = 'right'; pCtx.textBaseline = 'middle';
+        for (let i = 0; i <= 3; i++) {
+          const yv = (maxY * i) / 3;
+          pCtx.beginPath(); pCtx.moveTo(pPadL, toY(yv)); pCtx.lineTo(pPadL + plotW, toY(yv)); pCtx.stroke();
+          pCtx.fillText(yv.toFixed(2), pPadL - 6, toY(yv));
+        }
+
+        const labelStep = maxX > 36 ? 5 : (maxX > 20 ? 3 : (maxX > 12 ? 2 : 1));
+        for (let x = 0; x <= maxX; x++) {
+          const cx = toX(x), py = toY(pmfs[x]);
+          const isObs = (x === obsCount);
+          pCtx.fillStyle = isObs ? '#D97706' : '#0F766E';
+          pCtx.beginPath(); pCtx.roundRect(cx - barW / 2, py, barW, Math.max(0, toY(0) - py), [3, 3, 0, 0]); pCtx.fill();
+          if (x % labelStep === 0 || isObs) {
+            pCtx.fillStyle = isObs ? '#D97706' : '#57534E';
+            pCtx.textAlign = 'center'; pCtx.textBaseline = 'top';
+            pCtx.fillText(x, cx, pPadT + plotH + 6);
+          }
+        }
+        pCtx.strokeStyle = '#57534E'; pCtx.lineWidth = 1.3;
+        pCtx.beginPath(); pCtx.moveTo(pPadL, pPadT); pCtx.lineTo(pPadL, pPadT + plotH); pCtx.lineTo(pPadL + plotW, pPadT + plotH); pCtx.stroke();
+      }
+
+      function renderProcSum() {
+        const l1 = parseFloat(sumSliderL1.value);
+        const l2 = parseFloat(sumSliderL2.value);
+        const lSum = l1 + l2;
+
+        document.getElementById('sumValL1').textContent = l1.toFixed(1);
+        document.getElementById('sumValL2').textContent = l2.toFixed(1);
+
+        renderKatexTo(
+          document.getElementById('sumMgfBox'),
+          `M_{X_1+X_2}(t) = e^{${l1.toFixed(1)}(e^t - 1)} \\cdot e^{${l2.toFixed(1)}(e^t - 1)} = e^{${lSum.toFixed(1)}(e^t - 1)} \\implies X_1 + X_2 \\sim \\text{Pois}(${lSum.toFixed(1)})`,
+          true
+        );
+
+        const maxX = getPmfMaxX(lSum);
+        const p1 = [], p2 = [], pS = [];
+        for (let x = 0; x <= maxX; x++) {
+          p1.push(poisPMF(l1, x));
+          p2.push(poisPMF(l2, x));
+          pS.push(poisPMF(lSum, x));
+        }
+
+        const { ctx, w, h } = setupHiDPI(document.getElementById('sumCanvas'), document.getElementById('sumCanvasWrap'), 0.40, 210, 270);
+        const padL = 44, padR = 16, padT = 20, padB = 32;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const maxY = Math.max(0.12, ...p1, ...p2, ...pS) * 1.18;
+        const slotW = plotW / (maxX + 1);
+        const barW = Math.max(3, Math.min(22, slotW * 0.65));
+        const toX = x => padL + (x + 0.5) * slotW;
+        const toY = v => padT + plotH * (1 - v / maxY);
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = '#E7E5E4'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#57534E';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 0; i <= 4; i++) {
+          const yv = (maxY * i) / 4;
+          ctx.beginPath(); ctx.moveTo(padL, toY(yv)); ctx.lineTo(padL + plotW, toY(yv)); ctx.stroke();
+          ctx.fillText(yv.toFixed(2), padL - 6, toY(yv));
+        }
+
+        // Amber Bars for Sum X1 + X2
+        const labelStep = maxX > 32 ? 4 : (maxX > 18 ? 2 : 1);
+        for (let x = 0; x <= maxX; x++) {
+          const cx = toX(x), py = toY(pS[x]);
+          ctx.fillStyle = 'rgba(217, 119, 6, 0.38)';
+          ctx.strokeStyle = '#D97706'; ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.roundRect(cx - barW / 2, py, barW, Math.max(0, toY(0) - py), [3, 3, 0, 0]);
+          ctx.fill(); ctx.stroke();
+          if (x % labelStep === 0 || x === maxX) {
+            ctx.fillStyle = '#57534E'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(x, cx, padT + plotH + 8);
+          }
+        }
+
+        // Line + Dots for X1 (Teal) and X2 (Indigo)
+        [ { arr: p1, col: '#0F766E' }, { arr: p2, col: '#4338CA' } ].forEach(s => {
+          ctx.strokeStyle = s.col; ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          s.arr.forEach((v, x) => { if (x === 0) ctx.moveTo(toX(x), toY(v)); else ctx.lineTo(toX(x), toY(v)); });
+          ctx.stroke();
+          ctx.fillStyle = s.col;
+          s.arr.forEach((v, x) => {
+            if (v > 0.002) { ctx.beginPath(); ctx.arc(toX(x), toY(v), 3, 0, Math.PI * 2); ctx.fill(); }
+          });
+        });
+
+        ctx.strokeStyle = '#57534E'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+      }
+
+      document.getElementById('procSimBtn').addEventListener('click', simulatePoissonArrivals);
+      [procSliderL0, procSliderT].forEach(s => s.addEventListener('input', simulatePoissonArrivals));
+      [sumSliderL1, sumSliderL2].forEach(s => s.addEventListener('input', renderProcSum));
+
+      document.querySelectorAll('.proc-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          procMode = btn.getAttribute('data-prmode');
+          document.querySelectorAll('.proc-mode-btn').forEach(b => {
+            b.className = b === btn
+              ? 'proc-mode-btn px-3.5 py-2 rounded-lg bg-[#0F766E] text-white shadow-xs transition-all'
+              : 'proc-mode-btn px-3.5 py-2 rounded-lg text-[#57534E] transition-all';
+          });
+          document.getElementById('procScalingPanel').classList.toggle('hidden', procMode !== 'scaling');
+          document.getElementById('procSumPanel').classList.toggle('hidden', procMode !== 'sum');
+          if (procMode === 'scaling') renderProcScaling();
+          else renderProcSum();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         8. TAB 4: CENTRAL MOMENTS & RECURRENCE VERIFIER
+      ------------------------------------------------------------------- */
+      const momSliderLam = document.getElementById('momSliderLam');
+
+      function renderMomentsLab() {
+        const lam = parseFloat(momSliderLam.value);
+        const m2 = lam;
+        const m3 = lam;
+        const m4 = lam + 3 * lam * lam;
+        const g1 = 1 / Math.sqrt(lam);
+        const g2 = 1 / lam;
+
+        document.getElementById('momValLam').textContent = lam.toFixed(1);
+        document.getElementById('momOutM2').textContent = m2.toFixed(2);
+        document.getElementById('momOutM3').textContent = m3.toFixed(2);
+        document.getElementById('momOutM4').textContent = m4.toFixed(2);
+        document.getElementById('momOutG1').textContent = g1.toFixed(3);
+        document.getElementById('momOutG2').textContent = g2.toFixed(3);
+
+        document.getElementById('momRecSteps').innerHTML = `
+          <div class="p-2 rounded-lg bg-white border border-[#E7E5E4]"><strong>r = 1:</strong> μ₂ = 1(${lam.toFixed(1)})(1) + (${lam.toFixed(1)})(0) = <strong>${m2.toFixed(2)}</strong></div>
+          <div class="p-2 rounded-lg bg-white border border-[#E7E5E4]"><strong>r = 2:</strong> μ₃ = 2(${lam.toFixed(1)})(0) + (${lam.toFixed(1)})(1) = <strong>${m3.toFixed(2)}</strong></div>
+          <div class="p-2 rounded-lg bg-white border border-[#E7E5E4]"><strong>r = 3:</strong> μ₄ = 3(${lam.toFixed(1)})(${m2.toFixed(1)}) + (${lam.toFixed(1)})(1) = ${(3*lam*lam).toFixed(2)} + ${lam.toFixed(1)} = <strong>${m4.toFixed(2)}</strong></div>
+        `;
+
+        // High-DPI Decay Curve Canvas: gamma1(lam) & gamma2(lam) on [0.5, 15]
+        const { ctx, w, h } = setupHiDPI(document.getElementById('momCanvas'), document.getElementById('momCanvasWrap'), 0.48, 200, 255);
+        const padL = 42, padR = 18, padT = 18, padB = 32;
+        const plotW = w - padL - padR, plotH = h - padT - padB;
+        const lMin = 0.5, lMax = 15.0, yMax = 2.2;
+        const toX = v => padL + ((v - lMin) / (lMax - lMin)) * plotW;
+        const toY = v => padT + plotH * (1 - Math.min(v, yMax) / yMax);
+
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = '#E7E5E4'; ctx.lineWidth = 1;
+        ctx.font = '600 10px JetBrains Mono, monospace'; ctx.fillStyle = '#57534E';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        [0, 0.5, 1.0, 1.5, 2.0].forEach(yv => {
+          const py = toY(yv);
+          ctx.beginPath(); ctx.moveTo(padL, py); ctx.lineTo(padL + plotW, py); ctx.stroke();
+          ctx.fillText(yv.toFixed(1), padL - 6, py);
+        });
+
+        // Curves
+        function plotDecay(fn, color) {
+          ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          for (let i = 0; i <= 180; i++) {
+            const lv = lMin + (lMax - lMin) * (i / 180);
+            const px = toX(lv), py = toY(fn(lv));
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+        plotDecay(v => 1 / Math.sqrt(v), '#4338CA');
+        plotDecay(v => 1 / v, '#D97706');
+
+        // Vertical marker at current lambda
+        const lx = toX(lam);
+        ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = '#0F766E'; ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.moveTo(lx, padT); ctx.lineTo(lx, padT + plotH); ctx.stroke(); ctx.restore();
+
+        // Dots at (lam, g1) and (lam, g2)
+        [ { y: g1, col: '#4338CA' }, { y: g2, col: '#D97706' } ].forEach(pt => {
+          ctx.fillStyle = pt.col; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(lx, toY(pt.y), 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        });
+
+        // Axes & X ticks
+        ctx.strokeStyle = '#57534E'; ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+        ctx.fillStyle = '#57534E'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        [1, 3, 5, 8, 11, 15].forEach(lv => ctx.fillText(`λ=${lv}`, toX(lv), padT + plotH + 8));
+      }
+
+      momSliderLam.addEventListener('input', renderMomentsLab);
+
+      /* -------------------------------------------------------------------
+         9. SECTION 5: INTERACTIVE 5-QUESTION MASTERY QUIZ
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. (Rate Scaling) Phone calls arrive at a help desk according to a Poisson process at a mean rate of $6$ calls per hour. What is the probability of receiving NO calls in a 20-minute period?',
+          options: ['$e^{-6}$', '$e^{-3}$', '$e^{-2}$', '$1 - e^{-2}$'],
+          correct: 2,
+          explanation: 'Scale the rate to 20 minutes ($1/3$ hour): $\\lambda_{\\text{new}} = 6 \\times \\frac{1}{3} = 2$. Then $P(N(1/3) = 0) = e^{-2} \\cdot 2^0 / 0! = e^{-2} \\approx 0.1353$.'
+        },
+        {
+          q: '2. (Strict Tail Trap) For $X \\sim \\text{Pois}(\\lambda)$, which complement expression correctly equals $P(X > 5)$?',
+          options: [
+            '$1 - P(X \\le 4)$',
+            '$1 - P(X \\le 5)$',
+            '$1 - P(X = 5)$',
+            '$P(X \\le 5)$'
+          ],
+          correct: 1,
+          explanation: 'Strict inequality $X > 5$ means $X \\in \\{6, 7, 8, \\dots\\}$, whose complement is $X \\le 5$ ($\\{0,1,2,3,4,5\\}$). Thus $P(X > 5) = 1 - P(X \\le 5)$.'
+        },
+        {
+          q: '3. (Equidispersion & Mode) Suppose $X \\sim \\text{Pois}(\\lambda = 5)$. What are its variance and mode(s)?',
+          options: [
+            '$V(X) = \\sqrt{5}$, unique mode at $5$',
+            '$V(X) = 5$, unique mode at $5$',
+            '$V(X) = 5$, bimodal at $4$ and $5$',
+            '$V(X) = 25$, bimodal at $4$ and $5$'
+          ],
+          correct: 2,
+          explanation: 'By equidispersion, $V(X) = \\lambda = 5$. Because $\\lambda = 5$ is a positive integer, $P(X=5)/P(X=4) = 5/5 = 1$, making it bimodal at $\\lambda - 1 = 4$ and $\\lambda = 5$.'
+        },
+        {
+          q: '4. (Reproductive Property & Difference Trap) Let $X_1 \\sim \\text{Pois}(3)$ and $X_2 \\sim \\text{Pois}(5)$ be independent. Which statement is TRUE?',
+          options: [
+            '$X_1 + X_2 \\sim \\text{Pois}(8)$ and $X_2 - X_1 \\sim \\text{Pois}(2)$',
+            '$X_1 + X_2 \\sim \\text{Pois}(8)$, while $X_2 - X_1$ is NOT Poisson',
+            '$X_1 + X_2 \\sim \\text{Pois}(15)$',
+            'Neither $X_1 + X_2$ nor $X_2 - X_1$ is Poisson'
+          ],
+          correct: 1,
+          explanation: 'Independent Poisson sums add rates: $X_1 + X_2 \\sim \\text{Pois}(3+5) = \\text{Pois}(8)$. However, $X_2 - X_1$ can take negative values, so it is NEVER Poisson.'
+        },
+        {
+          q: '5. (Approximation Conditions) When is the Poisson approximation $B(n, p) \\approx \\text{Pois}(\\lambda = np)$ most accurate?',
+          options: [
+            'When $n$ is small and $p = 0.5$',
+            'When $n$ is large ($n \\ge 20$) and $p$ is small ($p \\le 0.05$) with moderate $np$',
+            'When $n$ is large and $p$ is close to $1$',
+            'Only when $np > 100$'
+          ],
+          correct: 1,
+          explanation: 'The Law of Rare Events requires large $n$ and small $p$ so that $q = 1-p \\approx 1$ and $V_{\\text{Bin}} = np(1-p) \\approx np = V_{\\text{Pois}}$.'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-[#FAFAF7] border-[#E7E5E4] text-[#1C1917] hover:border-[#0F766E] hover:bg-[#F0FDFA]';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-[#F0FDFA] border-[#0F766E] text-[#0F766E] font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-[#FFF1F2] border-[#BE123C] text-[#BE123C] font-semibold';
+              else cls = 'bg-stone-50 border-stone-200 text-stone-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-[#F0FDFA] border-teal-300 text-[#0F766E]' : 'bg-[#FFF1F2] border-rose-300 text-[#BE123C]'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-[#1C1917] text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        renderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         10. INITIALIZATION
+      ------------------------------------------------------------------- */
+      function initAll() {
+        renderPmfLab();
+        renderApproxLab();
+        simulatePoissonArrivals();
+        renderProcSum();
+        renderMomentsLab();
+        renderQuiz();
+        updateScrollProgress();
+        renderMath(document.body);
+      }
+
+      document.addEventListener('DOMContentLoaded', initAll);
+      window.addEventListener('load', () => {
+        redrawVisibleCanvases();
+        renderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

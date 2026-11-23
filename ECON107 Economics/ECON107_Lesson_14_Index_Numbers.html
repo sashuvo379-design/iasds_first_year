@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON107 • Lesson 14: Index Numbers</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f4c81;
+      --primary-light: #e0f2fe;
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+      --warn: #d97706;
+      --warn-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-elevated: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-light: rgba(56, 189, 248, 0.14);
+      --accent: #2dd4bf;
+      --accent-light: rgba(45, 212, 191, 0.14);
+      --warn: #fbbf24;
+      --warn-light: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.14);
+      --success: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.14);
+      --purple: #a78bfa;
+      --purple-light: rgba(167, 139, 250, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1rem; }
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .brand-badge { color: #0b1120; }
+    .top-controls { display: flex; align-items: center; gap: 0.75rem; }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .progress-bar-wrap { width: 72px; height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+    .btn-icon {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+    .scroll-track { height: 3px; background: transparent; width: 100%; }
+    .scroll-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.1s linear; }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 4.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 9px;
+      transition: all 0.18s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-link.active .nav-num { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .nav-link.active .nav-num { color: #0b1120; }
+    .sidebar-meta {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sidebar-meta strong { color: var(--text); }
+
+    /* Main */
+    .main { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #0d9488 45%, #4f46e5 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+    }
+    .pill-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-accent { background: var(--accent-light); color: var(--accent); }
+    .pill-warn { background: var(--warn-light); color: var(--warn); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+
+    .hero h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.65rem; }
+    .hero p { color: rgba(255, 255, 255, 0.92); max-width: 72ch; font-size: 1rem; }
+    .hero-stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+    }
+    .hero-stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+    .hero-stat-val { font-size: 1rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.85rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .section-card h2 { font-size: 1.45rem; line-height: 1.25; }
+    .section-card h3 { font-size: 1.1rem; margin: 1.15rem 0 0.5rem; }
+    .section-card p { margin-bottom: 0.85rem; color: var(--text); }
+    .muted { color: var(--text-muted); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.2rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-light); }
+    .callout.danger { border-left-color: var(--danger); background: var(--danger-light); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.95rem; }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.7rem; margin: 1rem 0; }
+    .mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.05rem;
+    }
+    .mini-card h4 { font-size: 0.98rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem; }
+    .mini-card ul { padding-left: 1.15rem; font-size: 0.89rem; color: var(--text-muted); }
+    .mini-card li { margin-bottom: 0.35rem; }
+
+    /* Score Cards */
+    .idx-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.85rem;
+      text-align: center;
+    }
+    .idx-card .idx-lbl { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+    .idx-card .idx-val { font-size: 1.35rem; font-weight: 800; margin: 0.25rem 0; color: var(--primary); }
+    .idx-card .idx-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    th, td { padding: 0.62rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-subtle); font-weight: 700; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    td input {
+      width: 68px;
+      padding: 0.3rem 0.4rem;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .chip-btn {
+      padding: 0.45rem 0.78rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .chip-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .chip-btn.active { color: #0b1120; }
+
+    /* Tabs & Buttons */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .tab-btn.active { color: #0b1120; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Inputs & Math Box */
+    .eq-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin: 0.85rem 0;
+    }
+    .eq-field {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+    .eq-field label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .eq-field input, .eq-field select {
+      width: 100%;
+      padding: 0.4rem 0.55rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+    .math-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 0.9rem 1.05rem;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      line-height: 1.75;
+    }
+
+    /* Accordion */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .acc-item { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated); }
+    .acc-btn {
+      width: 100%;
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: none;
+      padding: 0.95rem 1.15rem;
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .acc-btn:hover { filter: brightness(0.97); }
+    .acc-chevron { transition: transform 0.2s; font-size: 0.85rem; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 1.1rem 1.2rem; border-top: 1px solid var(--border); font-size: 0.92rem; }
+    .acc-item.open .acc-body { display: block; }
+
+    /* Quiz */
+    .quiz-q {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--bg-subtle);
+    }
+    .quiz-q-title { font-weight: 700; margin-bottom: 0.7rem; }
+    .quiz-opts { display: grid; gap: 0.45rem; }
+    .quiz-opt {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .quiz-opt.is-correct { background: var(--success-light); border-color: var(--success); font-weight: 600; }
+    .quiz-opt.is-wrong { background: var(--danger-light); border-color: var(--danger); }
+    .quiz-exp { margin-top: 0.65rem; font-size: 0.86rem; color: var(--text-muted); display: none; }
+    .quiz-exp.show { display: block; }
+
+    /* Done Button */
+    .done-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .done-btn.completed { background: var(--success-light); color: var(--success); border-color: var(--success); }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-2, .grid-3, .grid-5 { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge">ECON107</span>
+        <span>Lesson 14: Index Numbers (Course Finale)</span>
+      </div>
+      <div class="top-controls">
+        <div class="progress-pill">
+          <span id="progressText">0/6 Done</span>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="scroll-track"><div class="scroll-fill" id="scrollFill"></div></div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lesson 14 Roadmap</div>
+      <ul class="nav-list">
+        <li><a class="nav-link active" href="#sec-intro"><span class="nav-num">1</span> Basics, CPI &amp; Problems</a></li>
+        <li><a class="nav-link" href="#sec-formulas"><span class="nav-num">2</span> Weighted Index Formulas</a></li>
+        <li><a class="nav-link" href="#sec-lab"><span class="nav-num">3</span> Interactive Index Lab</a></li>
+        <li><a class="nav-link" href="#sec-tests"><span class="nav-num">4</span> Adequacy Tests (TRT &amp; FRT)</a></li>
+        <li><a class="nav-link" href="#sec-ops"><span class="nav-num">5</span> Base Shift, Splice &amp; Deflate</a></li>
+        <li><a class="nav-link" href="#sec-pyq"><span class="nav-num">6</span> ISRT PYQ Vault</a></li>
+        <li><a class="nav-link" href="#sec-quiz"><span class="nav-num">7</span> Final Mastery Check</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <div><strong>Course:</strong> ECON107 (4 Credits)</div>
+        <div><strong>Module 4 Finale:</strong> Lesson 14 of 14</div>
+        <div><strong>Sources:</strong> Index Number.pdf (Ch. 13) &amp; Finals</div>
+        <div><strong>Exam Focus:</strong> Guaranteed 12-Mark Final Q8</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-badges">
+          <span class="pill pill-glass">Module 4 Finale • Lesson 14 of 14</span>
+          <span class="pill pill-glass">Statistical Economics • ECON107</span>
+          <span class="pill pill-glass">Guaranteed 12-Mark Final Q8</span>
+        </div>
+        <h1>Index Numbers: Construction, Ideal Tests &amp; Applications</h1>
+        <p>
+          Master the "economic barometer" that turns thousands of changing prices and quantities into a single clear signal.
+          Compute Laspeyres, Paasche, Fisher's Ideal, Dorbish-Bowley, and Marshall-Edgeworth indices, verify Time &amp; Factor
+          Reversal Tests, and practice Base Shifting, Splicing, and Deflating with actual ISRT Final Exam tables.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Core Role</div>
+            <div class="hero-stat-val">Economic Barometer (CPI)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Ideal Index</div>
+            <div class="hero-stat-val">Fisher = √(Laspeyres × Paasche)</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Key Tests</div>
+            <div class="hero-stat-val">Time &amp; Factor Reversal</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Interactive Tools</div>
+            <div class="hero-stat-val">Full Index + Shift/Deflate Labs</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Introduction, Construction Problems & CPI -->
+      <section class="section-card" id="sec-intro">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 01 • Foundations (Index Number.pdf, Ch. 13)</div>
+            <h2>Definition, Construction Problems &amp; Consumer Price Index (CPI)</h2>
+          </div>
+          <button class="done-btn" data-section="s1">✓ Mark Done</button>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">What Is an Index Number? ("The Economic Barometer")</div>
+          An <strong>index number</strong> is a statistical device for measuring relative changes in a variable or group of
+          related variables (prices, quantities, or values) over <strong>time</strong> or <strong>space</strong>, expressed
+          as a percentage relative to a chosen <strong>base period (= 100)</strong>.
+        </div>
+
+        <div class="grid-3">
+          <div class="mini-card" style="border-top:4px solid var(--primary);">
+            <h4>🏷️ Types of Index Numbers</h4>
+            <ul>
+              <li><strong>Price Index ($P_{01}$):</strong> Measures general price changes (CPI, Wholesale Price Index).</li>
+              <li><strong>Quantity Index ($Q_{01}$):</strong> Measures physical volume changes (Industrial Production Index).</li>
+              <li><strong>Value Index ($V_{01}$):</strong> Measures total value change ($\sum p_1 q_1 / \sum p_0 q_0 \times 100$).</li>
+              <li><strong>Unweighted vs. Weighted:</strong> Weighted indices assign realistic importance ($q_0, q_1,$ or value weights) to each commodity.</li>
+            </ul>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--accent);">
+            <h4>🛠️ 7 Construction Problems</h4>
+            <ol style="padding-left:1.15rem; font-size:0.88rem; color:var(--text-muted);">
+              <li>Defining the exact <strong>purpose</strong>.</li>
+              <li>Selecting a <strong>normal base period</strong> (free of war/crisis).</li>
+              <li>Selecting representative <strong>commodities</strong>.</li>
+              <li>Collecting accurate <strong>price/quantity quotations</strong>.</li>
+              <li>Choosing an appropriate <strong>average</strong> (AM vs. GM).</li>
+              <li>Assigning proper <strong>weights</strong>.</li>
+              <li>Selecting the best <strong>formula</strong>.</li>
+            </ol>
+          </div>
+          <div class="mini-card" style="border-top:4px solid var(--warn);">
+            <h4>🛒 Consumer Price Index (CPI)</h4>
+            <p class="muted" style="font-size:0.87rem; margin-bottom:0.4rem;">
+              Measures the average change over time in the <strong>cost of living</strong> (a fixed market basket of food,
+              clothing, rent, fuel, transport) for a target class of consumers.
+            </p>
+            <ul>
+              <li><strong>Uses:</strong> Adjusting wages/pensions (dearness allowance), measuring inflation, deflating nominal income, guiding monetary policy.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Weighted Aggregative Index Formulas -->
+      <section class="section-card" id="sec-formulas">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 02 • Core Formulas &amp; Biases</div>
+            <h2>The 5 Weighted Price Index Formulas &amp; Upward/Downward Biases</h2>
+          </div>
+          <button class="done-btn" data-section="s2">✓ Mark Done</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Index Method</th><th>Price Index Formula (× 100)</th><th>Weights Used</th><th>Bias &amp; Practical Notes</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Laspeyres ($L$)</strong></td>
+                <td><code>(Σ p₁ q₀) / (Σ p₀ q₀) × 100</code></td>
+                <td>Base-year quantities ($q_0$)</td>
+                <td><span class="pill pill-danger">Upward Bias</span> Overstates inflation (ignores consumer substitution away from pricier goods). Easy/cheap to update annually!</td>
+              </tr>
+              <tr>
+                <td><strong>2. Paasche ($P$)</strong></td>
+                <td><code>(Σ p₁ q₁) / (Σ p₀ q₁) × 100</code></td>
+                <td>Current-year quantities ($q_1$)</td>
+                <td><span class="pill pill-warn">Downward Bias</span> Understates inflation (consumers already substituted toward cheaper items). Costly—needs fresh $q_1$ every year.</td>
+              </tr>
+              <tr>
+                <td><strong>3. Dorbish–Bowley ($DB$)</strong></td>
+                <td><code>½ (L + P)</code></td>
+                <td>Arithmetic Mean of $L$ &amp; $P$</td>
+                <td>Lies halfway between $L$ and $P$; always $\ge$ Fisher's Index (since $AM \ge GM$).</td>
+              </tr>
+              <tr>
+                <td><strong>4. Fisher's Ideal ($F$)</strong></td>
+                <td><code>√(L × P)</code></td>
+                <td>Geometric Mean of $L$ &amp; $P$</td>
+                <td><span class="pill pill-success">Ideal (No Bias)</span> Cancels upward bias of $L$ &amp; downward bias of $P$; satisfies <strong>both TRT &amp; FRT</strong>!</td>
+              </tr>
+              <tr>
+                <td><strong>5. Marshall–Edgeworth ($ME$)</strong></td>
+                <td><code>[Σ p₁(q₀+q₁)] / [Σ p₀(q₀+q₁)] × 100</code></td>
+                <td>Average qty $(q_0+q_1)/2$</td>
+                <td>Satisfies Time Reversal Test, but fails Factor Reversal Test (so Fisher is superior).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 3: Interactive Index Number & Reversal Test Lab -->
+      <section class="section-card" id="sec-lab">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 03 • Editable Live Calculator &amp; PYQ Verifier</div>
+            <h2>Interactive Index Number Lab (Laspeyres, Paasche, Fisher &amp; Tests)</h2>
+          </div>
+          <button class="done-btn" data-section="s3">✓ Mark Done</button>
+        </div>
+
+        <p class="muted" style="font-size:0.92rem;">
+          Click any ISRT Final Exam preset below—or edit any price/quantity directly in the table—to auto-compute all
+          four cross-product sums ($\sum p_0 q_0, \sum p_1 q_0, \sum p_0 q_1, \sum p_1 q_1$), all five weighted price
+          indices, and live <strong>Time Reversal</strong> &amp; <strong>Factor Reversal</strong> checks!
+        </p>
+
+        <div class="preset-chips" style="margin-bottom:0.85rem;">
+          <button class="chip-btn active" onclick="loadIdxPreset('f2025', this)">📄 Final 2025 Q8(c) (2025 = Base!)</button>
+          <button class="chip-btn" onclick="loadIdxPreset('ex42', this)">📘 Textbook Ex. 42 (2006 = Base)</button>
+          <button class="chip-btn" onclick="loadIdxPreset('f2024', this)">📄 Final 2024 Q8 (3 Goods, Fisher)</button>
+          <button class="chip-btn" onclick="loadIdxPreset('f2024err', this)">⚠️ Final 2024 Q8(3) (Q₂ Misrecorded = 35)</button>
+        </div>
+
+        <div class="callout warn" id="idxPresetNote" style="padding:0.75rem 1rem; font-size:0.88rem;"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Base Price ($p_0$)</th>
+                <th>Base Qty ($q_0$)</th>
+                <th>Curr Price ($p_1$)</th>
+                <th>Curr Qty ($q_1$)</th>
+                <th>$p_0 q_0$</th>
+                <th>$p_1 q_0$</th>
+                <th>$p_0 q_1$</th>
+                <th>$p_1 q_1$</th>
+              </tr>
+            </thead>
+            <tbody id="idxTableBody"></tbody>
+            <tfoot id="idxTableFoot" style="background:var(--bg-subtle); font-weight:700;"></tfoot>
+          </table>
+        </div>
+
+        <div class="grid-5" id="idxCards"></div>
+        <div class="math-box" id="idxTestsOut"></div>
+      </section>
+
+      <!-- Section 4: Adequacy Tests (TRT, FRT, Circular, Unit) -->
+      <section class="section-card" id="sec-tests">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 04 • Testing Index Accuracy (Final 2024 &amp; 2025 Q8a)</div>
+            <h2>The 4 Tests of a Good Index Number</h2>
+          </div>
+          <button class="done-btn" data-section="s4">✓ Mark Done</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Test</th><th>Mathematical Condition (Omit ×100)</th><th>Laspeyres</th><th>Paasche</th><th>Fisher's Ideal</th><th>Marshall–Edgeworth</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Time Reversal Test (TRT)</strong><br><span class="muted" style="font-size:0.78rem;">Forward index = 1 / Backward index</span></td>
+                <td><code>P₀₁ × P₁₀ = 1</code></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+                <td><span class="pill pill-success">✅ Passes</span></td>
+                <td><span class="pill pill-success">✅ Passes</span></td>
+              </tr>
+              <tr>
+                <td><strong>2. Factor Reversal Test (FRT)</strong><br><span class="muted" style="font-size:0.78rem;">Price index × Qty index = Value ratio</span></td>
+                <td><code>P₀₁ × Q₀₁ = Σp₁q₁ / Σp₀q₀ = V₀₁</code></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+                <td><span class="pill pill-success">✅ Passes</span></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+              </tr>
+              <tr>
+                <td><strong>3. Circular Test</strong><br><span class="muted" style="font-size:0.78rem;">Extension of TRT to 3+ periods</span></td>
+                <td><code>P₀₁ × P₁₂ × P₂₀ = 1</code></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+                <td><span class="pill pill-danger">❌ Fails</span></td>
+              </tr>
+              <tr>
+                <td><strong>4. Unit Test</strong><br><span class="muted" style="font-size:0.78rem;">Independent of quotation units</span></td>
+                <td>Invariant to kg vs. g, etc.</td>
+                <td><span class="pill pill-success">✅ Passes</span></td>
+                <td><span class="pill pill-success">✅ Passes</span></td>
+                <td><span class="pill pill-success">✅ Passes</span></td>
+                <td><span class="pill pill-success">✅ Passes</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Section 5: Base Shifting, Splicing & Deflating Interactive Lab -->
+      <section class="section-card" id="sec-ops">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 05 • Practical Operations (Final 2025 Q8b)</div>
+            <h2>Base Shifting, Splicing &amp; Deflating Interactive Lab</h2>
+          </div>
+          <button class="done-btn" data-section="s5">✓ Mark Done</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="op-shift">🔁 1. Base Shifting</button>
+          <button class="tab-btn" data-tab="op-splice">🔗 2. Splicing Two Series (Ex 13.10.2)</button>
+          <button class="tab-btn" data-tab="op-deflate">💵 3. Deflating Wages (Real Income)</button>
+        </div>
+
+        <!-- Tab 1: Base Shifting -->
+        <div class="tab-panel active" id="op-shift">
+          <p class="muted" style="font-size:0.9rem;">
+            <strong>Base Shifting</strong> updates an old, outdated base year to a more recent normal year using:
+            <code>New Index = (Old Index ÷ Old Index of New Base Year) × 100</code>. Pick a new base year below:
+          </p>
+          <div class="eq-inputs" style="max-width:300px;">
+            <div class="eq-field">
+              <label for="newBaseSel">Choose New Base Year (= 100)</label>
+              <select id="newBaseSel">
+                <option value="0">2018 (Old = 100)</option>
+                <option value="1">2019 (Old = 110)</option>
+                <option value="2" selected>2020 (Old = 125)</option>
+                <option value="3">2021 (Old = 150)</option>
+                <option value="4">2022 (Old = 160)</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Year</th><th>Original Index (2018 = 100)</th><th>Shifted Index (New Base = 100)</th></tr></thead>
+              <tbody id="shiftBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Splicing -->
+        <div class="tab-panel" id="op-splice">
+          <p class="muted" style="font-size:0.9rem;">
+            <strong>Splicing</strong> merges two overlapping index series (e.g., discontinued Index A [1995–2000] and new Index B
+            [2000–2005] from Example 13.10.2) into one continuous series using the overlap year (2000, where Index A = 188 and Index B = 100):
+            <code>Spliced (1995=100) = Index B × (188 / 100)</code>.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Year</th><th>Index A (1995=100)</th><th>Index B (2000=100)</th><th>Spliced Continuous Series (1995=100)</th></tr></thead>
+              <tbody>
+                <tr><td>1995</td><td>100</td><td>—</td><td>100.0</td></tr>
+                <tr><td>1998</td><td>147</td><td>—</td><td>147.0</td></tr>
+                <tr style="background:var(--primary-light); font-weight:700;"><td>2000 (Overlap)</td><td>188</td><td>100</td><td>188.0</td></tr>
+                <tr><td>2001</td><td>—</td><td>120</td><td>120 × 1.88 = <strong>225.6</strong></td></tr>
+                <tr><td>2003</td><td>—</td><td>140</td><td>140 × 1.88 = <strong>263.2</strong></td></tr>
+                <tr><td>2005</td><td>—</td><td>164</td><td>164 × 1.88 = <strong>308.3</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Deflating -->
+        <div class="tab-panel" id="op-deflate">
+          <p class="muted" style="font-size:0.9rem;">
+            <strong>Deflating</strong> removes price-inflation distortion from nominal wages or income to find true
+            <strong>Real Income</strong>: <code>Real Wage = (Nominal Wage ÷ CPI) × 100</code>.
+          </p>
+          <div class="eq-inputs">
+            <div class="eq-field"><label for="defNom">Current Nominal Salary (BDT)</label><input type="number" id="defNom" value="25000" step="1000" /></div>
+            <div class="eq-field"><label for="defCPI">Current CPI (Base = 100)</label><input type="number" id="defCPI" value="160" step="5" min="10" /></div>
+            <div class="eq-field"><label for="defBaseWage">Base-Year Salary (BDT)</label><input type="number" id="defBaseWage" value="15000" step="1000" /></div>
+          </div>
+          <div class="math-box" id="deflateOut"></div>
+        </div>
+      </section>
+
+      <!-- Section 6: ISRT PYQ Vault -->
+      <section class="section-card" id="sec-pyq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 06 • Exam Preparation</div>
+            <h2>ISRT Past Exam Question (PYQ) Vault (2019–2025)</h2>
+          </div>
+          <button class="done-btn" data-section="s6">✓ Mark Done</button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">Final 2025 • Q8(a,b,c) [12 Marks]</span> Define CPI &amp; accuracy tests; Base shifting &amp; deflating; Calculate Laspeyres &amp; Paasche for 2020 with 2025 as base year.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(a) CPI &amp; Accuracy Tests:</strong> CPI measures relative change in the cost of living for a representative consumer basket. Accuracy is tested via the <strong>Time Reversal Test</strong> ($P_{01} \times P_{10} = 1$), <strong>Factor Reversal Test</strong> ($P_{01} \times Q_{01} = V_{01}$), Circular Test, and Unit Test.</p>
+              <p><strong>(b) Base Shifting &amp; Deflating:</strong> Base shifting converts an index to a newer base year ($\text{New} = \text{Old}/\text{Old}_{\text{new base}} \times 100$). Deflating divides nominal money income by the CPI ($\times 100$) to measure real purchasing power.</p>
+              <p style="margin:0;"><strong>(c) Careful with Base Year!</strong> Here <strong>2025 is the base year ($p_0, q_0$)</strong> and <strong>2020 is the current year ($p_1, q_1$)</strong>! Sums: $\sum p_0 q_0 = 8,346$; $\sum p_1 q_0 = 7,408$; $\sum p_0 q_1 = 9,868$; $\sum p_1 q_1 = 8,749$.<br>
+              • <strong>Laspeyres:</strong> $(7408 / 8346) \times 100 = \mathbf{88.76}$ (prices in 2020 were 11.24% lower than in 2025).<br>
+              • <strong>Paasche:</strong> $(8749 / 9868) \times 100 = \mathbf{88.66}$ (prices in 2020 were 11.34% lower than in 2025).</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-accent">Final 2024 • Q8(1–4) [12 Marks]</span> 3 goods (Base 2022, Curr 2023): Compute Fisher's Ideal Index &amp; show TRT; Why Fisher avoids L &amp; P biases; Bias if Q₂ misrecorded as 35; Real-time accuracy.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(1) Sums &amp; Fisher Index (using P₁ = 120 in 2023):</strong> $\sum p_0 q_0 = 6200$, $\sum p_1 q_0 = 7310$ ($L = 117.90$), $\sum p_0 q_1 = 7250$, $\sum p_1 q_1 = 8525$ ($P = 117.59$). Fisher's Ideal Index $F = \sqrt{117.90 \times 117.59} = \mathbf{117.74}$. Time Reversal: $F_{01} \times F_{10} = 1.17745 \times 0.84930 = \mathbf{1.0000}$ ✓.</p>
+              <p><strong>(2) Avoiding Biases:</strong> Laspeyres uses fixed base quantities (ignoring substitution → upward bias); Paasche uses current quantities (over-weighting cheaper items → downward bias). Taking their geometric mean balances both opposing biases.</p>
+              <p><strong>(3) Misrecording $Q_2 = 35$ (instead of 25):</strong> Increases Good 2's weight in Paasche (Good 2 had a sharp +25% price rise from 20→25), pulling Paasche UP from 117.59 to <strong>117.78</strong> and biasing Fisher upward from 117.74 to <strong>117.84</strong>! <em>(Verify live in the Section 3 Lab!)</em></p>
+              <p style="margin:0;"><strong>(4) Improving Real-Time Accuracy:</strong> Use barcode/scanner transaction data, web scraping of e-commerce prices, automated chaining/frequent weight updates, and hedonic quality adjustments.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Final Mastery Check -->
+      <section class="section-card" id="sec-quiz">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 07 • Final Self-Assessment</div>
+            <h2>Lesson 14 Quick Mastery Check</h2>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="resetQuiz()">↻ Reset Quiz</button>
+        </div>
+        <div id="quizContainer"></div>
+        <div class="callout accent" id="quizSummary" style="display:none;"></div>
+      </section>
+
+      <footer>
+        🎓 ECON107 Complete Interactive Course Series (Lessons 1–14) • Built for Applied Statistics &amp; Data Science, ISRT, University of Dhaka
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme Toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('econ107_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('econ107_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+    });
+
+    // ---------- Scroll Progress & Active Nav ----------
+    const scrollFill = document.getElementById('scrollFill');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section-card');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      scrollFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      let currentId = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) currentId = sec.id; });
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + currentId));
+    });
+
+    // ---------- Completion Tracker ----------
+    const doneBtns = document.querySelectorAll('.done-btn');
+    let completedSet = new Set(JSON.parse(localStorage.getItem('econ107_l14_done') || '[]'));
+    function updateProgressUI() {
+      document.getElementById('progressText').textContent = `${completedSet.size}/${doneBtns.length} Done`;
+      document.getElementById('progressBar').style.width = `${(completedSet.size / doneBtns.length) * 100}%`;
+      doneBtns.forEach(btn => {
+        const isDone = completedSet.has(btn.dataset.section);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : '✓ Mark Done';
+      });
+    }
+    doneBtns.forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.section;
+      completedSet.has(k) ? completedSet.delete(k) : completedSet.add(k);
+      localStorage.setItem('econ107_l14_done', JSON.stringify([...completedSet]));
+      updateProgressUI();
+    }));
+    updateProgressUI();
+
+    // ---------- Accordion & Tabs ----------
+    document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const parent = btn.closest('.section-card');
+        parent.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+        parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        parent.querySelector('#' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ---------- Lab 1: Editable Index Number Calculator ----------
+    const idxPresets = {
+      f2025: {
+        note: '<strong>⚠️ Exam Trap Alert (Final 2025 Q8c):</strong> Question asks for the <strong>2020</strong> index with <strong>2025 as Base Year</strong>—so 2025 is (p₀, q₀) and 2020 is (p₁, q₁)! Notice indices are &lt; 100 (~88.7) because 2020 prices were lower than 2025.',
+        rows: [
+          { name: 'A', p0: 126, q0: 16, p1: 118, q1: 18 },
+          { name: 'B', p0: 125, q0: 8,  p1: 110, q1: 10 },
+          { name: 'C', p0: 90,  q0: 12, p1: 75,  q1: 15 },
+          { name: 'D', p0: 250, q0: 17, p1: 220, q1: 20 }
+        ]
+      },
+      ex42: {
+        note: '<strong>📘 Textbook Ex. 42 (2006 = Base, 2007 = Current):</strong> Same data table as Final 2025, but forward in time (2006 → 2007), giving ~112.7 (+12.7% inflation).',
+        rows: [
+          { name: 'A', p0: 118, q0: 18, p1: 126, q1: 16 },
+          { name: 'B', p0: 110, q0: 10, p1: 125, q1: 8  },
+          { name: 'C', p0: 75,  q0: 15, p1: 90,  q1: 12 },
+          { name: 'D', p0: 220, q0: 20, p1: 250, q1: 17 }
+        ]
+      },
+      f2024: {
+        note: '<strong>📄 Final 2024 Q8 (Base 2022, Current 2023):</strong> 3-commodity basket showing Fisher = 117.74 passing both Time &amp; Factor Reversal tests.',
+        rows: [
+          { name: 'Good 1', p0: 100, q0: 50, p1: 120, q1: 60 },
+          { name: 'Good 2', p0: 20,  q0: 30, p1: 25,  q1: 25 },
+          { name: 'Good 3', p0: 30,  q0: 20, p1: 28,  q1: 25 }
+        ]
+      },
+      f2024err: {
+        note: '<strong>⚠️ Final 2024 Q8(3) Sensitivity Check:</strong> Current quantity of Good 2 is misrecorded as <strong>35</strong> (instead of 25). Watch Paasche rise from 117.59 → 117.78 and Fisher bias upward from 117.74 → 117.84!',
+        rows: [
+          { name: 'Good 1', p0: 100, q0: 50, p1: 120, q1: 60 },
+          { name: 'Good 2', p0: 20,  q0: 30, p1: 25,  q1: 35 },
+          { name: 'Good 3', p0: 30,  q0: 20, p1: 28,  q1: 25 }
+        ]
+      }
+    };
+
+    let currentRows = [];
+    function loadIdxPreset(key, btn) {
+      if (btn) {
+        btn.parentElement.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      document.getElementById('idxPresetNote').innerHTML = idxPresets[key].note;
+      currentRows = idxPresets[key].rows.map(r => ({ ...r }));
+      renderIdxTable();
+      computeIndices();
+    }
+
+    function renderIdxTable() {
+      const tbody = document.getElementById('idxTableBody');
+      tbody.innerHTML = currentRows.map((r, i) => `
+        <tr>
+          <td><strong>${r.name}</strong></td>
+          <td><input type="number" value="${r.p0}" oninput="updateRow(${i},'p0',this.value)" /></td>
+          <td><input type="number" value="${r.q0}" oninput="updateRow(${i},'q0',this.value)" /></td>
+          <td><input type="number" value="${r.p1}" oninput="updateRow(${i},'p1',this.value)" /></td>
+          <td><input type="number" value="${r.q1}" oninput="updateRow(${i},'q1',this.value)" /></td>
+          <td id="c00-${i}"></td>
+          <td id="c10-${i}"></td>
+          <td id="c01-${i}"></td>
+          <td id="c11-${i}"></td>
+        </tr>
+      `).join('');
+    }
+
+    function updateRow(idx, field, val) {
+      currentRows[idx][field] = parseFloat(val) || 0;
+      computeIndices();
+    }
+
+    function computeIndices() {
+      let s00 = 0, s10 = 0, s01 = 0, s11 = 0;
+      currentRows.forEach((r, i) => {
+        const p0q0 = r.p0 * r.q0, p1q0 = r.p1 * r.q0, p0q1 = r.p0 * r.q1, p1q1 = r.p1 * r.q1;
+        s00 += p0q0; s10 += p1q0; s01 += p0q1; s11 += p1q1;
+        document.getElementById(`c00-${i}`).textContent = p0q0.toFixed(0);
+        document.getElementById(`c10-${i}`).textContent = p1q0.toFixed(0);
+        document.getElementById(`c01-${i}`).textContent = p0q1.toFixed(0);
+        document.getElementById(`c11-${i}`).textContent = p1q1.toFixed(0);
+      });
+
+      document.getElementById('idxTableFoot').innerHTML = `
+        <tr>
+          <td colspan="5">Column Sums (Σ)</td>
+          <td>Σp₀q₀ = ${s00.toFixed(0)}</td>
+          <td>Σp₁q₀ = ${s10.toFixed(0)}</td>
+          <td>Σp₀q₁ = ${s01.toFixed(0)}</td>
+          <td>Σp₁q₁ = ${s11.toFixed(0)}</td>
+        </tr>
+      `;
+
+      if (s00 <= 0 || s01 <= 0 || s10 <= 0 || s11 <= 0) return;
+
+      const L = (s10 / s00) * 100;
+      const P = (s11 / s01) * 100;
+      const F = Math.sqrt(L * P);
+      const DB = 0.5 * (L + P);
+      const ME = ((s10 + s11) / (s00 + s01)) * 100;
+
+      document.getElementById('idxCards').innerHTML = `
+        <div class="idx-card"><div class="idx-lbl">Laspeyres (L)</div><div class="idx-val">${L.toFixed(2)}</div><div class="idx-sub">${(L-100 >= 0 ? '+' : '')}${(L-100).toFixed(2)}%</div></div>
+        <div class="idx-card"><div class="idx-lbl">Paasche (P)</div><div class="idx-val">${P.toFixed(2)}</div><div class="idx-sub">${(P-100 >= 0 ? '+' : '')}${(P-100).toFixed(2)}%</div></div>
+        <div class="idx-card" style="border:2px solid var(--success);"><div class="idx-lbl">Fisher's Ideal (F)</div><div class="idx-val" style="color:var(--success);">${F.toFixed(2)}</div><div class="idx-sub">GM = √(L×P)</div></div>
+        <div class="idx-card"><div class="idx-lbl">Dorbish–Bowley</div><div class="idx-val">${DB.toFixed(2)}</div><div class="idx-sub">AM = ½(L+P)</div></div>
+        <div class="idx-card"><div class="idx-lbl">Marshall–Edg.</div><div class="idx-val">${ME.toFixed(2)}</div><div class="idx-sub">Avg Qty Wt</div></div>
+      `;
+
+      // Reversal Tests (without *100)
+      const Lp01 = s10 / s00, Lp10 = s01 / s11, Ltrt = Lp01 * Lp10;
+      const Pp01 = s11 / s01, Pp10 = s00 / s10, Ptrt = Pp01 * Pp10;
+      const Fp01 = Math.sqrt(Lp01 * Pp01), Fp10 = Math.sqrt(Lp10 * Pp10), Ftrt = Fp01 * Fp10;
+
+      const Fq01 = Math.sqrt((s01 / s00) * (s11 / s10));
+      const V01 = s11 / s00;
+      const Ffrt = Fp01 * Fq01;
+
+      document.getElementById('idxTestsOut').innerHTML = `
+        <strong>1. Time Reversal Test (P₀₁ × P₁₀ = 1):</strong><br>
+        • Laspeyres: ${Lp01.toFixed(4)} × ${Lp10.toFixed(4)} = <strong>${Ltrt.toFixed(4)}</strong> ${Math.abs(Ltrt - 1) < 1e-4 ? '✅' : '❌ (Fails ≠ 1)'}<br>
+        • Paasche:   ${Pp01.toFixed(4)} × ${Pp10.toFixed(4)} = <strong>${Ptrt.toFixed(4)}</strong> ${Math.abs(Ptrt - 1) < 1e-4 ? '✅' : '❌ (Fails ≠ 1)'}<br>
+        • Fisher's:  ${Fp01.toFixed(4)} × ${Fp10.toFixed(4)} = <strong style="color:var(--success);">${Ftrt.toFixed(4)} ✅ PASSES!</strong><br>
+        <strong>2. Factor Reversal Test (P₀₁ × Q₀₁ = V₀₁ = Σp₁q₁ / Σp₀q₀):</strong><br>
+        • Fisher's:  ${Fp01.toFixed(4)} × ${Fq01.toFixed(4)} = <strong style="color:var(--success);">${Ffrt.toFixed(4)}</strong> &nbsp;vs.&nbsp; V₀₁ = ${s11}/${s00} = <strong style="color:var(--success);">${V01.toFixed(4)} ✅ PASSES!</strong>
+      `;
+    }
+    loadIdxPreset('f2025');
+
+    // ---------- Lab 2: Base Shifting & Deflating ----------
+    const baseSeries = [
+      { yr: 2018, val: 100 },
+      { yr: 2019, val: 110 },
+      { yr: 2020, val: 125 },
+      { yr: 2021, val: 150 },
+      { yr: 2022, val: 160 }
+    ];
+    function renderBaseShift() {
+      const idx = parseInt(document.getElementById('newBaseSel').value, 10);
+      const baseVal = baseSeries[idx].val;
+      document.getElementById('shiftBody').innerHTML = baseSeries.map((r, i) => `
+        <tr style="${i === idx ? 'background:var(--primary-light); font-weight:700;' : ''}">
+          <td>${r.yr} ${i === idx ? '(New Base)' : ''}</td>
+          <td>${r.val.toFixed(1)}</td>
+          <td>(${r.val} ÷ ${baseVal}) × 100 = <strong>${((r.val / baseVal) * 100).toFixed(2)}</strong></td>
+        </tr>
+      `).join('');
+    }
+    document.getElementById('newBaseSel').addEventListener('change', renderBaseShift);
+    renderBaseShift();
+
+    function calcDeflate() {
+      const nom = parseFloat(document.getElementById('defNom').value) || 0;
+      const cpi = parseFloat(document.getElementById('defCPI').value) || 100;
+      const baseW = parseFloat(document.getElementById('defBaseWage').value) || 1;
+      const realW = (nom / cpi) * 100;
+      const pctChange = ((realW - baseW) / baseW) * 100;
+      document.getElementById('deflateOut').innerHTML = `
+        <strong>Real Salary (in Base-Year Taka):</strong> (${nom.toLocaleString()} ÷ ${cpi}) × 100 = <strong>BDT ${realW.toFixed(2)}</strong><br>
+        <strong>Purchasing Power of 100 Taka:</strong> (100 ÷ ${cpi}) × 100 = <strong>${(10000 / cpi).toFixed(2)} Taka</strong><br>
+        <strong>Real Welfare Change vs. Base Salary (BDT ${baseW.toLocaleString()}):</strong> <strong style="color:${pctChange >= 0 ? 'var(--success)' : 'var(--danger)'};">${pctChange >= 0 ? '+' : ''}${pctChange.toFixed(2)}%</strong> (${pctChange >= 0 ? 'Worker is better off in real terms!' : 'Inflation outpaced the nominal raise!'})
+      `;
+    }
+    ['defNom', 'defCPI', 'defBaseWage'].forEach(id => document.getElementById(id).addEventListener('input', calcDeflate));
+    calcDeflate();
+
+    // ---------- Quick Mastery Check Quiz ----------
+    const quizData = [
+      {
+        q: "1. Why is Fisher's Price Index called the 'Ideal' Index Number?",
+        opts: [
+          "Because it requires no quantity data at all.",
+          "Because it is the geometric mean of Laspeyres & Paasche, avoids both upward and downward biases, and satisfies BOTH Time Reversal and Factor Reversal tests.",
+          "Because it always equals 100.",
+          "Because it is the only index that satisfies the Circular Test."
+        ],
+        ans: 1,
+        exp: "Fisher's index = √(L × P) cancels out Laspeyres' upward bias and Paasche's downward bias, and uniquely satisfies both Time Reversal and Factor Reversal tests."
+      },
+      {
+        q: "2. What type of bias does Laspeyres' Price Index tend to exhibit during inflation, and why?",
+        opts: [
+          "Downward bias, because it uses current-year quantities.",
+          "Upward bias, because it uses fixed base-year quantities and ignores consumers substituting away from goods whose prices rose sharply.",
+          "Zero bias.",
+          "Random bias."
+        ],
+        ans: 1,
+        exp: "Laspeyres holds base-year quantities fixed (q₀), over-weighting goods that became expensive—giving it an upward bias (whereas Paasche has a downward bias)."
+      },
+      {
+        q: "3. Which mathematical condition defines the Factor Reversal Test?",
+        opts: [
+          "P₀₁ × P₁₀ = 1",
+          "P₀₁ × Q₀₁ = V₀₁ = Σp₁q₁ / Σp₀q₀",
+          "P₀₁ × P₁₂ × P₂₀ = 1",
+          "P₀₁ + Q₀₁ = 100"
+        ],
+        ans: 1,
+        exp: "Factor Reversal requires that the product of the price index and quantity index equals the true value index V₀₁ = Σp₁q₁ / Σp₀q₀."
+      },
+      {
+        q: "4. An index series with 2018 = 100 has value 125 in 2020 and 150 in 2021. If you shift the base year to 2020 (= 100), what is the new 2021 index?",
+        opts: ["120.0", "125.0", "175.0", "83.3"],
+        ans: 0,
+        exp: "New 2021 Index = (150 / 125) × 100 = 120.0."
+      },
+      {
+        q: "5. A worker's nominal monthly wage rose from 15,000 Tk (base year, CPI = 100) to 24,000 Tk when CPI reached 160. What happened to the worker's REAL wage?",
+        opts: [
+          "Real wage rose to 24,000 Tk.",
+          "Real wage stayed exactly unchanged at 15,000 Tk (24,000 ÷ 160 × 100).",
+          "Real wage fell to 9,375 Tk.",
+          "Real wage doubled."
+        ],
+        ans: 1,
+        exp: "Deflated Real Wage = (24,000 / 160) × 100 = 15,000 Tk—so the 60% nominal raise merely matched 60% inflation, leaving real purchasing power unchanged!"
+      },
+      {
+        q: "6. True or False: Fisher's Ideal Index satisfies the Circular Test (P₀₁ × P₁₂ × P₂₀ = 1).",
+        opts: ["True", "False"],
+        ans: 1,
+        exp: "False! None of the common weighted index numbers (Laspeyres, Paasche, or Fisher) satisfy the Circular Test—only simple geometric mean of price relatives or fixed-weight aggregates do."
+      }
+    ];
+
+    let quizAnswers = {};
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        div.innerHTML = `
+          <div class="quiz-q-title">${item.q}</div>
+          <div class="quiz-opts">
+            ${item.opts.map((opt, oIdx) => `<button class="quiz-opt" type="button" onclick="answerQuiz(${idx}, ${oIdx}, this)">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${idx}">${item.exp}</div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('quizSummary').style.display = 'none';
+    }
+
+    function answerQuiz(qIdx, oIdx, btn) {
+      if (quizAnswers[qIdx] !== undefined) return;
+      quizAnswers[qIdx] = oIdx;
+      const allBtns = btn.closest('.quiz-q').querySelectorAll('.quiz-opt');
+      const correctIdx = quizData[qIdx].ans;
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === correctIdx) b.classList.add('is-correct');
+        else if (i === oIdx) b.classList.add('is-wrong');
+      });
+      document.getElementById(`qexp-${qIdx}`).classList.add('show');
+
+      if (Object.keys(quizAnswers).length === quizData.length) {
+        let score = 0;
+        quizData.forEach((q, i) => { if (quizAnswers[i] === q.ans) score++; });
+        const summary = document.getElementById('quizSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `
+          <div class="callout-title">🎓 Final Mastery Check Complete: ${score} / ${quizData.length} (${Math.round(score / quizData.length * 100)}%)</div>
+          ${score === quizData.length
+            ? "CONGRATULATIONS! You have completed all 14 interactive lessons of ECON107: Economics (ISRT, University of Dhaka). You are fully armed for both In-courses and the Year Final!"
+            : "Great finish! Review the explanations above and reset the quiz to score 100% on Lesson 14."}
+        `;
+      }
+    }
+
+    function resetQuiz() { quizAnswers = {}; renderQuiz(); }
+    renderQuiz();
+  </script>
+</body>
+</html>

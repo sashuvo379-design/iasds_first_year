@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 11: Taylor &amp; Maclaurin Series + Leibnitz's Theorem | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #312e81 0%, #7c3aed 48%, #ec4899 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.86rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Leibnitz term cards */
+    .term-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .term-chip {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .term-chip.zero {
+      opacity: 0.55;
+      border-style: dashed;
+    }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 11: Taylor, Maclaurin &amp; Leibnitz</h2>
+      <p>Module 4 of 5 &bull; Series &amp; $n$-th Derivatives</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Series &amp; Leibnitz Theory</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Interactive Mastery Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 11.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">2nd Incourse 2025</span>
+      <span class="source-pill">Year Final 2025</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 11 of 15</span>
+        <span class="hero-badge">High Yield: 2nd In-course 2025 Q3 &amp; Final 2025 Q4–Q5</span>
+        <span class="hero-badge">Interactive Web Lab</span>
+      </div>
+      <h1>Successive Differentiation, Leibnitz's Theorem &amp; Taylor/Maclaurin Series</h1>
+      <p>
+        Enter Module 4! Slide polynomial degree $n$ to watch Maclaurin and Taylor polynomials hug $e^x$, $\sin x$,
+        $\cos x$, and $\frac{1}{1-x}$ over wider and wider intervals, test the 5-decimal-place error bound for
+        $\sin 3^\circ$, and expand $n$-th derivatives of products using Leibnitz's Theorem.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-hugger', this)">Taylor / Maclaurin Hugger</button>
+          <button class="tab-btn" onclick="switchTab('tab-err', this)">Error Bound Lab (sin 3&deg; Exam)</button>
+          <button class="tab-btn" onclick="switchTab('tab-leib', this)">Leibnitz's Theorem Expander</button>
+        </div>
+
+        <!-- TAB 1: TAYLOR HUGGER -->
+        <div id="tab-hugger" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="hugCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="hugFunc">Choose Lecture 11 Function</label>
+                <select id="hugFunc" onchange="drawHugCanvas()">
+                  <option value="exp">Ex 1 &amp; 2: f(x) = eˣ (Maclaurin, x₀ = 0)</option>
+                  <option value="sin">Ex 3(a): f(x) = sin(x) (Odd powers only!)</option>
+                  <option value="cos">Ex 3(b): f(x) = cos(x) (Even powers only!)</option>
+                  <option value="geom">Ex 5: f(x) = 1 / (1 - x) (Converges on |x| &lt; 1!)</option>
+                  <option value="sqrt1">Ex 3 (Taylor): f(x) = &radic;x about x₀ = 1</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Polynomial Degree $n$</span><span id="hugNVal">n = 3</span></label>
+                <input type="range" id="hugNSlider" min="0" max="11" step="1" value="3" oninput="drawHugCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span>Probe Input $x$</span><span id="hugXVal">1.00</span></label>
+                <input type="range" id="hugXSlider" min="-3.5" max="3.5" step="0.1" value="1.0" oninput="drawHugCanvas()" />
+              </div>
+              <div class="readout-card" id="hugReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: ERROR BOUND LAB -->
+        <div id="tab-err" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="errCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label><span>Target Angle $\theta$ (Degrees)</span><span id="errDegVal">3&deg; (0.05236 rad)</span></label>
+                <input type="range" id="errDegSlider" min="1" max="45" step="1" value="3" oninput="drawErrCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span>Maclaurin Degree $n$ for $\sin x$</span><span id="errNVal">n = 3</span></label>
+                <input type="range" id="errNSlider" min="1" max="9" step="2" value="3" oninput="drawErrCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-primary" onclick="snapSin3()">Load 2025 Exam: sin 3&deg; (5-Dec Accuracy)</button>
+              </div>
+              <div class="readout-card" id="errReadout"></div>
+              <p style="font-size: 0.79rem; color: var(--text-muted);">
+                <strong>Accuracy Goal:</strong> 5 decimal place accuracy requires $|R_n(x)| \le 0.000005 = 5 \times 10^{-6}$. Notice the bar chart uses a log scale!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: LEIBNITZ EXPANDER -->
+        <div id="tab-leib" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="readout-card" style="background: var(--surface); border-radius: 12px; padding: 18px;">
+              <h4 style="margin-bottom: 10px; font-size: 0.95rem;">Term-by-Term Leibnitz Expansion: $(uv)_n = \sum_{r=0}^n \binom{n}{r} u_{n-r} v_r$</h4>
+              <div class="term-grid" id="leibTerms"></div>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="leibSelect">Choose Product $u(x) \cdot v(x)$ (Ashraful's Notes)</label>
+                <select id="leibSelect" onchange="renderLeibnitz()">
+                  <option value="xlnx">y = (ln x) &middot; x  (Terminates after 2 terms!)</option>
+                  <option value="x2exp">y = (e³ˣ sin 4x) &middot; x&sup2;  (Terminates after 3 terms!)</option>
+                  <option value="rec_tan">Diff. Eq.: (1 + x&sup2;) y₂ + 2x y₁ = 0 (for y = tan⁻¹x)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Derivative Order $n$</span><span id="leibNVal">n = 5</span></label>
+                <input type="range" id="leibNSlider" min="2" max="10" step="1" value="5" oninput="renderLeibnitz()" />
+              </div>
+              <div class="readout-card" id="leibSummary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory (Lecture 11 Slides + Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Local Quadratic, Maclaurin (Def 9.7.2) &amp; Taylor (Def 9.7.3) Polynomials</h3>
+        <p>
+          To approximate $f(x)$ near $x = x_0$, we match its value and first $n$ derivatives at $x_0$:
+          $$p_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(x_0)}{k!}(x - x_0)^k = f(x_0) + f'(x_0)(x - x_0) + \frac{f''(x_0)}{2!}(x - x_0)^2 + \cdots + \frac{f^{(n)}(x_0)}{n!}(x - x_0)^n$$
+          Setting $x_0 = 0$ gives the <strong>$n$-th Maclaurin polynomial</strong> (Definition 9.7.2). Taking $n = 2$ gives the <strong>local quadratic approximation</strong>.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Function $f(x)$</th>
+                <th>Maclaurin Series Expansion (Memorize!)</th>
+                <th>Convergence Interval</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>$e^x$</strong></td>
+                <td>$1 + x + \dfrac{x^2}{2!} + \dfrac{x^3}{3!} + \cdots = \displaystyle\sum_{k=0}^{\infty} \frac{x^k}{k!}$</td>
+                <td>$(-\infty, \infty)$</td>
+              </tr>
+              <tr>
+                <td><strong>$\sin x$</strong> (Odd powers)</td>
+                <td>$x - \dfrac{x^3}{3!} + \dfrac{x^5}{5!} - \dfrac{x^7}{7!} + \cdots = \displaystyle\sum_{k=0}^{\infty} (-1)^k \frac{x^{2k+1}}{(2k+1)!}$</td>
+                <td>$(-\infty, \infty)$</td>
+              </tr>
+              <tr>
+                <td><strong>$\cos x$</strong> (Even powers)</td>
+                <td>$1 - \dfrac{x^2}{2!} + \dfrac{x^4}{4!} - \dfrac{x^6}{6!} + \cdots = \displaystyle\sum_{k=0}^{\infty} (-1)^k \frac{x^{2k}}{(2k)!}$</td>
+                <td>$(-\infty, \infty)$</td>
+              </tr>
+              <tr>
+                <td><strong>$\dfrac{1}{1 - x}$</strong> (Geometric)</td>
+                <td>$1 + x + x^2 + x^3 + \cdots = \displaystyle\sum_{k=0}^{\infty} x^k$</td>
+                <td>$(-1, 1)$</td>
+              </tr>
+              <tr>
+                <td><strong>$\ln(1 + x)$</strong></td>
+                <td>$x - \dfrac{x^2}{2} + \dfrac{x^3}{3} - \dfrac{x^4}{4} + \cdots = \displaystyle\sum_{k=1}^{\infty} (-1)^{k-1}\frac{x^k}{k}$</td>
+                <td>$(-1, 1]$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Remainder Estimation &amp; Convergence (Method 1 vs. Method 2)</h3>
+        <p>
+          If $f(x) = p_n(x) + R_n(x)$ and $|f^{(n+1)}(t)| \le M$ for all $t$ between $x_0$ and $x$, then the <strong>Lagrange Remainder Bound (Method 1)</strong> guarantees:
+          $$|R_n(x)| \le \frac{M}{(n + 1)!}|x - x_0|^{n+1}$$
+        </p>
+        <div class="callout note-bn">
+          <strong>Ashraful's Shortcut — Method 1 vs. Method 2 (Alternating Series Error Bound):</strong>
+          &bull; <strong>Method 1 (Lagrange Bound):</strong> যেকোনো bounded-derivative function-এর জন্য খাটে। Squeeze theorem দিয়ে $0 \le |R_n(x)| \le \frac{M|x-x_0|^{n+1}}{(n+1)!} \to 0$ দেখিয়ে convergence প্রমাণ করা হয়।<br />
+          &bull; <strong>Method 2 (Alternating Series):</strong> চিহ্ন পালাবদল ($+ - + -$) হলে এবং পদগুলো কমে $0$-তে গেলে, error প্রথম বাদ পড়া পদের (first omitted term) পরমমানের চেয়ে ছোট বা সমান!
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.3 Successive Differentiation &amp; Leibnitz's Theorem</h3>
+        <p>
+          <strong>Leibnitz's Theorem</strong> generalizes the Product Rule to the $n$-th derivative of $y = u \cdot v$:
+          $$(uv)_n = u_n v + \binom{n}{1} u_{n-1} v_1 + \binom{n}{2} u_{n-2} v_2 + \cdots + \binom{n}{r} u_{n-r} v_r + \cdots + u v_n$$
+          <em>Pro Tip:</em> Always choose the polynomial factor (like $x$, $x^2$, or $1+x^2$) as <strong>$v$</strong> so that $v_2$ or $v_3$ becomes $0$ and the sum terminates in 2–3 terms!
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Standard Function $y$</th>
+                <th>Exact $n$-th Derivative $y_n$</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>$y = \ln(ax + b)$</td>
+                <td>$y_n = (-1)^{n-1}\dfrac{(n-1)!\,a^n}{(ax+b)^n}$</td>
+              </tr>
+              <tr>
+                <td>$y = \sin(ax + b)$ &nbsp;/&nbsp; $\cos(ax + b)$</td>
+                <td>$y_n = a^n\sin\!\left(ax + b + \dfrac{n\pi}{2}\right)$ &nbsp;/&nbsp; $a^n\cos\!\left(ax + b + \dfrac{n\pi}{2}\right)$</td>
+              </tr>
+              <tr>
+                <td>$y = e^{ax}\sin(bx + c)$</td>
+                <td>$y_n = (a^2 + b^2)^{n/2} e^{ax}\sin\!\left(bx + c + n\tan^{-1}\dfrac{b}{a}\right)$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Lecture 11 &amp; Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: Lecture 11 Ex 3 -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-blue">Lecture 11 &bull; Exercise 3 (Also Ashraful's Notes)</span>
+            <h3 style="margin-top: 6px;">Example 1: Local Quadratic Approximation of $\sqrt{x}$ at $x_0 = 1$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Find the local quadratic approximation of $f(x) = \sqrt{x}$ at $x_0 = 1$ and use it to approximate $\sqrt{1.1}$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Derivatives at $x_0 = 1$:</strong> $f(x) = x^{1/2} \implies f(1) = 1$; &nbsp; $f'(x) = \frac{1}{2}x^{-1/2} \implies f'(1) = \frac{1}{2}$; &nbsp; $f''(x) = -\frac{1}{4}x^{-3/2} \implies f''(1) = -\frac{1}{4}$.</div>
+          <div class="step-item"><strong>Step 2 — Plug into Quadratic Taylor Formula:</strong> $p_2(x) = f(1) + f'(1)(x-1) + \dfrac{f''(1)}{2!}(x-1)^2 = 1 + \dfrac{1}{2}(x - 1) - \dfrac{1}{8}(x - 1)^2$.</div>
+          <div class="step-item"><strong>Step 3 — Approximate $\sqrt{1.1}$:</strong> Substitute $x = 1.1$ ($x - 1 = 0.1$): $p_2(1.1) = 1 + 0.5(0.1) - 0.125(0.01) = 1 + 0.05 - 0.00125 = \mathbf{1.04875}$. (Calculator exact: $1.048809$ — much tighter than linear $1.05$!)</div>
+        </div>
+      </div>
+
+      <!-- Example 2: Convergence of cos x via Squeeze Theorem -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's 8-Step Template &bull; Convergence Proof</span>
+            <h3 style="margin-top: 6px;">Example 2: Prove Maclaurin Series for $\cos x$ Converges for All $x \in \mathbb{R}$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Show that $\lim_{n \to \infty} R_n(x) = 0$ for $f(x) = \cos x$ and every real number $x$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Bound All Derivatives:</strong> Every derivative $f^{(n+1)}(t)$ of $\cos x$ is $\pm\sin t$ or $\pm\cos t$, so $|f^{(n+1)}(t)| \le 1$ everywhere. Take $M = 1$.</div>
+          <div class="step-item"><strong>Step 2 — Apply Remainder Bound + Lower Bound:</strong> Since an absolute value is never negative, $0 \le |R_n(x)| \le \dfrac{1 \cdot |x|^{n+1}}{(n + 1)!}$.</div>
+          <div class="step-item"><strong>Step 3 — Limit &amp; Squeeze Theorem:</strong> For any fixed $x \in \mathbb{R}$, factorial $(n+1)!$ grows faster than $|x|^{n+1}$, so $\lim_{n \to \infty} \dfrac{|x|^{n+1}}{(n+1)!} = 0$. By the Squeeze Theorem, $\lim_{n \to \infty} |R_n(x)| = 0 \implies \cos x = \sum_{k=0}^\infty (-1)^k \frac{x^{2k}}{(2k)!}$ for all $x \in \mathbb{R}$. $\blacksquare$</div>
+        </div>
+      </div>
+
+      <!-- Example 3: Leibnitz Recurrence Proof -->
+      <div class="example-card" data-ex="ex3">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Leibnitz's Theorem Proof</span>
+            <h3 style="margin-top: 6px;">Example 3: If $y = \ln\!\left(x + \sqrt{x^2 + 1}\right)$, Show $(x^2+1)y_{n+2} + (2n+1)xy_{n+1} + n^2 y_n = 0$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex3')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex3')">Reset</button>
+          </div>
+        </div>
+        <p>Use successive differentiation to build a second-order ODE, then apply Leibnitz's Theorem $n$ times.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Find $y_1$ and Clear the Square Root:</strong> $y_1 = \dfrac{1 + \frac{x}{\sqrt{x^2+1}}}{x + \sqrt{x^2+1}} = \dfrac{1}{\sqrt{x^2 + 1}} \implies (x^2 + 1)y_1^2 = 1$.</div>
+          <div class="step-item"><strong>Step 2 — Differentiate Again &amp; Divide by $2y_1$:</strong> $2(x^2 + 1)y_1 y_2 + 2x y_1^2 = 0 \implies (x^2 + 1)y_2 + x y_1 = 0$.</div>
+          <div class="step-item"><strong>Step 3 — Apply Leibnitz's Theorem $n$ Times:</strong>
+            &bull; $[(x^2+1)y_2]_n = (x^2+1)y_{n+2} + n(2x)y_{n+1} + \frac{n(n-1)}{2}(2)y_n$.<br />
+            &bull; $[x y_1]_n = x y_{n+1} + n(1) y_n$.
+          </div>
+          <div class="step-item"><strong>Step 4 — Combine Like Derivatives:</strong> $(x^2+1)y_{n+2} + (2n + 1)x y_{n+1} + [n(n-1) + n]y_n = 0 \implies \mathbf{(x^2+1)y_{n+2} + (2n+1)xy_{n+1} + n^2 y_n = 0}$. $\blacksquare$</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Filtered MATH104)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: 2nd Incourse 2025 Q3 & Final 2025 Q5(a) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">2nd In-course 2025 Q3 &amp; Year Final 2025 Q5(a)</span>
+          <span class="pill pill-amber">4–5 Marks (Direct Repeat!)</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Use the Maclaurin series for $\sin x$ to approximate $\sin 3^\circ$ to <strong>five decimal place accuracy</strong>.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> Convert $3^\circ$ to radians FIRST ($x = \frac{\pi}{60} \approx 0.05236$). Five decimal place accuracy means error $\le 0.000005 = 5 \times 10^{-6}$. Test $\frac{x^{n+1}}{(n+1)!}$ for $n = 1, 2, 3$!
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          1. Convert to radians: $3^\circ = 3 \times \dfrac{\pi}{180} = \dfrac{\pi}{60} \approx 0.0523599\text{ rad}$.<br />
+          2. For $f(x) = \sin x$, all derivatives satisfy $|f^{(n+1)}(t)| \le 1$ ($M = 1$). We need $|R_n(x)| \le \dfrac{|x|^{n+1}}{(n+1)!} \le 0.000005$:<br />
+          &bull; $n = 1$: $\dfrac{(0.05236)^2}{2!} \approx 0.00137 > 0.000005$ (too big).<br />
+          &bull; $n = 2$: $\dfrac{(0.05236)^3}{3!} \approx 0.0000239 > 0.000005$ (still too big).<br />
+          &bull; $n = 3$: $\dfrac{(0.05236)^4}{4!} \approx 3.13 \times 10^{-7} < 0.000005$ <strong>✓ (Sufficient!)</strong><br />
+          3. Evaluate $p_3(x) = x - \dfrac{x^3}{3!}$ at $x = \dfrac{\pi}{60}$:
+          $$\sin 3^\circ \approx 0.0523599 - \frac{(0.0523599)^3}{6} = 0.0523599 - 0.0000239 = \mathbf{0.05234} \;\;(\text{to 5 dec. places})$$
+          *(Verify this live in Tab 2 of the Sandbox!)*
+        </div>
+      </div>
+
+      <!-- Exam Q2: Year Final 2025 Q4(c) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Year Final Exam 2025 &bull; Q4(c)</span>
+          <span class="pill pill-amber">3 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> If $y = \sin ax + \cos ax$, then show that $y_n = a^n\left[1 + (-1)^n \sin 2ax\right]^{1/2}$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Proof</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Full Proof:</strong><br />
+          Apply the standard $n$-th derivative formulas:
+          $$y_n = a^n \sin\!\left(ax + \frac{n\pi}{2}\right) + a^n \cos\!\left(ax + \frac{n\pi}{2}\right) = a^n\left[\sin\!\left(ax + \frac{n\pi}{2}\right) + \cos\!\left(ax + \frac{n\pi}{2}\right)\right]$$
+          Rewrite the bracket as $\left[\left(\sin\theta + \cos\theta\right)^2\right]^{1/2}$ where $\theta = ax + \frac{n\pi}{2}$:
+          $$(\sin\theta + \cos\theta)^2 = \sin^2\theta + \cos^2\theta + 2\sin\theta\cos\theta = 1 + \sin(2\theta) = 1 + \sin(2ax + n\pi)$$
+          Since $\sin(2ax + n\pi) = (-1)^n \sin 2ax$ for every integer $n \ge 0$, we obtain:
+          $$y_n = a^n\left[1 + (-1)^n \sin 2ax\right]^{1/2} \quad \blacksquare$$
+        </div>
+      </div>
+
+      <!-- Exam Q3: Leibnitz H.W. & Classic Exam Proof -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-blue">Ashraful's Notes &bull; Leibnitz Exam Drill</span>
+          <span class="pill pill-purple">4 + 4 = 8 Marks</span>
+        </div>
+        <p>
+          <strong>(a)</strong> Find the $n$-th derivative of $y = x \ln x$ using Leibnitz's Theorem.<br />
+          <strong>(b)</strong> If $y = \tan^{-1} x$, prove that $(1 + x^2)y_{n+2} + 2(n + 1)x y_{n+1} + n(n + 1)y_n = 0$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm3-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm3-sol" class="toggle-box">
+          <strong>Part (a):</strong> Let $u = \ln x$ and $v = x$ (so $v_1 = 1$, $v_2 = 0$). Recall $u_n = (-1)^{n-1}\dfrac{(n-1)!}{x^n}$:<br />
+          $$(x\ln x)_n = u_n v + n u_{n-1} v_1 + 0 = (-1)^{n-1}\frac{(n-1)!}{x^n}\cdot x + n(-1)^{n-2}\frac{(n-2)!}{x^{n-1}}\cdot 1$$
+          Factor out $\dfrac{(-1)^{n-2}(n-2)!}{x^{n-1}}$:
+          $$(x\ln x)_n = \frac{(-1)^{n-2}(n-2)!}{x^{n-1}}[-(n-1) + n] = \mathbf{\frac{(-1)^{n-2}(n-2)!}{x^{n-1}}} \;\;(n \ge 2)$$
+          <strong>Part (b):</strong> $y_1 = \dfrac{1}{1+x^2} \implies (1+x^2)y_1 = 1$. Differentiate once: $(1+x^2)y_2 + 2x y_1 = 0$.<br />
+          Apply Leibnitz's Theorem $n$ times:<br />
+          $[(1+x^2)y_{n+2} + 2nx y_{n+1} + n(n-1)y_n] + [2x y_{n+1} + 2n y_n] = 0$<br />
+          Combine terms: $\mathbf{(1 + x^2)y_{n+2} + 2(n + 1)x y_{n+1} + n(n + 1)y_n = 0}$. $\blacksquare$
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: INTERACTIVE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Interactive Mastery Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawHugCanvas();
+      drawErrCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-hugger') drawHugCanvas();
+      if (id === 'tab-err') drawErrCanvas();
+      if (id === 'tab-leib') renderLeibnitz();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    /* ================= MATH HELPERS ================= */
+    function fact(k) {
+      let r = 1;
+      for (let i = 2; i <= k; i++) r *= i;
+      return r;
+    }
+    function nCr(n, r) {
+      if (r < 0 || r > n) return 0;
+      return Math.round(fact(n) / (fact(r) * fact(n - r)));
+    }
+
+    /* ================= CANVAS HELPERS ================= */
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#e2e8f0',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        amber: '#d97706',
+        red: '#dc2626'
+      };
+    }
+
+    function drawAxes(ctx, w, h, xMin, xMax, yMin, yMax, xStep = 1, yStep = 1) {
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+      const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+      ctx.strokeStyle = c.grid;
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+      }
+
+      ctx.strokeStyle = c.axis;
+      ctx.lineWidth = 1.8;
+      if (yMin <= 0 && yMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0)); ctx.stroke();
+      }
+      if (xMin <= 0 && xMax >= 0) {
+        ctx.beginPath(); ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h); ctx.stroke();
+      }
+
+      ctx.fillStyle = c.text;
+      ctx.font = '11px Inter, sans-serif';
+      for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+        if (Math.abs(x) > 1e-6) ctx.fillText(Math.round(x * 10) / 10, toX(x) - 6, toY(0) + 14);
+      }
+      for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+        if (Math.abs(y) > 1e-6) ctx.fillText(Math.round(y * 10) / 10, toX(0) + 6, toY(y) + 4);
+      }
+      return { toX, toY };
+    }
+
+    function plotFn(ctx, fn, xMin, xMax, yMin, yMax, toX, toY, color, width = 2.8, dash = []) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.setLineDash(dash);
+      ctx.beginPath();
+      let started = false;
+      const dx = (xMax - xMin) / 500;
+      const span = yMax - yMin;
+      for (let x = xMin; x <= xMax; x += dx) {
+        const y = fn(x);
+        if (y !== null && isFinite(y) && y >= yMin - span && y <= yMax + span) {
+          if (!started) { ctx.moveTo(toX(x), toY(y)); started = true; }
+          else ctx.lineTo(toX(x), toY(y));
+        } else { started = false; }
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ================= TAB 1: TAYLOR / MACLAURIN HUGGER ================= */
+    const hugPresets = {
+      exp: {
+        name: 'eˣ', x0: 0, xMin: -3.5, xMax: 3.5, yMin: -1.5, yMax: 7,
+        f: x => Math.exp(x),
+        poly: (x, n) => { let s = 0; for (let k = 0; k <= n; k++) s += Math.pow(x, k) / fact(k); return s; }
+      },
+      sin: {
+        name: 'sin(x)', x0: 0, xMin: -4.5, xMax: 4.5, yMin: -2.5, yMax: 2.5,
+        f: x => Math.sin(x),
+        poly: (x, n) => {
+          let s = 0;
+          for (let k = 0; 2*k + 1 <= n; k++) s += Math.pow(-1, k) * Math.pow(x, 2*k + 1) / fact(2*k + 1);
+          return s;
+        }
+      },
+      cos: {
+        name: 'cos(x)', x0: 0, xMin: -4.5, xMax: 4.5, yMin: -2.5, yMax: 2.5,
+        f: x => Math.cos(x),
+        poly: (x, n) => {
+          let s = 0;
+          for (let k = 0; 2*k <= n; k++) s += Math.pow(-1, k) * Math.pow(x, 2*k) / fact(2*k);
+          return s;
+        }
+      },
+      geom: {
+        name: '1 / (1 - x)', x0: 0, xMin: -2.0, xMax: 2.0, yMin: -3, yMax: 5,
+        f: x => Math.abs(1 - x) > 0.05 ? 1 / (1 - x) : null,
+        poly: (x, n) => { let s = 0; for (let k = 0; k <= n; k++) s += Math.pow(x, k); return s; }
+      },
+      sqrt1: {
+        name: '√x (about x₀ = 1)', x0: 1, xMin: -0.2, xMax: 3.2, yMin: -0.5, yMax: 2.5,
+        f: x => x >= 0 ? Math.sqrt(x) : null,
+        poly: (x, n) => {
+          let s = 1, term = 1, d = x - 1;
+          for (let k = 1; k <= n; k++) {
+            term *= (0.5 - (k - 1)) * d / k;
+            s += term;
+          }
+          return s;
+        }
+      }
+    };
+
+    function drawHugCanvas() {
+      const canvas = document.getElementById('hugCanvas');
+      const ctx = canvas.getContext('2d');
+      const key = document.getElementById('hugFunc').value;
+      const P = hugPresets[key];
+      const n = parseInt(document.getElementById('hugNSlider').value);
+      const xSl = document.getElementById('hugXSlider');
+      xSl.min = P.xMin + 0.2; xSl.max = P.xMax - 0.2;
+      let x0 = parseFloat(xSl.value);
+      if (x0 < P.xMin || x0 > P.xMax) x0 = P.x0 + 0.5;
+      document.getElementById('hugNVal').textContent = `n = ${n}`;
+      document.getElementById('hugXVal').textContent = x0.toFixed(2);
+
+      const { toX, toY } = drawAxes(ctx, canvas.width, canvas.height, P.xMin, P.xMax, P.yMin, P.yMax, 1, 1);
+      const c = getColors();
+
+      // Exact curve (Blue)
+      plotFn(ctx, P.f, P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.blue, 3);
+      // Taylor polynomial p_n(x) (Purple dashed)
+      plotFn(ctx, x => P.poly(x, n), P.xMin, P.xMax, P.yMin, P.yMax, toX, toY, c.purple, 2.8, [6, 4]);
+
+      // Probe points
+      const exactY = P.f(x0);
+      const polyY = P.poly(x0, n);
+      if (exactY !== null) {
+        ctx.fillStyle = c.blue; ctx.beginPath(); ctx.arc(toX(x0), toY(exactY), 6, 0, Math.PI*2); ctx.fill();
+      }
+      if (polyY >= P.yMin && polyY <= P.yMax) {
+        ctx.fillStyle = c.purple; ctx.beginPath(); ctx.arc(toX(x0), toY(polyY), 5.5, 0, Math.PI*2); ctx.fill();
+      }
+
+      const err = exactY !== null ? Math.abs(exactY - polyY) : null;
+      document.getElementById('hugReadout').innerHTML = `
+        <div class="readout-row"><span>Exact ${P.name} at x=${x0.toFixed(2)}:</span><strong style="color:var(--primary);">${exactY === null ? 'Undefined' : exactY.toFixed(5)}</strong></div>
+        <div class="readout-row"><span>Taylor p_${n}(${x0.toFixed(2)}):</span><strong style="color:var(--accent);">${polyY.toFixed(5)}</strong></div>
+        <div class="readout-row"><span>Actual Error |R_${n}|:</span><span class="pill ${err !== null && err < 0.01 ? 'pill-green' : 'pill-amber'}">${err === null ? '—' : err.toExponential(2)}</span></div>
+      `;
+    }
+
+    /* ================= TAB 2: ERROR BOUND LAB ================= */
+    function snapSin3() {
+      document.getElementById('errDegSlider').value = 3;
+      document.getElementById('errNSlider').value = 3;
+      drawErrCanvas();
+    }
+
+    function drawErrCanvas() {
+      const canvas = document.getElementById('errCanvas');
+      const ctx = canvas.getContext('2d');
+      const deg = parseInt(document.getElementById('errDegSlider').value);
+      const nSel = parseInt(document.getElementById('errNSlider').value);
+      const rad = deg * Math.PI / 180;
+      document.getElementById('errDegVal').textContent = `${deg}° (${rad.toFixed(5)} rad)`;
+      document.getElementById('errNVal').textContent = `n = ${nSel}`;
+
+      const c = getColors();
+      ctx.fillStyle = c.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw log10 error bar chart for n = 1, 2, 3, 5, 7
+      const ns = [1, 2, 3, 5, 7];
+      const tol = 5e-6; // 0.000005
+      const minLog = -12, maxLog = 0;
+      const toY = v => {
+        const lg = Math.max(minLog, Math.min(maxLog, Math.log10(Math.max(v, 1e-13))));
+        return 45 + ((maxLog - lg) / (maxLog - minLog)) * 270;
+      };
+
+      // Grid lines for powers of 10
+      ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
+      ctx.fillStyle = c.text; ctx.font = '11px Inter, sans-serif';
+      for (let p = 0; p >= -12; p -= 2) {
+        const y = toY(Math.pow(10, p));
+        ctx.beginPath(); ctx.moveTo(65, y); ctx.lineTo(canvas.width - 25, y); ctx.stroke();
+        ctx.fillText(`10^${p}`, 14, y + 4);
+      }
+
+      // 5-decimal accuracy threshold line (5e-6)
+      const tolY = toY(tol);
+      ctx.save(); ctx.setLineDash([6, 5]); ctx.strokeStyle = c.red; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(65, tolY); ctx.lineTo(canvas.width - 25, tolY); ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle = c.red; ctx.font = 'bold 11px Inter, sans-serif';
+      ctx.fillText('5-Dec Accuracy Target (5 × 10⁻⁶)', 210, tolY - 6);
+
+      // Bars
+      const barW = 60, gap = 36, startX = 95;
+      ns.forEach((n, idx) => {
+        const bound = Math.pow(rad, n + 1) / fact(n + 1);
+        const bx = startX + idx * (barW + gap);
+        const by = toY(bound);
+        const pass = bound <= tol;
+        ctx.fillStyle = (n === nSel) ? (pass ? c.green : c.amber) : (pass ? 'rgba(5,150,105,0.35)' : 'rgba(37,99,235,0.35)');
+        ctx.fillRect(bx, by, barW, 315 - by);
+        if (n === nSel) {
+          ctx.strokeStyle = c.text; ctx.lineWidth = 2;
+          ctx.strokeRect(bx, by, barW, 315 - by);
+        }
+        ctx.fillStyle = c.text; ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText(`n = ${n}`, bx + 14, 336);
+        ctx.font = '10px Inter, sans-serif';
+        ctx.fillText(bound.toExponential(1), bx + 4, by - 5);
+      });
+
+      // Compute approx sin(rad)
+      let approx = 0;
+      for (let k = 0; 2*k + 1 <= nSel; k++) {
+        approx += Math.pow(-1, k) * Math.pow(rad, 2*k + 1) / fact(2*k + 1);
+      }
+      const exact = Math.sin(rad);
+      const boundSel = Math.pow(rad, nSel + 1) / fact(nSel + 1);
+      const ok = boundSel <= tol;
+
+      document.getElementById('errReadout').innerHTML = `
+        <div class="readout-row"><span>p_${nSel}(${deg}°) Approx:</span><strong>${approx.toFixed(7)}</strong></div>
+        <div class="readout-row"><span>Exact sin(${deg}°):</span><strong>${exact.toFixed(7)}</strong></div>
+        <div class="readout-row"><span>Lagrange Bound |R_${nSel}| ≤:</span><span class="pill ${ok ? 'pill-green' : 'pill-red'}">${boundSel.toExponential(2)}</span></div>
+        <div class="readout-row"><span>5-Decimal Verdict:</span>${ok ? '<span class="pill pill-green">ACHIEVED! (≤ 5×10⁻⁶)</span>' : '<span class="pill pill-red">Need higher n</span>'}</div>
+      `;
+    }
+
+    /* ================= TAB 3: LEIBNITZ EXPANDER ================= */
+    function renderLeibnitz() {
+      const mode = document.getElementById('leibSelect').value;
+      const n = parseInt(document.getElementById('leibNSlider').value);
+      document.getElementById('leibNVal').textContent = `n = ${n}`;
+
+      let terms = [], summary = '';
+      if (mode === 'xlnx') {
+        terms = [
+          { r: 0, coeff: nCr(n, 0), u: `u_${n} = (-1)^${n-1}·${n-1}! / x^${n}`, v: 'v = x', zero: false },
+          { r: 1, coeff: nCr(n, 1), u: `u_${n-1} = (-1)^${n-2}·${n-2}! / x^${n-1}`, v: 'v₁ = 1', zero: false },
+          { r: 2, coeff: nCr(n, 2), u: `u_${n-2}`, v: 'v₂ = 0 (Terminates!)', zero: true }
+        ];
+        summary = `<strong>Result for n = ${n}:</strong> (x ln x)_${n} = ${n % 2 === 0 ? '+' : '-'}${fact(n-2)} / x^${n-1} = (-1)^${n-2}(${n-2})! / x^${n-1}`;
+      } else if (mode === 'x2exp') {
+        terms = [
+          { r: 0, coeff: nCr(n, 0), u: `5^${n} e³ˣ sin(4x + ${n}α)`, v: 'v = x²', zero: false },
+          { r: 1, coeff: nCr(n, 1), u: `5^${n-1} e³ˣ sin(4x + ${n-1}α)`, v: 'v₁ = 2x', zero: false },
+          { r: 2, coeff: nCr(n, 2), u: `5^${n-2} e³ˣ sin(4x + ${n-2}α)`, v: 'v₂ = 2', zero: false },
+          { r: 3, coeff: nCr(n, 3), u: `u_${n-3}`, v: 'v₃ = 0 (Terminates!)', zero: true }
+        ];
+        summary = `<strong>Here α = tan⁻¹(4/3), r = √(3²+4²) = 5:</strong> Only 3 non-zero terms survive because d³/dx³(x²) = 0!`;
+      } else {
+        terms = [
+          { r: 0, coeff: 1, u: `y_${n+2}`, v: '(1 + x²)  [from first term]', zero: false },
+          { r: 1, coeff: `${2*n} + 2 = ${2*(n+1)}`, u: `y_${n+1}`, v: 'x  [combined from both terms]', zero: false },
+          { r: 2, coeff: `${n*(n-1)} + ${2*n} = ${n*(n+1)}`, u: `y_${n}`, v: '1  [combined constant coeff]', zero: false }
+        ];
+        summary = `<strong>Recurrence at n = ${n}:</strong> (1+x²)y_${n+2} + ${2*(n+1)}x y_${n+1} + ${n*(n+1)}y_${n} = 0`;
+      }
+
+      document.getElementById('leibTerms').innerHTML = terms.map(t => `
+        <div class="term-chip ${t.zero ? 'zero' : ''}">
+          <div><span class="pill ${t.zero ? 'pill-red' : 'pill-blue'}">r = ${t.r}</span> &nbsp; <strong>Coeff: ${t.coeff}</strong></div>
+          <div style="text-align:right;"><code>${t.u}</code> &times; <strong>${t.v}</strong></div>
+        </div>
+      `).join('');
+      document.getElementById('leibSummary').innerHTML = summary;
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. What is the local quadratic approximation of f(x) = √x at x₀ = 1? (Lecture 11 Ex 3)',
+        opts: [
+          '1 + ½(x - 1) + ⅛(x - 1)²',
+          '1 + ½(x - 1) - ⅛(x - 1)²',
+          '1 + ½x - ¼x²',
+          '1 - ½(x - 1) + ⅛(x - 1)²'
+        ],
+        ans: 1,
+        exp: 'f(1) = 1, f\'(1) = 1/2, f\'\'(1) = -1/4 ⇒ p₂(x) = 1 + ½(x-1) + (-1/4)/2! · (x-1)² = 1 + ½(x-1) - ⅛(x-1)².'
+      },
+      {
+        q: '2. For f(x) = sin x, why are p₃(x) and p₄(x) identical Maclaurin polynomials? (Lecture 11 Ex 3a)',
+        opts: [
+          'Because sin x is an even function',
+          'Because f⁽⁴⁾(0) = sin(0) = 0, so the x⁴ term vanishes',
+          'Because 4! = 0',
+          'Because sin x only converges up to n = 3'
+        ],
+        ans: 1,
+        exp: 'Since sin x is odd, all even derivatives at 0 are zero (f(0) = f\'\'(0) = f⁽⁴⁾(0) = 0), so p₂ₖ₊₁(x) = p₂ₖ₊₂(x).'
+      },
+      {
+        q: '3. To approximate sin 3° to 5 decimal places (error ≤ 5×10⁻⁶), what is the smallest Maclaurin degree n needed? (2025 Exams)',
+        opts: ['n = 1', 'n = 2', 'n = 3', 'n = 7'],
+        ans: 2,
+        exp: 'With x = π/60 ≈ 0.05236, |R₃| ≤ x⁴/4! ≈ 3.13 × 10⁻⁷ < 5 × 10⁻⁶, so n = 3 (just x - x³/6) suffices!'
+      },
+      {
+        q: '4. When applying Leibnitz\'s Theorem to find the n-th derivative of y = x² e³ˣ sin 4x, which factor should you choose as v?',
+        opts: ['v = e³ˣ', 'v = sin 4x', 'v = x² (since v₃ = 0 terminates the sum)', 'It does not matter'],
+        ans: 2,
+        exp: 'Choosing the polynomial v = x² ensures v₁ = 2x, v₂ = 2, and v₃ = 0, so the entire sum terminates in just 3 terms.'
+      },
+      {
+        q: '5. What is the n-th Maclaurin polynomial for f(x) = 1 / (1 - x)? (Lecture 11 Example 5)',
+        opts: [
+          '1 + x + x²/2! + ... + xⁿ/n!',
+          '1 + x + x² + ... + xⁿ',
+          '1 - x + x² - ... + (-1)ⁿxⁿ',
+          'x - x²/2 + x³/3 - ...'
+        ],
+        ans: 1,
+        exp: 'Since f⁽ᵏ⁾(0) = k!, the factorials k!/k! cancel out, leaving pₙ(x) = ∑ xᵏ = 1 + x + x² + ... + xⁿ.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      drawHugCanvas();
+      drawErrCanvas();
+      renderLeibnitz();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

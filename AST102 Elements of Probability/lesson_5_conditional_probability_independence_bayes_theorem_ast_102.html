@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5: Conditional Probability, Independence &amp; Bayes' Theorem — AST 102: Elements of Probability (ISRT, University of Dhaka)</title>
+
+  <!-- Google Fonts: Inter, Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            primary: '#4f46e5',
+            verified: '#10b981',
+            warning: '#f59e0b',
+            danger: '#f43f5e',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- KaTeX 0.16.11 via jsDelivr CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Prevent display math overflow on small mobile screens */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      accent-color: #4f46e5;
+    }
+
+    /* Subtle transition for reduced sample space dimming */
+    .cell-dimmed {
+      opacity: 0.22;
+      filter: grayscale(85%);
+    }
+  </style>
+</head>
+
+<body class="antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+  <!-- ===================================================================== -->
+  <!-- STICKY TOP ORIENTATION BAR & LIVE READING PROGRESS BAR                -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <!-- Live Top Reading Progress Bar -->
+    <div class="w-full h-[3px] bg-slate-100 overflow-hidden">
+      <div id="readingProgressBar" class="h-full bg-gradient-to-r from-[#4f46e5] via-indigo-500 to-[#10b981] transition-all duration-150 ease-out" style="width: 0%;"></div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Row: Breadcrumb & Exam Weight Badge -->
+      <div class="flex flex-wrap items-center justify-between gap-2 py-2.5 border-b border-slate-100">
+        <nav aria-label="Breadcrumb" class="flex items-center flex-wrap gap-1.5 text-xs sm:text-sm font-medium text-slate-500">
+          <span class="inline-flex items-center gap-1.5 font-bold text-slate-900">
+            <span class="w-2 h-2 rounded-full bg-[#4f46e5]"></span>
+            AST 102 · Module 1: Foundations
+          </span>
+          <span class="text-slate-300">→</span>
+          <span class="text-[#4f46e5] font-semibold">Lesson 5 of 14</span>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+            <svg class="w-3.5 h-3.5 text-[#f59e0b]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            1st Incourse + Year Final · High Weight
+          </span>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Smooth-Scroll Section Links -->
+      <nav aria-label="Lesson Sections" class="flex items-center gap-1.5 py-2 overflow-x-auto no-scrollbar">
+        <a href="#concepts" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#4f46e5] hover:bg-indigo-50 transition-colors">Concepts</a>
+        <a href="#lab" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#4f46e5] hover:bg-indigo-50 transition-colors">Interactive Lab</a>
+        <a href="#proofs" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-[#4f46e5] hover:bg-indigo-50 transition-colors">Proofs</a>
+        <a href="#exams" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-amber-700 hover:bg-amber-50 transition-colors">Exam Vault</a>
+        <a href="#quiz" class="shrink-0 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">Mastery Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- HERO HEADER                                                           -->
+  <!-- ===================================================================== -->
+  <section class="bg-gradient-to-br from-slate-900 via-[#1e1b4b] to-[#312e81] text-white py-12 sm:py-16 border-b border-indigo-950">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-indigo-100 text-xs font-semibold">~35 min study</span>
+          <span class="px-3 py-1 rounded-full bg-indigo-500/25 border border-indigo-400/30 text-indigo-100 text-xs font-semibold">ISRT Lecture Notes</span>
+          <span class="px-3 py-1 rounded-full bg-indigo-500/25 border border-indigo-400/30 text-indigo-100 text-xs font-semibold">Ross Ch. 3</span>
+          <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold">Past Papers 2017–2025</span>
+        </div>
+
+        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
+          Lesson 5: Conditional Probability, Independence &amp; Bayes' Theorem
+        </h1>
+        <p class="text-indigo-100/90 text-base sm:text-lg leading-relaxed mb-6">
+          How should probabilities update when new evidence arrives? Master reduced sample spaces, the general multiplication rule, the subtle boundary between independence and mutual exclusivity, and inverse probability via <strong>Bayes' Theorem</strong>—the centerpiece of Module 1 in <strong>AST 102 (ISRT, University of Dhaka)</strong>.
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+          <a href="#lab" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4f46e5] hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-950/40 transition-all">
+            Open Bayesian Workbench
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </a>
+          <a href="#exams" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-semibold text-sm transition-all">
+            Jump to ISRT Exam Vault
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- MAIN CONTENT                                                          -->
+  <!-- ===================================================================== -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: CORE CONCEPTS & INTUITION                                -->
+    <!-- =================================================================== -->
+    <section id="concepts" class="scroll-mt-32 space-y-10">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Section 01 • Core Theory</span>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Core Concepts &amp; Intuition</h2>
+        </div>
+        <p class="text-sm text-slate-500">ISRT Lecture Notes · Sheldon Ross Ch. 3 · Past Papers 2017–2025</p>
+      </div>
+
+      <!-- 1.1 CONDITIONAL PROBABILITY & REDUCED SAMPLE SPACE -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4f46e5] font-mono text-xs font-bold inline-flex items-center justify-center">01</span>
+            Conditional Probability &amp; Reduced Sample Space
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">Ross Ch. 3.2 · 1st Incourse 2024 Q4</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 space-y-3 text-sm text-slate-600 leading-relaxed">
+            <p>
+              For two events $A$ and $B$ with $P(B) > 0$, the <strong>conditional probability of $A$ given $B$</strong> is the probability that $A$ occurs once we know for certain that $B$ has already occurred:
+            </p>
+            <div class="p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-center text-base font-semibold text-indigo-950">
+              $$P(A \mid B) = \frac{P(A \cap B)}{P(B)}, \qquad P(B) > 0$$
+            </div>
+            <p>
+              <strong>Intuition (Reduced Sample Space):</strong> Knowing that $B$ occurred discards every outcome outside $B$. The sample space shrinks from $\Omega$ to $B$, and we measure what fraction of $B$ also lies inside $A$ (namely $A \cap B$).
+            </p>
+          </div>
+
+          <!-- Comparison Box: Unconditional vs Conditional -->
+          <div class="lg:col-span-5 rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3 text-xs sm:text-sm">
+            <div class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Unconditional vs. Conditional</div>
+            <div class="p-3 rounded-lg bg-white border border-slate-200">
+              <div class="font-bold text-slate-800 mb-0.5">Unconditional $P(A)$</div>
+              <p class="text-slate-600 text-xs">Evaluated over the <strong>entire original sample space $\Omega$</strong> with no prior information about other events.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-indigo-50/60 border border-indigo-200">
+              <div class="font-bold text-indigo-950 mb-0.5">Conditional $P(A \mid B)$</div>
+              <p class="text-indigo-900/80 text-xs">Evaluated over the <strong>reduced sample space $B$</strong>, rescaling probabilities by dividing by $P(B)$ so $P(B \mid B) = 1$.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Amber ISRT Exam Trap Callout -->
+        <div class="rounded-2xl border-2 border-amber-300 bg-amber-50/80 p-5 space-y-3">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#f59e0b] text-white font-extrabold text-sm">!</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-800">ISRT Exam Trap Callout · Year Final 2020 Q1(ii) &amp; Final Q1a(iv)</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#f43f5e] text-white text-[11px] font-bold">FALSE / DISPROVED</span>
+          </div>
+          <p class="text-sm font-bold text-slate-900">
+            "Prove or Disprove: Conditional probability is always less than unconditional probability."
+          </p>
+          <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+            <strong>Disproved!</strong> Conditional probability $P(A \mid B)$ can be <strong>greater than</strong>, <strong>equal to</strong>, or <strong>less than</strong> $P(A)$. Consider rolling a fair six-sided die ($\Omega = \{1,2,3,4,5,6\}$) with conditioning event $B = \{2, 4, 6\}$ ($P(B) = 1/2$):
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="bg-white rounded-xl p-3.5 border border-emerald-200">
+              <div class="font-bold text-[#10b981] mb-1">Case 1: $P(A \mid B) &gt; P(A)$</div>
+              <p class="text-slate-600">Let $A = \{2\}$ ($P(A) = \frac{1}{6}$).</p>
+              <p class="font-mono font-bold text-slate-900 mt-1">$P(A \mid B) = \frac{1/6}{1/2} = \frac{1}{3} &gt; \frac{1}{6}$</p>
+            </div>
+            <div class="bg-white rounded-xl p-3.5 border border-indigo-200">
+              <div class="font-bold text-[#4f46e5] mb-1">Case 2: $P(A \mid B) = P(A)$</div>
+              <p class="text-slate-600">Let $A = \{1, 2\}$ ($P(A) = \frac{1}{3}$).</p>
+              <p class="font-mono font-bold text-slate-900 mt-1">$P(A \mid B) = \frac{1/6}{1/2} = \frac{1}{3} = \frac{1}{3}$</p>
+            </div>
+            <div class="bg-white rounded-xl p-3.5 border border-rose-200">
+              <div class="font-bold text-[#f43f5e] mb-1">Case 3: $P(A \mid B) &lt; P(A)$</div>
+              <p class="text-slate-600">Let $A = \{1, 2, 3\}$ ($P(A) = \frac{1}{2}$).</p>
+              <p class="font-mono font-bold text-slate-900 mt-1">$P(A \mid B) = \frac{1/6}{1/2} = \frac{1}{3} &lt; \frac{1}{2}$</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 GENERAL MULTIPLICATION RULE -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4f46e5] font-mono text-xs font-bold inline-flex items-center justify-center">02</span>
+            General Multiplication Rule
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">Year Final 2025 Q3(a)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Two Events ($A$ and $B$)</div>
+            <div class="py-1 text-center font-semibold text-slate-900">
+              $$P(A \cap B) = P(A)P(B \mid A) = P(B)P(A \mid B)$$
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Rearranging the conditional probability definition lets us find joint probabilities sequentially—essential for sampling without replacement.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-200 space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Three Events ($A, B, C$) · Final 2025 Q3(a)</div>
+            <div class="py-1 text-center font-semibold text-indigo-950">
+              $$P(A \cap B \cap C) = P(A)\,P(B \mid A)\,P(C \mid A \cap B)$$
+            </div>
+            <p class="text-xs text-indigo-900/80 leading-relaxed">
+              <strong>Under Mutual Independence:</strong> $P(B \mid A) = P(B)$ and $P(C \mid A \cap B) = P(C)$, so the chain rule simplifies cleanly to:
+              $P(A \cap B \cap C) = P(A)P(B)P(C)$.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.3 INDEPENDENCE VS. MUTUAL EXCLUSIVITY -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4f46e5] font-mono text-xs font-bold inline-flex items-center justify-center">03</span>
+            Independence vs. Mutual Exclusivity
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">1st Incourse 2024 Q2(ii) · Year Final 2020 Q1(i)</span>
+        </div>
+
+        <p class="text-sm text-slate-600 leading-relaxed">
+          Two events $A$ and $B$ are <strong>statistically independent</strong> if and only if knowing one occurred does not change the probability of the other:
+          $$P(A \cap B) = P(A)P(B) \quad \Longleftrightarrow \quad P(A \mid B) = P(A) \;\text{ (when } P(B) &gt; 0\text{)}$$
+        </p>
+
+        <!-- Side-by-side comparison table -->
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-900 text-white text-xs uppercase tracking-wider">
+                <th class="py-3.5 px-5 font-bold">Property</th>
+                <th class="py-3.5 px-5 font-bold text-amber-300">Mutually Exclusive (Disjoint)</th>
+                <th class="py-3.5 px-5 font-bold text-emerald-300">Independent</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tr>
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Defining Equation</td>
+                <td class="py-3.5 px-5">$A \cap B = \emptyset \implies P(A \cap B) = 0$</td>
+                <td class="py-3.5 px-5">$P(A \cap B) = P(A) \cdot P(B)$</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Conditional Effect</td>
+                <td class="py-3.5 px-5"><strong>Maximal dependence:</strong> If $B$ occurs, $A$ becomes impossible ($P(A \mid B) = 0$).</td>
+                <td class="py-3.5 px-5"><strong>Zero dependence:</strong> Knowing $B$ leaves $A$'s probability unchanged ($P(A \mid B) = P(A)$).</td>
+              </tr>
+              <tr>
+                <td class="py-3.5 px-5 font-semibold text-slate-900">Venn Diagram</td>
+                <td class="py-3.5 px-5">Two separated, non-overlapping circles.</td>
+                <td class="py-3.5 px-5">Circles MUST overlap (if $P(A)&gt;0, P(B)&gt;0$) with overlap area equal to $P(A)P(B)$.</td>
+              </tr>
+              <tr class="bg-rose-50/70">
+                <td class="py-3.5 px-5 font-bold text-[#f43f5e]">Classic Exam Trap</td>
+                <td colspan="2" class="py-3.5 px-5 text-slate-800">
+                  If $P(A) &gt; 0$ and $P(B) &gt; 0$, then $P(A)P(B) &gt; 0 \neq 0$, so <strong>mutually exclusive events can NEVER be independent!</strong>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Complement Shortcut for Independent Events -->
+        <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="text-xs sm:text-sm text-emerald-950 space-y-1">
+            <div class="font-bold text-[#10b981] uppercase tracking-wider text-[11px]">Complement Shortcut · "At Least One Succeeds"</div>
+            <p>When $A_1, A_2, \dots, A_n$ are independent (e.g., multiple students solving a problem), compute the probability that <em>all fail</em> and subtract from 1:</p>
+          </div>
+          <div class="px-4 py-2.5 rounded-xl bg-white border border-emerald-200 text-center shrink-0">
+            $$P\!\left(\bigcup_{i=1}^n A_i\right) = 1 - \prod_{i=1}^n \big(1 - P(A_i)\big)$$
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.4 LAW OF TOTAL PROBABILITY & BAYES' THEOREM -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-7 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-[#4f46e5] font-mono text-xs font-bold inline-flex items-center justify-center">04</span>
+            Law of Total Probability &amp; Bayes' Theorem
+          </h3>
+          <span class="text-xs font-semibold text-slate-400">Ross Ch. 3.3 · Year Finals 2023–2025</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <!-- Inline SVG Partition Diagram -->
+          <div class="lg:col-span-5 rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
+            <svg viewBox="0 0 380 220" class="w-full h-auto" role="img" aria-label="Sample space Omega partitioned into B1, B2, B3 intersected by event A">
+              <!-- Sample Space Rectangle -->
+              <rect x="10" y="10" width="360" height="200" rx="14" fill="#ffffff" stroke="#334155" stroke-width="2" />
+              <!-- Partition B1, B2, B3 -->
+              <rect x="11" y="11" width="118" height="198" rx="12" fill="#eef2ff" />
+              <rect x="129" y="11" width="122" height="198" fill="#ecfdf5" />
+              <rect x="251" y="11" width="118" height="198" rx="12" fill="#fffbeb" />
+
+              <!-- Partition Dividers -->
+              <line x1="129" y1="10" x2="129" y2="210" stroke="#64748b" stroke-width="2" stroke-dasharray="5,4" />
+              <line x1="251" y1="10" x2="251" y2="210" stroke="#64748b" stroke-width="2" stroke-dasharray="5,4" />
+
+              <!-- Partition Labels -->
+              <text x="70" y="34" text-anchor="middle" font-size="14" font-weight="800" fill="#4f46e5">B₁</text>
+              <text x="190" y="34" text-anchor="middle" font-size="14" font-weight="800" fill="#059669">B₂</text>
+              <text x="310" y="34" text-anchor="middle" font-size="14" font-weight="800" fill="#d97706">B₃</text>
+              <text x="358" y="30" text-anchor="end" font-size="13" font-weight="800" fill="#334155">Ω</text>
+
+              <!-- Event A Oval intersecting all 3 partitions -->
+              <ellipse cx="190" cy="122" rx="135" ry="52" fill="#4f46e5" fill-opacity="0.16" stroke="#4f46e5" stroke-width="2.6" />
+              <text x="190" y="189" text-anchor="middle" font-size="13" font-weight="800" fill="#312e81">Event A = (A ∩ B₁) ∪ (A ∩ B₂) ∪ (A ∩ B₃)</text>
+
+              <!-- Intersection labels -->
+              <text x="93" y="126" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#312e81">A∩B₁</text>
+              <text x="190" y="126" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#065f46">A∩B₂</text>
+              <text x="287" y="126" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#92400e">A∩B₃</text>
+            </svg>
+            <p class="text-[11px] text-slate-500 text-center mt-1.5">
+              Partition $\{B_1, B_2, B_3\}$: mutually exclusive ($B_i \cap B_j = \emptyset$) and exhaustive ($\bigcup B_i = \Omega$).
+            </p>
+          </div>
+
+          <!-- Formulas & Color-Coded Badges -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Law of Total Probability</div>
+              <div class="text-center">
+                $$P(A) = \sum_{i=1}^{k} P(B_i)\,P(A \mid B_i)$$
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 space-y-3">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Bayes' Theorem (Inverse Probability)</div>
+              <div class="text-center text-base">
+                $$P(B_j \mid A) = \frac{P(B_j)\,P(A \mid B_j)}{\displaystyle\sum_{i=1}^{k} P(B_i)\,P(A \mid B_i)}$$
+              </div>
+              <div class="flex flex-wrap justify-center gap-2 pt-1 text-[11px] font-bold">
+                <span class="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">Prior: $P(B_j)$</span>
+                <span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200">Likelihood: $P(A \mid B_j)$</span>
+                <span class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-800 border border-slate-300">Total Evidence: $P(A)$</span>
+                <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">Posterior: $P(B_j \mid A)$</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: 4-TAB INTERACTIVE CONDITIONAL & BAYES WORKBENCH          -->
+    <!-- =================================================================== -->
+    <section id="lab" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Section 02 • Hands-On Workbench</span>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 mt-1">4-Tab Interactive Conditional &amp; Bayes Lab</h2>
+        </div>
+        <p class="text-sm text-slate-500">Visualize trees, unit-square mosaics, reduced sample spaces &amp; sequential draws</p>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Tab Bar -->
+        <div role="tablist" class="flex overflow-x-auto no-scrollbar border-b border-slate-200 bg-slate-50 p-2 gap-1.5">
+          <button type="button" role="tab" data-tab="bayes" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-[#4f46e5] text-white shadow-sm">
+            1. Bayesian Tree &amp; Area Visualizer
+          </button>
+          <button type="button" role="tab" data-tab="contingency" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            2. Reduced Space &amp; Independence
+          </button>
+          <button type="button" role="tab" data-tab="urn" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            3. Sequential Draws Lab
+          </button>
+          <button type="button" role="tab" data-tab="solvers" class="lab-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-200/70">
+            4. Parallel Problem Solvers
+          </button>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 1: BAYESIAN TREE & AREA VISUALIZER                          -->
+        <!-- =============================================================== -->
+        <div id="tab-bayes" class="lab-panel p-5 sm:p-6 space-y-6">
+          <!-- Presets Bar -->
+          <div class="flex flex-col gap-3 pb-4 border-b border-slate-100">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">Bayesian Tree &amp; Unit-Square Mosaic Visualizer</h3>
+                <p class="text-xs sm:text-sm text-slate-500">Load an authentic ISRT exam problem or customize priors $P(B_i)$ and likelihoods $P(A \mid B_i)$ live.</p>
+              </div>
+              <div class="inline-flex rounded-xl bg-slate-100 p-1 text-xs font-bold">
+                <button type="button" data-hcount="2" class="bayes-k-btn px-3 py-1.5 rounded-lg text-slate-600 transition-all">2 Hypotheses</button>
+                <button type="button" data-hcount="3" class="bayes-k-btn px-3 py-1.5 rounded-lg bg-white text-[#4f46e5] shadow-xs transition-all">3 Hypotheses</button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-bpreset="ls24" class="bayes-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all">LS-24 Microchips (Final 2023)</button>
+              <button type="button" data-bpreset="urns" class="bayes-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Three Urns (Final 2025)</button>
+              <button type="button" data-bpreset="boxes" class="bayes-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">3 Coin Boxes (1st Inc. 2025)</button>
+              <button type="button" data-bpreset="college" class="bayes-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">College Math (Final 2024)</button>
+              <button type="button" data-bpreset="rain" class="bayes-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Rain &amp; Football (Final 2025)</button>
+            </div>
+          </div>
+
+          <!-- Controls: Editable Hypotheses + Normalize Priors + Target Selector -->
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Evidence Label ($A$):</span>
+                <input id="bayesEventInput" type="text" value="Defective" maxlength="18" class="px-2.5 py-1 rounded-lg border border-slate-300 bg-white text-xs font-bold text-slate-800 w-32 focus:outline-none focus:ring-2 focus:ring-[#4f46e5]" />
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="bayesPriorSumBadge" class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">∑ Priors = 1.000</span>
+                <button type="button" id="bayesNormBtn" class="px-3 py-1 rounded-lg bg-[#4f46e5] hover:bg-indigo-700 text-white text-xs font-bold transition-colors">Normalize Priors to 1</button>
+              </div>
+            </div>
+
+            <div id="bayesRowsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- Target Hypothesis Highlighter -->
+            <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200 text-xs">
+              <span class="font-bold text-slate-600">Highlight Target Posterior $P(B_j \mid A)$:</span>
+              <div id="bayesTargetBtns" class="flex flex-wrap gap-1.5"></div>
+            </div>
+          </div>
+
+          <!-- Two Synchronized Visualizations Side-by-Side -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+            <!-- (a) SVG Probability Tree -->
+            <div class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-4 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">(a) Interactive Probability Tree</h4>
+                <span class="text-[11px] font-semibold text-[#10b981]">Green = Highlighted Posterior Path</span>
+              </div>
+              <div id="bayesTreeWrap" class="w-full overflow-x-auto"></div>
+            </div>
+
+            <!-- (b) Unit-Square Mosaic Area Chart -->
+            <div class="lg:col-span-5 rounded-2xl border border-slate-200 bg-white p-4 flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">(b) Unit-Square Mosaic Area Chart</h4>
+                <span class="text-[11px] text-slate-400">Width = $P(B_i)$, Height = $P(A \mid B_i)$</span>
+              </div>
+              <div id="bayesMosaicWrap" class="w-full"></div>
+              <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">
+                Each shaded rectangle has area $P(B_i \cap A)$. The posterior $P(B_j \mid A)$ is the highlighted shaded area divided by the total shaded area $P(A)$.
+              </p>
+            </div>
+          </div>
+
+          <!-- Live Step-by-Step Calculation Box -->
+          <div class="p-5 rounded-2xl bg-slate-900 text-white space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-3">
+              <div>
+                <div class="text-[11px] uppercase tracking-wider text-indigo-300 font-bold">Law of Total Probability &amp; Bayes' Theorem Output</div>
+                <div id="bayesTotalEq" class="text-sm font-mono text-slate-200 mt-1 overflow-x-auto"></div>
+              </div>
+              <div class="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-right">
+                <div class="text-[11px] text-slate-300">Total Evidence $P(A)$</div>
+                <div id="bayesTotalVal" class="text-xl font-extrabold font-mono text-amber-300">0.0390</div>
+              </div>
+            </div>
+
+            <div id="bayesPosteriorsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 2: REDUCED SAMPLE SPACE & INDEPENDENCE CHECKER              -->
+        <!-- =============================================================== -->
+        <div id="tab-contingency" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Reduced Sample Space &amp; Independence Checker (2×2 Table)</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Edit the 4 joint counts and click a condition button to watch the sample space shrink visually.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-cpreset="cars" class="cont-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all">Sports Car Buyers (1st Inc. 2024)</button>
+              <button type="button" data-cpreset="indep" class="cont-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Independent (Final 2025 Q2b)</button>
+              <button type="button" data-cpreset="mutex" class="cont-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Mutually Exclusive</button>
+            </div>
+          </div>
+
+          <!-- Condition Filter Buttons -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mr-1">Condition On:</span>
+            <button type="button" data-cond="none" class="cont-cond-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all">No Condition ($\Omega$)</button>
+            <button type="button" data-cond="B" class="cont-cond-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Given $B$ occurred</button>
+            <button type="button" data-cond="Bp" class="cont-cond-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Given $B'$ occurred</button>
+            <button type="button" data-cond="A" class="cont-cond-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Given $A$ occurred</button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Editable 2x2 Table -->
+            <div class="lg:col-span-7 overflow-x-auto">
+              <table class="w-full text-center border-collapse text-xs sm:text-sm rounded-2xl overflow-hidden border border-slate-200">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 font-bold">
+                    <th class="p-3 border border-slate-200 text-left">Event</th>
+                    <th id="thColB" class="p-3 border border-slate-200 text-[#4f46e5]">$B$ (Bucket Seats)</th>
+                    <th id="thColBp" class="p-3 border border-slate-200 text-slate-600">$B'$ (No Bucket)</th>
+                    <th class="p-3 border border-slate-200 bg-slate-200/60">Row Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td id="tdRowA" class="p-3 border border-slate-200 font-bold text-left text-[#4f46e5] bg-slate-50">$A$ (Alarm)</td>
+                    <td id="cellAB" class="p-2.5 border border-slate-200 transition-all">
+                      <input id="inAB" type="number" min="0" value="20" class="cont-input w-20 text-center px-2 py-1.5 rounded-lg border border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#4f46e5]" />
+                    </td>
+                    <td id="cellABp" class="p-2.5 border border-slate-200 transition-all">
+                      <input id="inABp" type="number" min="0" value="20" class="cont-input w-20 text-center px-2 py-1.5 rounded-lg border border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#4f46e5]" />
+                    </td>
+                    <td id="totRowA" class="p-3 border border-slate-200 font-mono font-bold bg-slate-50">40</td>
+                  </tr>
+                  <tr>
+                    <td id="tdRowAp" class="p-3 border border-slate-200 font-bold text-left text-slate-600 bg-slate-50">$A'$ (No Alarm)</td>
+                    <td id="cellApB" class="p-2.5 border border-slate-200 transition-all">
+                      <input id="inApB" type="number" min="0" value="10" class="cont-input w-20 text-center px-2 py-1.5 rounded-lg border border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#4f46e5]" />
+                    </td>
+                    <td id="cellApBp" class="p-2.5 border border-slate-200 transition-all">
+                      <input id="inApBp" type="number" min="0" value="50" class="cont-input w-20 text-center px-2 py-1.5 rounded-lg border border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#4f46e5]" />
+                    </td>
+                    <td id="totRowAp" class="p-3 border border-slate-200 font-mono font-bold bg-slate-50">60</td>
+                  </tr>
+                  <tr class="bg-slate-100 font-bold">
+                    <td class="p-3 border border-slate-200 text-left">Column Total</td>
+                    <td id="totColB" class="p-3 border border-slate-200 font-mono">30</td>
+                    <td id="totColBp" class="p-3 border border-slate-200 font-mono">70</td>
+                    <td id="totGrand" class="p-3 border border-slate-200 font-mono text-[#4f46e5]">100</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div id="contReducedBanner" class="mt-3 p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-950 font-medium"></div>
+            </div>
+
+            <!-- Live Metrics & Dependence Badge -->
+            <div class="lg:col-span-5 space-y-4">
+              <div id="contStatusBadge" class="p-4 rounded-2xl border-2 text-center"></div>
+
+              <div class="grid grid-cols-2 gap-3 text-center">
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-[11px] font-bold text-slate-500">Unconditional $P(A)$</div>
+                  <div id="contPA" class="text-xl font-extrabold font-mono text-slate-900 mt-0.5">0.4000</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200">
+                  <div class="text-[11px] font-bold text-[#4f46e5]">Conditional $P(A \mid B)$</div>
+                  <div id="contPAB" class="text-xl font-extrabold font-mono text-indigo-950 mt-0.5">0.6667</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                  <div class="text-[11px] font-bold text-slate-500">Conditional $P(A \mid B')$</div>
+                  <div id="contPABp" class="text-xl font-extrabold font-mono text-slate-900 mt-0.5">0.2857</div>
+                </div>
+                <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200">
+                  <div class="text-[11px] font-bold text-[#10b981]">Reverse $P(B \mid A)$</div>
+                  <div id="contPBA" class="text-xl font-extrabold font-mono text-emerald-950 mt-0.5">0.5000</div>
+                </div>
+              </div>
+
+              <div id="contProductCheck" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700 leading-relaxed"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 3: SEQUENTIAL DRAWS & DEPENDENCE LAB (MULTIPLICATION RULE)  -->
+        <!-- =============================================================== -->
+        <div id="tab-urn" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Sequential Draws &amp; Dependence Lab (Multiplication Rule)</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Compare drawing all Red balls <strong>without replacement (dependent)</strong> vs. <strong>with replacement (independent)</strong>.</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-upreset="final2025" class="urn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all">Final 2025 Q3(b): 3 Red, 2 Blue, 3 Draws</button>
+              <button type="button" data-upreset="deck2022" class="urn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Deck Scale (1st Inc. 2022 Q4): 4 Target, 48 Others</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Sliders & Toggle -->
+            <div class="lg:col-span-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-[#f43f5e]">Red (Target) Balls</span>
+                  <span id="urnRedVal" class="font-mono text-slate-900">3</span>
+                </div>
+                <input id="urnRedSlider" type="range" min="1" max="15" value="3" class="w-full" />
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-[#4f46e5]">Blue (Other) Balls</span>
+                  <span id="urnBlueVal" class="font-mono text-slate-900">2</span>
+                </div>
+                <input id="urnBlueSlider" type="range" min="1" max="48" value="2" class="w-full" />
+              </div>
+
+              <div>
+                <div class="flex justify-between text-xs font-bold mb-1">
+                  <span class="text-slate-700">Sequential Draws ($k$)</span>
+                  <span id="urnKVal" class="font-mono text-slate-900">3</span>
+                </div>
+                <input id="urnKSlider" type="range" min="2" max="4" value="3" class="w-full" />
+              </div>
+
+              <div class="pt-2 border-t border-slate-200">
+                <div class="text-xs font-bold text-slate-600 mb-2">Sampling Mode</div>
+                <div class="grid grid-cols-2 gap-2">
+                  <button type="button" data-umode="without" class="urn-mode-btn py-2 px-3 rounded-xl text-xs font-bold border-2 bg-[#4f46e5] text-white border-[#4f46e5] transition-all">Without Replacement<br/><span class="font-normal opacity-80">(Dependent)</span></button>
+                  <button type="button" data-umode="with" class="urn-mode-btn py-2 px-3 rounded-xl text-xs font-bold border-2 bg-white text-slate-600 border-slate-200 hover:border-indigo-300 transition-all">With Replacement<br/><span class="font-normal opacity-80">(Independent)</span></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual Draw Steps & Ball Urn -->
+            <div class="lg:col-span-7 space-y-4">
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Step-by-Step Multiplication Chain</span>
+                  <span id="urnDepTag" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">Dependent Events</span>
+                </div>
+                <div id="urnStepsWrap" class="flex flex-wrap items-center justify-center gap-2 py-2"></div>
+              </div>
+
+              <!-- Visual Ball Stages -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Urn Contents Before Each Draw</div>
+                <div id="urnBallsStage" class="space-y-2"></div>
+              </div>
+
+              <!-- Final Probability Card -->
+              <div class="p-4 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <div class="text-[11px] uppercase tracking-wider text-indigo-300 font-bold">Probability of All-Red Draws</div>
+                  <div id="urnFormulaSummary" class="text-xs font-mono text-slate-300 mt-0.5">P(R₁ ∩ R₂ ∩ R₃) = P(R₁)·P(R₂|R₁)·P(R₃|R₁∩R₂)</div>
+                </div>
+                <div class="text-left sm:text-right">
+                  <div id="urnFinalFrac" class="text-2xl font-extrabold font-mono text-emerald-400">1/10 = 0.1000</div>
+                </div>
+              </div>
+              <div id="urnExtraNote" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- TAB 4: PARALLEL PROBLEM SOLVERS (INDEPENDENT UNION LAB)         -->
+        <!-- =============================================================== -->
+        <div id="tab-solvers" class="lab-panel hidden p-5 sm:p-6 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Parallel Problem Solvers (Independent Union Lab)</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Use the complement shortcut $P(\text{at least one solves}) = 1 - \prod (1 - p_i)$ for 2–4 independent solvers.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" data-spreset="inc2024" class="solver-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all">1st Incourse 2024 Q7 (2/7, 4/7, 4/9)</button>
+              <button type="button" data-spreset="fin2023" class="solver-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all">Year Final 2023 Q2(d) (1/2, 1/3, 1/4)</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Controls -->
+            <div class="lg:col-span-5 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Number of Solvers</span>
+                <div class="inline-flex rounded-xl bg-slate-200/70 p-1 text-xs font-bold">
+                  <button type="button" data-scount="2" class="solver-k-btn px-3 py-1 rounded-lg text-slate-600">2</button>
+                  <button type="button" data-scount="3" class="solver-k-btn px-3 py-1 rounded-lg bg-white text-[#4f46e5] shadow-xs">3</button>
+                  <button type="button" data-scount="4" class="solver-k-btn px-3 py-1 rounded-lg text-slate-600">4</button>
+                </div>
+              </div>
+              <div id="solverSlidersWrap" class="space-y-3.5"></div>
+            </div>
+
+            <!-- Results & Stacked Bar -->
+            <div class="lg:col-span-7 space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-center">
+                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                  <div class="text-xs font-bold uppercase text-[#10b981]">$P(\text{At Least One Solves})$</div>
+                  <div id="solverSolvedOut" class="text-2xl sm:text-3xl font-extrabold font-mono text-emerald-950 mt-1">0.8299</div>
+                  <div id="solverSolvedPct" class="text-xs font-semibold text-emerald-700 mt-0.5">82.99%</div>
+                </div>
+                <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
+                  <div class="text-xs font-bold uppercase text-[#f43f5e]">$P(\text{None Solve})$</div>
+                  <div id="solverNoneOut" class="text-2xl sm:text-3xl font-extrabold font-mono text-rose-950 mt-1">0.1701</div>
+                  <div id="solverNonePct" class="text-xs font-semibold text-rose-700 mt-0.5">17.01%</div>
+                </div>
+              </div>
+
+              <!-- Stacked Horizontal Bar Chart -->
+              <div class="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
+                <div class="flex justify-between text-xs font-bold">
+                  <span class="text-[#10b981]">Problem Solved</span>
+                  <span class="text-[#f43f5e]">Unsolved (All Fail)</span>
+                </div>
+                <div class="h-8 w-full rounded-xl overflow-hidden flex border border-slate-200">
+                  <div id="solverBarSolved" class="bg-[#10b981] h-full flex items-center justify-center text-xs font-mono font-bold text-white transition-all duration-200" style="width: 82.99%;">83.0%</div>
+                  <div id="solverBarNone" class="bg-[#f43f5e] h-full flex items-center justify-center text-xs font-mono font-bold text-white transition-all duration-200" style="width: 17.01%;">17.0%</div>
+                </div>
+              </div>
+
+              <!-- Step-by-Step Substitution -->
+              <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Step-by-Step Complement Substitution</div>
+                <div id="solverStepFormula" class="text-sm text-slate-800 overflow-x-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: PROOFS & DERIVATIONS DRAWER                              -->
+    <!-- =================================================================== -->
+    <section id="proofs" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Section 03 • Exam Proofs</span>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Proofs &amp; Derivations Drawer</h2>
+        </div>
+        <p class="text-sm text-slate-500">5 high-frequency ISRT AST 102 theorem proofs — click any card to expand</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Proof 1 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-[#4f46e5] text-[11px] font-bold mb-1">Proof 1 · 1st Incourse 2024 Q2(i) &amp; Year Final 2019 Q1(b)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">If $A$ and $B$ are independent, then $A'$ and $B'$ are also independent</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Given that $A$ and $B$ are independent, we know $P(A \cap B) = P(A)P(B)$. We want to show $P(A' \cap B') = P(A')P(B')$.</p>
+            <p>By De Morgan's Law, $A' \cap B' = (A \cup B)'$. Therefore:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center space-y-1">
+              $$P(A' \cap B') = P\big((A \cup B)'\big) = 1 - P(A \cup B)$$
+              $$= 1 - \big[P(A) + P(B) - P(A \cap B)\big] = 1 - P(A) - P(B) + P(A)P(B)$$
+            </div>
+            <p>Factor the right-hand side by grouping:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950">
+              $$P(A' \cap B') = \big(1 - P(A)\big) - P(B)\big(1 - P(A)\big) = \big(1 - P(A)\big)\big(1 - P(B)\big) = P(A')P(B') \quad \blacksquare$$
+            </div>
+            <p class="text-xs text-slate-500">Hence $A'$ and $B'$ are independent.</p>
+          </div>
+        </div>
+
+        <!-- Proof 2 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-rose-50 text-[#f43f5e] text-[11px] font-bold mb-1">Proof 2 · Year Final 2020 Q1(ii) &amp; Final Q1a(iv)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Prove or Disprove: "Conditional probability is always less than unconditional probability"</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong class="text-[#f43f5e]">DISPROVED (False).</strong> Let a fair six-sided die be rolled ($\Omega = \{1,2,3,4,5,6\}$), and fix $B = \{2, 4, 6\}$ so $P(B) = \frac{1}{2}$.</p>
+            <ul class="list-disc list-inside space-y-1.5">
+              <li><strong>Greater than ($&gt;$):</strong> Let $A = \{2\}$. Then $P(A) = \frac{1}{6}$, while $P(A \mid B) = \frac{P(\{2\})}{P(\{2,4,6\})} = \frac{1/6}{1/2} = \frac{1}{3} &gt; \frac{1}{6}$. (Directly disproves the claim!)</li>
+              <li><strong>Equal to ($=$):</strong> Let $A = \{1, 2\}$. Then $P(A) = \frac{2}{6} = \frac{1}{3}$, and $P(A \mid B) = \frac{P(\{2\})}{1/2} = \frac{1}{3} = P(A)$ (independent events).</li>
+              <li><strong>Less than ($&lt;$):</strong> Let $A = \{1, 2, 3\}$. Then $P(A) = \frac{3}{6} = \frac{1}{2}$, while $P(A \mid B) = \frac{1/6}{1/2} = \frac{1}{3} &lt; \frac{1}{2}$.</li>
+            </ul>
+            <p class="text-xs text-slate-500">Thus $P(A \mid B)$ may be larger than, equal to, or smaller than $P(A)$. $\blacksquare$</p>
+          </div>
+        </div>
+
+        <!-- Proof 3 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-[#4f46e5] text-[11px] font-bold mb-1">Proof 3 · Year Final 2024 Q3(b) &amp; 1st Incourse 2017 Q1a(ii)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Lower Bound on Conditional Probability: $P(B \mid A) \ge 1 - \dfrac{1-p_2}{p_1}$ and $P(A \mid B) \ge \dfrac{a+b-1}{b}$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p>Let $P(A) = p_1 &gt; 0$ and $P(B) = p_2 &gt; 0$. By Bonferroni's inequality (since $P(A \cup B) \le 1$):</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$P(A \cap B) = P(A) + P(B) - P(A \cup B) \ge P(A) + P(B) - 1 = p_1 + p_2 - 1$$
+            </div>
+            <p>Divide both sides by $P(A) = p_1 &gt; 0$ (preserving the inequality direction):</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950">
+              $$P(B \mid A) = \frac{P(A \cap B)}{P(A)} \ge \frac{p_1 + p_2 - 1}{p_1} = \frac{p_1 - (1 - p_2)}{p_1} = 1 - \frac{1 - p_2}{p_1} \quad \blacksquare$$
+            </div>
+            <p class="text-xs text-slate-600">
+              <strong>1st Incourse 2017 Q1a(ii) Equivalent Form:</strong> Setting $P(A)=a$ and $P(B)=b &gt; 0$ and dividing $P(A \cap B) \ge a + b - 1$ by $b$ yields $P(A \mid B) \ge \dfrac{a + b - 1}{b}$.
+            </p>
+          </div>
+        </div>
+
+        <!-- Proof 4 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-indigo-50 text-[#4f46e5] text-[11px] font-bold mb-1">Proof 4 · Year Final 2020 Q1(iii) &amp; 1st Incourse 2017 Q1a(i)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Conditional Probability Axioms: $P(A' \mid B) + P(A \mid B) = 1$ and $B \subset A \implies P(A \mid B) = 1$</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong>Part (a): Prove $P(A' \mid B) + P(A \mid B) = 1$ (for $P(B) &gt; 0$).</strong></p>
+            <p>Notice that $(A' \cap B)$ and $(A \cap B)$ are mutually exclusive with $(A' \cap B) \cup (A \cap B) = B$. Hence $P(A' \cap B) + P(A \cap B) = P(B)$:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$P(A' \mid B) + P(A \mid B) = \frac{P(A' \cap B)}{P(B)} + \frac{P(A \cap B)}{P(B)} = \frac{P(A' \cap B) + P(A \cap B)}{P(B)} = \frac{P(B)}{P(B)} = 1 \quad \blacksquare$$
+            </div>
+            <p><strong>Part (b): Prove that if $B \subset A$ (with $P(B) &gt; 0$), then $P(A \mid B) = 1$.</strong></p>
+            <p>Since $B \subset A$, every element of $B$ is in $A$, so $A \cap B = B$. Therefore:</p>
+            <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center text-emerald-950">
+              $$P(A \mid B) = \frac{P(A \cap B)}{P(B)} = \frac{P(B)}{P(B)} = 1 \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Proof 5 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <button type="button" class="accordion-toggle w-full flex items-center justify-between gap-4 p-5 text-left hover:bg-slate-50 transition-colors" aria-expanded="false">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded bg-rose-50 text-[#f43f5e] text-[11px] font-bold mb-1">Proof 5 · 1st Incourse 2024 Q2(ii) &amp; Year Final 2020 Q1(i)</span>
+              <div class="font-bold text-slate-900 text-sm sm:text-base">Prove or Disprove: "Mutually exclusive events are also independent"</div>
+            </div>
+            <svg class="accordion-icon w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="accordion-panel hidden px-5 pb-5 border-t border-slate-100 pt-4 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <p><strong class="text-[#f43f5e]">DISPROVED (False in general).</strong></p>
+            <p>Suppose $A$ and $B$ are mutually exclusive ($A \cap B = \emptyset$), which forces $P(A \cap B) = 0$. For $A$ and $B$ to also be independent, we would need:</p>
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-center">
+              $$P(A)P(B) = P(A \cap B) = 0$$
+            </div>
+            <ul class="list-disc list-inside space-y-1.5">
+              <li><strong>Positive-Probability Case ($P(A) &gt; 0$ and $P(B) &gt; 0$):</strong> Then $P(A)P(B) &gt; 0 \neq 0$, so $A$ and $B$ can <strong>NEVER</strong> be independent! (Example on a fair die: $A = \{1,3,5\}$ and $B = \{2,4,6\}$ are mutually exclusive, yet $P(A \cap B) = 0 \neq \frac{1}{2}\cdot\frac{1}{2} = \frac{1}{4}$.)</li>
+              <li><strong>Zero-Probability Edge Case:</strong> The <em>only</em> trivial exception occurs if $P(A) = 0$ or $P(B) = 0$ (e.g., $A = \emptyset$), in which case $P(A \cap B) = 0 = P(A)P(B)$ holds vacuously.</li>
+            </ul>
+            <p class="text-xs text-slate-500">Hence the blanket claim "mutually exclusive events are also independent" is FALSE. $\blacksquare$</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 4: PAST ISRT EXAM VAULT                                     -->
+    <!-- =================================================================== -->
+    <section id="exams" class="scroll-mt-32">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-[#f59e0b]">Section 04 • Authentic Archive</span>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Past ISRT Exam Vault (AST 102)</h2>
+        </div>
+        <p class="text-sm text-slate-500">5 authentic exam sets (2023–2025) with full worked solutions</p>
+      </div>
+
+      <div class="space-y-5">
+
+        <!-- Exam 1: Year Final 2025 Q3(c & e) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2025 · Q3(c) [4 Marks] &amp; Q3(e)</span>
+              <span class="text-xs text-slate-400 font-medium">AST 102 · ISRT, University of Dhaka</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q3(c):</strong> The probability that it rains on a given day is $0.6$. If it rains, the probability that friends play football is $0.2$; if it does not rain, the probability rises to $0.8$. Find $P(\text{Rain} \cap \text{Football})$, $P(\text{No Rain} \cap \text{Football})$, and $P(\text{Football})$.</p>
+              <p><strong>Q3(e):</strong> Three urns contain white and black balls: Urn 1 has (3W, 2B), Urn 2 has (2W, 3B), and Urn 3 has (4W, 1B). One urn is chosen at random and a drawn ball turns out to be white. What is the probability it came from the third urn?</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <div>
+              <p class="font-bold text-slate-900">Solution to Q3(c) — Rain &amp; Football:</p>
+              <ul class="list-disc list-inside space-y-1 mt-1">
+                <li>$P(R \cap F) = P(R)P(F \mid R) = 0.6 \times 0.2 = \mathbf{0.12}$</li>
+                <li>$P(R' \cap F) = P(R')P(F \mid R') = 0.4 \times 0.8 = \mathbf{0.32}$</li>
+                <li>By Law of Total Probability: $P(F) = 0.12 + 0.32 = \mathbf{0.44}$</li>
+              </ul>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <p class="font-bold text-slate-900">Solution to Q3(e) — Three Urns:</p>
+              <p>Priors: $P(U_1) = P(U_2) = P(U_3) = \frac{1}{3}$. Likelihoods of white: $P(W \mid U_1) = \frac{3}{5}$, $P(W \mid U_2) = \frac{2}{5}$, $P(W \mid U_3) = \frac{4}{5}$.</p>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 text-center my-2">
+                $$P(W) = \frac{1}{3}\left(\frac{3}{5} + \frac{2}{5} + \frac{4}{5}\right) = \frac{9}{15} = \frac{3}{5}$$
+                $$P(U_3 \mid W) = \frac{P(U_3)P(W \mid U_3)}{P(W)} = \frac{\frac{1}{3}\cdot\frac{4}{5}}{\frac{3}{5}} = \mathbf{\frac{4}{9} \approx 0.4444}$$
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam 2: 1st Incourse 2025 Q6 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-indigo-100 text-[#4f46e5] text-xs font-bold">1st Incourse 2025 · Q6 [4 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">Bertrand's Box Paradox · AST 102</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              Three identical boxes contain two coins each: Box I contains 2 Gold coins, Box II contains 2 Silver coins, and Box III contains 1 Gold and 1 Silver coin. A box is selected at random and one coin is drawn at random. If the drawn coin is Gold, what is the probability that the <em>other</em> coin in the same box is also Gold?
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p>The other coin is also Gold <strong>if and only if</strong> we selected Box I ($B_1$). Let $G$ be the event that the drawn coin is Gold.</p>
+            <p>Priors: $P(B_1) = P(B_2) = P(B_3) = \frac{1}{3}$. Likelihoods: $P(G \mid B_1) = 1$, $P(G \mid B_2) = 0$, $P(G \mid B_3) = \frac{1}{2}$.</p>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 text-center">
+              $$P(G) = \frac{1}{3}(1) + \frac{1}{3}(0) + \frac{1}{3}\left(\frac{1}{2}\right) = \frac{1}{2}$$
+              $$P(B_1 \mid G) = \frac{P(B_1)P(G \mid B_1)}{P(G)} = \frac{\frac{1}{3}\cdot 1}{\frac{1}{2}} = \mathbf{\frac{2}{3} \approx 0.6667}$$
+            </div>
+            <p class="text-xs text-slate-500">Intuition: There are 3 Gold coins in total—2 of them sit in Box I, so seeing Gold makes Box I twice as likely as Box III!</p>
+          </div>
+        </div>
+
+        <!-- Exam 3: Year Final 2023 Q4(d) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2023 · Q4(d) [5 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">AST 102 · ISRT, University of Dhaka</span>
+            </div>
+            <p class="text-sm text-slate-800 leading-relaxed">
+              A VCR manufacturer buys LS-24 microchips from three suppliers: 30% from Hall Electronics (3% defective), 20% from Schuller Sales (5% defective), and 50% from Crawford Components (4% defective). A randomly selected chip from the bin is found to be defective. What is the probability that it was manufactured by Schuller Sales?
+            </p>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p>Let $H, S, C$ denote Hall, Schuller, and Crawford, and $D$ denote defective. Given $P(H)=0.30, P(S)=0.20, P(C)=0.50$ and $P(D \mid H)=0.03, P(D \mid S)=0.05, P(D \mid C)=0.04$.</p>
+            <div class="bg-white p-3 rounded-xl border border-slate-200 text-center space-y-1">
+              $$P(D) = (0.30)(0.03) + (0.20)(0.05) + (0.50)(0.04) = 0.009 + 0.010 + 0.020 = 0.039$$
+              $$P(S \mid D) = \frac{(0.20)(0.05)}{0.039} = \frac{0.010}{0.039} = \mathbf{\frac{10}{39} \approx 0.2564}$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam 4: Year Final 2024 Q3(c & e) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">Year Final 2024 · Q3(c) [3 Marks] &amp; Q3(e) [3 Marks]</span>
+              <span class="text-xs text-slate-400 font-medium">AST 102 · ISRT, University of Dhaka</span>
+            </div>
+            <div class="space-y-2 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q3(c):</strong> In a college, 25% of boys and 10% of girls study mathematics. Girls constitute 60% of the student body. (i) Find $P(\text{Math})$. (ii) If a randomly selected student studies math, find $P(\text{Girl} \mid \text{Math})$.</p>
+              <p><strong>Q3(e):</strong> An insurance company insured 4,000 doctors, 8,000 teachers, and 12,000 businessmen. Probabilities of dying before age 58 are $0.01, 0.03,$ and $0.05$, respectively. If one insured individual dies before 58, find the probability he is a doctor.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-3 leading-relaxed">
+            <div>
+              <p class="font-bold text-slate-900">Solution to Q3(c) — College Math:</p>
+              <p>$P(G)=0.60, P(B)=0.40, P(M \mid G)=0.10, P(M \mid B)=0.25$.</p>
+              <p>(i) $P(M) = (0.60)(0.10) + (0.40)(0.25) = 0.06 + 0.10 = \mathbf{0.16}$.</p>
+              <p>(ii) $P(G \mid M) = \dfrac{0.06}{0.16} = \mathbf{\dfrac{3}{8} = 0.375}$.</p>
+            </div>
+            <div class="pt-2 border-t border-slate-200">
+              <p class="font-bold text-slate-900">Solution to Q3(e) — Insurance Policyholders:</p>
+              <p>Total insured $= 4000 + 8000 + 12000 = 24{,}000$. Priors: $P(Doc)=\frac{1}{6}$, $P(T)=\frac{2}{6}$, $P(Bus)=\frac{3}{6}$.</p>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 text-center my-1.5">
+                $$P(\text{Dies}) = \frac{1}{6}(0.01) + \frac{2}{6}(0.03) + \frac{3}{6}(0.05) = \frac{0.01 + 0.06 + 0.15}{6} = \frac{0.22}{6}$$
+                $$P(\text{Doctor} \mid \text{Dies}) = \frac{0.01/6}{0.22/6} = \mathbf{\frac{1}{22} \approx 0.0455}$$
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam 5: 1st Incourse 2024 Q4, Q5 & Q7 -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-indigo-100 text-[#4f46e5] text-xs font-bold">1st Incourse 2024 · Q4 [4], Q5 [3] &amp; Q7 [3]</span>
+              <span class="text-xs text-slate-400 font-medium">AST 102 · ISRT, University of Dhaka</span>
+            </div>
+            <div class="space-y-1.5 text-sm text-slate-800 leading-relaxed">
+              <p><strong>Q4:</strong> Among 100 sports car buyers, 40 bought alarm systems, 30 bought bucket seats, and 20 bought both. If a randomly chosen buyer bought an alarm system, what is the probability they also bought bucket seats?</p>
+              <p><strong>Q5:</strong> An Avon salesperson sells on the 1st visit with probability $0.4$. If she fails on the 1st visit, she sells on the 2nd visit with probability $0.65$ (never visits more than twice). Find $P(\text{makes a sale})$.</p>
+              <p><strong>Q7:</strong> A problem is given to three persons $P, Q, R$ whose chances of solving it are $\frac{2}{7}, \frac{4}{7}, \frac{4}{9}$ respectively. Find the probability that the problem is solved.</p>
+            </div>
+            <button type="button" class="accordion-toggle mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-[#4f46e5] text-slate-700 text-xs font-semibold transition-colors" aria-expanded="false">
+              <span>Show Model Solution</span>
+              <svg class="accordion-icon w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+          </div>
+          <div class="accordion-panel hidden bg-slate-50 border-t border-slate-200 p-5 sm:p-6 text-sm text-slate-700 space-y-2.5 leading-relaxed">
+            <p><strong>Q4:</strong> $P(\text{Bucket} \mid \text{Alarm}) = \dfrac{P(\text{Bucket} \cap \text{Alarm})}{P(\text{Alarm})} = \dfrac{20/100}{40/100} = \dfrac{20}{40} = \mathbf{0.50}$.</p>
+            <p><strong>Q5:</strong> $P(\text{Sale}) = P(S_1) + P(S_1' \cap S_2) = 0.4 + (1 - 0.4)(0.65) = 0.4 + 0.39 = \mathbf{0.79}$.</p>
+            <p><strong>Q7:</strong> Assuming independence, $P(\text{None solve}) = \left(1 - \frac{2}{7}\right)\left(1 - \frac{4}{7}\right)\left(1 - \frac{4}{9}\right) = \frac{5}{7}\cdot\frac{3}{7}\cdot\frac{5}{9} = \frac{75}{441} = \frac{25}{147}$. Therefore:
+              $$P(\text{Solved}) = 1 - \frac{25}{147} = \mathbf{\frac{122}{147} \approx 0.8299}$$
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 5: QUICK MASTERY CHECK (5 INTERACTIVE QUESTIONS)            -->
+    <!-- =================================================================== -->
+    <section id="quiz" class="scroll-mt-32">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#10b981]">Section 05 • Self-Assessment</span>
+            <h2 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Quick Mastery Check</h2>
+            <p class="text-sm text-slate-500 mt-1">Verify your mastery of Module 1's capstone lesson before advancing to Random Variables.</p>
+          </div>
+          <div class="flex items-center gap-3 self-start sm:self-center">
+            <div class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-bold shadow-sm">
+              Score: <span id="quizScore" class="text-emerald-400">0</span> / 5
+            </div>
+            <button type="button" id="quizResetBtn" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-colors">
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div id="quizContainer" class="divide-y divide-slate-100 mt-4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- FOOTER                                                                -->
+  <!-- ===================================================================== -->
+  <footer class="border-t border-slate-200 bg-white mt-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+      <a href="#concepts" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold border border-slate-200 transition-colors">
+        ← Lesson 4: Axioms &amp; Inequalities
+      </a>
+      <div class="text-slate-500 text-center">
+        <strong class="text-slate-800">AST 102: Elements of Probability</strong> · ISRT, University of Dhaka
+      </div>
+      <a href="#quiz" class="px-4 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-[#4f46e5] font-semibold border border-indigo-200 transition-colors">
+        Lesson 6: Random Variables, PMF, PDF &amp; CDF →
+      </a>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- INTERACTIVE APPLICATION JAVASCRIPT                                    -->
+  <!-- ===================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* -------------------------------------------------------------------
+         UTILITIES: KATEX AUTO-RENDER & EXACT FRACTION GCD
+      ------------------------------------------------------------------- */
+      function safeRenderMath(rootEl) {
+        try {
+          if (typeof renderMathInElement === 'function') {
+            renderMathInElement(rootEl || document.body, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false }
+              ],
+              throwOnError: false
+            });
+          }
+        } catch (err) {
+          console.warn('KaTeX auto-render skipped:', err);
+        }
+      }
+
+      function bigGcd(a, b) {
+        a = a < 0n ? -a : a;
+        b = b < 0n ? -b : b;
+        while (b !== 0n) {
+          const t = a % b;
+          a = b;
+          b = t;
+        }
+        return a === 0n ? 1n : a;
+      }
+
+      /* -------------------------------------------------------------------
+         1. READING PROGRESS BAR
+      ------------------------------------------------------------------- */
+      const progressBar = document.getElementById('readingProgressBar');
+      function updateScrollProgress() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+      }
+      window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
+      /* -------------------------------------------------------------------
+         2. COLLAPSIBLE ACCORDIONS (PROOFS & EXAM VAULT)
+      ------------------------------------------------------------------- */
+      document.querySelectorAll('.accordion-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.rounded-2xl');
+          const panel = card ? card.querySelector('.accordion-panel') : null;
+          const icon = btn.querySelector('.accordion-icon');
+          const labelSpan = btn.querySelector('span');
+          if (!panel) return;
+
+          const isOpen = !panel.classList.contains('hidden');
+          if (isOpen) {
+            panel.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            if (labelSpan && labelSpan.textContent === 'Hide Model Solution') {
+              labelSpan.textContent = 'Show Model Solution';
+            }
+          } else {
+            panel.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+            if (labelSpan && labelSpan.textContent === 'Show Model Solution') {
+              labelSpan.textContent = 'Hide Model Solution';
+            }
+            safeRenderMath(panel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         3. WORKBENCH TAB SWITCHER
+      ------------------------------------------------------------------- */
+      const labTabs = document.querySelectorAll('.lab-tab');
+      const labPanels = document.querySelectorAll('.lab-panel');
+
+      labTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-tab');
+          labTabs.forEach(t => {
+            t.classList.remove('bg-[#4f46e5]', 'text-white', 'shadow-sm');
+            t.classList.add('text-slate-600', 'hover:bg-slate-200/70');
+          });
+          tab.classList.add('bg-[#4f46e5]', 'text-white', 'shadow-sm');
+          tab.classList.remove('text-slate-600', 'hover:bg-slate-200/70');
+
+          labPanels.forEach(p => p.classList.add('hidden'));
+          const activePanel = document.getElementById('tab-' + target);
+          if (activePanel) {
+            activePanel.classList.remove('hidden');
+            safeRenderMath(activePanel);
+          }
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         4. TAB 1: BAYESIAN TREE & UNIT-SQUARE MOSAIC VISUALIZER
+      ------------------------------------------------------------------- */
+      const BAYES_COLORS = [
+        { hex: '#4f46e5', soft: '#eef2ff', border: '#c7d2fe', text: '#312e81' },
+        { hex: '#10b981', soft: '#ecfdf5', border: '#a7f3d0', text: '#065f46' },
+        { hex: '#f59e0b', soft: '#fffbeb', border: '#fde68a', text: '#92400e' }
+      ];
+
+      const BAYES_PRESETS = {
+        ls24: {
+          k: 3, event: 'Defective', target: 1,
+          hyps: [
+            { name: 'Hall', prior: 0.30, lik: 0.03 },
+            { name: 'Schuller', prior: 0.20, lik: 0.05 },
+            { name: 'Crawford', prior: 0.50, lik: 0.04 }
+          ]
+        },
+        urns: {
+          k: 3, event: 'White Ball', target: 2,
+          hyps: [
+            { name: 'Urn 1', prior: 0.3333, lik: 0.60 },
+            { name: 'Urn 2', prior: 0.3333, lik: 0.40 },
+            { name: 'Urn 3', prior: 0.3334, lik: 0.80 }
+          ]
+        },
+        boxes: {
+          k: 3, event: 'Gold Coin', target: 0,
+          hyps: [
+            { name: 'Box I (GG)', prior: 0.3333, lik: 1.00 },
+            { name: 'Box II (SS)', prior: 0.3333, lik: 0.00 },
+            { name: 'Box III (GS)', prior: 0.3334, lik: 0.50 }
+          ]
+        },
+        college: {
+          k: 2, event: 'Studies Math', target: 0,
+          hyps: [
+            { name: 'Girls', prior: 0.60, lik: 0.10 },
+            { name: 'Boys', prior: 0.40, lik: 0.25 },
+            { name: 'Other', prior: 0.00, lik: 0.20 }
+          ]
+        },
+        rain: {
+          k: 2, event: 'Play Football', target: 0,
+          hyps: [
+            { name: 'Rain', prior: 0.60, lik: 0.20 },
+            { name: 'No Rain', prior: 0.40, lik: 0.80 },
+            { name: 'Other', prior: 0.00, lik: 0.50 }
+          ]
+        }
+      };
+
+      let bayesState = {
+        k: 3,
+        event: 'Defective',
+        target: 1,
+        hyps: [
+          { name: 'Hall', prior: 0.30, lik: 0.03 },
+          { name: 'Schuller', prior: 0.20, lik: 0.05 },
+          { name: 'Crawford', prior: 0.50, lik: 0.04 }
+        ]
+      };
+
+      function buildBayesInputs() {
+        const container = document.getElementById('bayesRowsContainer');
+        container.className = bayesState.k === 2
+          ? 'grid grid-cols-1 md:grid-cols-2 gap-3'
+          : 'grid grid-cols-1 md:grid-cols-3 gap-3';
+
+        let html = '';
+        for (let i = 0; i < bayesState.k; i++) {
+          const h = bayesState.hyps[i];
+          const c = BAYES_COLORS[i];
+          html += `
+            <div class="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2.5">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md text-white font-mono text-xs font-bold flex items-center justify-center shrink-0" style="background:${c.hex}">B${i + 1}</span>
+                <input type="text" data-bidx="${i}" data-bfield="name" value="${h.name}" maxlength="14"
+                  class="bayes-field flex-1 px-2 py-1 rounded-lg border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#4f46e5]" />
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600 mb-1">
+                  <span>Prior $P(B_${i + 1})$</span>
+                  <input type="number" step="0.01" min="0" max="1" data-bidx="${i}" data-bfield="prior" value="${h.prior.toFixed(4)}"
+                    class="bayes-num w-18 px-1.5 py-0.5 rounded border border-slate-300 font-mono text-[11px] font-bold text-right" />
+                </div>
+                <input type="range" min="0" max="1" step="0.01" data-bidx="${i}" data-bfield="prior" value="${h.prior}" class="bayes-slider w-full" />
+              </div>
+              <div>
+                <div class="flex items-center justify-between text-[11px] font-semibold text-slate-600 mb-1">
+                  <span>Likelihood $P(A \\mid B_${i + 1})$</span>
+                  <input type="number" step="0.01" min="0" max="1" data-bidx="${i}" data-bfield="lik" value="${h.lik.toFixed(4)}"
+                    class="bayes-num w-18 px-1.5 py-0.5 rounded border border-slate-300 font-mono text-[11px] font-bold text-right" />
+                </div>
+                <input type="range" min="0" max="1" step="0.01" data-bidx="${i}" data-bfield="lik" value="${h.lik}" class="bayes-slider w-full" />
+              </div>
+            </div>
+          `;
+        }
+        container.innerHTML = html;
+
+        // Bind input listeners
+        container.querySelectorAll('.bayes-field').forEach(inp => {
+          inp.addEventListener('input', () => {
+            const idx = parseInt(inp.getAttribute('data-bidx'), 10);
+            bayesState.hyps[idx].name = inp.value || `B${idx + 1}`;
+            renderBayesVisuals();
+          });
+        });
+
+        container.querySelectorAll('.bayes-slider').forEach(sl => {
+          sl.addEventListener('input', () => {
+            const idx = parseInt(sl.getAttribute('data-bidx'), 10);
+            const field = sl.getAttribute('data-bfield');
+            const val = Math.max(0, Math.min(1, parseFloat(sl.value) || 0));
+            bayesState.hyps[idx][field] = val;
+            const numEl = container.querySelector(`.bayes-num[data-bidx="${idx}"][data-bfield="${field}"]`);
+            if (numEl) numEl.value = val.toFixed(4);
+            renderBayesVisuals();
+          });
+        });
+
+        container.querySelectorAll('.bayes-num').forEach(num => {
+          num.addEventListener('input', () => {
+            const idx = parseInt(num.getAttribute('data-bidx'), 10);
+            const field = num.getAttribute('data-bfield');
+            const val = Math.max(0, Math.min(1, parseFloat(num.value) || 0));
+            bayesState.hyps[idx][field] = val;
+            const slEl = container.querySelector(`.bayes-slider[data-bidx="${idx}"][data-bfield="${field}"]`);
+            if (slEl) slEl.value = val;
+            renderBayesVisuals();
+          });
+        });
+
+        // Update k toggle buttons
+        document.querySelectorAll('.bayes-k-btn').forEach(b => {
+          const active = parseInt(b.getAttribute('data-hcount'), 10) === bayesState.k;
+          b.className = active
+            ? 'bayes-k-btn px-3 py-1.5 rounded-lg bg-white text-[#4f46e5] shadow-xs transition-all'
+            : 'bayes-k-btn px-3 py-1.5 rounded-lg text-slate-600 transition-all';
+        });
+
+        safeRenderMath(container);
+        renderBayesVisuals();
+      }
+
+      function renderBayesVisuals() {
+        const k = bayesState.k;
+        if (bayesState.target >= k) bayesState.target = 0;
+        const activeHyps = bayesState.hyps.slice(0, k);
+        const evName = bayesState.event || 'A';
+
+        // Prior sum check
+        const rawPriorSum = activeHyps.reduce((s, h) => s + h.prior, 0);
+        const sumBadge = document.getElementById('bayesPriorSumBadge');
+        const isNorm = Math.abs(rawPriorSum - 1) < 0.002;
+        sumBadge.textContent = `∑ Priors = ${rawPriorSum.toFixed(3)}`;
+        sumBadge.className = isNorm
+          ? 'px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200'
+          : 'px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-amber-100 text-amber-800 border border-amber-300';
+
+        // Use normalized priors for mosaic geometry if sum > 0
+        const normDiv = rawPriorSum > 0 ? rawPriorSum : 1;
+        const joints = activeHyps.map(h => h.prior * h.lik);
+        const totalA = joints.reduce((s, v) => s + v, 0);
+        const posteriors = joints.map(j => totalA > 0 ? j / totalA : 0);
+
+        // Target highlight selector buttons
+        const targetWrap = document.getElementById('bayesTargetBtns');
+        targetWrap.innerHTML = activeHyps.map((h, i) => `
+          <button type="button" data-btarget="${i}" class="px-3 py-1 rounded-lg text-xs font-bold border transition-all ${
+            i === bayesState.target
+              ? 'bg-[#10b981] text-white border-emerald-600 shadow-xs'
+              : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-400'
+          }">B${i + 1}: ${h.name}</button>
+        `).join('');
+        targetWrap.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            bayesState.target = parseInt(btn.getAttribute('data-btarget'), 10);
+            renderBayesVisuals();
+          });
+        });
+
+        // (a) SVG Probability Tree
+        const treeW = 540;
+        const treeH = k === 2 ? 230 : 320;
+        const rootX = 32, rootY = treeH / 2;
+        const midX = 185, leafX = 365;
+        let treeSvg = `<svg viewBox="0 0 ${treeW} ${treeH}" class="w-full h-auto min-w-[360px]" role="img" aria-label="Bayesian probability tree">`;
+
+        // Column headers
+        treeSvg += `
+          <text x="${rootX}" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#64748b">Start</text>
+          <text x="${midX}" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#4f46e5">Prior P(Bᵢ)</text>
+          <text x="${leafX}" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#f59e0b">Likelihood</text>
+          <text x="468" y="16" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">Joint P(Bᵢ∩A)</text>
+        `;
+
+        const topPad = 36, usableH = treeH - topPad - 18;
+        const segH = usableH / k;
+
+        activeHyps.forEach((h, i) => {
+          const cy = topPad + segH * (i + 0.5);
+          const yA = cy - segH * 0.24;
+          const yAp = cy + segH * 0.24;
+          const isT = (i === bayesState.target);
+          const strokeMain = isT ? '#10b981' : '#94a3b8';
+          const strokeW = isT ? 3 : 1.6;
+
+          // Root -> Bi
+          treeSvg += `<line x1="${rootX}" y1="${rootY}" x2="${midX - 36}" y2="${cy}" stroke="${strokeMain}" stroke-width="${strokeW}" />`;
+          const lblX1 = (rootX + midX - 36) / 2;
+          const lblY1 = (rootY + cy) / 2 - 5;
+          treeSvg += `<text x="${lblX1}" y="${lblY1}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="${isT ? '#059669' : '#475569'}">${h.prior.toFixed(3)}</text>`;
+
+          // Bi -> A (Evidence)
+          treeSvg += `<line x1="${midX + 36}" y1="${cy}" x2="${leafX - 28}" y2="${yA}" stroke="${isT ? '#10b981' : '#4f46e5'}" stroke-width="${isT ? 3 : 1.8}" />`;
+          treeSvg += `<text x="${(midX + 36 + leafX - 28) / 2}" y="${(cy + yA) / 2 - 5}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="${isT ? '#059669' : '#4f46e5'}">${h.lik.toFixed(3)}</text>`;
+
+          // Bi -> A' (Complement)
+          treeSvg += `<line x1="${midX + 36}" y1="${cy}" x2="${leafX - 28}" y2="${yAp}" stroke="#cbd5e1" stroke-width="1.3" stroke-dasharray="3,3" />`;
+          treeSvg += `<text x="${(midX + 36 + leafX - 28) / 2}" y="${(cy + yAp) / 2 + 10}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#94a3b8">${(1 - h.lik).toFixed(3)}</text>`;
+
+          // Hypothesis Pill
+          treeSvg += `
+            <rect x="${midX - 38}" y="${cy - 13}" width="76" height="26" rx="8" fill="${isT ? '#ecfdf5' : '#f8fafc'}" stroke="${isT ? '#10b981' : BAYES_COLORS[i].hex}" stroke-width="${isT ? 2.2 : 1.5}" />
+            <text x="${midX}" y="${cy + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#0f172a">${h.name.slice(0, 10)}</text>
+          `;
+
+          // Leaf A Pill + Joint Value
+          treeSvg += `
+            <rect x="${leafX - 28}" y="${yA - 10}" width="56" height="20" rx="6" fill="${isT ? '#10b981' : '#eef2ff'}" stroke="${isT ? '#059669' : '#c7d2fe'}" stroke-width="1.4" />
+            <text x="${leafX}" y="${yA + 3.5}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${isT ? '#ffffff' : '#312e81'}">A</text>
+            <text x="468" y="${yA + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="800" fill="${isT ? '#059669' : '#334155'}">${joints[i].toFixed(4)}</text>
+          `;
+
+          // Leaf A'
+          treeSvg += `
+            <text x="${leafX}" y="${yAp + 3.5}" text-anchor="middle" font-size="9.5" font-weight="600" fill="#94a3b8">A'</text>
+            <text x="468" y="${yAp + 3.5}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#94a3b8">${(h.prior * (1 - h.lik)).toFixed(4)}</text>
+          `;
+        });
+
+        // Root node
+        treeSvg += `<circle cx="${rootX}" cy="${rootY}" r="7" fill="#4f46e5" stroke="#ffffff" stroke-width="2" />`;
+        treeSvg += `</svg>`;
+        document.getElementById('bayesTreeWrap').innerHTML = treeSvg;
+
+        // (b) Unit-Square Mosaic Area Chart
+        const mSize = 260;
+        const padL = 34, padT = 24, padB = 34, padR = 14;
+        const sqW = mSize - padL - padR;
+        const sqH = mSize - padT - padB;
+        let mosaicSvg = `<svg viewBox="0 0 ${mSize} ${mSize}" class="w-full max-w-[280px] mx-auto h-auto" role="img" aria-label="Unit-square mosaic area chart">`;
+
+        // Axes labels
+        mosaicSvg += `<text x="${padL + sqW / 2}" y="${mSize - 6}" text-anchor="middle" font-size="10" font-weight="700" fill="#64748b">Prior Widths P(Bᵢ)</text>`;
+        mosaicSvg += `<text x="12" y="${padT + sqH / 2}" text-anchor="middle" font-size="10" font-weight="700" fill="#64748b" transform="rotate(-90 12 ${padT + sqH / 2})">Likelihood P(A|Bᵢ)</text>`;
+
+        let curX = padL;
+        activeHyps.forEach((h, i) => {
+          const colW = (h.prior / normDiv) * sqW;
+          const shadeH = h.lik * sqH;
+          const isT = (i === bayesState.target);
+          const colHex = isT ? '#10b981' : BAYES_COLORS[i].hex;
+
+          if (colW > 0.5) {
+            // Unshaded top (A')
+            mosaicSvg += `<rect x="${curX}" y="${padT}" width="${colW}" height="${sqH}" fill="${BAYES_COLORS[i].soft}" stroke="#ffffff" stroke-width="1.5" />`;
+            // Shaded bottom (A ∩ Bi)
+            if (shadeH > 0.5) {
+              mosaicSvg += `<rect x="${curX}" y="${padT + sqH - shadeH}" width="${colW}" height="${shadeH}" fill="${colHex}" fill-opacity="${isT ? 0.92 : 0.65}" stroke="#ffffff" stroke-width="1.5" />`;
+            }
+            // Column label above
+            if (colW >= 24) {
+              mosaicSvg += `<text x="${curX + colW / 2}" y="${padT - 7}" text-anchor="middle" font-size="10" font-weight="800" fill="${isT ? '#059669' : '#334155'}">B${i + 1}</text>`;
+            }
+            // Area text inside shaded box if tall enough
+            if (colW >= 34 && shadeH >= 20) {
+              mosaicSvg += `<text x="${curX + colW / 2}" y="${padT + sqH - shadeH / 2 + 3.5}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="700" fill="#ffffff">${joints[i].toFixed(3)}</text>`;
+            }
+          }
+          curX += colW;
+        });
+
+        // Outer unit square border
+        mosaicSvg += `<rect x="${padL}" y="${padT}" width="${sqW}" height="${sqH}" fill="none" stroke="#1e293b" stroke-width="2" />`;
+        mosaicSvg += `</svg>`;
+        document.getElementById('bayesMosaicWrap').innerHTML = mosaicSvg;
+
+        // Step-by-Step Total Probability & Posterior Cards
+        const termStrings = activeHyps.map((h) => `(${h.prior.toFixed(3)})(${h.lik.toFixed(3)})`);
+        document.getElementById('bayesTotalEq').textContent = `P(${evName}) = ${termStrings.join(' + ')} = ${totalA.toFixed(4)}`;
+        document.getElementById('bayesTotalVal').textContent = totalA.toFixed(4);
+
+        const postGrid = document.getElementById('bayesPosteriorsGrid');
+        postGrid.className = k === 2 ? 'grid grid-cols-1 sm:grid-cols-2 gap-3' : 'grid grid-cols-1 sm:grid-cols-3 gap-3';
+        postGrid.innerHTML = activeHyps.map((h, i) => {
+          const isT = (i === bayesState.target);
+          return `
+            <div class="p-3.5 rounded-xl border transition-all ${
+              isT
+                ? 'bg-emerald-500/20 border-emerald-400 ring-1 ring-emerald-400'
+                : 'bg-white/5 border-slate-700'
+            }">
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-bold ${isT ? 'text-emerald-300' : 'text-slate-300'}">P(${h.name} | ${evName})</span>
+                ${isT ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500 text-[10px] font-bold text-white">Target</span>' : ''}
+              </div>
+              <div class="text-xl font-extrabold font-mono ${isT ? 'text-white' : 'text-slate-100'}">${posteriors[i].toFixed(4)}</div>
+              <div class="text-xs font-mono ${isT ? 'text-emerald-300' : 'text-slate-400'} mt-0.5">${(posteriors[i] * 100).toFixed(2)}% &nbsp;(${joints[i].toFixed(4)} / ${totalA.toFixed(4)})</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('bayesEventInput').addEventListener('input', (e) => {
+        bayesState.event = e.target.value || 'A';
+        renderBayesVisuals();
+      });
+
+      document.getElementById('bayesNormBtn').addEventListener('click', () => {
+        const k = bayesState.k;
+        const sum = bayesState.hyps.slice(0, k).reduce((s, h) => s + h.prior, 0);
+        if (sum > 0) {
+          for (let i = 0; i < k; i++) {
+            bayesState.hyps[i].prior = bayesState.hyps[i].prior / sum;
+          }
+        } else {
+          for (let i = 0; i < k; i++) bayesState.hyps[i].prior = 1 / k;
+        }
+        buildBayesInputs();
+      });
+
+      document.querySelectorAll('.bayes-k-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          bayesState.k = parseInt(btn.getAttribute('data-hcount'), 10);
+          buildBayesInputs();
+        });
+      });
+
+      document.querySelectorAll('.bayes-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = BAYES_PRESETS[btn.getAttribute('data-bpreset')];
+          if (!p) return;
+          bayesState = {
+            k: p.k,
+            event: p.event,
+            target: p.target,
+            hyps: p.hyps.map(h => ({ ...h }))
+          };
+          document.getElementById('bayesEventInput').value = p.event;
+          document.querySelectorAll('.bayes-preset').forEach(b => {
+            b.className = b === btn
+              ? 'bayes-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+              : 'bayes-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          buildBayesInputs();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         5. TAB 2: REDUCED SAMPLE SPACE & INDEPENDENCE CHECKER (2x2 TABLE)
+      ------------------------------------------------------------------- */
+      let contCondition = 'none';
+
+      const CONT_PRESETS = {
+        cars:  { ab: 20, abp: 20, apb: 10, apbp: 50, rA: 'A (Alarm)', rAp: "A' (No Alarm)", cB: 'B (Bucket Seats)', cBp: "B' (No Bucket)" },
+        indep: { ab: 15, abp: 35, apb: 15, apbp: 35, rA: 'Event A', rAp: "Event A'", cB: 'Event B', cBp: "Event B'" },
+        mutex: { ab: 0,  abp: 30, apb: 40, apbp: 30, rA: 'Event A', rAp: "Event A'", cB: 'Event B', cBp: "Event B'" }
+      };
+
+      function updateContingencyLab() {
+        const ab   = Math.max(0, parseFloat(document.getElementById('inAB').value) || 0);
+        const abp  = Math.max(0, parseFloat(document.getElementById('inABp').value) || 0);
+        const apb  = Math.max(0, parseFloat(document.getElementById('inApB').value) || 0);
+        const apbp = Math.max(0, parseFloat(document.getElementById('inApBp').value) || 0);
+
+        const rowA  = ab + abp;
+        const rowAp = apb + apbp;
+        const colB  = ab + apb;
+        const colBp = abp + apbp;
+        const total = rowA + rowAp;
+
+        document.getElementById('totRowA').textContent = rowA;
+        document.getElementById('totRowAp').textContent = rowAp;
+        document.getElementById('totColB').textContent = colB;
+        document.getElementById('totColBp').textContent = colBp;
+        document.getElementById('totGrand').textContent = total;
+
+        const pA   = total > 0 ? rowA / total : 0;
+        const pB   = total > 0 ? colB / total : 0;
+        const pAB  = total > 0 ? ab / total : 0;
+        const pAgB = colB > 0 ? ab / colB : NaN;
+        const pAgBp = colBp > 0 ? abp / colBp : NaN;
+        const pBgA = rowA > 0 ? ab / rowA : NaN;
+
+        document.getElementById('contPA').textContent   = pA.toFixed(4);
+        document.getElementById('contPAB').textContent  = Number.isNaN(pAgB) ? 'Undef.' : pAgB.toFixed(4);
+        document.getElementById('contPABp').textContent = Number.isNaN(pAgBp) ? 'Undef.' : pAgBp.toFixed(4);
+        document.getElementById('contPBA').textContent  = Number.isNaN(pBgA) ? 'Undef.' : pBgA.toFixed(4);
+
+        // Apply visual dimming to show reduced sample space
+        const cells = {
+          ab: document.getElementById('cellAB'),
+          abp: document.getElementById('cellABp'),
+          apb: document.getElementById('cellApB'),
+          apbp: document.getElementById('cellApBp')
+        };
+        Object.values(cells).forEach(el => {
+          el.classList.remove('cell-dimmed', 'bg-indigo-50', 'bg-emerald-50');
+        });
+
+        const banner = document.getElementById('contReducedBanner');
+        if (contCondition === 'none') {
+          banner.innerHTML = `<strong>Full Sample Space (Ω):</strong> All ${total} outcomes active. $P(A) = ${rowA}/${total} = ${pA.toFixed(4)}$.`;
+        } else if (contCondition === 'B') {
+          cells.abp.classList.add('cell-dimmed');
+          cells.apbp.classList.add('cell-dimmed');
+          cells.ab.classList.add('bg-indigo-50');
+          cells.apb.classList.add('bg-indigo-50');
+          banner.innerHTML = `<strong>Reduced Sample Space (Given B):</strong> Only column $B$ (${colB} outcomes) remains! $P(A \\mid B) = ${ab}/${colB} = ${Number.isNaN(pAgB) ? 'Undefined' : pAgB.toFixed(4)}$.`;
+        } else if (contCondition === 'Bp') {
+          cells.ab.classList.add('cell-dimmed');
+          cells.apb.classList.add('cell-dimmed');
+          cells.abp.classList.add('bg-indigo-50');
+          cells.apbp.classList.add('bg-indigo-50');
+          banner.innerHTML = `<strong>Reduced Sample Space (Given B'):</strong> Only column $B'$ (${colBp} outcomes) remains! $P(A \\mid B') = ${abp}/${colBp} = ${Number.isNaN(pAgBp) ? 'Undefined' : pAgBp.toFixed(4)}$.`;
+        } else if (contCondition === 'A') {
+          cells.apb.classList.add('cell-dimmed');
+          cells.apbp.classList.add('cell-dimmed');
+          cells.ab.classList.add('bg-emerald-50');
+          cells.abp.classList.add('bg-emerald-50');
+          banner.innerHTML = `<strong>Reduced Sample Space (Given A):</strong> Only row $A$ (${rowA} outcomes) remains! $P(B \\mid A) = ${ab}/${rowA} = ${Number.isNaN(pBgA) ? 'Undefined' : pBgA.toFixed(4)}$.`;
+        }
+
+        // Independence / Dependence Status Badge
+        const diff = pAB - (pA * pB);
+        const statusEl = document.getElementById('contStatusBadge');
+        if (Math.abs(diff) < 1e-6) {
+          statusEl.className = 'p-4 rounded-2xl border-2 border-emerald-400 bg-emerald-50 text-center';
+          statusEl.innerHTML = `
+            <div class="text-xs font-bold uppercase tracking-wider text-[#10b981]">Relationship Verdict</div>
+            <div class="text-lg font-extrabold text-emerald-950 mt-0.5">INDEPENDENT EVENTS ✓</div>
+            <div class="text-xs text-emerald-800 mt-0.5">$P(A \\mid B) = P(A \\mid B') = P(A)$</div>
+          `;
+        } else if (diff > 0) {
+          statusEl.className = 'p-4 rounded-2xl border-2 border-indigo-300 bg-indigo-50 text-center';
+          statusEl.innerHTML = `
+            <div class="text-xs font-bold uppercase tracking-wider text-[#4f46e5]">Relationship Verdict</div>
+            <div class="text-lg font-extrabold text-indigo-950 mt-0.5">POSITIVE DEPENDENCE</div>
+            <div class="text-xs text-indigo-800 mt-0.5">$P(A \\mid B) &gt; P(A)$ — Knowing $B$ makes $A$ more likely</div>
+          `;
+        } else {
+          statusEl.className = 'p-4 rounded-2xl border-2 border-rose-300 bg-rose-50 text-center';
+          statusEl.innerHTML = `
+            <div class="text-xs font-bold uppercase tracking-wider text-[#f43f5e]">Relationship Verdict</div>
+            <div class="text-lg font-extrabold text-rose-950 mt-0.5">${ab === 0 && rowA > 0 && colB > 0 ? 'MUTUALLY EXCLUSIVE (NEGATIVE DEPENDENCE)' : 'NEGATIVE DEPENDENCE'}</div>
+            <div class="text-xs text-rose-800 mt-0.5">$P(A \\mid B) &lt; P(A)$ — Knowing $B$ makes $A$ less likely</div>
+          `;
+        }
+
+        document.getElementById('contProductCheck').innerHTML = `
+          <div><strong>Product Rule Check:</strong></div>
+          <div>P(A ∩ B) = ${pAB.toFixed(4)} &nbsp;vs.&nbsp; P(A)·P(B) = (${pA.toFixed(4)})(${pB.toFixed(4)}) = ${(pA * pB).toFixed(4)}</div>
+        `;
+
+        safeRenderMath(document.getElementById('tab-contingency'));
+      }
+
+      document.querySelectorAll('.cont-input').forEach(inp => inp.addEventListener('input', updateContingencyLab));
+
+      document.querySelectorAll('.cont-cond-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          contCondition = btn.getAttribute('data-cond');
+          document.querySelectorAll('.cont-cond-btn').forEach(b => {
+            b.className = b === btn
+              ? 'cont-cond-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+              : 'cont-cond-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          updateContingencyLab();
+        });
+      });
+
+      document.querySelectorAll('.cont-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = CONT_PRESETS[btn.getAttribute('data-cpreset')];
+          if (!p) return;
+          document.getElementById('inAB').value = p.ab;
+          document.getElementById('inABp').value = p.abp;
+          document.getElementById('inApB').value = p.apb;
+          document.getElementById('inApBp').value = p.apbp;
+          document.getElementById('tdRowA').textContent = p.rA;
+          document.getElementById('tdRowAp').textContent = p.rAp;
+          document.getElementById('thColB').textContent = p.cB;
+          document.getElementById('thColBp').textContent = p.cBp;
+
+          document.querySelectorAll('.cont-preset').forEach(b => {
+            b.className = b === btn
+              ? 'cont-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+              : 'cont-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          updateContingencyLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         6. TAB 3: SEQUENTIAL DRAWS & DEPENDENCE LAB
+      ------------------------------------------------------------------- */
+      let urnMode = 'without'; // 'without' | 'with'
+
+      function updateUrnLab() {
+        const R = parseInt(document.getElementById('urnRedSlider').value, 10);
+        const B = parseInt(document.getElementById('urnBlueSlider').value, 10);
+        const k = parseInt(document.getElementById('urnKSlider').value, 10);
+
+        document.getElementById('urnRedVal').textContent = R;
+        document.getElementById('urnBlueVal').textContent = B;
+        document.getElementById('urnKVal').textContent = k;
+
+        const depTag = document.getElementById('urnDepTag');
+        depTag.textContent = urnMode === 'without' ? 'Dependent Events (Urn Shrinks)' : 'Independent Events (Constant Urn)';
+        depTag.className = urnMode === 'without'
+          ? 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800'
+          : 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800';
+
+        let num = 1n, den = 1n;
+        const stepCards = [];
+        const stageRows = [];
+        const condLabels = ['P(R₁)', 'P(R₂|R₁)', 'P(R₃|R₁∩R₂)', 'P(R₄|R₁∩R₂∩R₃)'];
+
+        for (let i = 0; i < k; i++) {
+          const curR = urnMode === 'without' ? Math.max(0, R - i) : R;
+          const curTot = urnMode === 'without' ? Math.max(1, R + B - i) : (R + B);
+          num *= BigInt(curR);
+          den *= BigInt(curTot);
+
+          const lbl = urnMode === 'without' ? condLabels[i] : `P(R${i + 1})`;
+          stepCards.push(`
+            <div class="flex items-center gap-2">
+              <div class="px-3.5 py-2.5 rounded-xl border-2 ${curR === 0 ? 'bg-rose-50 border-rose-300' : 'bg-indigo-50/70 border-indigo-200'} text-center min-w-[92px]">
+                <div class="text-[10px] font-bold text-[#4f46e5]">${lbl}</div>
+                <div class="text-lg font-extrabold font-mono text-slate-900 mt-0.5">${curR}/${curTot}</div>
+              </div>
+              ${i < k - 1 ? '<span class="text-lg font-extrabold text-slate-400">×</span>' : ''}
+            </div>
+          `);
+
+          // Ball visual strip (cap displayed dots cleanly for large deck counts)
+          const showDots = (curTot <= 20);
+          let ballsHtml = '';
+          if (showDots) {
+            ballsHtml =
+              Array(curR).fill('<span class="w-3.5 h-3.5 rounded-full bg-[#f43f5e] inline-block shadow-xs"></span>').join('') +
+              Array(curTot - curR).fill('<span class="w-3.5 h-3.5 rounded-full bg-[#4f46e5] inline-block shadow-xs"></span>').join('');
+          } else {
+            ballsHtml = `<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-mono text-[11px] font-bold">${curR} Red</span>
+                         <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 font-mono text-[11px] font-bold">${curTot - curR} Blue</span>`;
+          }
+
+          stageRows.push(`
+            <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs">
+              <span class="font-bold text-slate-600">Before Draw #${i + 1}:</span>
+              <div class="flex flex-wrap items-center gap-1">${ballsHtml}</div>
+              <span class="font-mono text-[11px] text-slate-500">Total = ${curTot}</span>
+            </div>
+          `);
+        }
+
+        document.getElementById('urnStepsWrap').innerHTML = stepCards.join('');
+        document.getElementById('urnBallsStage').innerHTML = stageRows.join('');
+
+        const g = bigGcd(num, den);
+        const rNum = num / g;
+        const rDen = den / g;
+        const dec = num === 0n ? 0 : Number(num) / Number(den);
+
+        document.getElementById('urnFormulaSummary').textContent = urnMode === 'without'
+          ? `Dependent Chain: ${condLabels.slice(0, k).join(' · ')}`
+          : `Independent Product: (P(R)) ^ ${k}`;
+        document.getElementById('urnFinalFrac').textContent = num === 0n
+          ? '0 (Impossible: k > Red)'
+          : `${rNum}/${rDen} = ${dec.toFixed(4)}`;
+
+        const extraNote = document.getElementById('urnExtraNote');
+        if (R === 4 && B === 48 && k === 2) {
+          extraNote.classList.remove('hidden');
+          extraNote.innerHTML = `<strong>1st Incourse 2022 Q4 Note:</strong> Drawing 2 Queens without replacement gives $\\frac{4}{52}\\cdot\\frac{3}{51} = \\frac{1}{221}$. Drawing a <em>Queen followed by an Ace</em> (still 4 Aces left!) gives $\\frac{4}{52}\\cdot\\frac{4}{51} = \\frac{4}{663} \\approx 0.0060$.`;
+          safeRenderMath(extraNote);
+        } else {
+          extraNote.classList.add('hidden');
+        }
+      }
+
+      ['urnRedSlider', 'urnBlueSlider', 'urnKSlider'].forEach(id => {
+        document.getElementById(id).addEventListener('input', updateUrnLab);
+      });
+
+      document.querySelectorAll('.urn-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          urnMode = btn.getAttribute('data-umode');
+          document.querySelectorAll('.urn-mode-btn').forEach(b => {
+            const active = b === btn;
+            b.className = active
+              ? 'urn-mode-btn py-2 px-3 rounded-xl text-xs font-bold border-2 bg-[#4f46e5] text-white border-[#4f46e5] transition-all'
+              : 'urn-mode-btn py-2 px-3 rounded-xl text-xs font-bold border-2 bg-white text-slate-600 border-slate-200 hover:border-indigo-300 transition-all';
+          });
+          updateUrnLab();
+        });
+      });
+
+      document.querySelectorAll('.urn-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-upreset');
+          if (p === 'final2025') {
+            document.getElementById('urnRedSlider').value = 3;
+            document.getElementById('urnBlueSlider').value = 2;
+            document.getElementById('urnKSlider').value = 3;
+          } else {
+            document.getElementById('urnRedSlider').value = 4;
+            document.getElementById('urnBlueSlider').value = 48;
+            document.getElementById('urnKSlider').value = 2;
+          }
+          urnMode = 'without';
+          document.querySelectorAll('.urn-preset').forEach(b => {
+            b.className = b === btn
+              ? 'urn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+              : 'urn-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          updateUrnLab();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         7. TAB 4: PARALLEL PROBLEM SOLVERS (INDEPENDENT UNION LAB)
+      ------------------------------------------------------------------- */
+      let solverCount = 3;
+      const solverNames = ['P', 'Q', 'R', 'S'];
+      let solverProbs = [2 / 7, 4 / 7, 4 / 9, 0.25];
+
+      function buildSolverSliders() {
+        const wrap = document.getElementById('solverSlidersWrap');
+        let html = '';
+        for (let i = 0; i < solverCount; i++) {
+          const p = solverProbs[i];
+          html += `
+            <div class="p-3 rounded-xl bg-white border border-slate-200">
+              <div class="flex justify-between text-xs font-bold mb-1">
+                <span class="text-slate-700">Solver ${solverNames[i]}: $p_${i + 1}$</span>
+                <span id="solverVal-${i}" class="font-mono text-[#4f46e5]">${p.toFixed(4)}</span>
+              </div>
+              <input type="range" min="0" max="1" step="0.01" data-sidx="${i}" value="${p.toFixed(2)}" class="solver-slider w-full" />
+            </div>
+          `;
+        }
+        wrap.innerHTML = html;
+
+        wrap.querySelectorAll('.solver-slider').forEach(sl => {
+          sl.addEventListener('input', () => {
+            const idx = parseInt(sl.getAttribute('data-sidx'), 10);
+            solverProbs[idx] = parseFloat(sl.value);
+            document.getElementById(`solverVal-${idx}`).textContent = solverProbs[idx].toFixed(4);
+            renderSolverResults();
+          });
+        });
+
+        document.querySelectorAll('.solver-k-btn').forEach(b => {
+          const active = parseInt(b.getAttribute('data-scount'), 10) === solverCount;
+          b.className = active
+            ? 'solver-k-btn px-3 py-1 rounded-lg bg-white text-[#4f46e5] shadow-xs'
+            : 'solver-k-btn px-3 py-1 rounded-lg text-slate-600';
+        });
+
+        safeRenderMath(wrap);
+        renderSolverResults();
+      }
+
+      function renderSolverResults() {
+        const active = solverProbs.slice(0, solverCount);
+        const pNone = active.reduce((acc, p) => acc * (1 - p), 1);
+        const pSolved = 1 - pNone;
+
+        document.getElementById('solverSolvedOut').textContent = pSolved.toFixed(4);
+        document.getElementById('solverSolvedPct').textContent = (pSolved * 100).toFixed(2) + '%';
+        document.getElementById('solverNoneOut').textContent = pNone.toFixed(4);
+        document.getElementById('solverNonePct').textContent = (pNone * 100).toFixed(2) + '%';
+
+        const sPct = (pSolved * 100).toFixed(1);
+        const nPct = (pNone * 100).toFixed(1);
+        const barS = document.getElementById('solverBarSolved');
+        const barN = document.getElementById('solverBarNone');
+        barS.style.width = sPct + '%';
+        barS.textContent = pSolved >= 0.14 ? sPct + '%' : '';
+        barN.style.width = nPct + '%';
+        barN.textContent = pNone >= 0.14 ? nPct + '%' : '';
+
+        const factors = active.map(p => `(1 - ${p.toFixed(3)})`).join(' \\cdot ');
+        const evalFactors = active.map(p => `(${(1 - p).toFixed(3)})`).join(' \\cdot ');
+        const formulaEl = document.getElementById('solverStepFormula');
+        formulaEl.innerHTML = `
+          $$P(\\text{Solved}) = 1 - ${factors} = 1 - ${evalFactors} = 1 - ${pNone.toFixed(4)} = \\mathbf{${pSolved.toFixed(4)}}$$
+        `;
+        safeRenderMath(formulaEl);
+      }
+
+      document.querySelectorAll('.solver-k-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          solverCount = parseInt(btn.getAttribute('data-scount'), 10);
+          buildSolverSliders();
+        });
+      });
+
+      document.querySelectorAll('.solver-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-spreset');
+          solverCount = 3;
+          if (p === 'inc2024') solverProbs = [2 / 7, 4 / 7, 4 / 9, 0.25];
+          else solverProbs = [1 / 2, 1 / 3, 1 / 4, 0.25];
+          document.querySelectorAll('.solver-preset').forEach(b => {
+            b.className = b === btn
+              ? 'solver-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f46e5] text-white shadow-xs transition-all'
+              : 'solver-preset px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-all';
+          });
+          buildSolverSliders();
+        });
+      });
+
+      /* -------------------------------------------------------------------
+         8. SECTION 5: QUICK MASTERY CHECK (5-QUESTION QUIZ)
+      ------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. (Reduced Sample Space) Among 100 car buyers, 40 bought an alarm system, 30 bought bucket seats, and 20 bought both. Given that a randomly chosen buyer bought an alarm system, what is the probability they also bought bucket seats?',
+          options: [
+            '$20 / 100 = 0.20$',
+            '$20 / 40 = 0.50$',
+            '$20 / 30 = 0.67$',
+            '$30 / 40 = 0.75$'
+          ],
+          correct: 1,
+          explanation: 'Conditioning on "bought an alarm system" shrinks the sample space to those 40 buyers. Out of those 40, 20 also bought bucket seats, so $P(\\text{Bucket} \\mid \\text{Alarm}) = 20/40 = 0.50$.'
+        },
+        {
+          q: '2. (Mutually Exclusive vs. Independent) Suppose two events $A$ and $B$ satisfy $P(A) > 0$ and $P(B) > 0$. If $A$ and $B$ are mutually exclusive, which statement is TRUE?',
+          options: [
+            '$A$ and $B$ must also be independent.',
+            '$A$ and $B$ can NEVER be independent.',
+            '$P(A \\mid B) = P(A)$.',
+            '$P(A \\cap B) = P(A)P(B) > 0$.'
+          ],
+          correct: 1,
+          explanation: 'Mutually exclusive implies $P(A \\cap B) = 0$. Since $P(A)P(B) > 0$, we have $P(A \\cap B) \\neq P(A)P(B)$, so they can never be independent.'
+        },
+        {
+          q: '3. (Independent Union Shortcut) Three independent students try to solve a problem with individual probabilities $1/2$, $1/3$, and $1/4$. What is the probability that the problem is solved (at least one succeeds)?',
+          options: [
+            '$1/24$',
+            '$1/4$',
+            '$3/4$',
+            '$11/12$'
+          ],
+          correct: 2,
+          explanation: '$P(\\text{None solve}) = (1 - 1/2)(1 - 1/3)(1 - 1/4) = \\frac{1}{2}\\cdot\\frac{2}{3}\\cdot\\frac{3}{4} = \\frac{1}{4}$. Therefore $P(\\text{Solved}) = 1 - 1/4 = 3/4$.'
+        },
+        {
+          q: '4. (Bertrand\'s Box / Bayes\' Theorem) Three boxes hold (2 Gold), (2 Silver), and (1 Gold, 1 Silver). You pick a box at random and draw 1 coin, which is Gold. Why is $P(\\text{Box I} \\mid \\text{Gold}) = 2/3$ instead of $1/2$?',
+          options: [
+            'Because Box I has a higher prior probability of being chosen.',
+            'Because Box I has twice the likelihood of producing a Gold coin ($1$) compared to Box III ($1/2$).',
+            'Because Box II has a positive likelihood of producing Gold.',
+            'Because drawing coins from a box is independent of which box was selected.'
+          ],
+          correct: 1,
+          explanation: 'By Bayes\' Theorem, $P(B_1 \\mid G) = \\frac{(1/3)(1)}{(1/3)(1) + (1/3)(0) + (1/3)(1/2)} = \\frac{1}{3/2} = \\frac{2}{3}$. Box I yields Gold with twice the likelihood of Box III.'
+        },
+        {
+          q: '5. (Verifying Independence — Final 2025 Q2b) Given $P(A) = 0.50$, $P(B) = 0.30$, and $P(A \\cap B) = 0.15$, what are $P(A \\mid B)$ and $P(A \\mid B\')$?',
+          options: [
+            '$P(A \\mid B) = 0.50$ and $P(A \\mid B\') = 0.50$ (Independent)',
+            '$P(A \\mid B) = 0.30$ and $P(A \\mid B\') = 0.70$ (Dependent)',
+            '$P(A \\mid B) = 0.50$ and $P(A \\mid B\') = 0.35$ (Dependent)',
+            '$P(A \\mid B) = 0.15$ and $P(A \\mid B\') = 0.35$ (Dependent)'
+          ],
+          correct: 0,
+          explanation: '$P(A \\mid B) = 0.15/0.30 = 0.50 = P(A)$, and $P(A \\mid B\') = P(A \\cap B\')/P(B\') = (0.50 - 0.15)/0.70 = 0.35/0.70 = 0.50 = P(A)$. Both confirm independence!'
+        }
+      ];
+
+      const userAnswers = new Array(quizData.length).fill(null);
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = quizData.map((item, qIdx) => {
+          const answered = userAnswers[qIdx] !== null;
+          const isRight = userAnswers[qIdx] === item.correct;
+
+          const optsHtml = item.options.map((opt, oIdx) => {
+            let cls = 'bg-white border-slate-200 text-slate-700 hover:border-[#4f46e5] hover:bg-indigo-50/40';
+            if (answered) {
+              if (oIdx === item.correct) cls = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold';
+              else if (oIdx === userAnswers[qIdx]) cls = 'bg-rose-50 border-rose-400 text-rose-900 font-semibold';
+              else cls = 'bg-slate-50 border-slate-200 text-slate-400';
+            }
+            return `
+              <button type="button" data-q="${qIdx}" data-o="${oIdx}" ${answered ? 'disabled' : ''}
+                class="quiz-opt-btn w-full text-left px-4 py-3 rounded-xl border text-xs sm:text-sm transition-all ${cls}">
+                <span class="inline-block w-5 font-bold">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+              </button>
+            `;
+          }).join('');
+
+          const fbHtml = answered ? `
+            <div class="mt-3 p-3.5 rounded-xl text-xs sm:text-sm border ${isRight ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}">
+              <strong>${isRight ? 'Correct!' : 'Not quite.'}</strong> ${item.explanation}
+            </div>
+          ` : '';
+
+          return `
+            <div class="py-6 first:pt-2 last:pb-0">
+              <p class="font-bold text-slate-900 text-sm sm:text-base mb-3">${item.q}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">${optsHtml}</div>
+              ${fbHtml}
+            </div>
+          `;
+        }).join('');
+
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const qIdx = parseInt(btn.getAttribute('data-q'), 10);
+            const oIdx = parseInt(btn.getAttribute('data-o'), 10);
+            if (userAnswers[qIdx] !== null) return;
+            userAnswers[qIdx] = oIdx;
+            updateQuizScore();
+            renderQuiz();
+          });
+        });
+
+        safeRenderMath(container);
+      }
+
+      function updateQuizScore() {
+        const score = userAnswers.reduce((acc, ans, i) => acc + (ans === quizData[i].correct ? 1 : 0), 0);
+        document.getElementById('quizScore').textContent = score;
+      }
+
+      document.getElementById('quizResetBtn').addEventListener('click', () => {
+        userAnswers.fill(null);
+        updateQuizScore();
+        renderQuiz();
+      });
+
+      /* -------------------------------------------------------------------
+         9. INITIALIZATION ON WINDOW LOAD
+      ------------------------------------------------------------------- */
+      window.addEventListener('load', () => {
+        buildBayesInputs();
+        updateContingencyLab();
+        updateUrnLab();
+        buildSolverSliders();
+        renderQuiz();
+        updateScrollProgress();
+        safeRenderMath(document.body);
+      });
+    })();
+  </script>
+</body>
+</html>

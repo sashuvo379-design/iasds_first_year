@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 8: First-Order DEs — Separable, Homogeneous &amp; Reducible | MATH 103 — Foundations of Mathematics</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            primary: '#4f46e5',
+            secondary: '#0ea5e9',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Theme Persistence Before First Paint (Default: Light Mode) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('math103_theme');
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100 transition-colors duration-200">
+
+  <!-- ==================== TOP STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Mobile Sidebar Toggle + Brand -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-sky-500 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              MATH 103 · ISRT, DU · Group B
+            </p>
+            <h1 class="text-sm sm:text-base font-serif font-bold text-slate-900 dark:text-white truncate">
+              Lesson 8: Separable, Homogeneous &amp; Reducible DEs
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Module Pill + Progress + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300 border border-sky-200 dark:border-sky-800/70">
+          <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+          Module 2 · Lesson 8 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+        </div>
+
+        <button
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle light or dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <svg class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR (280px desktop) ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 lg:w-[280px] bg-white dark:bg-slate-900 lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white text-sm">MATH 103 · Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Course Header & Live Lesson 8 Progress Card -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200/70 dark:border-sky-800/60">
+              Module 2 · Group B: Differential Equations
+            </span>
+            <div class="text-xs font-serif font-bold text-slate-900 dark:text-white mt-1.5">
+              MATH 103 — Foundations of Mathematics
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson 8 Progress</span>
+              <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-sky-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="sidebar-progress-detail" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+              0/6 sections · 0/3 labs · 0/5 quiz
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. Scroll-Spy In-Page Table of Contents -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-xs sm:text-sm">
+            <li><a href="#sec-8-1" data-spy="sec-8-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">8.1</span> Slope Fields &amp; Geometry</a></li>
+            <li><a href="#lab-slope" data-spy="lab-slope" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 1: Slope Field &amp; RK4</a></li>
+            <li><a href="#sec-8-2" data-spy="sec-8-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">8.2</span> Variable Separable DEs</a></li>
+            <li><a href="#sec-8-3" data-spy="sec-8-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">8.3</span> Reducible to Separable</a></li>
+            <li><a href="#sec-8-4" data-spy="sec-8-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">8.4</span> Homogeneous DEs</a></li>
+            <li><a href="#lab-homog" data-spy="lab-homog" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 2: Homog. &amp; $y=vx$</a></li>
+            <li><a href="#sec-8-5" data-spy="sec-8-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">8.5</span> Reducible to Homog.</a></li>
+            <li><a href="#lab-shift" data-spy="lab-shift" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-emerald-700 dark:hover:text-emerald-300 transition"><span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span> Lab 3: Origin-Shift &amp; Cases</a></li>
+            <li><a href="#sec-8-6" data-spy="sec-8-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">8.6</span> Method Cheat-Sheet</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" data-spy="exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault (6)</a>
+            </li>
+            <li>
+              <a href="#quick-quiz" data-spy="quick-quiz" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-1">Module 1 · Group A (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L01</span><span class="truncate">Real Numbers &amp; Divisibility</span></div><span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L02</span><span class="truncate">Congruences &amp; Diophantine</span></div><span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L03</span><span class="truncate">Inequalities &amp; Series</span></div><span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L04</span><span class="truncate">Complex Numbers &amp; Unity</span></div><span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L05</span><span class="truncate">Theory of Equations</span></div><span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L06</span><span class="truncate">Gamma &amp; Beta Functions</span></div><span class="shrink-0 font-bold">✓</span>
+              </div>
+            </div>
+
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-2">Module 2 · Group B: Differential Equations</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium">
+                <div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L07</span><span class="truncate">Fundamentals &amp; Formation</span></div><span class="shrink-0 font-bold">✓</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <span class="font-mono">L08</span>
+                <span class="truncate">Separable, Homog. &amp; Reducible</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L09</span><span class="truncate">Exact, IF &amp; Bernoulli DEs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L10</span><span class="truncate">Higher-Order Linear DEs</span></div>
+            </div>
+
+            <p class="font-semibold text-slate-500 dark:text-slate-400 pt-2">Module 3 · Group C: Discrete Math &amp; Games</p>
+            <div class="space-y-1">
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L11</span><span class="truncate">Logic &amp; Counting Principles</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L12</span><span class="truncate">Recurrences &amp; Gen. Funcs</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L13</span><span class="truncate">Graph Theory &amp; Dijkstra</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L14</span><span class="truncate">Game Theory</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT ==================== -->
+    <main class="flex-1 min-w-0 max-w-[960px] mx-auto w-full space-y-10 pb-20">
+
+      <!-- HERO ORIENTATION BANNER -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 max-w-3xl">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-sky-400/20 text-sky-100 border border-sky-300/30">
+              Module 2 · Group B: Differential Equations
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              Lesson 8 of 14
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              ⏱ Est. Study Time: ~60 mins
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30">
+              ★ Heavy 1st Incourse &amp; Final Coverage
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight leading-tight">
+            Lesson 8: First-Order DEs — Separable, Homogeneous &amp; Reducible
+          </h2>
+
+          <p class="mt-3 text-sm sm:text-base text-indigo-100 leading-relaxed">
+            Move from classifying differential equations to <strong>solving</strong> them! Master direction fields &amp; geometric intuition, variable separation, linear-argument substitutions, homogeneous equations ($y = vx$), and non-homogeneous linear-fractional reductions (both intersecting and parallel-line cases).
+          </p>
+
+          <div class="mt-5 p-3.5 rounded-2xl bg-white/10 border border-white/15 text-xs sm:text-sm text-indigo-100">
+            <strong class="text-white">Connected Sources:</strong> ISRT 1st Incourse (2022, 2024, 2025), ISRT Year Final (2020 Q6 &amp; Q7b), Abdul Matin's <em>Differential Equations</em> &amp; Prottasha's Class Notes.
+          </div>
+
+          <div class="mt-5 flex flex-wrap gap-3">
+            <a href="#lab-slope" class="px-4 py-2.5 rounded-xl bg-white text-indigo-700 font-bold text-xs sm:text-sm shadow-sm hover:bg-indigo-50 transition inline-flex items-center gap-2">
+              <span>🧭</span> Launch Slope Field Lab
+            </a>
+            <a href="#exam-vault" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 font-semibold text-xs sm:text-sm transition inline-flex items-center gap-2">
+              <span>🏛️</span> ISRT Past-Exam Vault
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 8.1: GEOMETRIC INTERPRETATION & DIRECTION (SLOPE) FIELDS    -->
+      <!-- =================================================================== -->
+      <section id="sec-8-1" data-track-sec="sec-8-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 8.1</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020 Q7(b) — 6 Marks</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Geometric Interpretation &amp; Direction (Slope) Fields
+            </h3>
+          </div>
+          <span id="badge-sec-8-1" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+          Consider a general first-order, first-degree ordinary differential equation written in normal form:
+          $$\frac{dy}{dx} = f(x, y)$$
+          Even before solving the equation analytically, it carries a rich <strong>geometric meaning</strong> in the $xy$-plane:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">1. Lineal Elements &amp; Direction Field</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              At every point $(x, y)$ where $f(x, y)$ is defined, the equation prescribes a numerical slope $m = f(x, y)$. Drawing a tiny line segment of slope $m$ centered at $(x, y)$ creates a <strong>lineal element</strong>; the collection of all such segments across the plane is the <strong>direction field (slope field)</strong>.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/35 border border-sky-200 dark:border-sky-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-sky-600 dark:text-sky-400 uppercase">2. Integral Curves &amp; One-Parameter Family</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              A solution $y = \phi(x)$ is a smooth curve whose tangent line at every point $(x, \phi(x))$ aligns with the lineal element there. The general solution $F(x, y, C) = 0$ represents a <strong>one-parameter family of integral curves</strong> filling the plane.
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase">3. Initial Condition $y(x_0) = y_0$</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Geometrically, specifying an initial condition $y(x_0) = y_0$ pins down a single point $(x_0, y_0)$ and selects the <strong>unique integral curve</strong> from the family that passes through $(x_0, y_0)$ (provided $f$ and $\partial f/\partial y$ are continuous nearby).
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 uppercase">4. Isoclines ($f(x, y) = k$)</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              An <strong>isocline</strong> (literally "equal slope") is the curve $f(x, y) = k$ along which every lineal element has the exact same constant slope $k$. Setting $k = 0$ gives the <strong>nullcline</strong> (where integral curves have horizontal tangents).
+            </p>
+          </div>
+        </div>
+
+        <!-- Collapsible 6-Mark Exam Answer Structure -->
+        <div class="rounded-2xl border border-amber-200 dark:border-amber-800/70 overflow-hidden">
+          <button type="button" onclick="toggleCollapsible('exam-struct-6m')" class="w-full px-5 py-3.5 bg-amber-50/80 dark:bg-amber-950/40 flex items-center justify-between text-left hover:bg-amber-100/70 dark:hover:bg-amber-950/60 transition">
+            <div>
+              <span class="text-xs font-mono font-bold text-amber-800 dark:text-amber-300 uppercase">Exam Strategy · ISRT Final 2020 Q7(b)</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">6-Mark Exam Answer Structure: How to Score Full Credit</p>
+            </div>
+            <span id="icon-exam-struct-6m" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-200 dark:bg-amber-800 text-amber-950 dark:text-amber-100 shrink-0">Show Guide</span>
+          </button>
+          <div id="exam-struct-6m" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-amber-200 dark:border-amber-800/70 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <ol class="list-decimal pl-5 space-y-1.5">
+              <li><strong>Write Standard Form (1 mark):</strong> State $\frac{dy}{dx} = f(x, y)$ and identify $\frac{dy}{dx} = m$ as the slope of the tangent to a solution curve at $(x, y)$.</li>
+              <li><strong>Define Lineal Element &amp; Direction Field (1.5 marks):</strong> Explain how attaching a short segment of slope $f(x,y)$ at grid points builds the direction field.</li>
+              <li><strong>Explain Integral Curves &amp; One-Parameter Family (1.5 marks):</strong> State that any solution curve is everywhere tangent to the field, and the general solution $F(x, y, C) = 0$ forms a 1-parameter family of non-intersecting curves (where regular).</li>
+              <li><strong>Role of Initial Condition &amp; Isoclines (1 mark):</strong> Explain how $y(x_0) = y_0$ picks one particular curve, and define isoclines $f(x,y) = k$ as a sketching aid.</li>
+              <li><strong>Include a Clean Sketch (1 mark):</strong> Draw a quick labeled diagram (e.g., $\frac{dy}{dx} = -\frac{x}{y}$ producing concentric circles $x^2 + y^2 = C$, or $\frac{dy}{dx} = \frac{y}{x}$ producing rays $y = Cx$)!</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 1: INTERACTIVE SLOPE FIELD & RK4 INTEGRAL CURVE PLOTTER         -->
+      <!-- =================================================================== -->
+      <section id="lab-slope" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Interactive Slope Field &amp; RK4 Integral Curve Plotter</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Click anywhere on the plane (or move sliders) to drop an initial point $(x_0, y_0)$ and trace the solution curve in real time.</p>
+          </div>
+        </div>
+
+        <!-- Preset & Isocline Controls -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 items-end">
+          <div class="md:col-span-5">
+            <label for="sf-preset" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Differential Equation Preset</label>
+            <select id="sf-preset" onchange="onSlopePresetChange()" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="circles">1. dy/dx = −x / y  [Separable · Circles x² + y² = C]</option>
+              <option value="rays">2. dy/dx = y / x  [Homogeneous · Rays y = Cx]</option>
+              <option value="isrt22">3. dy/dx = (x² + y²) / (2xy)  [ISRT '22/'24 · x² − y² = Cx]</option>
+              <option value="inv">4. dy/dx = −y² / x²  [ISRT Separable · 1/x + 1/y = C]</option>
+              <option value="linear">5. dy/dx = y − x  [Reducible · y = x + 1 + Ceˣ]</option>
+            </select>
+          </div>
+          <div class="md:col-span-4">
+            <label for="sf-iso" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Highlight Isocline ($f(x,y) = k$)</label>
+            <select id="sf-iso" onchange="renderSlopeField(true)" class="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+              <option value="none">Off (Show uniform field)</option>
+              <option value="0">Highlight m = 0 (Nullcline)</option>
+              <option value="1">Highlight m = +1</option>
+              <option value="-1">Highlight m = −1</option>
+            </select>
+          </div>
+          <div class="md:col-span-3 flex gap-2">
+            <button type="button" onclick="resetSlopePoint()" class="w-full px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 transition">↺ Reset Point</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Interactive SVG Canvas -->
+          <div class="lg:col-span-7 p-3 sm:p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+            <div class="w-full flex flex-wrap justify-between items-center gap-2 text-xs mb-2">
+              <span class="font-semibold text-slate-500 dark:text-slate-400">Click Canvas to Place $(x_0, y_0)$</span>
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-indigo-600"></span> RK4 Curve</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-amber-500"></span> Isocline</span>
+              </div>
+            </div>
+            <svg id="sf-svg" viewBox="0 0 420 420" class="w-full max-w-[410px] h-auto cursor-crosshair touch-none select-none"></svg>
+          </div>
+
+          <!-- Right Sliders & Live Readout -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-xs">
+              <div class="font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Initial Condition $(x_0, y_0)$</div>
+              <div>
+                <div class="flex justify-between mb-1"><span>$x_0$</span><span id="sf-x0-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">2.0</span></div>
+                <input id="sf-x0" type="range" min="-4.5" max="4.5" step="0.25" value="2.0" oninput="syncSlopeFromSliders()" class="w-full accent-indigo-600" />
+              </div>
+              <div>
+                <div class="flex justify-between mb-1"><span>$y_0$</span><span id="sf-y0-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">1.5</span></div>
+                <input id="sf-y0" type="range" min="-4.5" max="4.5" step="0.25" value="1.5" oninput="syncSlopeFromSliders()" class="w-full accent-indigo-600" />
+              </div>
+            </div>
+
+            <div id="sf-readout" class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs sm:text-sm"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 8.2: VARIABLE SEPARABLE DIFFERENTIAL EQUATIONS              -->
+      <!-- =================================================================== -->
+      <section id="sec-8-2" data-track-sec="sec-8-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 8.2</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Variable Separable Differential Equations
+            </h3>
+          </div>
+          <span id="badge-sec-8-2" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Standard Form &amp; Integration Recipe</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            A first-order ODE is <strong>variable separable</strong> if it can be rearranged into either:
+            $$M(x)\,dx + N(y)\,dy = 0 \qquad \text{or} \qquad \frac{dy}{dx} = g(x)\,h(y)$$
+            Separating $y$ terms onto the left and $x$ terms onto the right and integrating both sides gives the general solution:
+            $$\int \frac{dy}{h(y)} = \int g(x)\,dx + C$$
+          </p>
+        </div>
+
+        <!-- Two Pro Tips: Log-Constant Trick & Lost Singular Solutions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/60 space-y-1.5">
+            <div class="font-bold text-emerald-800 dark:text-emerald-300">💡 The Log-Constant Trick</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Whenever all integrated terms contain logarithms (e.g., $\ln|y| + \ln|x|$), write the arbitrary constant as <strong>$\ln C$</strong> (or $\frac{1}{2}\ln C$) instead of $C$ so you can collapse logs cleanly via $\ln A + \ln B = \ln(AB)$!
+            </p>
+          </div>
+          <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/35 border border-rose-200 dark:border-rose-800/70 space-y-1.5">
+            <div class="font-bold text-rose-800 dark:text-rose-300">⚠️ Trap: Lost Singular Solutions ($h(y) = 0$)</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              Dividing $\frac{dy}{dx} = g(x)h(y)$ by $h(y)$ implicitly assumes $h(y) \neq 0$. Always check whether any constant root $y = y_0$ of $h(y) = 0$ is a valid solution not already captured by the general formula!
+            </p>
+          </div>
+        </div>
+
+        <!-- Worked Exam Example -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 class="font-bold text-slate-900 dark:text-white">Worked Example (ISRT 1st Incourse 2022 &amp; 2024): $x(1 + y^2)\,dx + y(1 + x^2)\,dy = 0$</h4>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">Separable</span>
+          </div>
+          <p class="text-slate-700 dark:text-slate-300">
+            <strong>Step 1 (Separate):</strong> Since $(1+x^2)(1+y^2) > 0$ everywhere on $\mathbb{R}$, divide through by $(1+x^2)(1+y^2)$:
+            $$\frac{x}{1 + x^2}\,dx + \frac{y}{1 + y^2}\,dy = 0$$
+          </p>
+          <p class="text-slate-700 dark:text-slate-300">
+            <strong>Step 2 (Integrate with Log-Constant):</strong> Multiply by $2$ and integrate term-by-term:
+            $$\int \frac{2x}{1 + x^2}\,dx + \int \frac{2y}{1 + y^2}\,dy = \ln C \implies \ln(1 + x^2) + \ln(1 + y^2) = \ln C$$
+          </p>
+          <p class="font-bold text-emerald-700 dark:text-emerald-400">
+            <strong>Step 3 (Simplify):</strong> $\ln\big[(1 + x^2)(1 + y^2)\big] = \ln C \implies \mathbf{(1 + x^2)(1 + y^2) = C}$. $\blacksquare$
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 8.3: EQUATIONS REDUCIBLE TO VARIABLE SEPARABLE              -->
+      <!-- =================================================================== -->
+      <section id="sec-8-3" data-track-sec="sec-8-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 8.3</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Equations Reducible to Variable Separable (Linear Substitutions)
+            </h3>
+          </div>
+          <span id="badge-sec-8-3" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          If an equation is not directly separable, but $x$ and $y$ appear strictly inside a single linear combination $ax + by + c$, i.e.,
+          $$\frac{dy}{dx} = f(ax + by + c)$$
+          set $z = ax + by + c$. Differentiating with respect to $x$ gives $\dfrac{dz}{dx} = a + b\dfrac{dy}{dx} = a + b\,f(z)$, which is <strong>always variable separable</strong> in $z$ and $x$!
+        </p>
+
+        <!-- Worked Example -->
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 text-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 class="font-bold text-slate-900 dark:text-white">Worked Example: Solve $\dfrac{dy}{dx} = (x + y + 1)^2$</h4>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">Substitution $z = x + y + 1$</span>
+          </div>
+          <p class="text-slate-700 dark:text-slate-300">
+            <strong>1. Substitute:</strong> Let $z = x + y + 1 \implies \dfrac{dz}{dx} = 1 + \dfrac{dy}{dx} \implies \dfrac{dy}{dx} = \dfrac{dz}{dx} - 1$.
+          </p>
+          <p class="text-slate-700 dark:text-slate-300">
+            <strong>2. Separate &amp; Integrate:</strong> $\dfrac{dz}{dx} - 1 = z^2 \implies \dfrac{dz}{1 + z^2} = dx \implies \tan^{-1}(z) = x + C$.
+          </p>
+          <p class="font-bold text-emerald-700 dark:text-emerald-400">
+            <strong>3. Back-Substitute:</strong> $z = \tan(x + C) \implies \mathbf{x + y + 1 = \tan(x + C)}$ (or $y = \tan(x + C) - x - 1$). $\blacksquare$
+          </p>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 8.4: HOMOGENEOUS DIFFERENTIAL EQUATIONS                     -->
+      <!-- =================================================================== -->
+      <section id="sec-8-4" data-track-sec="sec-8-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 8.4</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Homogeneous Differential Equations
+            </h3>
+          </div>
+          <span id="badge-sec-8-4" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Homogeneous Function of Degree $n$</div>
+            <p class="text-slate-700 dark:text-slate-200 leading-relaxed">
+              A function $f(x, y)$ is <strong>homogeneous of degree $n$</strong> if for every $t > 0$:
+              $$f(tx, ty) = t^n f(x, y)$$
+            </p>
+          </div>
+          <div class="p-5 rounded-2xl bg-sky-50/70 dark:bg-sky-950/35 border border-sky-200 dark:border-sky-900/70 space-y-1.5">
+            <div class="text-xs font-mono font-bold text-sky-600 dark:text-sky-400 uppercase">Homogeneous First-Order DE</div>
+            <p class="text-slate-700 dark:text-slate-200 leading-relaxed">
+              $M(x, y)\,dx + N(x, y)\,dy = 0$ is <strong>homogeneous</strong> if both $M$ and $N$ are homogeneous functions of the <strong>exact same degree $n$</strong> (equivalently $\frac{dy}{dx} = \phi(y/x)$).
+            </p>
+          </div>
+        </div>
+
+        <!-- Collapsible Proof: Why y = vx ALWAYS separates -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <button type="button" onclick="toggleCollapsible('proof-homog-sep')" class="w-full px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between text-left hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <div>
+              <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Theorem 8.1 · Reduction Proof</span>
+              <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">
+                Prove that substituting $y = vx$ ALWAYS reduces a homogeneous DE to variable separable form.
+              </p>
+            </div>
+            <span id="icon-proof-homog-sep" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0">Show Proof</span>
+          </button>
+          <div id="proof-homog-sep" class="hidden px-5 py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+            <p>Since $M(x, y)$ and $N(x, y)$ are both homogeneous of degree $n$, factor out $x^n$ using $t = 1/x$:
+            $$M(x, y) = x^n M\!\left(1, \frac{y}{x}\right), \qquad N(x, y) = x^n N\!\left(1, \frac{y}{x}\right)$$</p>
+            <p>Thus $\dfrac{dy}{dx} = -\dfrac{M(x,y)}{N(x,y)} = -\dfrac{M(1, y/x)}{N(1, y/x)} = \phi\!\left(\dfrac{y}{x}\right)$.</p>
+            <p>Now set $y = vx$ (so $v = y/x$). Differentiating by the product rule gives $\dfrac{dy}{dx} = v + x\dfrac{dv}{dx}$. Substituting into $\frac{dy}{dx} = \phi(v)$:</p>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-center font-mono">
+              $$v + x\frac{dv}{dx} = \phi(v) \implies x\frac{dv}{dx} = \phi(v) - v \implies \frac{dx}{x} = \frac{dv}{\phi(v) - v} \quad \blacksquare$$
+            </div>
+          </div>
+        </div>
+
+        <!-- Exam Trap Callout: x = vy & sqrt(x^2) = |x| -->
+        <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800/70 flex gap-3.5">
+          <div class="text-2xl shrink-0">⚠️</div>
+          <div class="space-y-1.5 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+            <h4 class="font-bold text-amber-950 dark:text-amber-100">Two Smart Exam Tricks for Homogeneous DEs</h4>
+            <p><strong>1. When to use $x = vy$ instead of $y = vx$:</strong> If $M(x,y)$ has fewer terms than $N(x,y)$ or the equation contains expressions like $e^{x/y}$ or $\cos(x/y)$, substitute <strong>$x = vy$</strong> (so $dx = v\,dy + y\,dv$) to avoid messy integrals!</p>
+            <p><strong>2. Watch $\sqrt{x^2} = |x|$:</strong> In problems like ISRT 2020 Q6(a-ii) with $\sqrt{x^2 + 4y^2}$, factoring out $x^2$ gives $|x|\sqrt{1 + 4v^2}$ (which equals $x\sqrt{1 + 4v^2}$ for $x > 0$).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 2: HOMOGENEOUS FUNCTION & DEGREE CHECKER + y = vx REDUCER       -->
+      <!-- =================================================================== -->
+      <section id="lab-homog" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Homogeneous Function &amp; Degree Checker + $y = vx$ Reducer</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-hp="0" onclick="selectHomogPreset(0)" class="hp-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold transition">ISRT '22/'24 (deg 2)</button>
+            <button type="button" data-hp="1" onclick="selectHomogPreset(1)" class="hp-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold transition">ISRT '20 Radical (deg 1)</button>
+            <button type="button" data-hp="2" onclick="selectHomogPreset(2)" class="hp-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold transition">Quadratic Mix (deg 2)</button>
+            <button type="button" data-hp="3" onclick="selectHomogPreset(3)" class="hp-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold transition">Non-Homog. Counterex.</button>
+          </div>
+        </div>
+
+        <!-- Scaling Slider t -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+          <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
+            <label for="homog-t">Scaling Factor $t \in [0.5, 4.0]$ — Testing $M(tx, ty)/M(x, y)$ &amp; $N(tx, ty)/N(x, y)$ at $(x, y) = (2, 1)$</label>
+            <span id="homog-t-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">t = 2.00</span>
+          </div>
+          <input id="homog-t" type="range" min="0.5" max="4.0" step="0.1" value="2.0" oninput="updateHomogLab(true)" class="w-full accent-indigo-600 cursor-pointer" />
+        </div>
+
+        <div id="homog-output" class="space-y-4"></div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 8.5: EQUATIONS REDUCIBLE TO HOMOGENEOUS FORM                -->
+      <!-- =================================================================== -->
+      <section id="sec-8-5" data-track-sec="sec-8-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 8.5</span>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">★ Triple-Repeated ISRT Question (2022, 2024, 2025)</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1.5">
+              Equations Reducible to Homogeneous Form (Non-Homogeneous Linear Fractional)
+            </h3>
+          </div>
+          <span id="badge-sec-8-5" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          Consider a non-homogeneous first-order equation with linear numerator and denominator:
+          $$\frac{dy}{dx} = \frac{a_1 x + b_1 y + c_1}{a_2 x + b_2 y + c_2}$$
+          The constants $c_1, c_2$ break homogeneity! To solve it, compute the determinant $\Delta = a_1 b_2 - a_2 b_1$, which splits the problem into <strong>two mutually exclusive geometric cases</strong>:
+        </p>
+
+        <!-- Side-by-Side Case 1 vs Case 2 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 text-sm">
+          <!-- Case 1 -->
+          <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-indigo-600 text-white">Case 1 · Intersecting Lines</span>
+              <span class="font-mono text-xs font-bold text-indigo-700 dark:text-indigo-300">$\Delta = a_1 b_2 - a_2 b_1 \neq 0$</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              The two lines $L_1: a_1 x + b_1 y + c_1 = 0$ and $L_2: a_2 x + b_2 y + c_2 = 0$ intersect at a unique point $(h, k)$.
+            </p>
+            <ol class="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              <li>Solve $a_1 h + b_1 k + c_1 = 0$ and $a_2 h + b_2 k + c_2 = 0$ for $(h, k)$.</li>
+              <li>Shift the origin: $x = X + h$, $y = Y + k$ (so $dx = dX$, $dy = dY$).</li>
+              <li>Constants cancel, yielding a <strong>homogeneous DE</strong>:
+              $$\frac{dY}{dX} = \frac{a_1 X + b_1 Y}{a_2 X + b_2 Y}$$</li>
+              <li>Solve via $Y = vX$, then substitute back $X = x - h$, $Y = y - k$.</li>
+            </ol>
+          </div>
+
+          <!-- Case 2 -->
+          <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/70 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-600 text-white">Case 2 · Parallel Lines</span>
+              <span class="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300">$\Delta = a_1 b_2 - a_2 b_1 = 0$</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+              Since $\dfrac{a_1}{a_2} = \dfrac{b_1}{b_2} = \lambda$, the lines are <strong>parallel</strong>—no finite intersection $(h, k)$ exists!
+            </p>
+            <ol class="list-decimal pl-5 space-y-1 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              <li>Factor out the common linear part $a_1 x + b_1 y$ (so $a_2 x + b_2 y = \frac{1}{\lambda}(a_1 x + b_1 y)$).</li>
+              <li>Substitute <strong>$z = a_1 x + b_1 y$</strong> directly (as in Section 8.3).</li>
+              <li>Differentiate: $\dfrac{dz}{dx} = a_1 + b_1\dfrac{dy}{dx}$, which immediately yields a <strong>variable separable</strong> equation in $z$ and $x$!</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- LAB 3: REDUCIBLE-TO-HOMOGENEOUS ORIGIN-SHIFT & CASE-DETECTOR        -->
+      <!-- =================================================================== -->
+      <section id="lab-shift" class="scroll-mt-24 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border-2 border-indigo-200 dark:border-indigo-900/80 p-6 sm:p-8 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03
+            </span>
+            <h3 class="text-xl font-serif font-bold text-slate-900 dark:text-white">Reducible-to-Homogeneous Origin-Shift &amp; Case-Detector Visualizer</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setShiftPreset(2, 2, -2, 3, 1, -5)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition">ISRT '22/'24/'25 (h=2, k=−1)</button>
+            <button type="button" onclick="setShiftPreset(1, 2, 3, 2, 1, 3)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">ISRT '20 Q6 (h=−1, k=−1)</button>
+            <button type="button" onclick="setShiftPreset(1, 1, 1, 2, 2, 3)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800 hover:border-emerald-500 transition">Case 2 Parallel (Δ=0)</button>
+          </div>
+        </div>
+
+        <!-- 6 Coefficient Inputs -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-6 gap-3 text-xs">
+          <div>
+            <label for="sh-a1" class="block font-semibold text-indigo-600 dark:text-indigo-400 mb-1">$a_1$ (Num $x$)</label>
+            <input id="sh-a1" type="number" value="2" oninput="updateShiftLab(true)" class="w-full px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm text-center" />
+          </div>
+          <div>
+            <label for="sh-b1" class="block font-semibold text-indigo-600 dark:text-indigo-400 mb-1">$b_1$ (Num $y$)</label>
+            <input id="sh-b1" type="number" value="2" oninput="updateShiftLab(true)" class="w-full px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm text-center" />
+          </div>
+          <div>
+            <label for="sh-c1" class="block font-semibold text-indigo-600 dark:text-indigo-400 mb-1">$c_1$ (Num const)</label>
+            <input id="sh-c1" type="number" value="-2" oninput="updateShiftLab(true)" class="w-full px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm text-center" />
+          </div>
+          <div>
+            <label for="sh-a2" class="block font-semibold text-sky-600 dark:text-sky-400 mb-1">$a_2$ (Den $x$)</label>
+            <input id="sh-a2" type="number" value="3" oninput="updateShiftLab(true)" class="w-full px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm text-center" />
+          </div>
+          <div>
+            <label for="sh-b2" class="block font-semibold text-sky-600 dark:text-sky-400 mb-1">$b_2$ (Den $y$)</label>
+            <input id="sh-b2" type="number" value="1" oninput="updateShiftLab(true)" class="w-full px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm text-center" />
+          </div>
+          <div>
+            <label for="sh-c2" class="block font-semibold text-sky-600 dark:text-sky-400 mb-1">$c_2$ (Den const)</label>
+            <input id="sh-c2" type="number" value="-5" oninput="updateShiftLab(true)" class="w-full px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-sm text-center" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- SVG Lines & Shifted Axes -->
+          <div class="lg:col-span-6 p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col items-center">
+            <div class="w-full flex flex-wrap justify-between items-center gap-2 text-xs mb-2">
+              <span class="font-semibold text-slate-500 dark:text-slate-400">Lines $L_1$, $L_2$ &amp; Origin Shift</span>
+              <div class="flex items-center gap-2.5">
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-indigo-600"></span> $L_1$</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-sky-500"></span> $L_2$</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 border-t-2 border-dashed border-emerald-500"></span> $(X,Y)$ Axes</span>
+              </div>
+            </div>
+            <svg id="shift-svg" viewBox="0 0 360 320" class="w-full max-w-[360px] h-auto"></svg>
+          </div>
+
+          <!-- Algebraic Case & Transformation Output -->
+          <div id="shift-readout" class="lg:col-span-6 p-5 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3 text-xs sm:text-sm"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 8.6: FIRST-ORDER DE METHOD SELECTOR CHEAT-SHEET             -->
+      <!-- =================================================================== -->
+      <section id="sec-8-6" data-track-sec="sec-8-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 8.6 · Exam Decision Table</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              First-Order DE Method Selector Cheat-Sheet
+            </h3>
+          </div>
+          <span id="badge-sec-8-6" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-4 py-3">Equation Type</th>
+                <th class="px-4 py-3">Diagnostic Test</th>
+                <th class="px-4 py-3">Substitution</th>
+                <th class="px-4 py-3">Resulting Separable Form</th>
+                <th class="px-4 py-3">Common ISRT Trap</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="px-4 py-3 font-bold text-indigo-700 dark:text-indigo-300">Variable Separable</td>
+                <td class="px-4 py-3">Factors into $g(x)h(y)$</td>
+                <td class="px-4 py-3 font-mono">None</td>
+                <td class="px-4 py-3">$\dfrac{dy}{h(y)} = g(x)\,dx$</td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-400">Losing $h(y)=0$ roots; forgetting $\ln C$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-bold text-indigo-700 dark:text-indigo-300">Reducible to Separable</td>
+                <td class="px-4 py-3">RHS is $f(ax + by + c)$</td>
+                <td class="px-4 py-3 font-mono">$z = ax + by + c$</td>
+                <td class="px-4 py-3">$\dfrac{dz}{a + b\,f(z)} = dx$</td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-400">Forgetting chain term $+a$ in $\frac{dz}{dx}$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-bold text-indigo-700 dark:text-indigo-300">Homogeneous</td>
+                <td class="px-4 py-3">$M(tx,ty)=t^n M$, $N(tx,ty)=t^n N$</td>
+                <td class="px-4 py-3 font-mono">$y = vx$ (or $x = vy$)</td>
+                <td class="px-4 py-3">$\dfrac{dv}{\phi(v) - v} = \dfrac{dx}{x}$</td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-400">Forgetting to substitute $v = y/x$ back; $\sqrt{x^2}=|x|$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-bold text-indigo-700 dark:text-indigo-300">Reducible to Homog. (Case 1)</td>
+                <td class="px-4 py-3">$\Delta = a_1 b_2 - a_2 b_1 \neq 0$</td>
+                <td class="px-4 py-3 font-mono">$x = X+h,\; y = Y+k$</td>
+                <td class="px-4 py-3">Homog. $\frac{dY}{dX} \to Y = vX$</td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-400">Sign errors in $X = x - h,\; Y = y - k$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 font-bold text-emerald-700 dark:text-emerald-300">Reducible to Homog. (Case 2)</td>
+                <td class="px-4 py-3">$\Delta = a_1 b_2 - a_2 b_1 = 0$</td>
+                <td class="px-4 py-3 font-mono">$z = a_1 x + b_1 y$</td>
+                <td class="px-4 py-3">Separable in $z$ and $x$</td>
+                <td class="px-4 py-3 text-slate-600 dark:text-slate-400">Trying to solve for $(h,k)$ when lines are parallel!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT (6 AUTHENTIC WORKED PROBLEMS)                  -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Past Papers (2020–2025)</span>
+          <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 8)</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Solve each problem on paper first, then reveal the Hint or Full Step-by-Step Solution independently.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Vault 1 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 1st Incourse 2022 Q3(a) &amp; 2024 Q2(b)</span>
+              <span class="text-xs font-mono text-slate-400">[2.5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. Solve the differential equation: $x(1 + y^2)\,dx + y(1 + x^2)\,dy = 0$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Divide both sides by $(1 + x^2)(1 + y^2)$, multiply by $2$, and integrate using $\int \frac{f'(u)}{f(u)}\,du = \ln|f(u)|$.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Dividing by $(1 + x^2)(1 + y^2) > 0$: $\dfrac{x}{1 + x^2}\,dx + \dfrac{y}{1 + y^2}\,dy = 0$.</p>
+              <p>Multiplying by $2$ and integrating: $\int \dfrac{2x}{1 + x^2}\,dx + \int \dfrac{2y}{1 + y^2}\,dy = \ln C \implies \ln(1 + x^2) + \ln(1 + y^2) = \ln C$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $(1 + x^2)(1 + y^2) = C$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 1st Incourse 2022 Q3(b) &amp; 2024 Q2(a)</span>
+              <span class="text-xs font-mono text-slate-400">[2.5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. Solve the homogeneous differential equation: $(x^2 + y^2)\,dx - 2xy\,dy = 0$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Rewrite as $\frac{dy}{dx} = \frac{x^2 + y^2}{2xy}$, substitute $y = vx$, and simplify $x\frac{dv}{dx} = \frac{1 - v^2}{2v}$.
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Rewrite as $\dfrac{dy}{dx} = \dfrac{x^2 + y^2}{2xy}$ (homogeneous of degree $2$). Put $y = vx \implies \dfrac{dy}{dx} = v + x\dfrac{dv}{dx}$:</p>
+              <p>$$v + x\frac{dv}{dx} = \frac{1 + v^2}{2v} \implies x\frac{dv}{dx} = \frac{1 - v^2}{2v} \implies \frac{2v}{1 - v^2}\,dv = \frac{dx}{x}$$</p>
+              <p>Integrating: $-\ln|1 - v^2| = \ln|x| - \ln|C| \implies x(1 - v^2) = C$. Substituting $v = y/x$ gives $x\left(1 - \frac{y^2}{x^2}\right) = C$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $x^2 - y^2 = Cx$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020 · Q6(a-ii)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. Solve: $2x\,dy - 2y\,dx - \sqrt{x^2 + 4y^2}\,dx = 0$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Put $y = vx$ (homogeneous of degree $1$). The $v$ terms cancel, leaving $\frac{2\,dv}{\sqrt{1 + (2v)^2}} = \frac{dx}{x}$; recall $\int \frac{du}{\sqrt{1+u^2}} = \ln|u + \sqrt{1+u^2}|$.
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Rewrite as $\dfrac{dy}{dx} = \dfrac{2y + \sqrt{x^2 + 4y^2}}{2x}$. Put $y = vx$ ($x > 0$ so $\sqrt{x^2} = x$):</p>
+              <p>$$v + x\frac{dv}{dx} = \frac{2vx + x\sqrt{1 + 4v^2}}{2x} = v + \frac{\sqrt{1 + 4v^2}}{2} \implies \frac{2\,dv}{\sqrt{1 + (2v)^2}} = \frac{dx}{x}$$</p>
+              <p>Let $u = 2v \implies du = 2\,dv$. Integrating gives $\ln\left|2v + \sqrt{1 + 4v^2}\right| = \ln|x| + \ln C \implies 2v + \sqrt{1 + 4v^2} = Cx$.</p>
+              <p>Substituting $v = y/x$: $\dfrac{2y}{x} + \dfrac{\sqrt{x^2 + 4y^2}}{x} = Cx$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $2y + \sqrt{x^2 + 4y^2} = Cx^2$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 1st Incourse 2022 Q4(b), 2024 Q3(b) &amp; 2025 Q5 (Triple Repeat!)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. Solve $2(x + y - 1)\,dx = (3x + y - 5)\,dy$ by reducible to homogeneous form.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Shift $x = X + 2$, $y = Y - 1$ to get $\frac{dY}{dX} = \frac{2X + 2Y}{3X + Y}$. Put $Y = vX$ and use partial fractions $\frac{v+3}{(v+2)(v-1)} = \frac{4/3}{v-1} - \frac{1/3}{v+2}$.
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Step 1 (Shift Origin):</strong> Rewrite as $\dfrac{dy}{dx} = \dfrac{2x + 2y - 2}{3x + y - 5}$. Solving $2h + 2k - 2 = 0$ and $3h + k - 5 = 0$ gives $h = 2, k = -1$. Set $x = X + 2,\; y = Y - 1$:
+              $$\frac{dY}{dX} = \frac{2X + 2Y}{3X + Y}$$</p>
+              <p><strong>Step 2 (Homogeneous Substitution $Y = vX$):</strong>
+              $$v + X\frac{dv}{dX} = \frac{2 + 2v}{3 + v} \implies X\frac{dv}{dX} = \frac{2 - v - v^2}{3 + v} = -\frac{(v + 2)(v - 1)}{v + 3} \implies \frac{v + 3}{(v + 2)(v - 1)}\,dv = -\frac{dX}{X}$$</p>
+              <p><strong>Step 3 (Partial Fractions &amp; Integrate):</strong> $\left(\dfrac{4/3}{v - 1} - \dfrac{1/3}{v + 2}\right)dv = -\dfrac{dX}{X} \implies 4\ln|v - 1| - \ln|v + 2| = -3\ln|X| + \ln C$.</p>
+              <p>Combining logs: $\dfrac{X^3(v - 1)^4}{v + 2} = C \implies \dfrac{X^4(v - 1)^4}{X(v + 2)} = C \implies \dfrac{(Y - X)^4}{Y + 2X} = C$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Step 4 (Back-Substitute $X = x - 2,\; Y = y + 1$): $(y - x + 3)^4 = C(2x + y - 3)$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020 · Q6(a-iii)</span>
+              <span class="text-xs font-mono text-slate-400">[4 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. Solve: $(2x + y + 3)\,dy = (x + 2y + 3)\,dx$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Intersection of $x + 2y + 3 = 0$ and $2x + y + 3 = 0$ is $h = -1, k = -1$. Shift $x = X - 1, y = Y - 1$, then put $Y = vX$.
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Step 1 (Shift):</strong> $\dfrac{dy}{dx} = \dfrac{x + 2y + 3}{2x + y + 3}$. Solving $h + 2k + 3 = 0$ and $2h + k + 3 = 0$ yields $h = -1, k = -1$. Set $x = X - 1,\; y = Y - 1$:
+              $$\frac{dY}{dX} = \frac{X + 2Y}{2X + Y}$$</p>
+              <p><strong>Step 2 (Put $Y = vX$):</strong> $v + X\dfrac{dv}{dX} = \dfrac{1 + 2v}{2 + v} \implies X\dfrac{dv}{dX} = \dfrac{1 - v^2}{2 + v} \implies \dfrac{2 + v}{(1 - v)(1 + v)}\,dv = \dfrac{dX}{X}$.</p>
+              <p><strong>Step 3 (Partial Fractions):</strong> $\left(\dfrac{3/2}{1 - v} + \dfrac{1/2}{1 + v}\right)dv = \dfrac{dX}{X} \implies -3\ln|1 - v| + \ln|1 + v| = 2\ln|X| + \ln C$.</p>
+              <p>Thus $\dfrac{1 + v}{(1 - v)^3} = CX^2 \implies \dfrac{X(1 + v)}{X^3(1 - v)^3} = C \implies X + Y = C(X - Y)^3$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Step 4 (Back-Substitute $X = x + 1,\; Y = y + 1$): $x + y + 2 = C(x - y)^3$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2020 · Q7(b)</span>
+              <span class="text-xs font-mono text-slate-400">[6 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. Briefly explain the geometric interpretation of a first-order differential equation.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Hit all 5 keywords: <em>lineal element</em>, <em>direction/slope field</em>, <em>integral curves &amp; 1-parameter family</em>, <em>isoclines $f(x,y)=k$</em>, and <em>unique IVP curve</em> through $(x_0, y_0)$.
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>A first-order DE $\frac{dy}{dx} = f(x, y)$ assigns to each regular point $(x, y)$ in the plane a specific tangent slope $m = f(x, y)$. Drawing a tiny line segment of slope $m$ at each point produces a <strong>lineal element</strong>, and the entire array of segments forms the <strong>direction field (slope field)</strong>.</p>
+              <p>Curves of constant slope $f(x, y) = k$ are called <strong>isoclines</strong> and help sketch the field. Any solution $y = \phi(x)$ is an <strong>integral curve</strong> that is everywhere tangent to the lineal elements it passes through.</p>
+              <p>The general solution $F(x, y, C) = 0$ represents a <strong>one-parameter family of integral curves</strong>. Imposing an initial condition $y(x_0) = y_0$ selects the <strong>unique curve</strong> in this family passing through $(x_0, y_0)$ (for example, $\frac{dy}{dx} = -\frac{x}{y}$ generates the concentric circle family $x^2 + y^2 = C$, and $(3, 4)$ selects the single circle $x^2 + y^2 = 25$). $\blacksquare$</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- INTERACTIVE QUICK-CHECK QUIZ (5 AUTO-GRADED MCQS)                   -->
+      <!-- =================================================================== -->
+      <section id="quick-quiz" class="scroll-mt-24 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Self-Assessment</span>
+            <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <p>MATH 103: Foundations of Mathematics · ISRT, University of Dhaka (Lesson 8 of 14)</p>
+        <p>Next up: <strong>Lesson 9 — Exact Equations, Integrating Factors &amp; Bernoulli's Equation</strong></p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX RENDERING & MATH HELPERS
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function gcdInt(a, b) {
+      a = Math.abs(Math.round(a));
+      b = Math.abs(Math.round(b));
+      while (b) { const t = a % b; a = b; b = t; }
+      return a || 1;
+    }
+
+    function fmtFracTeX(num, den) {
+      if (den < 0) { num = -num; den = -den; }
+      const g = gcdInt(num, den);
+      num /= g; den /= g;
+      if (den === 1) return `${num}`;
+      return num < 0 ? `-\\frac{${Math.abs(num)}}{${den}}` : `\\frac{${num}}{${den}}`;
+    }
+
+    /* =========================================================================
+       2. THEME, SIDEBAR, COLLAPSIBLES & PROGRESS TRACKING (14 MILESTONES)
+       ========================================================================= */
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('math103_theme', isDark ? 'dark' : 'light');
+      renderSlopeField(false);
+      updateShiftLab(false);
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', openSidebar);
+    document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      document.getElementById('roadmap-list').classList.toggle('hidden');
+      document.getElementById('roadmap-chevron').classList.toggle('rotate-180');
+    }
+
+    function toggleCollapsible(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById('icon-' + id);
+      const isHidden = el.classList.toggle('hidden');
+      if (icon) icon.textContent = isHidden ? (id === 'exam-struct-6m' ? 'Show Guide' : 'Show Proof') : 'Hide';
+      if (!isHidden) renderMath(el);
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    const viewedSections = new Set();
+    const exploredLabs = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function markLabExplored(labId) {
+      if (!exploredLabs.has(labId)) {
+        exploredLabs.add(labId);
+        updateOverallProgress();
+      }
+    }
+
+    function updateOverallProgress() {
+      const total = 6 + 3 + 5; // 6 sections + 3 labs + 5 quiz questions
+      const done = viewedSections.size + exploredLabs.size + quizAnsweredCount;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('header-progress-text').textContent = pct + '%';
+      document.getElementById('sidebar-progress-pct').textContent = pct + '%';
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${viewedSections.size}/6 sections · ${exploredLabs.size}/3 labs · ${quizAnsweredCount}/5 quiz`;
+    }
+
+    function initObservers() {
+      const spyTargets = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link[data-spy]');
+      const spyObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              tocLinks.forEach((link) => {
+                if (link.dataset.spy === id) {
+                  link.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                } else {
+                  link.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
+      );
+      spyTargets.forEach((sec) => spyObs.observe(sec));
+
+      const secObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const secId = entry.target.dataset.trackSec;
+              if (secId && !viewedSections.has(secId)) {
+                viewedSections.add(secId);
+                const badge = document.getElementById('badge-' + secId);
+                if (badge) {
+                  badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300';
+                  badge.textContent = '✓ Viewed';
+                }
+                updateOverallProgress();
+              }
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      document.querySelectorAll('section[data-track-sec]').forEach((s) => secObs.observe(s));
+    }
+
+    /* =========================================================================
+       3. LAB 1: INTERACTIVE SLOPE FIELD & RK4 INTEGRAL CURVE PLOTTER
+       ========================================================================= */
+    const sfPresets = {
+      circles: {
+        eqTex: '\\frac{dy}{dx} = -\\frac{x}{y}',
+        familyTex: 'x^2 + y^2 = C',
+        type: 'Variable Separable',
+        fn: (x, y) => Math.abs(y) < 1e-4 ? NaN : -x / y,
+        defX: 2.0, defY: 1.5
+      },
+      rays: {
+        eqTex: '\\frac{dy}{dx} = \\frac{y}{x}',
+        familyTex: 'y = Cx',
+        type: 'Homogeneous (deg 1)',
+        fn: (x, y) => Math.abs(x) < 1e-4 ? NaN : y / x,
+        defX: 2.0, defY: 1.5
+      },
+      isrt22: {
+        eqTex: '\\frac{dy}{dx} = \\frac{x^2 + y^2}{2xy}',
+        familyTex: 'x^2 - y^2 = Cx',
+        type: 'ISRT 2022/2024 Homogeneous',
+        fn: (x, y) => Math.abs(2 * x * y) < 1e-4 ? NaN : (x * x + y * y) / (2 * x * y),
+        defX: 2.5, defY: 1.25
+      },
+      inv: {
+        eqTex: '\\frac{dy}{dx} = -\\frac{y^2}{x^2}',
+        familyTex: '\\frac{1}{x} + \\frac{1}{y} = C',
+        type: 'ISRT Separable',
+        fn: (x, y) => Math.abs(x) < 1e-4 ? NaN : -(y * y) / (x * x),
+        defX: 1.5, defY: 2.0
+      },
+      linear: {
+        eqTex: '\\frac{dy}{dx} = y - x',
+        familyTex: 'y = x + 1 + Ce^x',
+        type: 'Linear / Reducible ($z = y - x$)',
+        fn: (x, y) => y - x,
+        defX: 0.0, defY: 1.5
+      }
+    };
+
+    const sfState = { preset: 'circles', x0: 2.0, y0: 1.5 };
+    const SF_SIZE = 420, SF_RANGE = 5.0;
+    const sfToX = (x) => SF_SIZE / 2 + (x / SF_RANGE) * (SF_SIZE / 2 - 22);
+    const sfToY = (y) => SF_SIZE / 2 - (y / SF_RANGE) * (SF_SIZE / 2 - 22);
+    const sfFromX = (px) => ((px - SF_SIZE / 2) / (SF_SIZE / 2 - 22)) * SF_RANGE;
+    const sfFromY = (py) => ((SF_SIZE / 2 - py) / (SF_SIZE / 2 - 22)) * SF_RANGE;
+
+    function onSlopePresetChange() {
+      sfState.preset = document.getElementById('sf-preset').value;
+      const p = sfPresets[sfState.preset];
+      sfState.x0 = p.defX;
+      sfState.y0 = p.defY;
+      document.getElementById('sf-x0').value = sfState.x0;
+      document.getElementById('sf-y0').value = sfState.y0;
+      renderSlopeField(true);
+    }
+
+    function resetSlopePoint() {
+      const p = sfPresets[sfState.preset];
+      sfState.x0 = p.defX;
+      sfState.y0 = p.defY;
+      document.getElementById('sf-x0').value = sfState.x0;
+      document.getElementById('sf-y0').value = sfState.y0;
+      renderSlopeField(true);
+    }
+
+    function syncSlopeFromSliders() {
+      sfState.x0 = parseFloat(document.getElementById('sf-x0').value);
+      sfState.y0 = parseFloat(document.getElementById('sf-y0').value);
+      renderSlopeField(true);
+    }
+
+    // Arc-length normalized RK4 integrator (handles steep/vertical tangents smoothly!)
+    function traceIntegralCurve(fn, x0, y0, dir) {
+      const pts = [[x0, y0]];
+      let x = x0, y = y0;
+      const ds = 0.06 * dir;
+      const maxSteps = 260;
+
+      const stepVec = (px, py) => {
+        const m = fn(px, py);
+        if (!Number.isFinite(m)) return null;
+        const norm = Math.hypot(1, m);
+        return [1 / norm, m / norm];
+      };
+
+      for (let i = 0; i < maxSteps; i++) {
+        const k1 = stepVec(x, y);
+        if (!k1) break;
+        const k2 = stepVec(x + 0.5 * ds * k1[0], y + 0.5 * ds * k1[1]);
+        if (!k2) break;
+        const k3 = stepVec(x + 0.5 * ds * k2[0], y + 0.5 * ds * k2[1]);
+        if (!k3) break;
+        const k4 = stepVec(x + ds * k3[0], y + ds * k3[1]);
+        if (!k4) break;
+
+        const nx = x + (ds / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]);
+        const ny = y + (ds / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+
+        // Stop if out of bounds or crossing a discontinuity jump
+        if (Math.abs(nx) > SF_RANGE + 0.1 || Math.abs(ny) > SF_RANGE + 0.1) break;
+        if (Math.hypot(nx - x, ny - y) > 0.35) break;
+        // Stop near singular axes for 1/x or 1/y fields to prevent branch jumping
+        if (sfState.preset === 'circles' && y * ny < 0) break;
+        if ((sfState.preset === 'rays' || sfState.preset === 'inv') && x * nx < 0) break;
+        if (sfState.preset === 'isrt22' && (x * nx < 0 || y * ny < 0)) break;
+
+        x = nx; y = ny;
+        pts.push([x, y]);
+      }
+      return pts;
+    }
+
+    function renderSlopeField(userTriggered) {
+      if (userTriggered) markLabExplored('lab-slope');
+      const p = sfPresets[sfState.preset];
+      const { x0, y0 } = sfState;
+      const isoVal = document.getElementById('sf-iso').value;
+
+      document.getElementById('sf-x0-val').textContent = x0.toFixed(2);
+      document.getElementById('sf-y0-val').textContent = y0.toFixed(2);
+
+      const svg = document.getElementById('sf-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+      const segCol = isDark ? '#475569' : '#94a3b8';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      let html = `
+        <line x1="18" y1="${sfToY(0)}" x2="${SF_SIZE - 18}" y2="${sfToY(0)}" stroke="${axisCol}" stroke-width="1.5" />
+        <line x1="${sfToX(0)}" y1="18" x2="${sfToX(0)}" y2="${SF_SIZE - 18}" stroke="${axisCol}" stroke-width="1.5" />
+      `;
+
+      // Axis ticks
+      for (let t = -4; t <= 4; t += 2) {
+        if (t === 0) continue;
+        html += `<text x="${sfToX(t)}" y="${sfToY(0) + 14}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">${t}</text>`;
+        html += `<text x="${sfToX(0) - 8}" y="${sfToY(t) + 3}" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">${t}</text>`;
+      }
+
+      // Direction Field Grid (15 x 15)
+      const N = 15;
+      const segLen = 9.5;
+      for (let ix = 0; ix < N; ix++) {
+        for (let iy = 0; iy < N; iy++) {
+          const gx = -4.5 + (ix / (N - 1)) * 9.0;
+          const gy = -4.5 + (iy / (N - 1)) * 9.0;
+          const m = p.fn(gx, gy);
+          if (!Number.isFinite(m)) continue;
+
+          const angle = Math.atan(m);
+          const dx = segLen * Math.cos(angle);
+          const dy = -segLen * Math.sin(angle); // SVG y-axis inverted
+          const cx = sfToX(gx);
+          const cy = sfToY(gy);
+
+          let col = segCol;
+          let sw = 1.4;
+          if (isoVal !== 'none') {
+            const targetK = parseFloat(isoVal);
+            if (Math.abs(m - targetK) < 0.28) {
+              col = '#f59e0b';
+              sw = 2.6;
+            }
+          }
+          html += `<line x1="${(cx - dx).toFixed(1)}" y1="${(cy - dy).toFixed(1)}" x2="${(cx + dx).toFixed(1)}" y2="${(cy + dy).toFixed(1)}" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" opacity="${col === '#f59e0b' ? '1' : '0.75'}" />`;
+        }
+      }
+
+      // Trace RK4 integral curve forward & backward
+      const fwd = traceIntegralCurve(p.fn, x0, y0, 1);
+      const bwd = traceIntegralCurve(p.fn, x0, y0, -1);
+      const combined = bwd.slice().reverse().concat(fwd.slice(1));
+
+      if (combined.length > 1) {
+        const pathD = combined.map((pt, i) => `${i === 0 ? 'M' : 'L'} ${sfToX(pt[0]).toFixed(1)} ${sfToY(pt[1]).toFixed(1)}`).join(' ');
+        html += `<path d="${pathD}" fill="none" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />`;
+      }
+
+      // Draw initial point (x0, y0)
+      html += `
+        <circle cx="${sfToX(x0)}" cy="${sfToY(y0)}" r="6.5" fill="#10b981" stroke="${isDark ? '#020617' : '#ffffff'}" stroke-width="2.2" />
+      `;
+
+      svg.innerHTML = html;
+
+      // Live Readout
+      const m0 = p.fn(x0, y0);
+      const slopeStr = Number.isFinite(m0) ? m0.toFixed(3) : 'Undefined (Vertical / Singular)';
+      const readout = document.getElementById('sf-readout');
+      readout.innerHTML = `
+        <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Active Equation &amp; Family</div>
+        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+          $$${p.eqTex} \\quad \\Longrightarrow \\quad ${p.familyTex}$$
+        </div>
+        <div class="space-y-1 font-mono text-xs text-slate-700 dark:text-slate-300">
+          <div><strong>Classification:</strong> ${p.type}</div>
+          <div><strong>Initial Point:</strong> (x₀, y₀) = (${x0.toFixed(2)}, ${y0.toFixed(2)})</div>
+          <div><strong>Tangent Slope:</strong> m = f(x₀, y₀) = <span class="font-bold text-emerald-600 dark:text-emerald-400">${slopeStr}</span></div>
+        </div>
+      `;
+      renderMath(readout);
+    }
+
+    // Click-to-place point on Slope Field SVG
+    document.getElementById('sf-svg').addEventListener('pointerdown', (e) => {
+      const svg = e.currentTarget;
+      const rect = svg.getBoundingClientRect();
+      const px = ((e.clientX - rect.left) / rect.width) * SF_SIZE;
+      const py = ((e.clientY - rect.top) / rect.height) * SF_SIZE;
+      const clampSnap = (v) => Math.max(-4.5, Math.min(4.5, Math.round(v * 4) / 4));
+      sfState.x0 = clampSnap(sfFromX(px));
+      sfState.y0 = clampSnap(sfFromY(py));
+      document.getElementById('sf-x0').value = sfState.x0;
+      document.getElementById('sf-y0').value = sfState.y0;
+      renderSlopeField(true);
+    });
+
+    /* =========================================================================
+       4. LAB 2: HOMOGENEOUS FUNCTION & DEGREE CHECKER + y = vx REDUCER
+       ========================================================================= */
+    const homogPresets = [
+      {
+        name: 'ISRT 2022/2024 Homogeneous',
+        eqTex: '(x^2 + y^2)\\,dx - 2xy\\,dy = 0',
+        M: (x, y) => x * x + y * y,
+        N: (x, y) => -2 * x * y,
+        isHomog: true,
+        deg: 2,
+        step1: '\\frac{dy}{dx} = \\frac{x^2 + y^2}{2xy} = \\frac{1 + (y/x)^2}{2(y/x)}',
+        step2: 'v + x\\frac{dv}{dx} = \\frac{1 + v^2}{2v} \\implies \\frac{2v}{1 - v^2}\\,dv = \\frac{dx}{x}',
+        step3: 'x^2 - y^2 = Cx'
+      },
+      {
+        name: 'ISRT 2020 Q6(a-ii) Radical',
+        eqTex: '\\big(-2y - \\sqrt{x^2 + 4y^2}\\big)\\,dx + 2x\\,dy = 0',
+        M: (x, y) => -2 * y - Math.sqrt(x * x + 4 * y * y),
+        N: (x, y) => 2 * x,
+        isHomog: true,
+        deg: 1,
+        step1: '\\frac{dy}{dx} = \\frac{2y + \\sqrt{x^2 + 4y^2}}{2x} = \\frac{y}{x} + \\frac{1}{2}\\sqrt{1 + 4(y/x)^2}',
+        step2: 'v + x\\frac{dv}{dx} = v + \\frac{\\sqrt{1 + 4v^2}}{2} \\implies \\frac{2\\,dv}{\\sqrt{1 + (2v)^2}} = \\frac{dx}{x}',
+        step3: '2y + \\sqrt{x^2 + 4y^2} = Cx^2'
+      },
+      {
+        name: 'Quadratic Homogeneous Mix',
+        eqTex: '(x^2 - 4xy + 4y^2)\\,dx + (2y^2 + 8xy - 2x^2)\\,dy = 0',
+        M: (x, y) => x * x - 4 * x * y + 4 * y * y,
+        N: (x, y) => 2 * y * y + 8 * x * y - 2 * x * x,
+        isHomog: true,
+        deg: 2,
+        step1: '\\frac{dy}{dx} = -\\frac{1 - 4v + 4v^2}{2v^2 + 8v - 2}',
+        step2: 'x\\frac{dv}{dx} = -\\frac{2v^3 + 12v^2 - 6v + 1}{2v^2 + 8v - 2} \\implies \\text{Separable in } v \\text{ and } x!',
+        step3: '\\text{Integrate rational function in } v \\text{ and replace } v = y/x'
+      },
+      {
+        name: 'Non-Homogeneous Counterexample',
+        eqTex: '(x^2 + y)\\,dx + (y^2 + x)\\,dy = 0',
+        M: (x, y) => x * x + y,
+        N: (x, y) => y * y + x,
+        isHomog: false,
+        deg: null,
+        step1: 'M(tx, ty) = t^2 x^2 + ty \\neq t^n(x^2 + y)',
+        step2: '\\text{Mixed degrees (deg 2 and deg 1) prevent } x^n \\text{ from canceling!}',
+        step3: '\\text{NOT homogeneous — try Exactness check (Lesson 9)!}'
+      }
+    ];
+
+    let activeHomogIdx = 0;
+
+    function selectHomogPreset(idx) {
+      activeHomogIdx = idx;
+      document.querySelectorAll('.hp-btn').forEach((btn) => {
+        const active = parseInt(btn.dataset.hp, 10) === idx;
+        btn.className = active
+          ? 'hp-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-xs transition'
+          : 'hp-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition';
+      });
+      updateHomogLab(true);
+    }
+
+    function updateHomogLab(userTriggered) {
+      if (userTriggered) markLabExplored('lab-homog');
+      const t = parseFloat(document.getElementById('homog-t').value);
+      document.getElementById('homog-t-val').textContent = `t = ${t.toFixed(2)}`;
+
+      const item = homogPresets[activeHomogIdx];
+      const x = 2, y = 1;
+      const m0 = item.M(x, y), mt = item.M(t * x, t * y);
+      const n0 = item.N(x, y), nt = item.N(t * x, t * y);
+      const ratioM = mt / m0;
+      const ratioN = nt / n0;
+
+      const degM = Math.abs(t - 1) > 1e-4 ? Math.log(Math.abs(ratioM)) / Math.log(t) : item.deg;
+      const degN = Math.abs(t - 1) > 1e-4 ? Math.log(Math.abs(ratioN)) / Math.log(t) : item.deg;
+      const sameRatio = Math.abs(ratioM - ratioN) < 1e-4;
+
+      const out = document.getElementById('homog-output');
+      out.innerHTML = `
+        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">${item.name}</span>
+            <span class="px-3 py-1 rounded-full text-xs font-bold ${item.isHomog ? 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200' : 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200'}">
+              ${item.isHomog ? `✓ Homogeneous of Degree n = ${item.deg}` : '✕ NOT Homogeneous (Ratios Diverge!)'}
+            </span>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 text-center overflow-x-auto">
+            $$${item.eqTex}$$
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+            <div class="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900">
+              <div class="text-slate-500 dark:text-slate-400">M(tx, ty) / M(x, y)</div>
+              <div class="text-base font-extrabold text-indigo-700 dark:text-indigo-300 mt-0.5">${ratioM.toFixed(4)}</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${Math.abs(t - 1) > 1e-4 ? `log_t(ratio) = ${degM.toFixed(3)}` : 'Move t ≠ 1 to test scaling'}</div>
+            </div>
+            <div class="p-3 rounded-xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-900">
+              <div class="text-slate-500 dark:text-slate-400">N(tx, ty) / N(x, y)</div>
+              <div class="text-base font-extrabold text-sky-700 dark:text-sky-300 mt-0.5">${ratioN.toFixed(4)}</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">${Math.abs(t - 1) > 1e-4 ? `log_t(ratio) = ${degN.toFixed(3)}` : 'Move t ≠ 1 to test scaling'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Step y = vx Reduction Card -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-x-auto">
+            <div class="font-mono text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Step 1 · Normal Form</div>
+            <div>$$${item.step1}$$</div>
+          </div>
+          <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5 overflow-x-auto">
+            <div class="font-mono text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Step 2 · Put $y = vx$</div>
+            <div>$$${item.step2}$$</div>
+          </div>
+          <div class="p-4 rounded-2xl ${item.isHomog ? 'bg-emerald-50/70 dark:bg-emerald-950/35 border-emerald-200 dark:border-emerald-800' : 'bg-rose-50/70 dark:bg-rose-950/35 border-rose-200 dark:border-rose-800'} border space-y-1.5 overflow-x-auto">
+            <div class="font-mono text-xs font-bold uppercase ${item.isHomog ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-700 dark:text-rose-400'}">Step 3 · Final Result</div>
+            <div>$$${item.step3}$$</div>
+          </div>
+        </div>
+      `;
+      renderMath(out);
+    }
+
+    /* =========================================================================
+       5. LAB 3: REDUCIBLE-TO-HOMOGENEOUS ORIGIN-SHIFT & CASE-DETECTOR
+       ========================================================================= */
+    function setShiftPreset(a1, b1, c1, a2, b2, c2) {
+      document.getElementById('sh-a1').value = a1;
+      document.getElementById('sh-b1').value = b1;
+      document.getElementById('sh-c1').value = c1;
+      document.getElementById('sh-a2').value = a2;
+      document.getElementById('sh-b2').value = b2;
+      document.getElementById('sh-c2').value = c2;
+      updateShiftLab(true);
+    }
+
+    function fmtLinExpr(a, b, c, vx = 'x', vy = 'y') {
+      const terms = [];
+      const pushTerm = (coef, sym) => {
+        if (coef === 0) return;
+        const absC = Math.abs(coef);
+        const s = coef < 0 ? '-' : '+';
+        const mag = sym && absC === 1 ? '' : `${absC}`;
+        if (terms.length === 0) terms.push(`${coef < 0 ? '-' : ''}${mag}${sym}`);
+        else terms.push(` ${s} ${mag}${sym}`);
+      };
+      pushTerm(a, vx);
+      pushTerm(b, vy);
+      pushTerm(c, '');
+      return terms.length ? terms.join('') : '0';
+    }
+
+    function updateShiftLab(userTriggered) {
+      if (userTriggered) markLabExplored('lab-shift');
+      const a1 = parseFloat(document.getElementById('sh-a1').value) || 0;
+      const b1 = parseFloat(document.getElementById('sh-b1').value) || 0;
+      const c1 = parseFloat(document.getElementById('sh-c1').value) || 0;
+      const a2 = parseFloat(document.getElementById('sh-a2').value) || 0;
+      const b2 = parseFloat(document.getElementById('sh-b2').value) || 0;
+      const c2 = parseFloat(document.getElementById('sh-c2').value) || 0;
+
+      const delta = a1 * b2 - a2 * b1;
+      const readout = document.getElementById('shift-readout');
+
+      let h = null, k = null;
+      if (Math.abs(delta) > 1e-9) {
+        // Cramer's Rule for a1 h + b1 k = -c1, a2 h + b2 k = -c2
+        const hNum = (-c1) * b2 - (-c2) * b1;
+        const kNum = a1 * (-c2) - a2 * (-c1);
+        h = hNum / delta;
+        k = kNum / delta;
+        const hTex = fmtFracTeX(hNum, delta);
+        const kTex = fmtFracTeX(kNum, delta);
+
+        const homNum = fmtLinExpr(a1, b1, 0, 'X', 'Y');
+        const homDen = fmtLinExpr(a2, b2, 0, 'X', 'Y');
+
+        readout.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200">Case 1 · Intersecting Lines</span>
+            <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">$\\Delta = ${delta} \\neq 0$</span>
+          </div>
+          <div><strong>Original DE:</strong> $$\\frac{dy}{dx} = \\frac{${fmtLinExpr(a1, b1, c1)}}{${fmtLinExpr(a2, b2, c2)}}$$</div>
+          <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1">
+            <div class="text-xs font-bold uppercase text-emerald-700 dark:text-emerald-400">Exact Intersection &amp; Origin Shift</div>
+            <div>$(h, k) = \\left(${hTex},\\; ${kTex}\\right)$ &nbsp; $\\implies$ &nbsp; $x = X + (${hTex}),\\; y = Y + (${kTex})$</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
+            <div class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Transformed Homogeneous Equation</div>
+            <div>$$\\frac{dY}{dX} = \\frac{${homNum}}{${homDen}}$$</div>
+            <p class="text-xs text-slate-500">Now substitute $Y = vX$ to separate variables!</p>
+          </div>
+        `;
+      } else {
+        // Case 2: Parallel Lines
+        const kRatio = Math.abs(a1) > 1e-9 ? a2 / a1 : (Math.abs(b1) > 1e-9 ? b2 / b1 : 1);
+        const zExpr = fmtLinExpr(a1, b1, 0, 'x', 'y');
+        readout.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200">Case 2 · Parallel Lines</span>
+            <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">$\\Delta = 0$</span>
+          </div>
+          <div><strong>Original DE:</strong> $$\\frac{dy}{dx} = \\frac{${fmtLinExpr(a1, b1, c1)}}{${fmtLinExpr(a2, b2, c2)}}$$</div>
+          <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200">
+            <strong>No Intersection $(h, k)$ Exists!</strong> The lines $L_1$ and $L_2$ are parallel (ratio $a_2/a_1 = b_2/b_1 = ${Number(kRatio.toFixed(2))}$).
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1">
+            <div class="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400">Direct Separable Substitution</div>
+            <div>Put $z = ${zExpr} \\implies \\dfrac{dz}{dx} = ${a1} + ${b1}\\dfrac{dy}{dx}$:</div>
+            <div>$$\\frac{dz}{dx} = ${a1} + ${b1}\\left(\\frac{z + (${c1})}{${Number(kRatio.toFixed(2))}z + (${c2})}\\right)$$</div>
+            <p class="text-xs text-slate-500">Directly variable separable in $z$ and $x$!</p>
+          </div>
+        `;
+      }
+      renderMath(readout);
+      drawShiftSVG(a1, b1, c1, a2, b2, c2, h, k);
+    }
+
+    function drawShiftSVG(a1, b1, c1, a2, b2, c2, h, k) {
+      const svg = document.getElementById('shift-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const gridCol = isDark ? '#1e293b' : '#f1f5f9';
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+
+      const W = 360, H = 320;
+      const range = Math.max(5, h !== null ? Math.abs(h) + 3 : 5, k !== null ? Math.abs(k) + 3 : 5);
+      const sx = (x) => W / 2 + (x / range) * (W / 2 - 20);
+      const sy = (y) => H / 2 - (y / range) * (H / 2 - 20);
+
+      let html = '';
+      for (let g = -Math.floor(range); g <= Math.floor(range); g++) {
+        html += `<line x1="${sx(g)}" y1="12" x2="${sx(g)}" y2="${H - 12}" stroke="${gridCol}" stroke-width="1" />`;
+        html += `<line x1="12" y1="${sy(g)}" x2="${W - 12}" y2="${sy(g)}" stroke="${gridCol}" stroke-width="1" />`;
+      }
+      html += `
+        <line x1="12" y1="${sy(0)}" x2="${W - 12}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.5" />
+        <line x1="${sx(0)}" y1="12" x2="${sx(0)}" y2="${H - 12}" stroke="${axisCol}" stroke-width="1.5" />
+      `;
+
+      // Helper to clip line ax + by + c = 0 to [-range, range]^2
+      const drawLine = (a, b, c, color) => {
+        if (Math.abs(a) < 1e-9 && Math.abs(b) < 1e-9) return '';
+        let xA, yA, xB, yB;
+        if (Math.abs(b) >= Math.abs(a)) {
+          xA = -range; yA = (-a * xA - c) / b;
+          xB = range;  yB = (-a * xB - c) / b;
+        } else {
+          yA = -range; xA = (-b * yA - c) / a;
+          yB = range;  xB = (-b * yB - c) / a;
+        }
+        return `<line x1="${sx(xA).toFixed(1)}" y1="${sy(yA).toFixed(1)}" x2="${sx(xB).toFixed(1)}" y2="${sy(yB).toFixed(1)}" stroke="${color}" stroke-width="2.6" />`;
+      };
+
+      html += drawLine(a1, b1, c1, '#4f46e5');
+      html += drawLine(a2, b2, c2, '#0ea5e9');
+
+      if (h !== null && k !== null) {
+        // Draw shifted (X, Y) axes through (h, k)
+        html += `
+          <line x1="12" y1="${sy(k)}" x2="${W - 12}" y2="${sy(k)}" stroke="#10b981" stroke-width="1.8" stroke-dasharray="5 4" />
+          <line x1="${sx(h)}" y1="12" x2="${sx(h)}" y2="${H - 12}" stroke="#10b981" stroke-width="1.8" stroke-dasharray="5 4" />
+          <circle cx="${sx(h)}" cy="${sy(k)}" r="6" fill="#10b981" stroke="${isDark ? '#020617' : '#ffffff'}" stroke-width="2" />
+          <text x="${Math.min(W - 75, sx(h) + 9)}" y="${Math.max(24, sy(k) - 8)}" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#10b981">(h,k)=(${h.toFixed(1)},${k.toFixed(1)})</text>
+        `;
+      } else {
+        html += `<text x="${W / 2}" y="26" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#10b981">Parallel Lines (Δ = 0)</text>`;
+      }
+
+      svg.innerHTML = html;
+    }
+
+    /* =========================================================================
+       6. QUICK-CHECK INTERACTIVE QUIZ (5 EXAM-STYLE MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. What is the degree of homogeneity of $f(x, y) = \\dfrac{x^2 + y^2}{x + y}$, and is $(x^2 + y)\\,dx + (y^2 + x)\\,dy = 0$ homogeneous?',
+        options: [
+          'Degree $1$; YES, the DE is homogeneous',
+          'Degree $1$; NO, the DE is not homogeneous',
+          'Degree $2$; NO, the DE is not homogeneous',
+          'Degree $0$; YES, the DE is homogeneous'
+        ],
+        answer: 1,
+        explanation: '$f(tx, ty) = \\frac{t^2(x^2+y^2)}{t(x+y)} = t^1 f(x,y)$, so $f$ is homogeneous of degree $1$. Meanwhile, $(x^2 + y)$ mixes degree $2$ and degree $1$, so $(x^2+y)\\,dx + (y^2+x)\\,dy = 0$ is NOT homogeneous.'
+      },
+      {
+        q: '2. Substituting $y = vx$ into the ISRT exam equation $(x^2 + y^2)\\,dx - 2xy\\,dy = 0$ reduces it to which variable separable form?',
+        options: [
+          '$\\dfrac{2v}{1 + v^2}\\,dv = \\dfrac{dx}{x}$',
+          '$\\dfrac{2v}{1 - v^2}\\,dv = \\dfrac{dx}{x}$',
+          '$\\dfrac{1 - v^2}{2v}\\,dv = \\dfrac{dx}{x}$',
+          '$\\dfrac{2v}{v^2 - 1}\\,dv = \\dfrac{dx}{x}$'
+        ],
+        answer: 1,
+        explanation: '$\\frac{dy}{dx} = \\frac{1+v^2}{2v} = v + x\\frac{dv}{dx} \\implies x\\frac{dv}{dx} = \\frac{1+v^2-2v^2}{2v} = \\frac{1-v^2}{2v} \\implies \\frac{2v}{1-v^2}\\,dv = \\frac{dx}{x}$.'
+      },
+      {
+        q: '3. To reduce $2(x + y - 1)\\,dx = (3x + y - 5)\\,dy$ (ISRT 2022/2024/2025) to homogeneous form via $x = X + h,\\; y = Y + k$, what is the exact origin shift $(h, k)$?',
+        options: [
+          '$(h, k) = (2, -1)$',
+          '$(h, k) = (-1, 2)$',
+          '$(h, k) = (-1, -1)$',
+          '$(h, k) = (2, 1)$'
+        ],
+        answer: 0,
+        explanation: 'Solving $2h + 2k - 2 = 0$ (i.e. $h + k = 1$) and $3h + k - 5 = 0$: subtracting gives $2h = 4 \\implies h = 2$, and $k = 1 - 2 = -1$.'
+      },
+      {
+        q: '4. For $\\dfrac{dy}{dx} = \\dfrac{x + y + 1}{2x + 2y + 3}$, notice $\\Delta = a_1 b_2 - a_2 b_1 = 0$ (parallel lines). What is the correct substitution?',
+        options: [
+          'Shift origin $x = X + h,\\; y = Y + k$',
+          'Put $y = vx$ directly',
+          'Put $z = x + y$ to reduce directly to variable separable form',
+          'Divide by $x^2 + y^2$'
+        ],
+        answer: 2,
+        explanation: 'When $\\Delta = 0$ (Case 2: parallel lines), no finite intersection $(h, k)$ exists. Setting $z = x + y$ gives $\\frac{dz}{dx} = 1 + \\frac{z+1}{2z+3}$, which is immediately separable!'
+      },
+      {
+        q: '5. On the direction (slope) field of $\\dfrac{dy}{dx} = f(x, y)$, what does an <strong>isocline</strong> $f(x, y) = k$ represent?',
+        options: [
+          'A single particular solution passing through $(0, k)$',
+          'The curve along which all lineal elements have the exact same constant slope $k$',
+          'The set of points where $f(x, y)$ is undefined',
+          'A curve orthogonal to every integral curve'
+        ],
+        answer: 1,
+        explanation: 'An isocline ("equal inclination/slope") is the locus $f(x, y) = k$ where every tangent segment in the direction field shares the constant slope $k$.'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       7. INITIALIZATION ON DOMCONTENTLOADED
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSlopeField(false);
+      selectHomogPreset(0);
+      updateShiftLab(false);
+      renderQuiz();
+      updateOverallProgress();
+      initObservers();
+
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

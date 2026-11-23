@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 11: Chi-Square (χ²) Statistic & Standardized Measures</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #0891b2, #2563eb, #7c3aed);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #0891b2, #4f46e5);
+      color: #fff; font-weight: 800; font-size: 14.5px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #0891b2, var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #164e63 0%, #0891b2 46%, #4f46e5 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.78;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .cell-input {
+      width: 74px; padding: 6px 8px; border-radius: 7px;
+      border: 1.5px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 14px; font-weight: 700; text-align: center;
+    }
+    .cell-input:focus { outline: none; border-color: var(--primary); }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 16.5px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 11</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L11</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 11 Progress</span>
+          <span id="progress-text">0 / 5</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Expected Counts, df &amp; χ²</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Limits of χ² &amp; Φ, C, T, V</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Interactive r×c χ² Workbench</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Proofs &amp; 2×2 Shortcut Vault</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 3 of 4 • Final Exam Core (Q8)</span>
+          <span class="badge">Lesson 11 of 12 (Slide Deck L11)</span>
+          <span class="badge">⏱ Est. Study Time: 60 mins</span>
+        </div>
+        <h1>Chi-Square (χ²) Statistic &amp; Standardized Measures</h1>
+        <p class="subtitle">
+          Extend categorical association beyond 2×2 tables—compute expected frequencies under independence, evaluate χ², overcome its sample-size dependence with Phi (Φ), Pearson's C, Tschuprow's T, and Cramér's V, and prove the 2×2 shortcut formula.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L11 Slides + Mihad Notes</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 36–37</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2019–2025</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Observed Counts, Expected Counts, Degrees of Freedom &amp; χ²</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p>For any <span class="mono">r × c</span> contingency table with observed cell counts <span class="mono">O<sub>ij</sub></span>, row totals <span class="mono">R<sub>i</sub></span>, column totals <span class="mono">C<sub>j</sub></span>, and grand total <span class="mono">N = ΣΣ O<sub>ij</sub></span>, we test independence by asking: <em>"What counts would we expect in each cell if the two variables were completely unrelated?"</em></p>
+        <p>Under statistical independence, the joint probability equals the product of the marginal probabilities: <span class="mono">P(A = A<sub>j</sub>, B = B<sub>i</sub>) = (C<sub>j</sub> / N) × (R<sub>i</sub> / N)</span>. Multiplying by <em>N</em> gives the <strong>Expected Count</strong>:</p>
+
+        <div class="formula-box">
+          Expected Frequency: &nbsp; E<sub>ij</sub> = (R<sub>i</sub> × C<sub>j</sub>) / N &nbsp; = &nbsp; (Row Total × Column Total) / Grand Total<br>
+          Chi-Square Statistic: &nbsp; χ² = Σ<sub>i=1</sub><sup>r</sup> Σ<sub>j=1</sub><sup>c</sup> [ (O<sub>ij</sub> − E<sub>ij</sub>)² / E<sub>ij</sub> ]<br>
+          Degrees of Freedom (Final 2019 Q8c): &nbsp; df = (r − 1)(c − 1)
+        </div>
+
+        <div class="callout tip">
+          <strong class="callout-title">Interpreting χ² &amp; Degrees of Freedom</strong>
+          <ul style="margin-bottom:0">
+            <li><strong>χ² = 0:</strong> Every observed count equals its expected count (<span class="mono">O<sub>ij</sub> = E<sub>ij</sub></span>) → supports <strong>no association</strong>.</li>
+            <li><strong>Larger χ² &gt; 0:</strong> Stronger evidence that the two categorical variables are associated.</li>
+            <li><strong>Why df = (r − 1)(c − 1)?</strong> Once the row and column totals are fixed, you can freely fill only <span class="mono">(r − 1)(c − 1)</span> cells—the remaining last cell in every row and column is uniquely forced by subtraction from the marginal totals!</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02 • Final 2020 Q8(b) [6 Marks]</div>
+            <h2>Limitations of χ² &amp; The Four Standardized Measures (Φ, <em>C</em>, <em>T</em>, <em>V</em>)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <div class="callout trap">
+          <strong class="callout-title">Limitations of Raw χ² as a Measure of Association (Final 2020 Q8b)</strong>
+          <ol style="margin-bottom:0; margin-top:4px">
+            <li><strong>Depends heavily on sample size <em>N</em>:</strong> If you double every cell count in a table (exact same proportions!), <span class="mono">χ²</span> doubles even though the underlying strength of association hasn't changed!</li>
+            <li><strong>No fixed upper bound:</strong> Ranges from <span class="mono">0</span> to <span class="mono">N · (min(r, c) − 1)</span>, so a raw value like <span class="mono">χ² = 22.15</span> cannot be judged as "weak" or "strong" without knowing <em>N</em> and table size.</li>
+            <li><strong>Depends on table dimensions (<em>r × c</em>):</strong> Tables with more rows/columns naturally accumulate larger sums.</li>
+            <li><strong>No direction:</strong> Since differences are squared, <span class="mono">χ²</span> never indicates positive vs. negative direction.</li>
+          </ol>
+        </div>
+
+        <p>To overcome these limitations, statisticians standardize <span class="mono">χ²</span> into four bounded measures of strength:</p>
+
+        <div class="grid-4">
+          <div class="card">
+            <span class="card-top-tag">1. Phi Coefficient (Φ)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              Φ = √(χ² / n)
+            </div>
+            <p style="font-size:13.2px; margin-bottom:0"><strong>Best for:</strong> Strictly <strong>2×2 tables</strong> (ranges 0 to 1; signed form <span class="mono">±(ad−bc)/√(...)</span> gives −1 to +1). Can exceed 1 for tables larger than 2×2!</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">2. Pearson's C</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              C = √[ χ² / (χ² + n) ]
+            </div>
+            <p style="font-size:13.2px; margin-bottom:0"><strong>Limitation:</strong> <em>Never reaches 1!</em> Max is <span class="mono">√[(k−1)/k]</span>: <strong>0.707</strong> for 2×2, <strong>0.870</strong> for 4×4. Never compare <em>C</em> across tables of different sizes.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">3. Tschuprow's T</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              T = √[ (χ²/n) / √((r−1)(c−1)) ]
+            </div>
+            <p style="font-size:13.2px; margin-bottom:0"><strong>Range:</strong> <span class="mono">[0, 1]</span>. Reaches 1 only for <strong>square tables</strong> (<span class="mono">r = c</span>). For 2×2 tables, <span class="mono">T = Φ</span>.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">4. Cramér's V (Best General)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              V = √[ χ² / (n(k − 1)) ]<br>
+              k = min(r, c)
+            </div>
+            <p style="font-size:13.2px; margin-bottom:0"><strong>Range:</strong> <span class="mono">[0, 1]</span> inclusive for <strong>ANY</strong> table size (even non-square!). For 2×2 tables (<span class="mono">k = 2</span>), <strong><span class="mono">V = Φ = T</span></strong>.</p>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong class="callout-title">Watch Out for k = min(r, c)!</strong>
+          In Cramér's <em>V</em>, <span class="mono">k</span> is always the <strong>smaller</strong> of the number of rows and columns. For a <span class="mono">2 × 3</span> table (like Party Affiliation vs. Tax Reform), <span class="mono">k = min(2, 3) = 2</span> (so <span class="mono">k − 1 = 1</span>, giving <span class="mono">V = √(22.15 / 500) = 0.2105</span>). Always double-check that you pick the <em>minimum</em>, not the maximum!
+        </div>
+      </section>
+
+      <!-- SECTION 3: INTERACTIVE r x c CHI-SQUARE WORKBENCH -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03 • Interactive Workbench</div>
+            <h2>Dynamic <em>r × c</em> Chi-Square (χ²) &amp; Association Engine</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <p>Load any slide or ISRT Final Exam table—or change table dimensions (<span class="mono">2×2</span>, <span class="mono">2×3</span>, <span class="mono">3×3</span>) and edit cell counts. Watch the Expected Counts (<span class="mono">E<sub>ij</sub></span>), cell-by-cell <span class="mono">(O−E)²/E</span> contributions, <span class="mono">χ²</span>, and all four standardized measures (<span class="mono">Φ, C, T, V</span>) update instantaneously!</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Presets:</strong>
+            <button class="tab-btn active" onclick="loadChiPreset('party', this)">Slide: Party vs Tax Reform (2×3)</button>
+            <button class="tab-btn" onclick="loadChiPreset('job', this)">Slide: Gender vs Job (2×3)</button>
+            <button class="tab-btn" onclick="loadChiPreset('film', this)">Slide: Film vs Grade (2×2)</button>
+            <button class="tab-btn" onclick="loadChiPreset('eye19', this)">Final 2019 Q8(b): Eye Color (2×2)</button>
+            <button class="tab-btn" onclick="loadChiPreset('grid33', this)">Custom 3×3 Table</button>
+          </div>
+
+          <div class="control-row">
+            <button class="btn-ghost" style="flex:0 0 auto" onclick="scaleTable(2)">×2 All Counts (Test χ² Sample-Size Trap!)</button>
+            <button class="btn-ghost" style="flex:0 0 auto" onclick="scaleTable(0.5)">÷2 All Counts</button>
+          </div>
+
+          <div class="table-wrap" style="background:var(--surface)">
+            <table id="chi-input-table"></table>
+          </div>
+
+          <div class="metric-grid" id="chi-metrics"></div>
+
+          <div class="lab-panel" id="chi-rec" style="font-size:14px"></div>
+
+          <details style="margin-top:12px" open>
+            <summary>Cell-by-Cell Expected Counts (E<sub>ij</sub>) &amp; χ² Contributions Table</summary>
+            <div class="details-body">
+              <div class="table-wrap" style="margin:0">
+                <table>
+                  <thead>
+                    <tr><th>Cell (Row, Col)</th><th>Observed (O)</th><th>Expected (E = R·C/N)</th><th>O − E</th><th>(O − E)² / E</th><th>% Share of χ²</th></tr>
+                  </thead>
+                  <tbody id="chi-detail-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- SECTION 4: PROOFS VAULT -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • L11 Slides 12–20 &amp; Mihad Notes</div>
+            <h2>Proofs &amp; Derivations Vault</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <details open>
+          <summary><span><span class="proof-badge">Theorem 1</span> Prove the 2×2 Chi-Square Shortcut: χ² = n(ad − bc)² / [(a+b)(c+d)(a+c)(b+d)]</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Let n = a + b + c + d. Expected frequencies under independence are:<br>
+            E<sub>11</sub> = (a+b)(a+c)/n, &nbsp; E<sub>12</sub> = (a+b)(b+d)/n, &nbsp; E<sub>21</sub> = (c+d)(a+c)/n, &nbsp; E<sub>22</sub> = (c+d)(b+d)/n.</div>
+            <div class="proof-step"><strong>Step 1 (Compute O<sub>11</sub> − E<sub>11</sub>):</strong><br>
+            a − (a+b)(a+c)/n = [ a(a+b+c+d) − (a²+ac+ab+bc) ] / n = <strong>(ad − bc) / n</strong>.<br>
+            By identical algebra: O<sub>12</sub> − E<sub>12</sub> = −(ad−bc)/n, &nbsp; O<sub>21</sub> − E<sub>21</sub> = −(ad−bc)/n, &nbsp; O<sub>22</sub> − E<sub>22</sub> = +(ad−bc)/n.<br>
+            Thus ALL FOUR squared numerators equal <strong>(ad − bc)² / n²</strong>!</div>
+            <div class="proof-step"><strong>Step 2 (Divide each by E<sub>ij</sub> and factor out (ad−bc)² / n):</strong><br>
+            χ² = [(ad−bc)² / n] · { 1/[(a+b)(a+c)] + 1/[(a+b)(b+d)] + 1/[(c+d)(a+c)] + 1/[(c+d)(b+d)] }</div>
+            <div class="proof-step"><strong>Step 3 (Combine over common denominator (a+b)(c+d)(a+c)(b+d)):</strong><br>
+            Numerator inside braces = (c+d)(b+d) + (c+d)(a+c) + (a+b)(b+d) + (a+b)(a+c)<br>
+            = (c+d)[(b+d)+(a+c)] + (a+b)[(b+d)+(a+c)] = (a+b+c+d)(a+b+c+d) = <strong>n²</strong>.</div>
+            <div class="proof-step"><strong>Final Step:</strong> χ² = [(ad − bc)² / n] · [ n² / {(a+b)(c+d)(a+c)(b+d)} ] = <strong>n(ad − bc)² / [(a+b)(c+d)(a+c)(b+d)]</strong>. [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 2</span> Direct Cell Formula for Phi (Φ) &amp; Equivalence Φ = T = V in a 2×2 Table</span></summary>
+          <div class="details-body">
+            <div class="proof-step"><strong>Direct Phi:</strong> Φ = √(χ² / n) = √[ (ad − bc)² / {(a+b)(c+d)(a+c)(b+d)} ] = <strong>±(ad − bc) / √[(a+b)(c+d)(a+c)(b+d)]</strong>.</div>
+            <div class="proof-step"><strong>For a 2×2 table (r = 2, c = 2, k = min(2, 2) = 2):</strong><br>
+            Tschuprow's T = Φ / [(2−1)(2−1)]<sup>1/4</sup> = Φ / 1 = <strong>Φ</strong>.<br>
+            Cramér's V = Φ / √(2−1) = Φ / 1 = <strong>Φ</strong>.<br>
+            Thus for any 2×2 table, <strong>|Φ| = T = V</strong>! [Proved]</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 5: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2019–2025)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Problems &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2019 • Q8(b),(c) [8 Marks]</span> Father's vs. Son's Eye Color χ² Test &amp; Degrees of Freedom</span></summary>
+          <div class="details-body">
+            <p><strong>Data (N = 1,000):</strong> Father Black &amp; Son Black (<span class="mono">a = 230</span>), Father Black &amp; Son Not Black (<span class="mono">b = 148</span>), Father Not Black &amp; Son Black (<span class="mono">c = 151</span>), Both Not Black (<span class="mono">d = 471</span>).</p>
+            <ul>
+              <li><strong>Row &amp; Col Totals:</strong> <span class="mono">R₁ = 378, R₂ = 622, C₁ = 381, C₂ = 619, N = 1000</span>.</li>
+              <li><strong>Expected Counts:</strong> <span class="mono">E₁₁ = 144.02, E₁₂ = 233.98, E₂₁ = 236.98, E₂₂ = 385.02</span>.</li>
+              <li><strong>Chi-Square (2×2 Shortcut):</strong><br>
+                <span class="mono">ad − bc = (230 × 471) − (148 × 151) = 108,330 − 22,348 = 85,982</span>.<br>
+                <span class="mono">χ² = 1000 × (85982)² / (378 × 622 × 381 × 619) = <strong>133.33</strong></span>.</li>
+              <li><strong>Decision (df = (2−1)(2−1) = 1):</strong> From the exam table, critical values at <span class="mono">df = 1</span> are <strong>3.842</strong> (α = 0.05) and <strong>6.635</strong> (α = 0.01). Since <span class="mono">133.33 &gt;&gt; 6.635</span>, we reject independence and conclude there is a <strong>highly significant association</strong> between father's and son's eye color (<span class="mono">Φ = V = 0.365</span>, moderate positive association).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2020 • Q8(b) [6 Marks]</span> Limitations of χ² &amp; Standardized Alternatives</span></summary>
+          <div class="details-body">
+            <p><strong>Model Answer Outline:</strong></p>
+            <ol style="margin-bottom:0">
+              <li><strong>Limitations of χ²:</strong> Directly proportional to sample size <em>N</em>, has no fixed upper bound (varies with <em>N</em> and table size), gives no direction of association, and cannot compare association strength across tables of different sizes/samples.</li>
+              <li><strong>Standardized Alternatives:</strong> Present (i) <strong>Phi (Φ = √(χ²/n))</strong> for 2×2 tables, (ii) <strong>Pearson's C = √(χ²/(χ²+n))</strong> (noting its table-dependent upper limit &lt; 1), (iii) <strong>Tschuprow's T</strong> for square tables, and (iv) <strong>Cramér's V = √[χ²/(n(k−1))]</strong> with <span class="mono">k = min(r, c)</span>, which cleanly spans <span class="mono">[0, 1]</span> for any table size.</li>
+            </ol>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l11_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l11_theme') || localStorage.getItem('ast101_l10_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l11_done') || '[]');
+    function syncProgress() {
+      const total = 5;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l11_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l11_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Interactive r x c Chi-Square Workbench ----------
+    const chiPresets = {
+      party: { rows: ["Democrat", "Republican"], cols: ["Favor", "Indifferent", "Opposed"], data: [[138, 83, 64], [64, 67, 84]] },
+      job:   { rows: ["Male", "Female"], cols: ["Manager", "Supervisor", "Operator"], data: [[50, 55, 105], [25, 50, 45]] },
+      film:  { rows: ["Film: Yes", "Film: No"], cols: ["High Grade", "Low Grade"], data: [[30, 70], [70, 30]] },
+      eye19: { rows: ["Father Black", "Father Not Black"], cols: ["Son Black", "Son Not Black"], data: [[230, 148], [151, 471]] },
+      grid33:{ rows: ["Low Income", "Mid Income", "High Income"], cols: ["Rarely", "Sometimes", "Often"], data: [[40, 25, 10], [20, 45, 25], [10, 20, 55]] }
+    };
+
+    let chiState = { rows: [], cols: [], data: [] };
+
+    function loadChiPreset(key, btn) {
+      if (btn) {
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      const p = chiPresets[key];
+      chiState = { rows: [...p.rows], cols: [...p.cols], data: p.data.map(r => [...r]) };
+      buildChiTable();
+      calcChi();
+    }
+
+    function scaleTable(factor) {
+      chiState.data = chiState.data.map(row => row.map(v => Math.max(1, Math.round(v * factor))));
+      buildChiTable();
+      calcChi();
+    }
+
+    function buildChiTable() {
+      const tbl = document.getElementById('chi-input-table');
+      let html = `<thead><tr><th>Row \\ Col</th>${chiState.cols.map(c => `<th>${c}</th>`).join('')}<th>Row Total</th></tr></thead><tbody>`;
+      chiState.rows.forEach((rLab, i) => {
+        html += `<tr><td><strong>${rLab}</strong></td>`;
+        chiState.cols.forEach((cLab, j) => {
+          html += `<td><input class="cell-input" type="number" min="0" value="${chiState.data[i][j]}" onchange="updateChiCell(${i},${j},this.value)"/></td>`;
+        });
+        html += `<td id="chi-rt-${i}" style="font-weight:700"></td></tr>`;
+      });
+      html += `<tr style="background:var(--surface-alt); font-weight:700"><td>Col Total</td>${chiState.cols.map((_, j) => `<td id="chi-ct-${j}"></td>`).join('')}<td id="chi-grand"></td></tr></tbody>`;
+      tbl.innerHTML = html;
+    }
+
+    function updateChiCell(i, j, val) {
+      chiState.data[i][j] = Math.max(0, parseFloat(val) || 0);
+      calcChi();
+    }
+
+    function calcChi() {
+      const r = chiState.rows.length, c = chiState.cols.length;
+      const R = chiState.data.map(row => row.reduce((a, b) => a + b, 0));
+      const C = chiState.cols.map((_, j) => chiState.data.reduce((s, row) => s + row[j], 0));
+      const N = R.reduce((a, b) => a + b, 0);
+
+      R.forEach((v, i) => document.getElementById(`chi-rt-${i}`).textContent = v);
+      C.forEach((v, j) => document.getElementById(`chi-ct-${j}`).textContent = v);
+      document.getElementById('chi-grand').textContent = N;
+
+      if (N <= 0) return;
+
+      let chi2 = 0;
+      const cells = [];
+      for (let i = 0; i < r; i++) {
+        for (let j = 0; j < c; j++) {
+          const O = chiState.data[i][j];
+          const E = (R[i] * C[j]) / N;
+          const contrib = E > 0 ? ((O - E) ** 2) / E : 0;
+          chi2 += contrib;
+          cells.push({ label: `${chiState.rows[i]} × ${chiState.cols[j]}`, O, E, diff: O - E, contrib });
+        }
+      }
+
+      const df = (r - 1) * (c - 1);
+      const k = Math.min(r, c);
+      const phi = Math.sqrt(chi2 / N);
+      const pC = Math.sqrt(chi2 / (chi2 + N));
+      const T = Math.sqrt((chi2 / N) / Math.sqrt(df));
+      const V = Math.sqrt(chi2 / (N * (k - 1)));
+      const maxC = Math.sqrt((k - 1) / k);
+
+      document.getElementById('chi-metrics').innerHTML = [
+        ["Grand Total (N)", N],
+        ["df = (r−1)(c−1)", df],
+        ["Chi-Square (χ²)", chi2.toFixed(3)],
+        ["Phi (Φ)", (r === 2 && c === 2) ? phi.toFixed(4) : `${phi.toFixed(4)} (2×2 only!)`],
+        ["Pearson's C", `${pC.toFixed(4)} (max ${maxC.toFixed(3)})`],
+        ["Tschuprow's T", T.toFixed(4)],
+        ["Cramér's V (k=" + k + ")", V.toFixed(4)]
+      ].map(([lab, val]) => `<div class="metric-tile"><span>${lab}</span><strong>${val}</strong></div>`).join('');
+
+      const bestTool = (r === 2 && c === 2)
+        ? `Because this is a <strong>2×2 table</strong>, <strong>Phi (Φ) = T = V = ${V.toFixed(4)}</strong> are all equal!`
+        : (r === c)
+          ? `Because this is a <strong>square ${r}×${c} table</strong>, both <strong>Cramér's V</strong> and <strong>Tschuprow's T</strong> (${V.toFixed(4)}) reach 1.0.`
+          : `Because this is a <strong>non-square ${r}×${c} table</strong> (k = min(${r},${c}) = ${k}), <strong>Cramér's V (${V.toFixed(4)})</strong> is the best standardized measure!`;
+
+      const strength = V < 0.10 ? "Very weak / negligible" : V < 0.30 ? "Weak-to-moderate" : V < 0.50 ? "Moderate-to-strong" : "Strong";
+      document.getElementById('chi-rec').innerHTML = `
+        <strong>Recommended Metric:</strong> ${bestTool}<br>
+        <strong>Strength Verdict:</strong> V = <strong>${V.toFixed(4)}</strong> indicates a <strong>${strength} association</strong>. <em>Try clicking "×2 All Counts" above—watch χ² double while Φ, C, T, and V stay completely unchanged!</em>
+      `;
+
+      document.getElementById('chi-detail-body').innerHTML = cells.map(x => {
+        const share = chi2 > 0 ? (x.contrib / chi2) * 100 : 0;
+        const hiStyle = share >= 25 ? 'background:var(--warning-soft); font-weight:700' : '';
+        return `<tr style="${hiStyle}">
+          <td>${x.label}</td>
+          <td>${x.O}</td>
+          <td>${x.E.toFixed(2)}</td>
+          <td>${x.diff >= 0 ? '+' : ''}${x.diff.toFixed(2)}</td>
+          <td><strong>${x.contrib.toFixed(3)}</strong></td>
+          <td>${share.toFixed(1)}%</td>
+        </tr>`;
+      }).join('');
+    }
+    loadChiPreset('party', document.querySelector('#sec-3 .tab-btn'));
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "L11 Expected Counts",
+        q: "In an r×c contingency table with row total R_i, column total C_j, and grand total N, what is the expected count E_ij under independence?",
+        opts: ["(R_i + C_j) / N", "(R_i × C_j) / N", "N / (R_i × C_j)", "(R_i × C_j) / N²"],
+        ans: 1,
+        exp: "Under independence, P(row i, col j) = (R_i/N)(C_j/N), so multiplying by N yields E_ij = (R_i × C_j) / N."
+      },
+      {
+        tag: "Final 2019 Q8(c)",
+        q: "How many degrees of freedom (df) does a 3×4 contingency table have?",
+        opts: ["12", "7", "6", "5"],
+        ans: 2,
+        exp: "df = (r − 1)(c − 1) = (3 − 1)(4 − 1) = 2 × 3 = 6."
+      },
+      {
+        tag: "Final 2020 Q8(b)",
+        q: "If every observed cell count in a contingency table is DOUBLED (exact same proportions), what happens to χ² and Cramér's V?",
+        opts: ["Both double", "χ² doubles, while Cramér's V remains unchanged", "Both remain unchanged", "χ² quadruples, V doubles"],
+        ans: 1,
+        exp: "Raw χ² scales linearly with sample size N (its major limitation!), while standardized Cramér's V divides by N and stays invariant."
+      },
+      {
+        tag: "L11 Pearson's C",
+        q: "What is the maximum possible value that Pearson's Coefficient of Contingency (C) can reach in a 2×2 table?",
+        opts: ["1.000", "0.870", "0.707", "0.500"],
+        ans: 2,
+        exp: "In a k×k table, C_max = √[(k−1)/k]. For 2×2, C_max = √(1/2) ≈ 0.707 (and for 4×4, √(3/4) ≈ 0.866 / 0.870)."
+      },
+      {
+        tag: "L11 Cramér's V",
+        q: "In Cramér's V = √[χ² / (n(k − 1))] for a 2×5 contingency table, what is the value of k?",
+        opts: ["5", "2", "7", "4"],
+        ans: 1,
+        exp: "k is always the SMALLER of the number of rows and columns: k = min(2, 5) = 2."
+      },
+      {
+        tag: "L11 2×2 Equivalence",
+        q: "For ANY 2×2 contingency table, which of the following equalities holds?",
+        opts: ["C = Φ = V", "|Φ| = T = V", "χ² = Φ = V", "T = C = V"],
+        ans: 1,
+        exp: "When r = c = k = 2, both (r−1)(c−1) = 1 and (k−1) = 1, so |Φ| = T = V (whereas C ≤ 0.707 is strictly smaller)."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

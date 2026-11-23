@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 4: Moments, Skewness & Kurtosis</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #db2777, #7c3aed, #2563eb);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #be185d, #7c3aed);
+      color: #fff; font-weight: 800; font-size: 15px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #db2777, var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #9d174d 0%, #7c3aed 52%, #2563eb 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.78;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .mini-input {
+      width: 92px; padding: 6px 9px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 16.5px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 4</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L4</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 4 Progress</span>
+          <span id="progress-text">0 / 7</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Raw, Arbitrary &amp; Central Moments</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Sheppard's Correction</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Skewness &amp; Kurtosis Measures</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Distribution Shape Studio (Lab 1)</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Moment Converter Lab (Lab 2)</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Proofs &amp; Derivations Vault</a></li>
+          <li><a class="nav-link" href="#sec-7" data-sec="sec-7"><span class="nav-check">✓</span>7. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 2 of 4 • 1st &amp; 2nd Incourse Core</span>
+          <span class="badge">Lesson 4 of 12</span>
+          <span class="badge">⏱ Est. Study Time: 65 mins</span>
+        </div>
+        <h1>Moments, Skewness &amp; Kurtosis</h1>
+        <p class="subtitle">
+          Quantify the exact shape of any distribution—convert raw moments to central moments, apply Sheppard's grouping correction, compare Pearson's, Bowley's, Kelley's &amp; moment measures, and prove β₂ ≥ β₁ + 1.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L4 Slides + Mihad Notes</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 22–25</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2017–2025</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Raw Moments, Arbitrary-Point Moments &amp; Central Moments</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p><strong>Moments</strong> are statistical parameters that capture the complete quantitative profile of a distribution using its first four powers: <strong>1st</strong> (location/mean), <strong>2nd</strong> (spread/variance), <strong>3rd</strong> (asymmetry/skewness), and <strong>4th</strong> (tail-weight &amp; peakedness/kurtosis). Two distributions can share the same mean and variance yet differ dramatically in skewness and kurtosis.</p>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag">1. Raw Moments (About Origin 0)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              μ'<sub>r</sub> = (1/n) Σ x<sub>i</sub><sup>r</sup><br>
+              Grouped: (1/N) Σ f<sub>i</sub> x<sub>i</sub><sup>r</sup>
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0">Notice <strong>μ'<sub>1</sub> = x̄</strong> (Arithmetic Mean). Always raise to the power <em>r</em> first, sum, then divide by <em>n</em>.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">2. Moments About Arbitrary Value a</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              μ'<sub>r</sub><sup>(a)</sup> = (1/n) Σ (x<sub>i</sub> − a)<sup>r</sup><br>
+              Mean: x̄ = a + μ'<sub>1</sub><sup>(a)</sup>
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0">When <em>a</em> = 0, these reduce to raw moments about the origin. Extremely common in ISRT exam calculations!</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">3. Central Moments (About Mean x̄)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13px">
+              μ<sub>r</sub> = (1/n) Σ (x<sub>i</sub> − x̄)<sup>r</sup><br>
+              μ<sub>1</sub> = 0 &nbsp;|&nbsp; μ<sub>2</sub> = σ² (Variance)
+            </div>
+            <p style="font-size:13.5px; margin-bottom:0"><strong>Independent of origin</strong>, but <strong>dependent on scale</strong>: if <span class="mono">d = (x − a)/c</span>, then <span class="mono">μ<sub>r</sub>(x) = c<sup>r</sup> μ<sub>r</sub>(d)</span>.</p>
+          </div>
+        </div>
+
+        <h3>Master Conversion Formulas: Raw (or About <em>a</em>) → Central Moments <span class="exam-badge">Final 2025 Q6(b)</span></h3>
+        <p>Because central moments are shift-invariant, the <strong>exact same four formulas</strong> convert moments about <em>any</em> arbitrary point <em>a</em> (including <em>a</em> = 0) into central moments:</p>
+        <div class="formula-box">
+          μ<sub>1</sub> = 0<br>
+          μ<sub>2</sub> = μ'<sub>2</sub> − (μ'<sub>1</sub>)²<br>
+          μ<sub>3</sub> = μ'<sub>3</sub> − 3 μ'<sub>2</sub> μ'<sub>1</sub> + 2 (μ'<sub>1</sub>)³<br>
+          μ<sub>4</sub> = μ'<sub>4</sub> − 4 μ'<sub>3</sub> μ'<sub>1</sub> + 6 μ'<sub>2</sub> (μ'<sub>1</sub>)² − 3 (μ'<sub>1</sub>)⁴
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02</div>
+            <h2>Grouping Error &amp; Sheppard's Correction</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>When computing moments from a grouped frequency distribution, we assume every observation in a class is concentrated at its <strong>class midpoint</strong>. This simplification introduces a small <strong>grouping error</strong>. For continuous, unimodal distributions with equal class width <span class="mono">c</span> that taper smoothly to zero at both tails, <strong>Sheppard's Correction</strong> adjusts the even central moments:</p>
+
+        <div class="formula-box">
+          μ<sub>1</sub>(corrected) = μ<sub>1</sub>(uncorrected) = 0 &nbsp;&nbsp;(No correction needed)<br>
+          μ<sub>2</sub>(corrected) = μ<sub>2</sub>(uncorrected) − c² / 12<br>
+          μ<sub>3</sub>(corrected) = μ<sub>3</sub>(uncorrected) &nbsp;&nbsp;(No correction needed)<br>
+          μ<sub>4</sub>(corrected) = μ<sub>4</sub>(uncorrected) − (c² / 2) · μ<sub>2</sub>(uncorrected) + (7 c⁴) / 240
+        </div>
+
+        <div class="callout warn">
+          <strong class="callout-title">Exam Reminder</strong>
+          In the μ<sub>4</sub> formula, always plug in <strong>μ<sub>2</sub>(uncorrected)</strong>—not the already-corrected μ<sub>2</sub>! Only even moments (μ<sub>2</sub> and μ<sub>4</sub>) receive Sheppard's correction.
+        </div>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Measures of Skewness &amp; Kurtosis</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <p><strong>Skewness</strong> measures the degree and direction of <em>asymmetry</em> (departure from symmetry). <strong>Kurtosis</strong> measures the degree of <em>peakedness or flatness</em> relative to the standard normal curve. All coefficients below are <strong>pure, unit-free numbers</strong> independent of origin and scale.</p>
+
+        <h3>Four Measures of Skewness</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Measure</th><th>Formula</th><th>Range</th><th>Interpretation</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. Pearson's Coefficient</strong></td>
+                <td><span class="mono">Sk<sub>P</sub> = (Mean − Mode)/σ = 3(Mean − Me)/σ</span></td>
+                <td>Usually (−3, 3)</td>
+                <td>0 = symmetric; &gt;0 right-skewed; &lt;0 left-skewed</td>
+              </tr>
+              <tr>
+                <td><strong>2. Bowley's (Quartile)</strong></td>
+                <td><span class="mono">Sk<sub>B</sub> = (Q<sub>3</sub> + Q<sub>1</sub> − 2Me) / (Q<sub>3</sub> − Q<sub>1</sub>)</span></td>
+                <td>[−1, +1]</td>
+                <td>Useful for open-ended tables; outlier-resistant</td>
+              </tr>
+              <tr>
+                <td><strong>3. Kelley's (Decile)</strong></td>
+                <td><span class="mono">Sk<sub>K</sub> = (D<sub>1</sub> + D<sub>9</sub> − 2Me) / (D<sub>9</sub> − D<sub>1</sub>)</span></td>
+                <td>[−1, +1]</td>
+                <td>Uses middle 80% of data (<span class="mono">P<sub>10</sub></span> to <span class="mono">P<sub>90</sub></span>)</td>
+              </tr>
+              <tr>
+                <td><strong>4. Method of Moments</strong></td>
+                <td><span class="mono">β<sub>1</sub> = μ<sub>3</sub>² / μ<sub>2</sub>³ &nbsp;|&nbsp; γ<sub>1</sub> = μ<sub>3</sub> / μ<sub>2</sub><sup>3/2</sup></span></td>
+                <td>β<sub>1</sub> ≥ 0; γ<sub>1</sub> ∈ ℝ</td>
+                <td><strong>Use γ<sub>1</sub> for sign!</strong> β<sub>1</sub> loses direction because μ<sub>3</sub> is squared</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Two Measures of Kurtosis</h3>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag purple">1. Moment Coefficient (Pearson's β<sub>2</sub> &amp; γ<sub>2</sub>)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13.2px">
+              β<sub>2</sub> = μ<sub>4</sub> / μ<sub>2</sub>² &nbsp;&nbsp;|&nbsp;&nbsp; γ<sub>2</sub> = β<sub>2</sub> − 3
+            </div>
+            <ul style="font-size:13.8px; margin-bottom:0">
+              <li><strong>Mesokurtic (Normal):</strong> <span class="mono">β<sub>2</sub> = 3</span> or <span class="mono">γ<sub>2</sub> = 0</span></li>
+              <li><strong>Leptokurtic (Slender / Peaked):</strong> <span class="mono">β<sub>2</sub> &gt; 3</span> or <span class="mono">γ<sub>2</sub> &gt; 0</span></li>
+              <li><strong>Platykurtic (Flat-topped / Wide):</strong> <span class="mono">β<sub>2</sub> &lt; 3</span> or <span class="mono">γ<sub>2</sub> &lt; 0</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">2. Percentile Coefficient of Kurtosis (K)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13.2px">
+              K = [½ (Q<sub>3</sub> − Q<sub>1</sub>)] / (P<sub>90</sub> − P<sub>10</sub>) &nbsp;&nbsp;(0 &lt; K ≤ 0.5)
+            </div>
+            <ul style="font-size:13.8px; margin-bottom:0">
+              <li><strong>Mesokurtic:</strong> <span class="mono">K ≈ 0.263</span></li>
+              <li><strong>Leptokurtic:</strong> <span class="mono">K &gt; 0.263</span></li>
+              <li><strong>Platykurtic:</strong> <span class="mono">K &lt; 0.263</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: INTERACTIVE LAB 1 -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • Interactive Lab 1</div>
+            <h2>Distribution Shape Studio (Skewness &amp; Kurtosis Morph)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <p>Drag the <strong>Skewness (γ<sub>1</sub>)</strong> and <strong>Excess Kurtosis (γ<sub>2</sub>)</strong> sliders—or load the exact scenarios from <strong>2nd Incourse 2025 Q2(a)</strong>—to see how the curve morphs relative to a standard Normal (dashed), how Mean/Median/Mode separate, and whether the universal inequality <span class="mono">β<sub>2</sub> ≥ β<sub>1</sub> + 1</span> holds.</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">2nd Incourse 2025 Q2(a) Presets:</strong>
+            <button class="tab-btn active" onclick="setShapePreset(0, 0, this)">(i) γ₁ = 0, γ₂ = 0</button>
+            <button class="tab-btn" onclick="setShapePreset(-2.11, -2.01, this)">(ii) γ₁ = −2.11, γ₂ = −2.01</button>
+            <button class="tab-btn" onclick="setShapePreset(0.99, 0.5, this)">(iii) γ₁ = 0.99, γ₂ = 0.5</button>
+            <button class="tab-btn" onclick="setShapePreset(0, 2.2, this)">Symmetric Leptokurtic</button>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:8px">
+            <div class="lab-panel" style="margin-top:0">
+              <div class="control-row" style="margin-bottom:4px">
+                <span>Skewness (<strong>γ<sub>1</sub></strong>): <strong id="sl-g1-val" style="color:var(--primary)">0.00</strong></span>
+                <input type="range" id="sl-g1" min="-2.5" max="2.5" step="0.01" value="0" style="flex:1" oninput="renderShapeStudio()" />
+              </div>
+              <div class="control-row" style="margin-bottom:0">
+                <span>Excess Kurtosis (<strong>γ<sub>2</sub></strong>): <strong id="sl-g2-val" style="color:var(--accent)">0.00</strong></span>
+                <input type="range" id="sl-g2" min="-2.2" max="3.0" step="0.01" value="0" style="flex:1" oninput="renderShapeStudio()" />
+              </div>
+            </div>
+            <div class="lab-panel" style="margin-top:0; display:flex; flex-direction:column; justify-content:center">
+              <div id="studio-verdict" style="font-weight:700; font-size:14.5px; margin-bottom:4px"></div>
+              <div id="studio-ineq" style="font-size:13px"></div>
+            </div>
+          </div>
+
+          <div class="lab-panel" style="text-align:center">
+            <svg id="shape-svg" viewBox="0 0 740 245" width="100%" style="max-width:740px; height:auto"></svg>
+            <div class="metric-grid" id="studio-metrics" style="margin-bottom:0"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: INTERACTIVE LAB 2 -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Interactive Lab 2</div>
+            <h2>Raw-to-Central Moment Converter &amp; Sheppard's Calculator</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <p>Enter the first four moments about any arbitrary value <span class="mono">a</span> (set <span class="mono">a = 0</span> for raw moments about origin) and optional class width <span class="mono">c</span> for Sheppard's correction. Pre-loaded with Dr. Masud's <strong>L4 Class Activity Examples</strong>:</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Slide Presets:</strong>
+            <button class="tab-btn active" onclick="loadMomPreset(5, 2, 20, 40, 50, 0, this)">L4 Ex. 1 (a=5: 2, 20, 40, 50)</button>
+            <button class="tab-btn" onclick="loadMomPreset(3, -1, 5, 9, 45, 0, this)">L4 Ex. 2 (a=3: −1, 5, 9)</button>
+            <button class="tab-btn" onclick="loadMomPreset(4, -2, 10, 20, 120, 0, this)">L4 Ex. 6 (a=4: −2, 10, 20, 120)</button>
+            <button class="tab-btn" onclick="loadMomPreset(0, 0, 238.75, -1108.39, 135964.22, 10, this)">L4 Ex. 4 + Sheppard (c=10)</button>
+          </div>
+
+          <div class="control-row">
+            <label>Point <em>a</em>: <input class="mini-input" type="number" step="any" id="m-a" value="5" oninput="calcMoments()"></label>
+            <label>μ'₁: <input class="mini-input" type="number" step="any" id="m-1" value="2" oninput="calcMoments()"></label>
+            <label>μ'₂: <input class="mini-input" type="number" step="any" id="m-2" value="20" oninput="calcMoments()"></label>
+            <label>μ'₃: <input class="mini-input" type="number" step="any" id="m-3" value="40" oninput="calcMoments()"></label>
+            <label>μ'₄: <input class="mini-input" type="number" step="any" id="m-4" value="50" oninput="calcMoments()"></label>
+            <label>Width <em>c</em> (0=off): <input class="mini-input" type="number" step="any" min="0" id="m-c" value="0" oninput="calcMoments()"></label>
+          </div>
+
+          <div class="metric-grid" id="mom-grid"></div>
+          <div class="lab-panel" id="mom-comment" style="font-size:14px"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: PROOFS VAULT -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • High-Yield Proofs</div>
+            <h2>Proofs &amp; Derivations Vault (4 Core Theorems)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 1</span> <span class="exam-badge">Final 2025 Q6(b)</span> Derive μ₂, μ₃, and μ₄ in terms of Raw Moments μ'<sub>r</sub></span></summary>
+          <div class="details-body">
+            <div class="proof-step">Write x<sub>i</sub> − x̄ = (x<sub>i</sub> − a) − (x̄ − a) = (x<sub>i</sub> − a) − μ'<sub>1</sub>, where μ'<sub>r</sub> = (1/n) Σ(x<sub>i</sub> − a)<sup>r</sup>.</div>
+            <div class="proof-step"><strong>For r = 2:</strong> μ<sub>2</sub> = (1/n) Σ[(x<sub>i</sub> − a) − μ'<sub>1</sub>]² = (1/n) Σ[(x<sub>i</sub> − a)² − 2μ'<sub>1</sub>(x<sub>i</sub> − a) + (μ'<sub>1</sub>)²]<br>
+            = μ'<sub>2</sub> − 2μ'<sub>1</sub>(μ'<sub>1</sub>) + (μ'<sub>1</sub>)² = <strong>μ'<sub>2</sub> − (μ'<sub>1</sub>)²</strong>.</div>
+            <div class="proof-step"><strong>For r = 3:</strong> μ<sub>3</sub> = (1/n) Σ[(x<sub>i</sub> − a)³ − 3(x<sub>i</sub> − a)²μ'<sub>1</sub> + 3(x<sub>i</sub> − a)(μ'<sub>1</sub>)² − (μ'<sub>1</sub>)³]<br>
+            = μ'<sub>3</sub> − 3μ'<sub>2</sub>μ'<sub>1</sub> + 3(μ'<sub>1</sub>)³ − (μ'<sub>1</sub>)³ = <strong>μ'<sub>3</sub> − 3μ'<sub>2</sub>μ'<sub>1</sub> + 2(μ'<sub>1</sub>)³</strong>.</div>
+            <div class="proof-step"><strong>For r = 4:</strong> Expanding binomial (A − B)⁴ = A⁴ − 4A³B + 6A²B² − 4AB³ + B⁴ and averaging:<br>
+            μ<sub>4</sub> = μ'<sub>4</sub> − 4μ'<sub>3</sub>μ'<sub>1</sub> + 6μ'<sub>2</sub>(μ'<sub>1</sub>)² − 4(μ'<sub>1</sub>)⁴ + (μ'<sub>1</sub>)⁴ = <strong>μ'<sub>4</sub> − 4μ'<sub>3</sub>μ'<sub>1</sub> + 6μ'<sub>2</sub>(μ'<sub>1</sub>)² − 3(μ'<sub>1</sub>)⁴</strong>. [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 2</span> <span class="exam-badge">1st Incourse 2025 Q6</span> Central Moments Depend on Scale but NOT on Origin: μ<sub>r</sub>(x) = c<sup>r</sup> μ<sub>r</sub>(d)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Let d<sub>i</sub> = (x<sub>i</sub> − a) / c  ⇒  x<sub>i</sub> = a + c·d<sub>i</sub>, and x̄ = a + c·d̄.</div>
+            <div class="proof-step">Subtracting gives x<sub>i</sub> − x̄ = (a + c·d<sub>i</sub>) − (a + c·d̄) = c(d<sub>i</sub> − d̄). Notice the origin shift 'a' cancels completely!</div>
+            <div class="proof-step">μ<sub>r</sub>(x) = (1/n) Σ(x<sub>i</sub> − x̄)<sup>r</sup> = (1/n) Σ[c(d<sub>i</sub> − d̄)]<sup>r</sup> = c<sup>r</sup> · [(1/n) Σ(d<sub>i</sub> − d̄)<sup>r</sup>] = <strong>c<sup>r</sup> · μ<sub>r</sub>(d)</strong>.</div>
+            <div class="proof-step">Because 'a' is absent and 'c' remains, central moments are independent of origin and dependent on scale. [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 3</span> <span class="exam-badge">Final 2017 Q8(c)</span> Skewness (β₁) and Kurtosis (β₂) are Independent of BOTH Origin &amp; Scale</span></summary>
+          <div class="details-body">
+            <div class="proof-step">From Theorem 2, for d<sub>i</sub> = (x<sub>i</sub> − a)/c:  μ<sub>2</sub>(x) = c²μ<sub>2</sub>(d),  μ<sub>3</sub>(x) = c³μ<sub>3</sub>(d),  μ<sub>4</sub>(x) = c⁴μ<sub>4</sub>(d).</div>
+            <div class="proof-step"><strong>For β₁:</strong> β<sub>1</sub>(x) = μ<sub>3</sub>²(x) / μ<sub>2</sub>³(x) = [c³μ<sub>3</sub>(d)]² / [c²μ<sub>2</sub>(d)]³ = [c⁶ μ<sub>3</sub>²(d)] / [c⁶ μ<sub>2</sub>³(d)] = <strong>β<sub>1</sub>(d)</strong>.</div>
+            <div class="proof-step"><strong>For β₂:</strong> β<sub>2</sub>(x) = μ<sub>4</sub>(x) / μ<sub>2</sub>²(x) = [c⁴μ<sub>4</sub>(d)] / [c²μ<sub>2</sub>(d)]² = [c⁴ μ<sub>4</sub>(d)] / [c⁴ μ<sub>2</sub>²(d)] = <strong>β<sub>2</sub>(d)</strong>.</div>
+            <div class="proof-step">Both origin (a) and scale (c) cancel out completely. Hence β₁ and β₂ are invariant under linear transformations. [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Theorem 4</span> Universal Inequality: For ANY Distribution, β₂ ≥ β₁ + 1</span></summary>
+          <div class="details-body">
+            <div class="proof-step">For any real constants a, b, c, a sum of squares is always non-negative:<br>
+            (1/n) Σ [ a(x<sub>i</sub> − x̄)² + b(x<sub>i</sub> − x̄) + c ]² ≥ 0</div>
+            <div class="proof-step">Expand the square and take the average term by term (using μ<sub>1</sub> = 0):<br>
+            a²μ<sub>4</sub> + b²μ<sub>2</sub> + c² + 2ab·μ<sub>3</sub> + 2bc·(0) + 2ca·μ<sub>2</sub> ≥ 0  --- (i)</div>
+            <div class="proof-step">Substitute <strong>a = 1</strong>, <strong>b = −μ<sub>3</sub> / μ<sub>2</sub></strong>, and <strong>c = −μ<sub>2</sub></strong> into (i):<br>
+            μ<sub>4</sub> + (μ<sub>3</sub>² / μ<sub>2</sub>²)·μ<sub>2</sub> + μ<sub>2</sub>² + 2(1)(−μ<sub>3</sub> / μ<sub>2</sub>)μ<sub>3</sub> + 2(−μ<sub>2</sub>)(1)μ<sub>2</sub> ≥ 0</div>
+            <div class="proof-step">Simplify:  μ<sub>4</sub> + (μ<sub>3</sub>² / μ<sub>2</sub>) + μ<sub>2</sub>² − 2(μ<sub>3</sub>² / μ<sub>2</sub>) − 2μ<sub>2</sub>² ≥ 0  ⇒  μ<sub>4</sub> − (μ<sub>3</sub>² / μ<sub>2</sub>) − μ<sub>2</sub>² ≥ 0</div>
+            <div class="proof-step">Divide every term by μ<sub>2</sub>² (&gt; 0):  (μ<sub>4</sub> / μ<sub>2</sub>²) − (μ<sub>3</sub>² / μ<sub>2</sub>³) − 1 ≥ 0  ⇒  β<sub>2</sub> − β<sub>1</sub> − 1 ≥ 0  ⇒  <strong>β<sub>2</sub> ≥ β<sub>1</sub> + 1</strong>. [Proved]</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 7: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-7">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 07 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2017–2025)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-7')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Problems &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">2nd Incourse 2025 • Q2(a),(c) [4 Marks]</span> Shape Commenting &amp; Finding All 4 Central Moments</span></summary>
+          <div class="details-body">
+            <p><strong>Part (a):</strong> Comment on the shape for:</p>
+            <ul>
+              <li><strong>(i) γ<sub>1</sub> = 0, γ<sub>2</sub> = 0:</strong> <em>Symmetrical</em> and <em>Mesokurtic</em> (normal-like peakedness).</li>
+              <li><strong>(ii) γ<sub>1</sub> = −2.11, γ<sub>2</sub> = −2.01:</strong> Strongly <em>negatively (left) skewed</em> and <em>platykurtic</em> (Note: mathematically impossible for a real distribution because β<sub>2</sub> = 0.99 &lt; β<sub>1</sub> + 1 = 5.45, though students should still interpret the signs!).</li>
+              <li><strong>(iii) γ<sub>1</sub> = 0.99, γ<sub>2</sub> = 0.5:</strong> <em>Positively (right) skewed</em> and <em>leptokurtic</em> (more peaked than normal).</li>
+            </ul>
+            <p><strong>Part (c):</strong> Given <span class="mono">μ<sub>3</sub>² = 5625</span>, <span class="mono">γ<sub>1</sub> = −0.6</span>, <span class="mono">γ<sub>2</sub> = 0.3</span>. Find μ<sub>1</sub>, μ<sub>2</sub>, μ<sub>3</sub>, μ<sub>4</sub>.</p>
+            <ul>
+              <li><strong>μ<sub>1</sub> = 0</strong> (always true for central moments).</li>
+              <li>Since <span class="mono">γ<sub>1</sub> = −0.6 &lt; 0</span>, μ<sub>3</sub> must be negative: <strong>μ<sub>3</sub> = −√5625 = −75</strong>.</li>
+              <li>From <span class="mono">γ<sub>1</sub> = μ<sub>3</sub> / μ<sub>2</sub><sup>3/2</sup></span>: <span class="mono">−0.6 = −75 / μ<sub>2</sub><sup>3/2</sup> ⇒ μ<sub>2</sub><sup>3/2</sup> = 125 ⇒ μ<sub>2</sub> = 125<sup>2/3</sup> = <strong>25</strong></span>.</li>
+              <li>From <span class="mono">γ<sub>2</sub> = β<sub>2</sub> − 3 = 0.3 ⇒ β<sub>2</sub> = 3.3</span>: <span class="mono">μ<sub>4</sub> = β<sub>2</sub> · μ<sub>2</sub>² = 3.3 × 25² = 3.3 × 625 = <strong>2062.5</strong></span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">2nd Incourse 2024 • Q3 [4.5 Marks]</span> Doubled Salary: New CV &amp; Chebyshev 70% Interval</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> Monthly salary (Tk lac) has Mean = 2, <span class="mono">μ<sub>3</sub> = 2</span>, <span class="mono">γ<sub>1</sub> = 2</span>, <span class="mono">γ<sub>2</sub> = 5</span>. Salary is doubled. (a) Find CV of the new salary. (b) What limit contains at least 70% of employees' new salary?</p>
+            <p><strong>Worked Solution:</strong></p>
+            <ul>
+              <li><strong>Step 1 (Find old σ):</strong> <span class="mono">γ<sub>1</sub> = μ<sub>3</sub> / μ<sub>2</sub><sup>3/2</sup> ⇒ 2 = 2 / μ<sub>2</sub><sup>3/2</sup> ⇒ μ<sub>2</sub><sup>3/2</sup> = 1 ⇒ μ<sub>2</sub> = 1 ⇒ σ = 1</span> Tk lac.</li>
+              <li><strong>Step 2 (Double salary: Y = 2X):</strong> New Mean = <span class="mono">2 × 2 = 4</span> Tk lac; New SD = <span class="mono">2 × 1 = 2</span> Tk lac.</li>
+              <li><strong>(a) New CV:</strong> <span class="mono">CV = (2 / 4) × 100% = <strong>50%</strong></span> (scaling by a positive constant leaves CV unchanged!).</li>
+              <li><strong>(b) At least 70% (Chebyshev — distribution is skewed, NOT normal!):</strong><br>
+                <span class="mono">1 − 1/k² = 0.70 ⇒ 1/k² = 0.30 ⇒ k = √(10/3) ≈ 1.8257</span>.<br>
+                Interval: <span class="mono">4 ± 1.8257(2) = 4 ± 3.6515 = <strong>(0.35, 7.65) Tk lac</strong></span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2017 • Q5 [12 Marks]</span> Male vs. Female Income Shape, Under/Over-Reporting &amp; USD Conversion</span></summary>
+          <div class="details-body">
+            <p><strong>Given ('000 Tk):</strong> Male (n=600): x̄=30, s=4, m<sub>3</sub>=50, m<sub>4</sub>=255. Female (n=400): x̄=25, s=3, m<sub>3</sub>=−35, m<sub>4</sub>=222.</p>
+            <ul>
+              <li><strong>(a) Variability (CV):</strong> Male CV = (4/30)×100 = <strong>13.33%</strong>; Female CV = (3/25)×100 = <strong>12.00%</strong> → Male income is slightly more variable.</li>
+              <li><strong>(b) Shape:</strong>
+                <ul>
+                  <li>Male: <span class="mono">γ<sub>1</sub> = 50 / 4³ = +0.781</span> (positively skewed); <span class="mono">β<sub>2</sub> = 255 / 4⁴ = 0.996 &lt; 3</span> (platykurtic).</li>
+                  <li>Female: <span class="mono">γ<sub>1</sub> = −35 / 3³ = −1.296</span> (negatively skewed); <span class="mono">β<sub>2</sub> = 222 / 3⁴ = 2.741 &lt; 3</span> (platykurtic).</li>
+                </ul>
+              </li>
+              <li><strong>(c) Correcting reporting bias (Male +5, Female −2 in '000 Tk):</strong> Real Male Mean = 35, SD = 4; Real Female Mean = 23, SD = 3.</li>
+              <li><strong>(d) Effect on shape:</strong> Adding/subtracting constants is a pure <strong>origin shift</strong>. Because β<sub>1</sub>, γ<sub>1</sub>, and β<sub>2</sub> are independent of origin, the <strong>shape of each group's distribution does not change at all</strong>.</li>
+              <li><strong>(e) Converting to USD (÷ 80):</strong> Both Mean and SD are divided by 80 (scale change), while CV, skewness, and kurtosis remain unchanged.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">L4 Slide Class Activity Ex. 7 &amp; Ex. 10</span> Pearson's Skewness Shortcut &amp; Mesokurtic μ₄</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>Ex. 7 (x̄ = 400, CV = 8%, Sk<sub>P</sub> = 0.40):</strong><br>
+                From CV: <span class="mono">σ = (8/100) × 400 = 32</span>.<br>
+                From <span class="mono">Sk<sub>P</sub> = (Mean − Mode)/σ</span>: <span class="mono">0.40 = (400 − Mode)/32 ⇒ Mode = 400 − 12.8 = <strong>387.2</strong></span>.<br>
+                From <span class="mono">Sk<sub>P</sub> = 3(Mean − Median)/σ</span>: <span class="mono">0.40 = 3(400 − Me)/32 ⇒ Me = 400 − (12.8/3) = <strong>395.73</strong></span>.</li>
+              <li><strong>Ex. 10 &amp; 1st Incourse 2025 Q6:</strong> For a mesokurtic distribution, <span class="mono">β<sub>2</sub> = μ<sub>4</sub>/μ<sub>2</sub>² = 3 ⇒ μ<sub>4</sub> = 3μ<sub>2</sub>²</span>. If variance μ<sub>2</sub> = 3, μ<sub>4</sub> = 27; if μ<sub>2</sub> = 25, μ<sub>4</sub> = 3(625) = <strong>1875</strong>.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l4_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l4_theme') || localStorage.getItem('ast101_l3_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l4_done') || '[]');
+    function syncProgress() {
+      const total = 7;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l4_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l4_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Lab 1: Distribution Shape Studio ----------
+    function setShapePreset(g1, g2, btn) {
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('sl-g1').value = g1;
+      document.getElementById('sl-g2').value = g2;
+      renderShapeStudio();
+    }
+
+    function renderShapeStudio() {
+      const g1 = parseFloat(document.getElementById('sl-g1').value);
+      const g2 = parseFloat(document.getElementById('sl-g2').value);
+      const b1 = g1 * g1;
+      const b2 = g2 + 3;
+
+      document.getElementById('sl-g1-val').textContent = g1.toFixed(2);
+      document.getElementById('sl-g2-val').textContent = g2.toFixed(2);
+
+      const skewTxt = Math.abs(g1) < 0.08 ? "Symmetrical" : g1 > 0 ? "Positively (Right) Skewed" : "Negatively (Left) Skewed";
+      const kurtTxt = Math.abs(g2) < 0.08 ? "Mesokurtic (Normal peak)" : g2 > 0 ? "Leptokurtic (Peaked)" : "Platykurtic (Flat-topped)";
+      document.getElementById('studio-verdict').textContent = `Verdict: ${skewTxt} & ${kurtTxt}`;
+
+      const valid = b2 >= b1 + 1 - 1e-6;
+      document.getElementById('studio-ineq').innerHTML = valid
+        ? `<span style="color:var(--success);font-weight:700">✓ Satisfies β₂ ≥ β₁ + 1</span> (${b2.toFixed(2)} ≥ ${(b1+1).toFixed(2)})`
+        : `<span style="color:var(--danger);font-weight:700">⚠ Violates β₂ ≥ β₁ + 1</span> (${b2.toFixed(2)} &lt; ${(b1+1).toFixed(2)} — impossible for a real dataset!)`;
+
+      document.getElementById('studio-metrics').innerHTML = [
+        ["β₁ = γ₁²", b1.toFixed(3)],
+        ["γ₁ (Skew)", g1.toFixed(2)],
+        ["β₂ = γ₂ + 3", b2.toFixed(2)],
+        ["γ₂ (Excess)", g2.toFixed(2)],
+        ["Order", Math.abs(g1) < 0.08 ? "Mo = Me = x̄" : g1 > 0 ? "Mo < Me < x̄" : "x̄ < Me < Mo"]
+      ].map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+      // Draw morphing density curve vs dashed Normal reference
+      const svg = document.getElementById('shape-svg');
+      const W = 740, H = 245, padL = 36, padR = 36, baseY = 205, maxH = 165;
+      const sx = x => padL + ((x + 4.2) / 8.4) * (W - padL - padR);
+      const sy = y => baseY - y * maxH;
+
+      // Visual shape parameters (split-power exponential family for clean visual morphing)
+      const peakScale = Math.max(0.55, Math.min(1.55, 1 + 0.22 * g2));
+      const pExp = Math.max(1.2, Math.min(3.8, 2 - 0.35 * g2)); // lower p = sharper peak/heavier tails
+      const skewFactor = Math.max(-0.62, Math.min(0.62, g1 * 0.25));
+      const leftSig = 1.0 - skewFactor;
+      const rightSig = 1.0 + skewFactor;
+      const modeX = -skewFactor * 1.15;
+
+      let normPts = [], userPts = [];
+      let sumW = 0, sumWX = 0;
+      const xs = [], ys = [];
+      for (let i = 0; i <= 160; i++) {
+        const x = -4.2 + (8.4 * i) / 160;
+        const yn = Math.exp(-0.5 * x * x) * 0.68;
+        normPts.push(`${sx(x).toFixed(1)},${sy(yn).toFixed(1)}`);
+
+        const dx = x - modeX;
+        const sig = dx < 0 ? leftSig : rightSig;
+        const yu = Math.exp(-0.5 * Math.pow(Math.abs(dx / sig), pExp)) * 0.68 * peakScale;
+        const yClamped = Math.min(0.98, yu);
+        xs.push(x); ys.push(yClamped);
+        sumW += yClamped; sumWX += yClamped * x;
+        userPts.push(`${sx(x).toFixed(1)},${sy(yClamped).toFixed(1)}`);
+      }
+      const meanX = sumWX / sumW;
+      // Approximate median via cumulative sum
+      let cum = 0, medX = meanX;
+      for (let i = 0; i < xs.length; i++) {
+        cum += ys[i];
+        if (cum >= sumW / 2) { medX = xs[i]; break; }
+      }
+
+      const areaPath = `M ${sx(-4.2)},${baseY} L ${userPts.join(' L ')} L ${sx(4.2)},${baseY} Z`;
+      let out = `<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="currentColor" opacity="0.4"/>`;
+      out += `<polyline points="${normPts.join(' ')}" fill="none" stroke="currentColor" opacity="0.35" stroke-dasharray="5 4" stroke-width="2"/>`;
+      out += `<path d="${areaPath}" fill="rgba(124,58,237,0.16)" stroke="#7c3aed" stroke-width="2.8"/>`;
+
+      // Legend for dashed normal
+      out += `<text x="${W-padR}" y="22" text-anchor="end" font-size="11" fill="currentColor" opacity="0.65">- - - Normal Reference (γ₁=0, γ₂=0)</text>`;
+
+      // Markers for Mode, Median, Mean
+      const markers = [
+        { x: modeX, label: "Mode", col: "#059669", yOff: 18 },
+        { x: medX, label: "Med", col: "#2563eb", yOff: 32 },
+        { x: meanX, label: "Mean", col: "#dc2626", yOff: 18 }
+      ];
+      markers.forEach((m, idx) => {
+        const px = sx(m.x);
+        out += `<line x1="${px}" y1="45" x2="${px}" y2="${baseY}" stroke="${m.col}" stroke-width="1.8" stroke-dasharray="3 2"/>`;
+        out += `<circle cx="${px}" cy="${baseY}" r="4" fill="${m.col}"/>`;
+        out += `<text x="${px}" y="${baseY + m.yOff}" text-anchor="middle" font-size="11" font-weight="700" fill="${m.col}">${m.label}</text>`;
+      });
+
+      svg.innerHTML = out;
+    }
+    renderShapeStudio();
+
+    // ---------- Lab 2: Moment Converter & Sheppard's ----------
+    function loadMomPreset(a, m1, m2, m3, m4, c, btn) {
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('m-a').value = a;
+      document.getElementById('m-1').value = m1;
+      document.getElementById('m-2').value = m2;
+      document.getElementById('m-3').value = m3;
+      document.getElementById('m-4').value = m4;
+      document.getElementById('m-c').value = c;
+      calcMoments();
+    }
+
+    function calcMoments() {
+      const a = parseFloat(document.getElementById('m-a').value) || 0;
+      const m1p = parseFloat(document.getElementById('m-1').value) || 0;
+      const m2p = parseFloat(document.getElementById('m-2').value) || 0;
+      const m3p = parseFloat(document.getElementById('m-3').value) || 0;
+      const m4p = parseFloat(document.getElementById('m-4').value) || 0;
+      const c = Math.max(0, parseFloat(document.getElementById('m-c').value) || 0);
+
+      const mean = a + m1p;
+      const mu2_raw = m2p - m1p * m1p;
+      const mu3 = m3p - 3 * m2p * m1p + 2 * Math.pow(m1p, 3);
+      const mu4_raw = m4p - 4 * m3p * m1p + 6 * m2p * m1p * m1p - 3 * Math.pow(m1p, 4);
+
+      const mu2 = c > 0 ? mu2_raw - (c * c) / 12 : mu2_raw;
+      const mu4 = c > 0 ? mu4_raw - (c * c / 2) * mu2_raw + (7 * Math.pow(c, 4)) / 240 : mu4_raw;
+
+      const sd = mu2 > 0 ? Math.sqrt(mu2) : NaN;
+      const cv = (!isNaN(sd) && mean !== 0) ? (sd / Math.abs(mean)) * 100 : NaN;
+      const b1 = mu2 > 0 ? (mu3 * mu3) / Math.pow(mu2, 3) : NaN;
+      const g1 = mu2 > 0 ? mu3 / Math.pow(mu2, 1.5) : NaN;
+      const b2 = mu2 > 0 ? mu4 / (mu2 * mu2) : NaN;
+      const g2 = !isNaN(b2) ? b2 - 3 : NaN;
+
+      const fmt = v => isNaN(v) ? 'N/A' : Number(v.toFixed(4));
+      const tiles = [
+        ["Mean (x̄)", fmt(mean)],
+        ["μ₁", "0"],
+        [c > 0 ? "μ₂ (Corr)" : "μ₂ (Var)", fmt(mu2)],
+        ["SD (σ)", fmt(sd)],
+        ["CV (%)", isNaN(cv) ? 'N/A' : cv.toFixed(2) + '%'],
+        ["μ₃", fmt(mu3)],
+        [c > 0 ? "μ₄ (Corr)" : "μ₄", fmt(mu4)],
+        ["β₁ / γ₁", `${fmt(b1)} / ${fmt(g1)}`],
+        ["β₂ / γ₂", `${fmt(b2)} / ${fmt(g2)}`]
+      ];
+      document.getElementById('mom-grid').innerHTML = tiles.map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+      let msg = '';
+      if (mu2 <= 0) {
+        msg = `<strong style="color:var(--danger)">Invalid Variance (μ₂ ≤ 0):</strong> Check your input moments—μ'₂ must exceed (μ'₁)².`;
+      } else {
+        const sk = Math.abs(g1) < 1e-4 ? 'Symmetrical' : g1 > 0 ? 'Positively (Right) Skewed' : 'Negatively (Left) Skewed';
+        const ku = Math.abs(g2) < 1e-4 ? 'Mesokurtic' : g2 > 0 ? 'Leptokurtic' : 'Platykurtic';
+        const check = b2 >= b1 + 1 - 1e-6
+          ? `<span style="color:var(--success)">✓ Valid moments (β₂ = ${b2.toFixed(3)} ≥ β₁ + 1 = ${(b1+1).toFixed(3)})</span>`
+          : `<span style="color:var(--danger)">⚠ Fails β₂ ≥ β₁ + 1 (${b2.toFixed(3)} &lt; ${(b1+1).toFixed(3)}) — textbook exercise numbers may violate the inequality!</span>`;
+        msg = `<strong>Interpretation:</strong> The distribution is <strong>${sk}</strong> (γ₁ = ${g1.toFixed(3)}) and <strong>${ku}</strong> (β₂ = ${b2.toFixed(3)}, γ₂ = ${g2.toFixed(3)}).<br>` +
+              (c > 0 ? `<strong>Sheppard's Adjustment (c = ${c}):</strong> Uncorrected μ₂ = ${mu2_raw.toFixed(3)} → ${mu2.toFixed(3)}; Uncorrected μ₄ = ${mu4_raw.toFixed(2)} → ${mu4.toFixed(2)}.<br>` : '') +
+              check;
+      }
+      document.getElementById('mom-comment').innerHTML = msg;
+    }
+    calcMoments();
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "L4 Core Concept",
+        q: "Which central moments require Sheppard's correction for grouping error in a frequency distribution?",
+        opts: ["1st and 2nd moments", "2nd and 3rd moments", "2nd and 4th moments", "All four moments"],
+        ans: 2,
+        exp: "Only even central moments (μ₂ and μ₄) are adjusted by Sheppard's correction; μ₁ and μ₃ need no correction."
+      },
+      {
+        tag: "1st Incourse 2025 Q6",
+        q: "For a symmetrical distribution with variance μ₂ = 25, what must μ₄ be for the distribution to be mesokurtic?",
+        opts: ["75", "625", "1875", "3125"],
+        ans: 2,
+        exp: "Mesokurtic means β₂ = μ₄ / μ₂² = 3 ⇒ μ₄ = 3 × 25² = 3 × 625 = 1875."
+      },
+      {
+        tag: "L4 Origin & Scale",
+        q: "If every observation in a dataset is multiplied by 2 and then increased by 10, how do β₁ and β₂ change?",
+        opts: ["Both are multiplied by 2", "β₁ is multiplied by 8, β₂ by 16", "Both remain completely unchanged", "Both increase by 10"],
+        ans: 2,
+        exp: "By Theorem 3, both β₁ and β₂ are pure, dimensionless numbers independent of both origin and scale."
+      },
+      {
+        tag: "L4 Skewness",
+        q: "For a negatively (left) skewed unimodal distribution, which ordering of central tendencies holds?",
+        opts: ["Mean > Median > Mode", "Mean < Median < Mode", "Mode < Mean < Median", "Mean = Median = Mode"],
+        ans: 1,
+        exp: "In a negatively skewed distribution, extreme low values in the left tail pull the Mean below the Median, while the Mode stays at the right peak."
+      },
+      {
+        tag: "L4 Percentile Kurtosis",
+        q: "A distribution has Percentile Coefficient of Kurtosis K = 0.21. How is it classified?",
+        opts: ["Leptokurtic", "Mesokurtic", "Platykurtic", "Symmetrical"],
+        ans: 2,
+        exp: "For the normal (mesokurtic) curve, K ≈ 0.263. Since 0.21 < 0.263, the distribution is Platykurtic."
+      },
+      {
+        tag: "L4 Inequality",
+        q: "A student claims a real dataset has β₁ = 3.0 and β₂ = 3.5. What can you conclude immediately?",
+        opts: ["The dataset is leptokurtic and valid", "The calculation must contain an error", "The dataset is symmetric", "The variance is negative"],
+        ans: 1,
+        exp: "By the universal inequality β₂ ≥ β₁ + 1, if β₁ = 3.0 then β₂ must be at least 4.0. Thus β₂ = 3.5 is mathematically impossible!"
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

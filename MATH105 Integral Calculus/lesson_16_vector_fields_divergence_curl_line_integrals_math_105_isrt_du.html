@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 16: Vector Fields, Divergence, Curl &amp; Line Integrals | MATH 105 (ISRT, DU)</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX 0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS — DARK SLATE ACADEMIC THEME (MATCHING LESSONS 1–15)
+       ========================================================================== */
+    :root {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-2: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-2: #818cf8;
+      --green: #34d399;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --accent-border: rgba(56, 189, 248, 0.38);
+      --accent2-soft: rgba(129, 140, 248, 0.15);
+      --accent2-border: rgba(129, 140, 248, 0.38);
+      --green-soft: rgba(52, 211, 153, 0.14);
+      --green-border: rgba(52, 211, 153, 0.38);
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: rgba(251, 191, 36, 0.38);
+      --rose-soft: rgba(251, 113, 133, 0.12);
+      --rose-border: rgba(251, 113, 133, 0.38);
+
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 270px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    code, .mono { font-family: var(--font-mono); }
+    button, select, input { font-family: inherit; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+    /* ==========================================================================
+       MOBILE TOP BAR (< 900px)
+       ========================================================================== */
+    .mobile-bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .mobile-bar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .menu-toggle {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .mobile-bar-title {
+      font-size: 0.9rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mobile-pct-pill {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700;
+      color: var(--green); background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       FIXED LEFT SIDEBAR (270px)
+       ========================================================================== */
+    .sidebar-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(2, 6, 23, 0.75);
+      z-index: 55; backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.active { display: block; }
+
+    aside.sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px 18px;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 20px;
+      z-index: 60;
+      transition: transform 0.25s ease;
+    }
+    .brand { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .brand .tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .brand h1 { font-size: 1.04rem; margin-top: 5px; line-height: 1.3; font-weight: 800; }
+    .brand p { font-size: 0.79rem; color: var(--muted); margin-top: 4px; }
+
+    .progress-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+    }
+    .progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; margin-bottom: 7px; font-weight: 600;
+    }
+    .progress-bar { height: 8px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--green));
+      transition: width 0.35s ease;
+    }
+    .progress-detail {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; color: var(--muted); margin-top: 7px;
+    }
+
+    nav.side-nav { display: flex; flex-direction: column; gap: 5px; }
+    .nav-heading {
+      font-size: 0.69rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--muted); padding: 0 10px; margin-bottom: 4px;
+    }
+    nav.side-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+      transition: all 0.18s ease;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    nav.side-nav a:hover { background: var(--surface-2); color: var(--text); }
+    nav.side-nav a.active {
+      background: var(--surface-2);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .foot-btn {
+      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; transition: all 0.18s;
+    }
+    .foot-btn:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ==========================================================================
+       MAIN CONTENT & HERO
+       ========================================================================== */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: 34px 40px 84px;
+      max-width: calc(1140px + var(--sidebar-w));
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(129, 140, 248, 0.17));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      margin-bottom: 34px;
+    }
+    .hero .pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      background: var(--accent-soft); border: 1px solid var(--accent-border);
+      color: var(--accent); margin-bottom: 10px;
+    }
+    .hero h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 800; margin-bottom: 8px; line-height: 1.2; }
+    .hero p { color: var(--muted); max-width: 830px; font-size: 0.95rem; }
+    .hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .hero-chip {
+      font-size: 0.77rem; font-weight: 600;
+      padding: 4px 10px; border-radius: 999px;
+      background: rgba(11, 17, 32, 0.55); border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    section { margin-bottom: 48px; scroll-margin-top: 24px; }
+    .section-title {
+      font-size: 1.32rem; font-weight: 800; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title .num {
+      background: var(--accent); color: var(--bg);
+      font-family: var(--font-mono); font-weight: 800; font-size: 0.85rem;
+      width: 28px; height: 28px; border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .section-sub { color: var(--muted); font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* ==========================================================================
+       CONTROLS, BUTTONS & CANVASES
+       ========================================================================== */
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab-btn, .btn {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.84rem; font-weight: 600;
+      transition: all 0.18s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .tab-btn:hover, .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn:disabled { opacity: 0.42; cursor: not-allowed; }
+    .tab-btn.active, .btn-primary {
+      background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 700;
+    }
+    .btn-primary:hover:not(:disabled) { background: #7dd3fc; border-color: #7dd3fc; color: var(--bg); }
+    .btn.toggled {
+      background: var(--accent2-soft); border-color: var(--accent-2); color: var(--accent-2);
+    }
+    .btn.toggled-rose {
+      background: var(--rose-soft); border-color: var(--rose); color: var(--rose);
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .control-group label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; color: var(--muted); font-weight: 600;
+    }
+    .control-group label strong {
+      font-family: var(--font-mono); color: var(--accent); font-size: 0.82rem;
+    }
+    .control-group select {
+      width: 100%;
+      background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 9px 11px; font-size: 0.86rem; cursor: pointer;
+    }
+    .control-group select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .control-group input[type="range"] {
+      width: 100%; accent-color: var(--accent); cursor: pointer; height: 6px;
+    }
+
+    .canvas-wrap {
+      background: #070d19;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      position: relative;
+      width: 100%;
+      height: 410px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .canvas-wrap.line-wrap { height: 380px; cursor: default; }
+    .canvas-wrap canvas { display: block; width: 100%; height: 100%; }
+
+    .canvas-hint {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(17, 24, 39, 0.88);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-mono); font-size: 0.71rem;
+      padding: 4px 10px; border-radius: 999px;
+      pointer-events: none;
+    }
+    .canvas-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(17, 24, 39, 0.88);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-family: var(--font-mono); font-size: 0.73rem; font-weight: 700;
+      padding: 4px 11px; border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .legend-row {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+    .telemetry {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 15px;
+      overflow-x: auto;
+    }
+    .stat.highlight { background: var(--green-soft); border-color: var(--green-border); }
+    .stat.accent { background: var(--accent-soft); border-color: var(--accent-border); }
+    .stat.amber { background: var(--amber-soft); border-color: var(--amber-border); }
+    .stat.rose { background: var(--rose-soft); border-color: var(--rose-border); }
+    .stat .label {
+      font-size: 0.71rem; color: var(--muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat .val {
+      font-family: var(--font-mono);
+      font-size: 0.96rem; font-weight: 700; margin-top: 4px; color: var(--accent);
+    }
+    .stat .sub { font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+
+    .mini-badge {
+      display: inline-block;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 999px; margin-top: 4px;
+      text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .mini-badge.green { background: var(--green-soft); border: 1px solid var(--green-border); color: var(--green); }
+    .mini-badge.rose { background: var(--rose-soft); border: 1px solid var(--rose-border); color: var(--rose); }
+    .mini-badge.amber { background: var(--amber-soft); border: 1px solid var(--amber-border); color: var(--amber); }
+    .mini-badge.sky { background: var(--accent-soft); border: 1px solid var(--accent-border); color: var(--accent); }
+
+    /* Section 2 Tab B: Side-by-side Scalar ds comparison */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .compare-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex; flex-direction: column; gap: 8px;
+      overflow-x: auto;
+    }
+    .compare-card.rev { border-top-color: var(--accent-2); }
+    .match-banner {
+      margin-top: 14px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+      font-size: 0.89rem; font-weight: 700;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+    }
+
+    /* ==========================================================================
+       SECTION 3: THEORY & EXAM TRAPS
+       ========================================================================== */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 16px; }
+    .formula-box {
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent-2);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    .trap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .trap-box {
+      background: var(--rose-soft);
+      border: 1px solid var(--rose-border);
+      border-left: 4px solid var(--rose);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+    }
+    .trap-box strong { color: var(--rose); display: block; margin-bottom: 4px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+
+    /* ==========================================================================
+       SECTION 4: VAULT
+       ========================================================================== */
+    .vault-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+    .vault-item.reviewed { border-color: var(--green-border); }
+    .vault-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+      border-radius: 999px; background: var(--accent2-soft); color: var(--accent-2);
+      border: 1px solid var(--accent2-border);
+    }
+    .badge.sky { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-border); }
+
+    .vault-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+    .reveal-box {
+      display: none; margin-top: 12px; padding: 14px 16px;
+      background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border);
+      overflow-x: auto; font-size: 0.91rem;
+    }
+    .reveal-box.open { display: block; }
+    .reveal-box.hint-box { background: var(--amber-soft); border-color: var(--amber-border); }
+    .check-label {
+      margin-left: auto; font-size: 0.82rem; font-weight: 600; color: var(--green);
+      display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+      padding: 6px 11px; border-radius: 8px;
+      background: var(--green-soft); border: 1px solid var(--green-border);
+      user-select: none;
+    }
+    .check-label input { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; }
+
+    /* ==========================================================================
+       SECTION 5: QUIZ
+       ========================================================================== */
+    .quiz-bar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    }
+    .quiz-q {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; margin-top: 12px; }
+    .opt-btn {
+      text-align: left; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px;
+      cursor: pointer; font-size: 0.89rem; transition: all 0.18s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .opt-btn.correct { background: var(--green-soft); border-color: var(--green); color: var(--green); font-weight: 600; }
+    .opt-btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: var(--rose); }
+    .feedback {
+      margin-top: 11px; font-size: 0.87rem; color: var(--text);
+      padding: 10px 13px; border-radius: 8px; background: var(--surface-2);
+      border: 1px solid var(--border); display: none;
+    }
+    .feedback.show { display: block; }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 80;
+      background: var(--surface-2); border: 1px solid var(--accent-border);
+      color: var(--text); padding: 11px 16px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+      opacity: 0; transform: translateY(10px); pointer-events: none; transition: all 0.22s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 900px) {
+      .mobile-bar { display: flex; }
+      aside.sidebar {
+        transform: translateX(-100%);
+        top: 63px;
+        box-shadow: 0 14px 36px rgba(0,0,0,0.6);
+      }
+      aside.sidebar.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 22px 16px 64px; }
+      section { scroll-margin-top: 78px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Top Header -->
+  <header class="mobile-bar">
+    <div class="mobile-bar-left">
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <span class="mobile-bar-title">Lesson 16: Vector Fields &amp; Line Integrals</span>
+    </div>
+    <span class="mobile-pct-pill" id="mobilePct">0%</span>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Fixed Left Sidebar -->
+  <aside class="sidebar" id="sidebar" aria-label="Lesson 16 navigation">
+    <div class="brand">
+      <div class="tag">MATH 105 · ISRT, DU</div>
+      <h1>Lesson 16: Vector Fields, Divergence, Curl &amp; Line Integrals</h1>
+      <p>Module 5 · Vector Calculus</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Mastery Progress</span>
+        <strong id="progressPct" style="color:var(--green)">0%</strong>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-detail" id="progressDetail">0 / 13 tasks completed</div>
+    </div>
+
+    <nav class="side-nav" id="sideNav">
+      <div class="nav-heading">Sections (15.1 &amp; 15.2)</div>
+      <a href="#sec1" class="active" data-sec="sec1">1. Vector Field, Div &amp; Curl</a>
+      <a href="#sec2" data-sec="sec2">2. Line Integral &amp; Orientation</a>
+      <a href="#sec3" data-sec="sec3">3. Core Theory &amp; Traps</a>
+      <a href="#sec4" data-sec="sec4">4. ISRT Past-Exam Vault (8)</a>
+      <a href="#sec5" data-sec="sec5">5. Quick Mastery Check (5)</a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="foot-btn" id="prevBtn"><span>&larr; Prev Lesson</span><span class="mono">L15</span></button>
+      <button type="button" class="foot-btn" id="nextBtn"><span>Next Lesson &rarr;</span><span class="mono" style="color:var(--accent)">L17</span></button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <span class="pill">Sections 15.1 · 15.2 · Final Exam Core</span>
+      <h2>Vector Fields, Divergence, Curl &amp; Line Integrals</h2>
+      <p>
+        Drop a virtual paddlewheel and flux ring into 2D vector fields to see curl and divergence come alive, animate work $\int_C \mathbf{F}\cdot d\mathbf{r}$ along curves while reversing orientation, contrast scalar $ds$ vs. vector $d\mathbf{r}$ integrals, and master 8 authentic ISRT exam problems.
+      </p>
+      <div class="hero-chips">
+        <span class="hero-chip">Gradient $\nabla\phi$</span>
+        <span class="hero-chip">Divergence $\nabla\cdot\mathbf{F}$</span>
+        <span class="hero-chip">Curl $\nabla\times\mathbf{F}$</span>
+        <span class="hero-chip">Scalar $\int_C f\,ds$ vs. Work $\int_C \mathbf{F}\cdot d\mathbf{r}$</span>
+        <span class="hero-chip">8 Solved ISRT Problems</span>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         SECTION 1: INTERACTIVE 2D VECTOR FIELD, DIVERGENCE & CURL LAB
+         ====================================================================== -->
+    <section id="sec1">
+      <h3 class="section-title"><span class="num">1</span> Interactive 2D Vector Field, Divergence &amp; Curl Lab</h3>
+      <p class="section-sub">Click or drag the amber probe anywhere on the canvas to measure local divergence (outward/inward flux ring) and local curl (spinning paddlewheel).</p>
+
+      <div class="card">
+        <div class="controls-grid">
+          <div class="control-group" style="grid-column: span 2;">
+            <label for="vfPreset"><span>Select 2D Vector Field Preset (5 Presets)</span></label>
+            <select id="vfPreset">
+              <option value="source">1) Radial Source: F(x,y) = ⟨x, y⟩ (div = 2, curl_z = 0)</option>
+              <option value="vortex">2) Pure Rotation / Vortex: F(x,y) = ⟨-y, x⟩ (div = 0, curl_z = 2)</option>
+              <option value="sink">3) Radial Sink: F(x,y) = ⟨-x, -y⟩ (div = -2, curl_z = 0)</option>
+              <option value="shear">4) Shear Flow: F(x,y) = ⟨y, 0⟩ (div = 0, curl_z = -1)</option>
+              <option value="exam">5) Exam Semicircle Field (Final 2023/2025): F(x,y) = ⟨2xy, x² + y²⟩</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label for="densitySlider">
+              <span>Arrow Density</span>
+              <strong id="densityLabel">11 &times; 11</strong>
+            </label>
+            <input type="range" id="densitySlider" min="7" max="17" step="2" value="11" />
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;">
+          <button type="button" class="btn toggled" id="toggleProbeBtn">&#9881; Drop Probe Paddlewheel &amp; Divergence Ring</button>
+          <button type="button" class="btn toggled" id="toggleParticlesBtn">&#10024; Animate Flow Particles</button>
+          <button type="button" class="btn" id="centerProbeBtn">&#8634; Center Probe at (1, 1)</button>
+        </div>
+
+        <div class="canvas-wrap" id="vfCanvasWrap">
+          <canvas id="vfCanvas" aria-label="2D vector field, divergence and curl interactive canvas"></canvas>
+          <span class="canvas-badge" id="vfProbeCoordBadge">Probe: (1.00, 1.00)</span>
+          <span class="canvas-hint">Click or drag to move probe</span>
+        </div>
+
+        <div class="legend-row">
+          <span class="legend-item"><span class="swatch" style="background:var(--accent)"></span> Vector Field $\mathbf{F}(x,y)$</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Spinning Paddlewheel ($\text{curl}_z$)</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--green)"></span> Positive Flux / Source ($\text{div} &gt; 0$)</span>
+          <span class="legend-item"><span class="swatch" style="background:var(--rose)"></span> Negative Flux / Sink ($\text{div} &lt; 0$)</span>
+        </div>
+
+        <!-- 4 Live Telemetry Cards -->
+        <div class="telemetry">
+          <div class="stat accent">
+            <div class="label">1. Vector $\mathbf{F}(x_0, y_0)$ at Probe</div>
+            <div class="val" id="vfTeleVec">—</div>
+            <div class="sub" id="vfTeleMag">Magnitude $\|\mathbf{F}\|$</div>
+          </div>
+          <div class="stat" id="vfTeleDivCard">
+            <div class="label">2. Divergence $\frac{\partial f}{\partial x} + \frac{\partial g}{\partial y}$</div>
+            <div class="val" id="vfTeleDiv">—</div>
+            <span class="mini-badge green" id="vfDivBadge">SOURCE</span>
+          </div>
+          <div class="stat" id="vfTeleCurlCard">
+            <div class="label">3. 2D Scalar Curl $\frac{\partial g}{\partial x} - \frac{\partial f}{\partial y}$</div>
+            <div class="val" id="vfTeleCurl">—</div>
+            <span class="mini-badge sky" id="vfCurlBadge">IRROTATIONAL</span>
+          </div>
+          <div class="stat highlight">
+            <div class="label">4. Physical Classification</div>
+            <div class="val" id="vfTeleClass" style="font-size:0.88rem;color:var(--green)">—</div>
+            <div class="sub" id="vfTeleClassSub">Local fluid behavior</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 2: INTERACTIVE LINE INTEGRAL & ORIENTATION LAB
+         ====================================================================== -->
+    <section id="sec2">
+      <h3 class="section-title"><span class="num">2</span> Interactive Line Integral &amp; Orientation Lab</h3>
+      <p class="section-sub">Animate a particle along $C$ to see how $\mathbf{F}\cdot d\mathbf{r}$ accumulates positive (green) and negative (rose) work, flip orientation to verify $\int_{-C}\mathbf{F}\cdot d\mathbf{r} = -\int_C \mathbf{F}\cdot d\mathbf{r}$, and compare with orientation-independent scalar $ds$ integrals.</p>
+
+      <div class="card">
+        <div class="tabs" role="tablist">
+          <button type="button" class="tab-btn active" data-lab2="vector">Tab A: Vector Work Integral &amp; Orientation Reverser</button>
+          <button type="button" class="tab-btn" data-lab2="scalar">Tab B: Scalar Arc-Length ($ds$) Orientation-Independence Checker</button>
+        </div>
+
+        <!-- TAB A: Vector Work Integral & Orientation Reverser -->
+        <div id="lab2-vector">
+          <div class="controls-grid">
+            <div class="control-group" style="grid-column: span 2;">
+              <label for="liPreset"><span>ISRT Exam / Class Notes Path Preset</span></label>
+              <select id="liPreset">
+                <option value="semi">1) Final 2025 Q7b / 2023 Q8a: ∫ 2xy dx + (x²+y²) dy (Upper Semicircle r=2)</option>
+                <option value="line3xy">2) Class Notes Ex 5: ∫ 3xy dy along y = 2x from (0,0) to (1,2)</option>
+                <option value="triangle">3) Class Notes Ex 10 / Final 2025 Q8a: ∫ x²y dx + x dy (Triangle)</option>
+                <option value="vert">4) Class Notes Ex 8: ∫ cos(x) dx + sin(x) dy along x = -π/2, y ∈ [1, 2]</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="liTSlider">
+                <span>Path Progress ($t$)</span>
+                <strong id="liTLabel">65%</strong>
+              </label>
+              <input type="range" id="liTSlider" min="0" max="100" step="0.5" value="65" />
+            </div>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-primary" id="liPlayBtn">&#9654; Play Particle</button>
+              <button type="button" class="btn" id="liResetBtn">&#8634; Reset $t = 0$</button>
+            </div>
+            <button type="button" class="btn" id="liReverseBtn">&#8644; Reverse Orientation ($-C$)</button>
+          </div>
+
+          <div class="canvas-wrap line-wrap" id="liCanvasWrap">
+            <canvas id="liCanvas" aria-label="Line integral work and orientation canvas"></canvas>
+            <span class="canvas-badge" id="liOrientBadge">Orientation: Forward (+C)</span>
+          </div>
+
+          <div class="legend-row">
+            <span class="legend-item"><span class="swatch" style="background:var(--green)"></span> Positive Work ($\mathbf{F}\cdot d\mathbf{r} &gt; 0$)</span>
+            <span class="legend-item"><span class="swatch" style="background:var(--rose)"></span> Negative Work ($\mathbf{F}\cdot d\mathbf{r} &lt; 0$)</span>
+            <span class="legend-item"><span class="swatch" style="background:var(--amber)"></span> Tangent Vector $\mathbf{r}'(t)$</span>
+            <span class="legend-item"><span class="swatch" style="background:var(--accent)"></span> Force Field $\mathbf{F}(\mathbf{r}(t))$</span>
+          </div>
+
+          <!-- 4 Live Telemetry Cards -->
+          <div class="telemetry">
+            <div class="stat">
+              <div class="label">1. Current Position $\mathbf{r}(t)$</div>
+              <div class="val" id="liTelePos">—</div>
+              <div class="sub" id="liTeleParam">Parameter value</div>
+            </div>
+            <div class="stat">
+              <div class="label">2. Instantaneous $\mathbf{F}\cdot\mathbf{r}'(t)$</div>
+              <div class="val" id="liTeleDot">—</div>
+              <div class="sub" id="liTeleDotSign">Alignment with tangent</div>
+            </div>
+            <div class="stat amber">
+              <div class="label">3. Accumulated Integral to $t$</div>
+              <div class="val" id="liTeleAccum" style="color:var(--amber)">—</div>
+              <div class="sub">Numeric Simpson sum up to $t$</div>
+            </div>
+            <div class="stat highlight">
+              <div class="label">4. Full Exact Value</div>
+              <div class="val" id="liTeleExact" style="color:var(--green)">—</div>
+              <div class="sub" id="liTeleExactSub">Flips sign on $-C$!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB B: Scalar Arc-Length Integral (ds) Orientation-Independence Checker -->
+        <div id="lab2-scalar" style="display:none;">
+          <div class="tabs" id="scalarTabs">
+            <button type="button" class="tab-btn active" data-sc="0">1) Class Notes Ex 1: $\int_C (1 + xy^2)\,ds$ along $y = 2x$</button>
+            <button type="button" class="tab-btn" data-sc="1">2) Class Notes Ex 3: Wire Mass $\int_C (15 - y)\,ds$ ($x^2+y^2=25, y\ge 0$)</button>
+          </div>
+          <div id="scalarOutput"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 3: CORE THEORY, MASTER FORMULAS & ISRT EXAM TRAPS
+         ====================================================================== -->
+    <section id="sec3">
+      <h3 class="section-title"><span class="num">3</span> Core Theory, Master Formulas &amp; ISRT Exam Traps</h3>
+
+      <div class="grid-2">
+        <div class="card">
+          <h4 style="color:var(--accent)">1. Gradient, Divergence &amp; Curl (Sec. 15.1)</h4>
+          <p style="font-size:0.86rem;color:var(--muted);margin-top:4px;">For scalar $\phi(x,y,z)$ and vector field $\mathbf{F} = f\mathbf{i} + g\mathbf{j} + h\mathbf{k}$:</p>
+          <div class="formula-box">
+            $$\nabla\phi = \frac{\partial\phi}{\partial x}\mathbf{i} + \frac{\partial\phi}{\partial y}\mathbf{j} + \frac{\partial\phi}{\partial z}\mathbf{k} \quad (\text{steepest ascent, }\perp\text{ level surfaces})$$
+            $$\text{div}\,\mathbf{F} = \nabla\cdot\mathbf{F} = \frac{\partial f}{\partial x} + \frac{\partial g}{\partial y} + \frac{\partial h}{\partial z} \quad (\text{scalar: source/sink/incompressible})$$
+            $$\text{curl}\,\mathbf{F} = \nabla\times\mathbf{F} = \begin{vmatrix}\mathbf{i}&\mathbf{j}&\mathbf{k}\\ \partial_x&\partial_y&\partial_z\\ f&g&h\end{vmatrix} \quad (\text{vector: rotation; }\mathbf{0}=\text{irrotational})$$
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--green)">2. Scalar Line Integrals w.r.t. Arc Length $ds$</h4>
+          <p style="font-size:0.86rem;color:var(--muted);margin-top:4px;">Integrates a scalar function (e.g., wire density $\delta$ or curtain height $f$) along $\mathbf{r}(t) = x(t)\mathbf{i} + y(t)\mathbf{j}$, $a \le t \le b$:</p>
+          <div class="formula-box" style="border-left-color:var(--green)">
+            $$\int_C f(x,y)\,ds = \int_a^b f\big(x(t), y(t)\big)\|\mathbf{r}'(t)\|\,dt$$
+            $$ds = \sqrt{\left(\frac{dx}{dt}\right)^2 + \left(\frac{dy}{dt}\right)^2}\,dt, \qquad \int_{-C} f\,ds = +\int_C f\,ds$$
+          </div>
+          <p style="font-size:0.83rem;color:var(--muted);"><strong>Key property:</strong> Completely <strong>independent of orientation</strong>! Used for wire mass $M = \int_C \delta\,ds$ and vertical curtain area.</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--amber)">3. Vector / Coordinate Line Integrals (Work)</h4>
+          <p style="font-size:0.86rem;color:var(--muted);margin-top:4px;">Measures total work done by force field $\mathbf{F} = \langle f, g, h\rangle$ along an oriented curve $C$:</p>
+          <div class="formula-box" style="border-left-color:var(--amber)">
+            $$\int_C \mathbf{F}\cdot d\mathbf{r} = \int_C f\,dx + g\,dy + h\,dz = \int_a^b \mathbf{F}(\mathbf{r}(t))\cdot\mathbf{r}'(t)\,dt$$
+            $$\int_{-C} \mathbf{F}\cdot d\mathbf{r} = -\int_C \mathbf{F}\cdot d\mathbf{r}$$
+          </div>
+          <p style="font-size:0.83rem;color:var(--muted);"><strong>Key property:</strong> Reversing direction ($-C$) <strong>negates</strong> the integral!</p>
+        </div>
+
+        <div class="card">
+          <h4 style="color:var(--accent-2)">4. Standard Parametrization Cheat Sheet</h4>
+          <div class="formula-box">
+            <div><strong>Line segment $\mathbf{r}_0 \to \mathbf{r}_1$:</strong> $\;\mathbf{r}(t) = (1-t)\mathbf{r}_0 + t\mathbf{r}_1,\quad 0 \le t \le 1$</div>
+            <div style="margin-top:6px;"><strong>Circle / Semicircle ($x^2+y^2=a^2$):</strong> $\;x = a\cos t,\; y = a\sin t$ (CCW: $0\to\pi$ for upper semicircle, $0\to 2\pi$ full)</div>
+            <div style="margin-top:6px;"><strong>Function graph $y = f(x)$:</strong> $\;x = t,\; y = f(t),\; a \le t \le b$</div>
+            <div style="margin-top:6px;"><strong>Vertical line $x = c$:</strong> $\;x = c,\; y = t\; (dx = 0,\; dy = dt)$</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 style="color:var(--rose);">&#9888; 4 High-Yield ISRT Exam Traps</h4>
+        <div class="trap-grid">
+          <div class="trap-box">
+            <strong>Trap 1: Confusing $ds$ with $dx, dy$</strong>
+            Scalar $ds$ requires multiplying by the speed $\|\mathbf{r}'(t)\|$ and is <strong>independent of orientation</strong>. Coordinate integrals $f\,dx + g\,dy$ use $x'(t)\,dt$ and $y'(t)\,dt$ (no square root!) and <strong>flip sign</strong> on $-C$.
+          </div>
+          <div class="trap-box">
+            <strong>Trap 2: Computing Curl as a Scalar in 3D</strong>
+            In 3D, $\text{div}\,\mathbf{F}$ is a <strong>scalar</strong>, whereas $\text{curl}\,\mathbf{F}$ is ALWAYS a <strong>vector</strong> computed via the $3\times 3$ determinant!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 3: Dropping the Minus Sign on $\mathbf{j}$ in Curl</strong>
+            In the $3\times 3$ curl determinant, the middle component is $-\left(\frac{\partial h}{\partial x} - \frac{\partial f}{\partial z}\right)\mathbf{j} = \left(\frac{\partial f}{\partial z} - \frac{\partial h}{\partial x}\right)\mathbf{j}$. Watch this sign in Final 2024 Q8(a)!
+          </div>
+          <div class="trap-box">
+            <strong>Trap 4: Backwards Triangle Leg Parametrization</strong>
+            For the return leg $(1,2)\to(0,0)$ of a triangle, using $x = t, y = 2t$ from $0$ to $1$ walks <em>backwards</em>! Always use $\mathbf{r}(t) = (1-t)\mathbf{r}_0 + t\mathbf{r}_1 = \langle 1-t, 2-2t\rangle$ for $0 \le t \le 1$ (or integrate from $t = 1$ down to $0$).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ====================================================================== -->
+    <section id="sec4">
+      <h3 class="section-title"><span class="num">4</span> ISRT Past-Exam &amp; Class-Notes Vault (8 Problems)</h3>
+      <div class="tabs" id="vaultFilters">
+        <button type="button" class="tab-btn active" data-vcat="all">All (8)</button>
+        <button type="button" class="tab-btn" data-vcat="divcurl">Div &amp; Curl (2)</button>
+        <button type="button" class="tab-btn" data-vcat="scalar">Scalar $ds$ (2)</button>
+        <button type="button" class="tab-btn" data-vcat="vector">Vector $\mathbf{F}\cdot d\mathbf{r}$ (4)</button>
+      </div>
+      <div id="vaultList"></div>
+    </section>
+
+    <!-- ======================================================================
+         SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ====================================================================== -->
+    <section id="sec5">
+      <h3 class="section-title"><span class="num">5</span> Quick Mastery Check</h3>
+      <div class="quiz-bar">
+        <span style="color:var(--muted);font-size:0.9rem;">Quiz Score: <strong id="quizScore" style="color:var(--green);font-family:var(--font-mono)">0 / 5</strong></span>
+        <button type="button" class="btn" id="resetQuizBtn">&#8634; Reset Quiz</button>
+      </div>
+      <div id="quizContainer"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastBox" role="status" aria-live="polite"></div>
+
+  <!-- ========================================================================
+       APPLICATION JAVASCRIPT
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      /* ----------------------------------------------------------------------
+         1. KATEX HELPER & TOAST
+         ---------------------------------------------------------------------- */
+      function renderMath(el) {
+        if (typeof window.renderMathInElement === 'function') {
+          window.renderMathInElement(el || document.body, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      }
+
+      const toastBox = document.getElementById('toastBox');
+      let toastTimer = null;
+      function showToast(msg) {
+        toastBox.textContent = msg;
+        toastBox.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastBox.classList.remove('show'), 2600);
+      }
+
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(220, Math.floor(rect.height));
+        if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+      }
+
+      /* ----------------------------------------------------------------------
+         2. SECTION 1: 2D VECTOR FIELD, DIVERGENCE & CURL LAB
+         ---------------------------------------------------------------------- */
+      const vfPresets = {
+        source: {
+          F: (x, y) => [x, y],
+          div: () => 2,
+          curl: () => 0,
+          divFormula: '1 + 1 = 2',
+          curlFormula: '0 - 0 = 0',
+          cls: 'Irrotational Source',
+          clsSub: 'Fluid expands radially with zero local spin'
+        },
+        vortex: {
+          F: (x, y) => [-y, x],
+          div: () => 0,
+          curl: () => 2,
+          divFormula: '0 + 0 = 0',
+          curlFormula: '1 - (-1) = 2',
+          cls: 'Incompressible Vortex',
+          clsSub: 'Solenoidal (div = 0) with uniform CCW spin'
+        },
+        sink: {
+          F: (x, y) => [-x, -y],
+          div: () => -2,
+          curl: () => 0,
+          divFormula: '-1 + (-1) = -2',
+          curlFormula: '0 - 0 = 0',
+          cls: 'Irrotational Sink',
+          clsSub: 'Fluid compresses radially inward with zero spin'
+        },
+        shear: {
+          F: (x, y) => [y, 0],
+          div: () => 0,
+          curl: () => -1,
+          divFormula: '0 + 0 = 0',
+          curlFormula: '0 - 1 = -1',
+          cls: 'Incompressible Shear Flow',
+          clsSub: 'Straight streamlines, yet CW paddlewheel spin!'
+        },
+        exam: {
+          F: (x, y) => [2 * x * y, x * x + y * y],
+          div: (x, y) => 4 * y,
+          curl: () => 0,
+          divFormula: '2y + 2y = 4y',
+          curlFormula: '2x - 2x = 0',
+          cls: 'Conservative Field (curl = 0)',
+          clsSub: 'Source for y > 0, Sink for y < 0; F = ∇(x²y + y³/3)'
+        }
+      };
+
+      const vfState = {
+        preset: 'source',
+        density: 11,
+        showProbe: true,
+        showParticles: true,
+        probeX: 1.0,
+        probeY: 1.0,
+        wheelAngle: 0,
+        pulsePhase: 0,
+        particles: [],
+        range: 3.0
+      };
+
+      const vfCanvas = document.getElementById('vfCanvas');
+
+      function initParticles() {
+        vfState.particles = [];
+        for (let i = 0; i < 65; i++) {
+          vfState.particles.push({
+            x: (Math.random() * 2 - 1) * vfState.range,
+            y: (Math.random() * 2 - 1) * vfState.range,
+            life: Math.random() * 120
+          });
+        }
+      }
+
+      function updateVFTelemetry() {
+        const pr = vfPresets[vfState.preset];
+        const x0 = vfState.probeX, y0 = vfState.probeY;
+        const [fx, fy] = pr.F(x0, y0);
+        const mag = Math.hypot(fx, fy);
+        const divVal = pr.div(x0, y0);
+        const curlVal = pr.curl(x0, y0);
+
+        document.getElementById('vfProbeCoordBadge').textContent = `Probe: (${x0.toFixed(2)}, ${y0.toFixed(2)})`;
+        document.getElementById('vfTeleVec').textContent = `⟨${fx.toFixed(2)}, ${fy.toFixed(2)}⟩`;
+        document.getElementById('vfTeleMag').textContent = `Magnitude ‖F‖ = ${mag.toFixed(2)}`;
+
+        document.getElementById('vfTeleDiv').textContent = `${divVal.toFixed(2)}  (${pr.divFormula})`;
+        const dBadge = document.getElementById('vfDivBadge');
+        if (divVal > 1e-4) { dBadge.className = 'mini-badge green'; dBadge.textContent = 'SOURCE (div > 0)'; }
+        else if (divVal < -1e-4) { dBadge.className = 'mini-badge rose'; dBadge.textContent = 'SINK (div < 0)'; }
+        else { dBadge.className = 'mini-badge sky'; dBadge.textContent = 'INCOMPRESSIBLE (div = 0)'; }
+
+        document.getElementById('vfTeleCurl').textContent = `${curlVal.toFixed(2)}  (${pr.curlFormula})`;
+        const cBadge = document.getElementById('vfCurlBadge');
+        if (curlVal > 1e-4) { cBadge.className = 'mini-badge amber'; cBadge.textContent = 'CCW ROTATION (curl > 0)'; }
+        else if (curlVal < -1e-4) { cBadge.className = 'mini-badge rose'; cBadge.textContent = 'CW ROTATION (curl < 0)'; }
+        else { cBadge.className = 'mini-badge sky'; cBadge.textContent = 'IRROTATIONAL (curl = 0)'; }
+
+        document.getElementById('vfTeleClass').textContent = pr.cls;
+        document.getElementById('vfTeleClassSub').textContent = pr.clsSub;
+      }
+
+      function drawVectorFieldFrame(dt) {
+        const pr = vfPresets[vfState.preset];
+        const { ctx, w, h } = setupCanvas(vfCanvas);
+        const R = vfState.range;
+        const scale = Math.min(w, h) * 0.45 / R;
+        const cx = w * 0.5, cy = h * 0.5;
+        const toX = (x) => cx + x * scale;
+        const toY = (y) => cy - y * scale;
+
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        // Subtle grid & axes
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.11)'; ctx.lineWidth = 1;
+        for (let k = -3; k <= 3; k++) {
+          ctx.beginPath(); ctx.moveTo(toX(k), 0); ctx.lineTo(toX(k), h); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, toY(k)); ctx.lineTo(w, toY(k)); ctx.stroke();
+        }
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, cy); ctx.lineTo(w, cy);
+        ctx.moveTo(cx, 0); ctx.lineTo(cx, h);
+        ctx.stroke();
+
+        // Vector arrows on grid
+        const N = vfState.density;
+        const spacing = (2 * R) / (N - 1);
+        const maxArrowPx = Math.min(w, h) / (N * 1.15);
+
+        for (let i = 0; i < N; i++) {
+          for (let j = 0; j < N; j++) {
+            const x = -R + i * spacing;
+            const y = -R + j * spacing;
+            const [fx, fy] = pr.F(x, y);
+            const mag = Math.hypot(fx, fy);
+            if (mag < 1e-4) continue;
+            const len = Math.min(maxArrowPx, Math.log1p(mag) * maxArrowPx * 0.55);
+            const ang = Math.atan2(-fy, fx);
+            const sx = toX(x), sy = toY(y);
+            const ex = sx + len * Math.cos(ang);
+            const ey = sy + len * Math.sin(ang);
+
+            const alpha = Math.min(0.85, 0.25 + 0.14 * Math.log1p(mag));
+            ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+            ctx.fillStyle = `rgba(56, 189, 248, ${alpha})`;
+            ctx.lineWidth = 1.4;
+            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+
+            // Tiny arrowhead
+            const hl = 5;
+            ctx.beginPath();
+            ctx.moveTo(ex, ey);
+            ctx.lineTo(ex - hl * Math.cos(ang - 0.5), ey - hl * Math.sin(ang - 0.5));
+            ctx.lineTo(ex - hl * Math.cos(ang + 0.5), ey - hl * Math.sin(ang + 0.5));
+            ctx.closePath(); ctx.fill();
+          }
+        }
+
+        // Animated flow particles
+        if (vfState.showParticles) {
+          vfState.particles.forEach((pt) => {
+            const [fx, fy] = pr.F(pt.x, pt.y);
+            const mag = Math.hypot(fx, fy);
+            const speed = Math.min(2.2, mag * 0.45);
+            if (mag > 1e-4) {
+              pt.x += (fx / mag) * speed * dt;
+              pt.y += (fy / mag) * speed * dt;
+            }
+            pt.life -= dt * 35;
+            if (pt.life <= 0 || Math.abs(pt.x) > R * 1.1 || Math.abs(pt.y) > R * 1.1 || mag < 0.05) {
+              pt.x = (Math.random() * 2 - 1) * R;
+              pt.y = (Math.random() * 2 - 1) * R;
+              pt.life = 50 + Math.random() * 90;
+            }
+            const px = toX(pt.x), py = toY(pt.y);
+            ctx.fillStyle = 'rgba(129, 140, 248, 0.82)';
+            ctx.beginPath(); ctx.arc(px, py, 2.3, 0, Math.PI * 2); ctx.fill();
+          });
+        }
+
+        // Interactive Probe: Divergence Ring + Spinning Paddlewheel
+        if (vfState.showProbe) {
+          const px = toX(vfState.probeX), py = toY(vfState.probeY);
+          const divVal = pr.div(vfState.probeX, vfState.probeY);
+          const curlVal = pr.curl(vfState.probeX, vfState.probeY);
+
+          vfState.wheelAngle += curlVal * 1.4 * dt; // CCW for curl > 0
+          vfState.pulsePhase = (vfState.pulsePhase + dt * 1.3) % 1;
+
+          // Divergence pulsing ring + radial flux arrows
+          const baseR = 26;
+          if (Math.abs(divVal) > 1e-3) {
+            const isSrc = divVal > 0;
+            const col = isSrc ? '#34d399' : '#fb7185';
+            const pulseR = isSrc ? baseR + vfState.pulsePhase * 16 : baseR + (1 - vfState.pulsePhase) * 16;
+            const pAlpha = (1 - Math.abs(vfState.pulsePhase - 0.5) * 1.8) * 0.7;
+
+            ctx.strokeStyle = isSrc ? `rgba(52, 211, 153, ${Math.max(0.15, pAlpha)})` : `rgba(251, 113, 133, ${Math.max(0.15, pAlpha)})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(px, py, pulseR, 0, Math.PI * 2); ctx.stroke();
+
+            // 8 radial flux ticks pointing out (source) or in (sink)
+            ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 1.8;
+            for (let k = 0; k < 8; k++) {
+              const a = (k / 8) * Math.PI * 2;
+              const rA = isSrc ? baseR + 2 : baseR + 14;
+              const rB = isSrc ? baseR + 14 : baseR + 2;
+              ctx.beginPath();
+              ctx.moveTo(px + rA * Math.cos(a), py + rA * Math.sin(a));
+              ctx.lineTo(px + rB * Math.cos(a), py + rB * Math.sin(a));
+              ctx.stroke();
+            }
+          } else {
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.55)';
+            ctx.lineWidth = 1.6; ctx.setLineDash([4, 3]);
+            ctx.beginPath(); ctx.arc(px, py, baseR, 0, Math.PI * 2); ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          // Spinning 4-blade paddlewheel (amber)
+          const wheelR = 17;
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(-vfState.wheelAngle); // canvas y is down -> -angle is mathematical CCW
+          ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.6;
+          for (let b = 0; b < 4; b++) {
+            const ba = (b * Math.PI) / 2;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(wheelR * Math.cos(ba), wheelR * Math.sin(ba));
+            ctx.stroke();
+            // Small paddle tip
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(wheelR * Math.cos(ba), wheelR * Math.sin(ba), 3, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.fillStyle = '#070d19';
+          ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(0, 0, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      /* ----------------------------------------------------------------------
+         3. SECTION 2A: VECTOR WORK INTEGRAL & ORIENTATION REVERSER
+         ---------------------------------------------------------------------- */
+      const liPresets = {
+        semi: {
+          xRange: [-2.7, 2.7], yRange: [-0.6, 2.6],
+          exactFwd: 0, exactTex: '0',
+          F: (x, y) => [2 * x * y, x * x + y * y],
+          rFwd(s) {
+            const t = s * Math.PI;
+            return { x: 2 * Math.cos(t), y: 2 * Math.sin(t), dx: -2 * Math.sin(t) * Math.PI, dy: 2 * Math.cos(t) * Math.PI, lbl: `t = ${t.toFixed(2)} rad` };
+          }
+        },
+        line3xy: {
+          xRange: [-0.3, 1.5], yRange: [-0.3, 2.4],
+          exactFwd: 4, exactTex: '4',
+          F: (x, y) => [0, 3 * x * y],
+          rFwd(s) {
+            return { x: s, y: 2 * s, dx: 1, dy: 2, lbl: `t = ${s.toFixed(2)}` };
+          }
+        },
+        triangle: {
+          xRange: [-0.3, 1.5], yRange: [-0.3, 2.4],
+          exactFwd: 0.5, exactTex: '\\frac{1}{2}',
+          F: (x, y) => [x * x * y, x],
+          rFwd(s) {
+            if (s <= 1 / 3) {
+              const u = s * 3;
+              return { x: u, y: 0, dx: 3, dy: 0, lbl: `Leg C₁ (u=${u.toFixed(2)})` };
+            } else if (s <= 2 / 3) {
+              const u = (s - 1 / 3) * 3;
+              return { x: 1, y: 2 * u, dx: 0, dy: 6, lbl: `Leg C₂ (u=${u.toFixed(2)})` };
+            } else {
+              const u = (s - 2 / 3) * 3;
+              return { x: 1 - u, y: 2 - 2 * u, dx: -3, dy: -6, lbl: `Leg C₃ (u=${u.toFixed(2)})` };
+            }
+          }
+        },
+        vert: {
+          xRange: [-2.4, 0.4], yRange: [0.6, 2.4],
+          exactFwd: -1, exactTex: '-1',
+          F: (x) => [Math.cos(x), Math.sin(x)],
+          rFwd(s) {
+            return { x: -Math.PI / 2, y: 1 + s, dx: 0, dy: 1, lbl: `t = ${(1 + s).toFixed(2)}` };
+          }
+        }
+      };
+
+      const liState = {
+        preset: 'semi',
+        tPct: 65,
+        reversed: false,
+        playing: false
+      };
+
+      const liCanvas = document.getElementById('liCanvas');
+      const liTSlider = document.getElementById('liTSlider');
+      const liPlayBtn = document.getElementById('liPlayBtn');
+
+      function samplePath(pr, s, reversed) {
+        if (!reversed) return pr.rFwd(s);
+        const pt = pr.rFwd(1 - s);
+        return { x: pt.x, y: pt.y, dx: -pt.dx, dy: -pt.dy, lbl: `(-C) ${pt.lbl}` };
+      }
+
+      function drawLineIntegralLab() {
+        const pr = liPresets[liState.preset];
+        const sCur = liState.tPct / 100;
+        const { ctx, w, h } = setupCanvas(liCanvas);
+        const pad = { top: 24, right: 24, bottom: 32, left: 46 };
+        const plotW = w - pad.left - pad.right;
+        const plotH = h - pad.top - pad.bottom;
+        const [xMin, xMax] = pr.xRange, [yMin, yMax] = pr.yRange;
+        const toX = (x) => pad.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const toY = (y) => pad.top + ((yMax - y) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = '#070d19';
+        ctx.fillRect(0, 0, w, h);
+
+        // Axes & grid
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)'; ctx.lineWidth = 1;
+        for (let k = Math.ceil(xMin); k <= Math.floor(xMax); k++) {
+          ctx.beginPath(); ctx.moveTo(toX(k), pad.top); ctx.lineTo(toX(k), h - pad.bottom); ctx.stroke();
+        }
+        for (let k = Math.ceil(yMin); k <= Math.floor(yMax); k++) {
+          ctx.beginPath(); ctx.moveTo(pad.left, toY(k)); ctx.lineTo(w - pad.right, toY(k)); ctx.stroke();
+        }
+        ctx.strokeStyle = '#64748b'; ctx.lineWidth = 1.5;
+        if (yMin <= 0 && yMax >= 0) {
+          ctx.beginPath(); ctx.moveTo(pad.left, toY(0)); ctx.lineTo(w - pad.right, toY(0)); ctx.stroke();
+        }
+        if (xMin <= 0 && xMax >= 0) {
+          ctx.beginPath(); ctx.moveTo(toX(0), pad.top); ctx.lineTo(toX(0), h - pad.bottom); ctx.stroke();
+        }
+
+        // Faint background vector field arrows
+        const gN = 9;
+        for (let i = 0; i < gN; i++) {
+          for (let j = 0; j < gN; j++) {
+            const gx = xMin + ((i + 0.5) / gN) * (xMax - xMin);
+            const gy = yMin + ((j + 0.5) / gN) * (yMax - yMin);
+            const [fx, fy] = pr.F(gx, gy);
+            const mag = Math.hypot(fx, fy);
+            if (mag < 1e-4) continue;
+            const len = Math.min(20, 6 + 6 * Math.log1p(mag));
+            const ang = Math.atan2(-fy, fx);
+            const sx = toX(gx), sy = toY(gy);
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.22)'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + len * Math.cos(ang), sy + len * Math.sin(ang)); ctx.stroke();
+          }
+        }
+
+        // Faint full path C
+        const steps = 180;
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.32)'; ctx.lineWidth = 2.4; ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i++) {
+          const pt = samplePath(pr, i / steps, liState.reversed);
+          i === 0 ? ctx.moveTo(toX(pt.x), toY(pt.y)) : ctx.lineTo(toX(pt.x), toY(pt.y));
+        }
+        ctx.stroke(); ctx.setLineDash([]);
+
+        // Traced path colored by sign of F · dr (green positive, rose negative) + numeric integral
+        let accum = 0;
+        const traceSteps = Math.max(1, Math.round(sCur * steps));
+        const ds = sCur / traceSteps;
+        for (let i = 0; i < traceSteps; i++) {
+          const s0 = i * ds, s1 = (i + 1) * ds, sm = 0.5 * (s0 + s1);
+          const p0 = samplePath(pr, s0, liState.reversed);
+          const p1 = samplePath(pr, s1, liState.reversed);
+          const pm = samplePath(pr, sm, liState.reversed);
+          const [fx, fy] = pr.F(pm.x, pm.y);
+          const dot = fx * pm.dx + fy * pm.dy;
+          accum += dot * ds;
+
+          ctx.strokeStyle = Math.abs(dot) < 1e-4 ? '#94a3b8' : dot > 0 ? '#34d399' : '#fb7185';
+          ctx.lineWidth = 3.8;
+          ctx.beginPath(); ctx.moveTo(toX(p0.x), toY(p0.y)); ctx.lineTo(toX(p1.x), toY(p1.y)); ctx.stroke();
+        }
+
+        // Moving Particle + Tangent r'(t) (amber) + Field F(r(t)) (sky)
+        const cur = samplePath(pr, sCur, liState.reversed);
+        const [cfx, cfy] = pr.F(cur.x, cur.y);
+        const curDot = cfx * cur.dx + cfy * cur.dy;
+        const px = toX(cur.x), py = toY(cur.y);
+
+        function drawVecArrow(vx, vy, col, lbl) {
+          const mag = Math.hypot(vx, vy);
+          if (mag < 1e-4) return;
+          const len = Math.min(62, 22 + 16 * Math.log1p(mag));
+          const ang = Math.atan2(-vy, vx);
+          const ex = px + len * Math.cos(ang), ey = py + len * Math.sin(ang);
+          ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2.6;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(ex, ey); ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(ex, ey);
+          ctx.lineTo(ex - 9 * Math.cos(ang - 0.4), ey - 9 * Math.sin(ang - 0.4));
+          ctx.lineTo(ex - 9 * Math.cos(ang + 0.4), ey - 9 * Math.sin(ang + 0.4));
+          ctx.closePath(); ctx.fill();
+          ctx.font = '700 11px "JetBrains Mono", monospace';
+          ctx.fillText(lbl, ex + 6 * Math.cos(ang), ey + 6 * Math.sin(ang));
+        }
+
+        drawVecArrow(cur.dx, cur.dy, '#fbbf24', "r'(t)");
+        drawVecArrow(cfx, cfy, '#38bdf8', 'F');
+
+        // Particle dot
+        ctx.fillStyle = '#f1f5f9'; ctx.strokeStyle = '#070d19'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+        // Update UI & 4 Telemetry Cards
+        document.getElementById('liTLabel').textContent = `${Math.round(liState.tPct)}%`;
+        document.getElementById('liOrientBadge').textContent = liState.reversed ? 'Orientation: Reversed (-C)' : 'Orientation: Forward (+C)';
+        document.getElementById('liOrientBadge').style.color = liState.reversed ? 'var(--rose)' : 'var(--accent)';
+        document.getElementById('liOrientBadge').style.borderColor = liState.reversed ? 'var(--rose-border)' : 'var(--accent-border)';
+
+        document.getElementById('liTelePos').textContent = `(${cur.x.toFixed(2)}, ${cur.y.toFixed(2)})`;
+        document.getElementById('liTeleParam').textContent = cur.lbl;
+        document.getElementById('liTeleDot').textContent = curDot.toFixed(3);
+        document.getElementById('liTeleDot').style.color = curDot >= 0 ? 'var(--green)' : 'var(--rose)';
+        document.getElementById('liTeleDotSign').textContent = curDot > 1e-3 ? 'F helps motion (+work)' : curDot < -1e-3 ? 'F opposes motion (-work)' : 'Orthogonal / zero work';
+        document.getElementById('liTeleAccum').textContent = accum.toFixed(4);
+
+        const signedExact = liState.reversed ? -pr.exactFwd : pr.exactFwd;
+        const exactSignTex = pr.exactFwd === 0 ? '0' : (liState.reversed ? (pr.exactFwd > 0 ? `-${pr.exactTex}` : pr.exactTex.replace('-', '')) : pr.exactTex);
+        const eEl = document.getElementById('liTeleExact');
+        eEl.innerHTML = `$${exactSignTex}$ (${signedExact.toFixed(2)})`;
+        renderMath(eEl);
+      }
+
+      /* ----------------------------------------------------------------------
+         4. SECTION 2B: SCALAR ARC-LENGTH (ds) ORIENTATION-INDEPENDENCE CHECKER
+         ---------------------------------------------------------------------- */
+      const scalarPresets = [
+        {
+          title: 'Class Notes Ex 1 (Anton p.1097): $\\displaystyle \\int_C (1 + xy^2)\\,ds$ along $y = 2x$',
+          fwd: {
+            heading: 'Forward Path $+C$: $(0,0) \\to (1,2)$',
+            param: '$\\mathbf{r}(t) = t\\mathbf{i} + 2t\\mathbf{j}, \\quad 0 \\le t \\le 1$',
+            speed: '$\\mathbf{r}\'(t) = \\mathbf{i} + 2\\mathbf{j} \\implies \\|\\mathbf{r}\'(t)\\| = \\sqrt{1^2 + 2^2} = \\sqrt{5}$',
+            evalTex: '$$\\int_0^1 \\big(1 + t(2t)^2\\big)\\sqrt{5}\\,dt = \\sqrt{5}\\left[t + t^4\\right]_0^1 = 2\\sqrt{5}$$'
+          },
+          rev: {
+            heading: 'Reversed Path $-C$: $(1,2) \\to (0,0)$',
+            param: '$\\mathbf{r}(t) = (1-t)\\mathbf{i} + (2-2t)\\mathbf{j}, \\quad 0 \\le t \\le 1$',
+            speed: '$\\mathbf{r}\'(t) = -\\mathbf{i} - 2\\mathbf{j} \\implies \\|\\mathbf{r}\'(t)\\| = \\sqrt{(-1)^2 + (-2)^2} = \\sqrt{5}$',
+            evalTex: '$$\\int_0^1 \\big(1 + 4(1-t)^3\\big)\\sqrt{5}\\,dt = \\sqrt{5}\\left[t - (1-t)^4\\right]_0^1 = 2\\sqrt{5}$$'
+          },
+          result: '2\\sqrt{5} \\approx 4.4721'
+        },
+        {
+          title: 'Class Notes Ex 3 (Anton p.1098): Wire Mass $\\displaystyle M = \\int_C (15 - y)\\,ds$ on $x^2+y^2=25\\; (y\\ge 0)$',
+          fwd: {
+            heading: 'Counterclockwise $+C$: $(5,0) \\to (-5,0)$',
+            param: '$x = 5\\cos t,\\; y = 5\\sin t, \\quad 0 \\le t \\le \\pi$',
+            speed: '$\\|\\mathbf{r}\'(t)\\| = \\sqrt{(-5\\sin t)^2 + (5\\cos t)^2} = 5$',
+            evalTex: '$$\\int_0^\\pi (15 - 5\\sin t)\\cdot 5\\,dt = \\big[75t + 25\\cos t\\big]_0^\\pi = 75\\pi - 50$$'
+          },
+          rev: {
+            heading: 'Clockwise $-C$: $(-5,0) \\to (5,0)$',
+            param: '$x = 5\\cos(\\pi - t),\\; y = 5\\sin(\\pi - t), \\quad 0 \\le t \\le \\pi$',
+            speed: '$\\|\\mathbf{r}\'(t)\\| = \\sqrt{(5\\sin(\\pi-t))^2 + (-5\\cos(\\pi-t))^2} = 5$',
+            evalTex: '$$\\int_0^\\pi (15 - 5\\sin t)\\cdot 5\\,dt = \\big[75t + 25\\cos t\\big]_0^\\pi = 75\\pi - 50$$'
+          },
+          result: '75\\pi - 50 \\approx 185.6194'
+        }
+      ];
+
+      function renderScalarChecker(idx) {
+        const p = scalarPresets[idx];
+        const out = document.getElementById('scalarOutput');
+        out.innerHTML = `
+          <div style="font-weight:700;font-size:0.96rem;margin-bottom:6px;">${p.title}</div>
+          <div class="compare-grid">
+            <div class="compare-card">
+              <strong style="color:var(--accent)">${p.fwd.heading}</strong>
+              <div><strong>Parametrization:</strong> ${p.fwd.param}</div>
+              <div><strong>Speed Element:</strong> ${p.fwd.speed}</div>
+              <div>${p.fwd.evalTex}</div>
+            </div>
+            <div class="compare-card rev">
+              <strong style="color:var(--accent-2)">${p.rev.heading}</strong>
+              <div><strong>Parametrization:</strong> ${p.rev.param}</div>
+              <div><strong>Speed Element:</strong> ${p.rev.speed}</div>
+              <div>${p.rev.evalTex}</div>
+            </div>
+          </div>
+          <div class="match-banner">
+            <span>&#10003; Orientation-Independence Confirmed: $\\displaystyle \\int_C f\\,ds = \\int_{-C} f\\,ds$</span>
+            <span>Both equal $${p.result}$</span>
+          </div>
+        `;
+        renderMath(out);
+      }
+
+      /* ----------------------------------------------------------------------
+         5. SECTION 4: ISRT PAST-EXAM & CLASS-NOTES VAULT (8 PROBLEMS)
+         ---------------------------------------------------------------------- */
+      const vaultData = [
+        {
+          id: 'v1', cat: 'divcurl', exam: 'Final 2023 Q7(b)', topic: 'Div & Curl',
+          q: 'Define gradient, divergence, and curl with physical interpretations. Find the divergence and the curl of the vector field $\\mathbf{F}(x, y, z) = \\langle x^2 y,\\; 2y^3 z,\\; 3z\\rangle$.',
+          hint: 'Use $\\text{div}\\,\\mathbf{F} = f_x + g_y + h_z$ (scalar) and the $3\\times 3$ determinant for $\\text{curl}\\,\\mathbf{F}$ (vector).',
+          sol: `<strong>Definitions &amp; Interpretations:</strong><br/>
+                &bull; <strong>Gradient ($\\nabla\\phi$):</strong> Vector pointing in the direction of steepest increase of scalar field $\\phi$, perpendicular to level surfaces.<br/>
+                &bull; <strong>Divergence ($\\nabla\\cdot\\mathbf{F}$):</strong> Scalar measuring net outward flux per unit volume (source $&gt;0$, sink $&lt;0$, incompressible $=0$).<br/>
+                &bull; <strong>Curl ($\\nabla\\times\\mathbf{F}$):</strong> Vector measuring local rotation/circulation tendency ($\\mathbf{0}$ = irrotational).<br/>
+                <strong>Divergence:</strong>
+                $$\\text{div}\\,\\mathbf{F} = \\frac{\\partial}{\\partial x}(x^2 y) + \\frac{\\partial}{\\partial y}(2y^3 z) + \\frac{\\partial}{\\partial z}(3z) = 2xy + 6y^2 z + 3.$$
+                <strong>Curl:</strong>
+                $$\\text{curl}\\,\\mathbf{F} = \\begin{vmatrix}\\mathbf{i}&\\mathbf{j}&\\mathbf{k}\\\\ \\partial_x&\\partial_y&\\partial_z\\\\ x^2 y & 2y^3 z & 3z\\end{vmatrix} = (0 - 2y^3)\\mathbf{i} - (0 - 0)\\mathbf{j} + (0 - x^2)\\mathbf{k} = \\langle -2y^3,\\; 0,\\; -x^2\\rangle.$$`
+        },
+        {
+          id: 'v2', cat: 'divcurl', exam: 'Final 2024 Q8(a)', topic: 'Div & Curl',
+          q: 'Evaluate the divergence and the curl of the vector field $\\mathbf{F}(x, y, z) = \\langle xz,\\; 2y^2 x^2,\\; 5z^2 y\\rangle$.',
+          hint: 'Watch the middle $\\mathbf{j}$-component sign in the $3\\times 3$ determinant: $-(\\partial_x(5z^2 y) - \\partial_z(xz)) = +x$.',
+          sol: `<strong>Divergence:</strong>
+                $$\\text{div}\\,\\mathbf{F} = \\frac{\\partial}{\\partial x}(xz) + \\frac{\\partial}{\\partial y}(2y^2 x^2) + \\frac{\\partial}{\\partial z}(5z^2 y) = z + 4x^2 y + 10yz.$$
+                <strong>Curl:</strong>
+                $$\\text{curl}\\,\\mathbf{F} = \\begin{vmatrix}\\mathbf{i}&\\mathbf{j}&\\mathbf{k}\\\\ \\partial_x&\\partial_y&\\partial_z\\\\ xz & 2y^2 x^2 & 5z^2 y\\end{vmatrix} = (5z^2 - 0)\\mathbf{i} - (0 - x)\\mathbf{j} + (4xy^2 - 0)\\mathbf{k} = \\langle 5z^2,\\; x,\\; 4xy^2\\rangle.$$`
+        },
+        {
+          id: 'v3', cat: 'vector', exam: 'Final 2025 Q7(b) & Final 2023 Q8(a)', topic: 'Vector F·dr',
+          q: 'Evaluate the line integral $\\displaystyle \\int_C 2xy\\,dx + (x^2 + y^2)\\,dy$ along the upper semicircle $x^2 + y^2 = 4$ (oriented counterclockwise from $(2,0)$ to $(-2,0)$).',
+          hint: 'Parametrize with $x = 2\\cos t,\\; y = 2\\sin t$ for $0 \\le t \\le \\pi$, so $dx = -2\\sin t\\,dt$ and $dy = 2\\cos t\\,dt$.',
+          sol: `Parametrization: $x = 2\\cos t,\\; y = 2\\sin t$ ($0 \\le t \\le \\pi$), giving $dx = -2\\sin t\\,dt$, $dy = 2\\cos t\\,dt$, and $x^2 + y^2 = 4$:
+                $$\\int_C 2xy\\,dx + (x^2+y^2)\\,dy = \\int_0^{\\pi} \\Big[2(2\\cos t)(2\\sin t)(-2\\sin t) + 4(2\\cos t)\\Big]\\,dt$$
+                $$= \\int_0^{\\pi} (-16\\sin^2 t\\cos t + 8\\cos t)\\,dt = \\left[-\\frac{16}{3}\\sin^3 t + 8\\sin t\\right]_0^{\\pi} = 0 - 0 = 0.$$`
+        },
+        {
+          id: 'v4', cat: 'scalar', exam: 'Class Notes Ex 1 (Anton p.1097)', topic: 'Scalar ds',
+          q: 'Evaluate $\\displaystyle \\int_C (1 + xy^2)\\,ds$ using both parametrizations for $0 \\le t \\le 1$:<br/>(a) $\\mathbf{r}(t) = t\\mathbf{i} + 2t\\mathbf{j}$ &qquad (b) $\\mathbf{r}(t) = (1 - t)\\mathbf{i} + (2 - 2t)\\mathbf{j}$.',
+          hint: 'In both cases $\\|\\mathbf{r}\'(t)\\| = \\sqrt{5}$. Confirm that both forward and reversed parametrizations give the same positive answer!',
+          sol: `<strong>(a) Forward ($x = t, y = 2t$):</strong> $\\|\\mathbf{r}\'(t)\\| = \\sqrt{1^2 + 2^2} = \\sqrt{5}$.
+                $$\\int_0^1 \\big(1 + t(2t)^2\\big)\\sqrt{5}\\,dt = \\sqrt{5}\\int_0^1 (1 + 4t^3)\\,dt = \\sqrt{5}\\big[t + t^4\\big]_0^1 = 2\\sqrt{5}.$$
+                <strong>(b) Reversed ($x = 1-t, y = 2-2t$):</strong> $\\|\\mathbf{r}\'(t)\\| = \\sqrt{(-1)^2 + (-2)^2} = \\sqrt{5}$.
+                $$\\int_0^1 \\big(1 + 4(1-t)^3\\big)\\sqrt{5}\\,dt = \\sqrt{5}\\big[t - (1-t)^4\\big]_0^1 = \\sqrt{5}(1 - (-1)) = 2\\sqrt{5}.$$`
+        },
+        {
+          id: 'v5', cat: 'scalar', exam: 'Class Notes Ex 3 (Anton p.1098)', topic: 'Scalar ds',
+          q: 'Find the mass of a thin semicircular wire $x^2 + y^2 = 25$ ($y \\ge 0$) whose mass density function is $\\delta(x, y) = 15 - y$.',
+          hint: 'Use $x = 5\\cos t,\\; y = 5\\sin t$ ($0 \\le t \\le \\pi$) with $ds = 5\\,dt$ and $M = \\int_C \\delta(x,y)\\,ds$.',
+          sol: `Parametrize the wire by $x = 5\\cos t,\\; y = 5\\sin t$ ($0 \\le t \\le \\pi$), so $\\|\\mathbf{r}\'(t)\\| = \\sqrt{(-5\\sin t)^2 + (5\\cos t)^2} = 5$:
+                $$M = \\int_C (15 - y)\\,ds = \\int_0^{\\pi} (15 - 5\\sin t)\\cdot 5\\,dt = \\int_0^{\\pi} (75 - 25\\sin t)\\,dt$$
+                $$= \\big[75t + 25\\cos t\\big]_0^{\\pi} = (75\\pi - 25) - (0 + 25) = 75\\pi - 50.$$`
+        },
+        {
+          id: 'v6', cat: 'vector', exam: 'Class Notes Ex 5 (Anton p.1100)', topic: 'Vector F·dr',
+          q: 'Evaluate $\\displaystyle \\int_C 3xy\\,dy$ along the line segment $y = 2x$: (a) from $(0,0)$ to $(1,2)$, and (b) from $(1,2)$ to $(0,0)$.',
+          hint: 'Use $x = t, y = 2t$ ($dy = 2\\,dt$) for (a) and $x = 1-t, y = 2-2t$ ($dy = -2\\,dt$) for (b).',
+          sol: `<strong>(a) $(0,0) \\to (1,2)$:</strong> $x = t,\\; y = 2t$ ($0 \\le t \\le 1$), $dy = 2\\,dt$:
+                $$\\int_0^1 3(t)(2t)(2\\,dt) = \\int_0^1 12t^2\\,dt = \\big[4t^3\\big]_0^1 = 4.$$
+                <strong>(b) $(1,2) \\to (0,0)$:</strong> $x = 1-t,\\; y = 2-2t$ ($0 \\le t \\le 1$), $dy = -2\\,dt$:
+                $$\\int_0^1 3(1-t)(2-2t)(-2\\,dt) = -12\\int_0^1 (1-t)^2\\,dt = \\big[4(1-t)^3\\big]_0^1 = -4.$$`
+        },
+        {
+          id: 'v7', cat: 'vector', exam: 'Class Notes Ex 8 (Anton p.1104)', topic: 'Vector F·dr',
+          q: 'Find the work done by the force field $\\mathbf{F}(x, y) = \\cos x\\,\\mathbf{i} + \\sin x\\,\\mathbf{j}$ along the vertical line segment $\\mathbf{r}(t) = -\\frac{\\pi}{2}\\mathbf{i} + t\\mathbf{j}$ for $1 \\le t \\le 2$.',
+          hint: 'Since $x(t) = -\\frac{\\pi}{2}$ is constant, $dx = 0$ and $dy = dt$, leaving $\\int_1^2 \\sin(-\\frac{\\pi}{2})\\,dt$.',
+          sol: `Here $x = -\\frac{\\pi}{2}$ ($dx = 0$) and $y = t$ ($dy = dt$) for $1 \\le t \\le 2$:
+                $$W = \\int_C \\cos x\\,dx + \\sin x\\,dy = \\int_1^2 \\left(\\cos\\!\\left(-\\frac{\\pi}{2}\\right)\\cdot 0 + \\sin\\!\\left(-\\frac{\\pi}{2}\\right)\\cdot 1\\right)dt = \\int_1^2 (-1)\\,dt = -1.$$`
+        },
+        {
+          id: 'v8', cat: 'vector', exam: 'Class Notes Ex 10 (Anton p.1107)', topic: 'Vector F·dr',
+          q: 'Directly evaluate $\\displaystyle \\oint_C x^2 y\\,dx + x\\,dy$ along the piecewise triangular path $(0,0) \\to (1,0) \\to (1,2) \\to (0,0)$.',
+          hint: 'Split into 3 legs: $C_1: (t, 0)$, $C_2: (1, 2t)$, and $C_3: (1-t, 2-2t)$ for $0 \\le t \\le 1$, then sum all three.',
+          sol: `<strong>Leg $C_1$ ($(0,0)\\to(1,0)$):</strong> $x=t, y=0, dy=0 \\implies \\int_0^1 (0 + 0)\\,dt = 0$.<br/>
+                <strong>Leg $C_2$ ($(1,0)\\to(1,2)$):</strong> $x=1, dx=0, y=2t, dy=2\\,dt \\implies \\int_0^1 1\\cdot 2\\,dt = 2$.<br/>
+                <strong>Leg $C_3$ ($(1,2)\\to(0,0)$):</strong> $x=1-t, dx=-dt, y=2-2t, dy=-2\\,dt$:
+                $$\\int_0^1 \\Big[(1-t)^2(2-2t)(-1) + (1-t)(-2)\\Big]dt = \\int_0^1 \\big[-2(1-t)^3 - 2(1-t)\\big]dt = \\left[\\frac{1}{2}(1-t)^4 + (1-t)^2\\right]_0^1 = -\\frac{3}{2}.$$
+                <strong>Total:</strong> $\\displaystyle \\oint_C x^2 y\\,dx + x\\,dy = 0 + 2 - \\frac{3}{2} = \\frac{1}{2}.$`
+        }
+      ];
+
+      const reviewedVault = new Set();
+
+      function renderVault(filter) {
+        const list = document.getElementById('vaultList');
+        list.innerHTML = '';
+        vaultData.filter((v) => filter === 'all' || v.cat === filter).forEach((v) => {
+          const isRev = reviewedVault.has(v.id);
+          const card = document.createElement('div');
+          card.className = `vault-item ${isRev ? 'reviewed' : ''}`;
+          card.innerHTML = `
+            <div class="vault-head">
+              <span class="badge">${v.exam}</span>
+              <span class="badge sky">${v.topic}</span>
+            </div>
+            <p>${v.q}</p>
+            <div class="vault-actions">
+              <button type="button" class="btn" data-toggle="${v.id}-hint">Show Hint</button>
+              <button type="button" class="btn btn-primary" data-toggle="${v.id}-sol">Step-by-Step Solution</button>
+              <label class="check-label">
+                <input type="checkbox" class="vault-cb" data-vid="${v.id}" ${isRev ? 'checked' : ''} />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+            <div class="reveal-box hint-box" id="${v.id}-hint"><strong>Hint:</strong> ${v.hint}</div>
+            <div class="reveal-box" id="${v.id}-sol">${v.sol}</div>
+          `;
+          list.appendChild(card);
+        });
+
+        list.querySelectorAll('[data-toggle]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const box = document.getElementById(btn.dataset.toggle);
+            const open = box.classList.toggle('open');
+            if (btn.dataset.toggle.endsWith('-hint')) {
+              btn.textContent = open ? 'Hide Hint' : 'Show Hint';
+            } else {
+              btn.textContent = open ? 'Hide Solution' : 'Step-by-Step Solution';
+            }
+            if (open) renderMath(box);
+          });
+        });
+
+        list.querySelectorAll('.vault-cb').forEach((cb) => {
+          cb.addEventListener('change', () => {
+            const vid = cb.dataset.vid;
+            if (cb.checked) reviewedVault.add(vid);
+            else reviewedVault.delete(vid);
+            cb.closest('.vault-item').classList.toggle('reviewed', cb.checked);
+            updateProgress();
+          });
+        });
+
+        renderMath(list);
+      }
+
+      /* ----------------------------------------------------------------------
+         6. SECTION 5: QUICK MASTERY CHECK (5 MCQS)
+         ---------------------------------------------------------------------- */
+      const quizData = [
+        {
+          q: '1. Physically, if a fluid velocity field $\\mathbf{F}$ satisfies $\\text{div}\\,\\mathbf{F} = 0$ and $\\text{curl}\\,\\mathbf{F} = \\mathbf{0}$ everywhere, the flow is called:',
+          opts: [
+            'Compressive and rotational',
+            'Incompressible (solenoidal) and irrotational',
+            'A radial source with constant vortex spin',
+            'Divergent and non-conservative'
+          ],
+          ans: 1,
+          exp: '$\\text{div}\\,\\mathbf{F} = 0$ means zero net expansion/compression (<strong>incompressible</strong>), and $\\text{curl}\\,\\mathbf{F} = \\mathbf{0}$ means zero local rotation (<strong>irrotational</strong>).'
+        },
+        {
+          q: '2. How do $\\int_C f\\,ds$ and $\\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ change when you reverse the orientation of curve $C$ to $-C$?',
+          opts: [
+            'Both change sign',
+            'Neither changes sign',
+            '$\\int_{-C} f\\,ds = +\\int_C f\\,ds$ (unchanged), while $\\int_{-C} \\mathbf{F}\\cdot d\\mathbf{r} = -\\int_C \\mathbf{F}\\cdot d\\mathbf{r}$ (flips sign)',
+            '$\\int_{-C} f\\,ds = -\\int_C f\\,ds$, while $\\int_{-C} \\mathbf{F}\\cdot d\\mathbf{r}$ stays unchanged'
+          ],
+          ans: 2,
+          exp: 'Arc-length element $ds = \\|\\mathbf{r}\'(t)\\|\\,dt \\ge 0$ is orientation-independent, whereas $d\\mathbf{r} = \\mathbf{r}\'(t)\\,dt$ reverses direction on $-C$, negating the work integral.'
+        },
+        {
+          q: '3. What is the 2D scalar curl $\\dfrac{\\partial g}{\\partial x} - \\dfrac{\\partial f}{\\partial y}$ of $\\mathbf{F}(x, y) = \\langle x^2 y,\\; x\\rangle$ (used in Final 2023/2025)?',
+          opts: ['$1 - x^2$', '$x^2 - 1$', '$2xy + 1$', '$1 - 2xy$'],
+          ans: 0,
+          exp: 'With $f = x^2 y$ and $g = x$, we have $\\frac{\\partial g}{\\partial x} = 1$ and $\\frac{\\partial f}{\\partial y} = x^2$, so $\\text{curl}_z = 1 - x^2$.'
+        },
+        {
+          q: '4. Which parametrization correctly traces the straight line segment from $(1, 2)$ to $(0, 0)$ for $0 \\le t \\le 1$?',
+          opts: [
+            '$x = t,\\; y = 2t$',
+            '$x = 1 - t,\\; y = 2 - 2t$',
+            '$x = t - 1,\\; y = 2t - 2$',
+            '$x = 1 + t,\\; y = 2 + 2t$'
+          ],
+          ans: 1,
+          exp: 'Using $\\mathbf{r}(t) = (1-t)\\mathbf{r}_0 + t\\mathbf{r}_1$ with $\\mathbf{r}_0 = (1,2)$ and $\\mathbf{r}_1 = (0,0)$ gives $x = 1-t,\\; y = 2-2t$ (at $t=0$: $(1,2)$; at $t=1$: $(0,0)$).'
+        },
+        {
+          q: '5. What is the exact value of $\\displaystyle \\int_C 2xy\\,dx + (x^2 + y^2)\\,dy$ along the upper semicircle $x^2 + y^2 = 4$ (Final 2023 Q8a / Final 2025 Q7b)?',
+          opts: ['$4\\pi$', '$8$', '$-4$', '$0$'],
+          ans: 3,
+          exp: 'Parametrizing $x = 2\\cos t, y = 2\\sin t$ ($0\\le t\\le\\pi$) yields $\\int_0^\\pi (-16\\sin^2 t\\cos t + 8\\cos t)\\,dt = \\big[-\\frac{16}{3}\\sin^3 t + 8\\sin t\\big]_0^\\pi = 0$.'
+        }
+      ];
+
+      const quizAnswered = new Map();
+
+      function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        quizData.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'quiz-q';
+          div.innerHTML = `
+            <p><strong>${item.q}</strong></p>
+            <div class="options" id="q-opts-${idx}"></div>
+            <div class="feedback" id="q-fb-${idx}"></div>
+          `;
+          container.appendChild(div);
+          const optsDiv = div.querySelector(`#q-opts-${idx}`);
+          item.opts.forEach((opt, oi) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'opt-btn';
+            btn.innerHTML = opt;
+            btn.addEventListener('click', () => handleQuizAnswer(idx, oi));
+            optsDiv.appendChild(btn);
+          });
+        });
+        renderMath(container);
+      }
+
+      function handleQuizAnswer(qIdx, oIdx) {
+        if (quizAnswered.has(qIdx)) return;
+        const item = quizData[qIdx];
+        const ok = oIdx === item.ans;
+        quizAnswered.set(qIdx, ok);
+
+        const btns = document.querySelectorAll(`#q-opts-${qIdx} .opt-btn`);
+        btns.forEach((b, i) => {
+          b.disabled = true;
+          if (i === item.ans) b.classList.add('correct');
+          else if (i === oIdx) b.classList.add('wrong');
+        });
+
+        const fb = document.getElementById(`q-fb-${qIdx}`);
+        fb.innerHTML = (ok ? '<strong style="color:var(--green)">Correct!</strong> ' : '<strong style="color:var(--rose)">Not quite.</strong> ') + item.exp;
+        fb.classList.add('show');
+        renderMath(fb);
+
+        const score = [...quizAnswered.values()].filter(Boolean).length;
+        document.getElementById('quizScore').textContent = `${score} / ${quizData.length}`;
+        updateProgress();
+      }
+
+      /* ----------------------------------------------------------------------
+         7. MASTERY PROGRESS (8 VAULT + 5 QUIZ = 13 TASKS)
+         ---------------------------------------------------------------------- */
+      function updateProgress() {
+        const total = vaultData.length + quizData.length;
+        const done = reviewedVault.size + quizAnswered.size;
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('progressPct').textContent = `${pct}%`;
+        document.getElementById('mobilePct').textContent = `${pct}%`;
+        document.getElementById('progressFill').style.width = `${pct}%`;
+        document.getElementById('progressDetail').textContent = `${done} / ${total} tasks completed`;
+      }
+
+      /* ----------------------------------------------------------------------
+         8. MAIN ANIMATION LOOP & DOM INITIALIZATION
+         ---------------------------------------------------------------------- */
+      let lastFrameTs = 0;
+      function animationLoop(ts) {
+        if (!lastFrameTs) lastFrameTs = ts;
+        const dt = Math.min(0.05, (ts - lastFrameTs) / 1000);
+        lastFrameTs = ts;
+
+        drawVectorFieldFrame(dt);
+
+        if (liState.playing) {
+          liState.tPct += 24 * dt;
+          if (liState.tPct >= 100) liState.tPct = 0;
+          liTSlider.value = liState.tPct.toFixed(1);
+          drawLineIntegralLab();
+        }
+        requestAnimationFrame(animationLoop);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Mobile Drawer
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        function setDrawer(open) {
+          sidebar.classList.toggle('open', open);
+          overlay.classList.toggle('active', open);
+          menuToggle.setAttribute('aria-expanded', String(open));
+        }
+        menuToggle.addEventListener('click', () => setDrawer(!sidebar.classList.contains('open')));
+        overlay.addEventListener('click', () => setDrawer(false));
+        document.querySelectorAll('#sideNav a').forEach((a) => a.addEventListener('click', () => setDrawer(false)));
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+          showToast('Previous: Lesson 15 — Change of Variables & the Jacobian');
+        });
+        document.getElementById('nextBtn').addEventListener('click', () => {
+          showToast('Final Lesson Next: Lesson 17 — Green\'s Theorem & Multiply Connected Regions');
+        });
+
+        // Scrollspy
+        const sections = document.querySelectorAll('main section');
+        const navLinks = document.querySelectorAll('#sideNav a');
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              navLinks.forEach((l) => l.classList.toggle('active', l.dataset.sec === entry.target.id));
+            }
+          });
+        }, { rootMargin: '-20% 0px -65% 0px' });
+        sections.forEach((s) => spy.observe(s));
+
+        // Section 1 Controls & Probe Dragging
+        document.getElementById('vfPreset').addEventListener('change', (e) => {
+          vfState.preset = e.target.value;
+          initParticles();
+          updateVFTelemetry();
+        });
+
+        const densitySlider = document.getElementById('densitySlider');
+        densitySlider.addEventListener('input', () => {
+          vfState.density = parseInt(densitySlider.value, 10);
+          document.getElementById('densityLabel').textContent = `${vfState.density} × ${vfState.density}`;
+        });
+
+        const probeBtn = document.getElementById('toggleProbeBtn');
+        probeBtn.addEventListener('click', () => {
+          vfState.showProbe = !vfState.showProbe;
+          probeBtn.classList.toggle('toggled', vfState.showProbe);
+        });
+
+        const partBtn = document.getElementById('toggleParticlesBtn');
+        partBtn.addEventListener('click', () => {
+          vfState.showParticles = !vfState.showParticles;
+          partBtn.classList.toggle('toggled', vfState.showParticles);
+        });
+
+        document.getElementById('centerProbeBtn').addEventListener('click', () => {
+          vfState.probeX = 1.0; vfState.probeY = 1.0;
+          updateVFTelemetry();
+        });
+
+        let probeDragging = false;
+        function setProbeFromClient(cxClient, cyClient) {
+          const rect = vfCanvas.getBoundingClientRect();
+          const px = cxClient - rect.left;
+          const py = cyClient - rect.top;
+          const scale = (Math.min(rect.width, rect.height) * 0.45) / vfState.range;
+          const nx = (px - rect.width * 0.5) / scale;
+          const ny = (rect.height * 0.5 - py) / scale;
+          vfState.probeX = Math.max(-vfState.range, Math.min(vfState.range, nx));
+          vfState.probeY = Math.max(-vfState.range, Math.min(vfState.range, ny));
+          vfState.showProbe = true;
+          probeBtn.classList.add('toggled');
+          updateVFTelemetry();
+        }
+        vfCanvas.addEventListener('mousedown', (e) => { probeDragging = true; setProbeFromClient(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', (e) => { if (probeDragging) setProbeFromClient(e.clientX, e.clientY); });
+        window.addEventListener('mouseup', () => { probeDragging = false; });
+        vfCanvas.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) { probeDragging = true; setProbeFromClient(e.touches[0].clientX, e.touches[0].clientY); }
+        }, { passive: true });
+        vfCanvas.addEventListener('touchmove', (e) => {
+          if (probeDragging && e.touches.length === 1) { e.preventDefault(); setProbeFromClient(e.touches[0].clientX, e.touches[0].clientY); }
+        }, { passive: false });
+        vfCanvas.addEventListener('touchend', () => { probeDragging = false; });
+
+        // Section 2 Tabs & Controls
+        document.querySelectorAll('[data-lab2]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('[data-lab2]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tgt = btn.dataset.lab2;
+            document.getElementById('lab2-vector').style.display = tgt === 'vector' ? 'block' : 'none';
+            document.getElementById('lab2-scalar').style.display = tgt === 'scalar' ? 'block' : 'none';
+            if (tgt === 'vector') requestAnimationFrame(drawLineIntegralLab);
+          });
+        });
+
+        document.getElementById('liPreset').addEventListener('change', (e) => {
+          liState.preset = e.target.value;
+          liState.playing = false;
+          liPlayBtn.innerHTML = '&#9654; Play Particle';
+          liState.tPct = 65;
+          liTSlider.value = 65;
+          drawLineIntegralLab();
+        });
+
+        liTSlider.addEventListener('input', () => {
+          liState.playing = false;
+          liPlayBtn.innerHTML = '&#9654; Play Particle';
+          liState.tPct = parseFloat(liTSlider.value);
+          drawLineIntegralLab();
+        });
+
+        liPlayBtn.addEventListener('click', () => {
+          liState.playing = !liState.playing;
+          liPlayBtn.innerHTML = liState.playing ? '&#10074;&#10074; Pause' : '&#9654; Play Particle';
+        });
+
+        document.getElementById('liResetBtn').addEventListener('click', () => {
+          liState.playing = false;
+          liPlayBtn.innerHTML = '&#9654; Play Particle';
+          liState.tPct = 0;
+          liTSlider.value = 0;
+          drawLineIntegralLab();
+        });
+
+        const revBtn = document.getElementById('liReverseBtn');
+        revBtn.addEventListener('click', () => {
+          liState.reversed = !liState.reversed;
+          revBtn.classList.toggle('toggled-rose', liState.reversed);
+          revBtn.innerHTML = liState.reversed ? '&#8644; Reversed (-C Active)' : '&#8644; Reverse Orientation (-C)';
+          drawLineIntegralLab();
+          showToast(liState.reversed ? 'Reversed to -C: work integral sign flipped!' : 'Restored Forward Orientation (+C)');
+        });
+
+        // Section 2B Scalar Checker Tabs
+        document.querySelectorAll('#scalarTabs .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#scalarTabs .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderScalarChecker(parseInt(btn.dataset.sc, 10));
+          });
+        });
+
+        // Section 4 Vault Filters
+        document.querySelectorAll('#vaultFilters .tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#vaultFilters .tab-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderVault(btn.dataset.vcat);
+          });
+        });
+
+        // Section 5 Reset Quiz
+        document.getElementById('resetQuizBtn').addEventListener('click', () => {
+          quizAnswered.clear();
+          document.getElementById('quizScore').textContent = `0 / ${quizData.length}`;
+          renderQuiz();
+          updateProgress();
+        });
+
+        // Initial Builds & Animation Loop
+        initParticles();
+        updateVFTelemetry();
+        renderScalarChecker(0);
+        renderVault('all');
+        renderQuiz();
+        drawLineIntegralLab();
+        updateProgress();
+        renderMath(document.body);
+
+        const ro = new ResizeObserver(() => {
+          drawLineIntegralLab();
+        });
+        ro.observe(document.getElementById('liCanvasWrap'));
+
+        requestAnimationFrame(animationLoop);
+      });
+
+      window.addEventListener('load', () => {
+        renderMath(document.body);
+        drawLineIntegralLab();
+      });
+    })();
+  </script>
+</body>
+</html>

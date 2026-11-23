@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 7: Introduction to Simple Linear Regression (OLS)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #ea580c, #2563eb, #7c3aed);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #ea580c, #2563eb);
+      color: #fff; font-weight: 800; font-size: 15px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #ea580c, var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #9a3412 0%, #ea580c 44%, #2563eb 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+    .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.78;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .btn-primary {
+      padding: 8px 15px; border-radius: 9px; border: none;
+      background: var(--primary); color: #fff; font-weight: 700; font-size: 13.5px;
+      cursor: pointer; transition: background 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .mini-input {
+      width: 90px; padding: 6px 8px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 16.5px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 7</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L7</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 7 Progress</span>
+          <span id="progress-text">0 / 6</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Regression Concept &amp; Model</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. The 5 Classical Assumptions</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. OLS Estimation &amp; Interpretation</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. "Beat OLS" Line Fitter Lab</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. OLS Derivation &amp; Proofs Vault</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 3 of 4 • 2nd Incourse &amp; Final Core</span>
+          <span class="badge">Lesson 7 of 12 (Slide Deck L8)</span>
+          <span class="badge">⏱ Est. Study Time: 65 mins</span>
+        </div>
+        <h1>Introduction to Simple Linear Regression (OLS)</h1>
+        <p class="subtitle">
+          Move from measuring association to building predictive models—master the population regression model, its 5 classical assumptions, Carl Friedrich Gauss's Ordinary Least Squares (OLS) derivation, and real ISRT regression exams.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L8 Slides + Mihad + Kelleher</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 31–33</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2017–2024</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Concept of Regression &amp; The Population Model</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p>Recall that Pearson's correlation <span class="mono">r</span> is <strong>symmetric</strong>—swapping <em>X</em> and <em>Y</em> gives the exact same value. In <strong>Regression Analysis</strong>, direction matters! Before fitting a model, we must designate which variable explains or predicts the other:</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Independent Variable (X)</span>
+            <p style="font-size:14px; margin-bottom:0">Also called the <strong>explanatory</strong> or <strong>predictor</strong> variable (input). Placed on the horizontal X-axis—used to gain information about <em>Y</em> (e.g., Height, Weight, Car Age, Income).</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Dependent Variable (Y)</span>
+            <p style="font-size:14px; margin-bottom:0">Also called the <strong>response</strong> or <strong>target</strong> variable (output). Placed on the vertical Y-axis—its expected value is predicted from <em>X</em> (e.g., Cholesterol Level, Car Price, Expenditure).</p>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          Conditional Mean Function: &nbsp; E(Y | X) = α + β X<br>
+          Population Simple Linear Regression Model: &nbsp; Y<sub>i</sub> = α + β X<sub>i</sub> + ε<sub>i</sub> &nbsp;&nbsp;(i = 1, 2, ..., n)
+        </div>
+
+        <p>When the study involves only <strong>one</strong> independent variable, it is called <strong>Simple Linear Regression (SLR)</strong>. (Adding more predictors, like <span class="mono">Diabetes = w₀ + w₁BMI + w₂Exercise + w₃Weight</span>, yields <em>Multiple Linear Regression</em>.) Here <span class="mono">ε<sub>i</sub></span> is the random error term capturing all factors affecting <em>Y</em> other than <em>X</em>.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Feature</th><th>Correlation Analysis</th><th>Simple Linear Regression</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Core Goal</strong></td><td>Measure strength &amp; direction of linear relationship</td><td>Build a mathematical equation to predict <em>Y</em> from <em>X</em></td></tr>
+              <tr><td><strong>Symmetry</strong></td><td>Symmetric (<span class="mono">r<sub>xy</sub> = r<sub>yx</sub></span>)</td><td>Asymmetric (<em>Y</em> on <em>X</em> ≠ <em>X</em> on <em>Y</em>)</td></tr>
+              <tr><td><strong>Units</strong></td><td>Unit-free pure number in <span class="mono">[−1, +1]</span></td><td><span class="mono">β̂</span> has units of (Units of Y / Units of X)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02</div>
+            <h2>The 5 Classical Linear Regression Assumptions</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>Past ISRT finals (Final 2019 Q7b, Final 2020 Q7a) routinely ask you to state the underlying assumptions of the simple linear regression model <span class="mono">Y<sub>i</sub> = α + βX<sub>i</sub> + ε<sub>i</sub></span>:</p>
+
+        <div class="grid-5">
+          <div class="card">
+            <span class="card-top-tag">1. Linearity</span>
+            <p style="font-size:13.5px; margin-bottom:0">The true underlying relationship between <em>X</em> and the mean of <em>Y</em> is linear.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">2. Independence</span>
+            <p style="font-size:13.5px; margin-bottom:0">Error terms (<span class="mono">ε<sub>i</sub></span>) are statistically independent of one another.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">3. Normality</span>
+            <p style="font-size:13.5px; margin-bottom:0">For any given value of <em>X</em>, the errors <span class="mono">ε<sub>i</sub></span> are normally distributed.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">4. Zero Mean</span>
+            <p style="font-size:13.5px; margin-bottom:0">The probability distribution of errors has zero mean: <span class="mono">E(ε<sub>i</sub>) = 0</span>.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">5. Constant Variance</span>
+            <p style="font-size:13.5px; margin-bottom:0">Errors have constant variance <span class="mono">Var(ε<sub>i</sub>) = σ²</span> across all <em>X</em> (homoscedasticity).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Ordinary Least Squares (OLS) Estimation &amp; Interpretation</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <p>Developed by <strong>Carl Friedrich Gauss</strong> while tracking the dwarf planet Ceres, the <strong>Method of Least Squares</strong> chooses the unique line <span class="mono">ŷ<sub>i</sub> = α̂ + β̂ x<sub>i</sub></span> that minimizes the <strong>Sum of Squared Errors (SSE)</strong>—the sum of squared vertical deviations between observed values <span class="mono">y<sub>i</sub></span> and predicted values <span class="mono">ŷ<sub>i</sub></span>:</p>
+
+        <div class="formula-box">
+          Minimize SSE = Σ (y<sub>i</sub> − ŷ<sub>i</sub>)² = Σ (y<sub>i</sub> − α̂ − β̂ x<sub>i</sub>)²<br><br>
+          Slope (β̂) = Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) / Σ(x<sub>i</sub> − x̄)² = [ Σxy − (1/n)ΣxΣy ] / [ Σx² − (1/n)(Σx)² ]<br>
+          Intercept (α̂) = ȳ − β̂ x̄ = (1/n)Σy − β̂ (1/n)Σx
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag green">Interpreting Slope (β̂) &amp; Intercept (α̂)</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>Slope (<span class="mono">β̂</span>):</strong> For every <strong>1-unit increase</strong> in the independent variable <em>X</em>, the dependent variable <em>Y</em> is estimated to change (increase if +, decrease if −) by <strong><span class="mono">β̂</span> units on average</strong>.</li>
+              <li><strong>Intercept (<span class="mono">α̂</span>):</strong> The point where the line crosses the Y-axis—literally, the estimated average value of <em>Y</em> when <span class="mono">X = 0</span>. <em>(Warning: if X = 0 is outside the observed range, e.g., weight = 0 kg, the literal intercept may not have a physical meaning!)</em></li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Slide Worked Example: Weight vs. Cholesterol (n = 10)</span>
+            <p style="font-size:13.5px">Given <span class="mono">Σx = 215, Σy = 2284, Σx² = 4761, Σxy = 49205</span>:</p>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li><span class="mono">β̂ = [49205 − (1/10)(215)(2284)] / [4761 − (1/10)(215)²] = <strong>0.7148</strong></span></li>
+              <li><span class="mono">α̂ = 228.4 − 0.7148(21.5) = <strong>213.03</strong></span></li>
+              <li><strong>Fitted Line:</strong> <span class="mono">Cholesterol = 213.03 + 0.7148 × Weight</span></li>
+              <li><strong>Prediction (Weight = 21 kg):</strong> <span class="mono">213.03 + 0.7148(21) = <strong>228.04</strong></span>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout trap">
+          <strong class="callout-title">Why Square the Errors? (Kelleher &amp; Tierney Ch. 4)</strong>
+          Squaring prevents positive residuals (underestimates) and negative residuals (overestimates) from canceling each other out—and makes SSE smooth and differentiable. However, squaring also weights far-away points heavily, which is why <strong>outliers</strong> can pull the OLS line strongly toward themselves!
+        </div>
+      </section>
+
+      <!-- SECTION 4: INTERACTIVE "BEAT OLS" LINE FITTER -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • Interactive Lab</div>
+            <h2>"Beat OLS" Line Fitter &amp; Squared Residual Visualizer</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <p>Try dragging the <strong>Intercept</strong> and <strong>Slope</strong> sliders to shrink the red residual lines (and squared error boxes) as much as possible. Can you get lower than the exact OLS minimum? Spoiler: Gauss proved you can't!</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Exam Presets:</strong>
+            <button class="tab-btn active" onclick="loadOLSPreset('cars23', this)">Final 2023 Q7: 8 Cars (Age vs Price)</button>
+            <button class="tab-btn" onclick="loadOLSPreset('fin20', this)">Final 2020 Q7: 5 Sample Points</button>
+            <button class="tab-btn" onclick="loadOLSPreset('fleet17', this)">Final 2017 Q7: Weight vs MPG</button>
+            <button class="tab-btn" onclick="loadOLSPreset('sales21', this)">2nd Incourse '21: Test Score vs Sales</button>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:8px">
+            <div class="lab-panel" style="margin-top:0">
+              <div class="control-row" style="margin-bottom:6px">
+                <span>Your Intercept (<strong>a</strong>): <strong id="u-a-val" style="color:var(--primary)"></strong></span>
+                <input type="range" id="sl-a" style="flex:1" oninput="renderOLSPlot()" />
+              </div>
+              <div class="control-row" style="margin-bottom:8px">
+                <span>Your Slope (<strong>b</strong>): <strong id="u-b-val" style="color:var(--accent)"></strong></span>
+                <input type="range" id="sl-b" style="flex:1" oninput="renderOLSPlot()" />
+              </div>
+              <div class="control-row" style="margin-bottom:0">
+                <button class="btn-primary" onclick="snapToOLS()">✨ Snap to Exact OLS</button>
+                <label style="font-size:13px; display:inline-flex; align-items:center; gap:6px; cursor:pointer">
+                  <input type="checkbox" id="chk-boxes" checked onchange="renderOLSPlot()" /> Show Squared Residual Boxes
+                </label>
+              </div>
+            </div>
+            <div class="lab-panel" style="margin-top:0">
+              <h4 style="margin-top:0">Live OLS Prediction Engine</h4>
+              <div class="control-row" style="margin-bottom:8px">
+                <span>Predict Ŷ when <strong id="pred-xlabel">X</strong> = </span>
+                <input class="mini-input" type="number" step="any" id="pred-x" value="7" oninput="renderPrediction()" />
+              </div>
+              <div id="pred-out" class="formula-box" style="margin:0; font-size:13.2px"></div>
+            </div>
+          </div>
+
+          <div style="text-align:center">
+            <svg id="ols-svg" viewBox="0 0 680 340" width="100%" style="max-width:680px; height:auto; background:var(--surface); border:1px solid var(--border); border-radius:10px"></svg>
+          </div>
+
+          <div class="metric-grid" id="ols-metrics"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: PROOFS VAULT -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • High-Yield Proofs</div>
+            <h2>OLS Derivation &amp; Fundamental Properties Vault</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <details open>
+          <summary><span><span class="proof-badge">Derivation 1</span> <span class="exam-badge">Final '19, '20, '22 &amp; 2nd Incourse '24</span> Derive the OLS Estimators α̂ and β̂</span></summary>
+          <div class="details-body">
+            <div class="proof-step"><strong>Objective:</strong> Minimize the Sum of Squared Errors:<br>
+            S(α̂, β̂) = Σ<sub>i=1</sub><sup>n</sup> e<sub>i</sub>² = Σ<sub>i=1</sub><sup>n</sup> (y<sub>i</sub> − α̂ − β̂ x<sub>i</sub>)²</div>
+            <div class="proof-step"><strong>Step 1 (Partial Derivatives = 0 → Normal Equations):</strong><br>
+            ∂S / ∂α̂ = −2 Σ(y<sub>i</sub> − α̂ − β̂ x<sub>i</sub>) = 0  ⇒  Σy<sub>i</sub> = n α̂ + β̂ Σx<sub>i</sub>   --- (1)<br>
+            ∂S / ∂β̂ = −2 Σ x<sub>i</sub>(y<sub>i</sub> − α̂ − β̂ x<sub>i</sub>) = 0  ⇒  Σx<sub>i</sub>y<sub>i</sub> = α̂ Σx<sub>i</sub> + β̂ Σx<sub>i</sub>²   --- (2)</div>
+            <div class="proof-step"><strong>Step 2 (Solve Equation 1 for α̂):</strong><br>
+            Divide (1) by n:  ȳ = α̂ + β̂ x̄  ⇒  <strong>α̂ = ȳ − β̂ x̄</strong>.</div>
+            <div class="proof-step"><strong>Step 3 (Substitute α̂ into Equation 2 and Solve for β̂):</strong><br>
+            Σx<sub>i</sub>y<sub>i</sub> = (ȳ − β̂ x̄) Σx<sub>i</sub> + β̂ Σx<sub>i</sub>²<br>
+            Σx<sub>i</sub>y<sub>i</sub> − ȳ Σx<sub>i</sub> = β̂ (Σx<sub>i</sub>² − x̄ Σx<sub>i</sub>)<br>
+            Σx<sub>i</sub>(y<sub>i</sub> − ȳ) = β̂ Σx<sub>i</sub>(x<sub>i</sub> − x̄)  ⇒  β̂ = Σx<sub>i</sub>(y<sub>i</sub> − ȳ) / Σx<sub>i</sub>(x<sub>i</sub> − x̄).</div>
+            <div class="proof-step"><strong>Step 4 (Dr. Masud's Slide 22 Algebraic Identity):</strong><br>
+            Since Σ x̄(y<sub>i</sub> − ȳ) = x̄(nȳ − nȳ) = 0 and Σ x̄(x<sub>i</sub> − x̄) = 0, subtract both zero terms:<br>
+            <strong>β̂ = Σ(x<sub>i</sub> − x̄)(y<sub>i</sub> − ȳ) / Σ(x<sub>i</sub> − x̄)² = [Σxy − (1/n)ΣxΣy] / [Σx² − (1/n)(Σx)²]</strong>.  [Derived]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Property 2</span> Three Built-In Consequences of the OLS Normal Equations</span></summary>
+          <div class="details-body">
+            <div class="proof-step"><strong>1. Sum of Residuals is Always Zero:</strong> From Normal Equation (1), Σe<sub>i</sub> = Σ(y<sub>i</sub> − α̂ − β̂ x<sub>i</sub>) = <strong>0</strong>.</div>
+            <div class="proof-step"><strong>2. Residuals are Orthogonal to X:</strong> From Normal Equation (2), Σe<sub>i</sub>x<sub>i</sub> = <strong>0</strong> (used in Lesson 9 to prove SST = SSR + SSE!).</div>
+            <div class="proof-step"><strong>3. Fitted Line Always Passes Through (x̄, ȳ):</strong> Plug X = x̄ into ŷ = α̂ + β̂ X = (ȳ − β̂ x̄) + β̂ x̄ = <strong>ȳ</strong>.</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 6: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2017–2024)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Problems &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2023 • Q7 [12 Marks]</span> Car Depreciation: Age vs. Price (8 Cars)</span></summary>
+          <div class="details-body">
+            <p><strong>Data (n = 8):</strong> Age (X, years): 8, 3, 6, 9, 2, 5, 6, 3 &nbsp;|&nbsp; Price (Y, $100s): 45, 210, 100, 33, 267, 134, 109, 235.</p>
+            <ul>
+              <li><strong>(a) Scatter Diagram:</strong> Points fall tightly along a downward-sloping straight line → strong negative linear relationship (verify in Lab above!).</li>
+              <li><strong>(b) Regression of Price (Y) on Age (X):</strong><br>
+                <span class="mono">Σx = 42 (x̄ = 5.25), Σy = 1133 (ȳ = 141.625), Σx² = 264, Σxy = 4450</span><br>
+                <span class="mono">S<sub>xx</sub> = 264 − 42²/8 = 43.5</span> &nbsp;|&nbsp; <span class="mono">S<sub>xy</sub> = 4450 − (42 × 1133)/8 = −1498.25</span><br>
+                <span class="mono">β̂ = −1498.25 / 43.5 = <strong>−34.4425</strong></span> &nbsp;|&nbsp; <span class="mono">α̂ = 141.625 − (−34.4425)(5.25) = <strong>322.448</strong></span><br>
+                Fitted Line: <strong><span class="mono">Ŷ = 322.45 − 34.44 X</span></strong>.
+              </li>
+              <li><strong>(c) Interpretation:</strong> <span class="mono">β̂ = −34.44</span> means each additional year of age reduces the car's estimated average price by <strong>$3,444</strong>. <span class="mono">α̂ = 322.45</span> estimates the price of a brand-new (0-year-old) car at <strong>$32,245</strong>.</li>
+              <li><strong>(d) Predict Price of a 7-year-old car:</strong> <span class="mono">Ŷ = 322.448 − 34.4425(7) = 81.35</span> (hundreds) = <strong>$8,135</strong>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2020 • Q7(2) [6 Marks]</span> 5-Observation Regression &amp; Prediction at X = 7</span></summary>
+          <div class="details-body">
+            <p><strong>Data (n = 5):</strong> X = {4, 5, 3, 6, 10}, Y = {4, 6, 5, 7, 7}.</p>
+            <ul>
+              <li><span class="mono">Σx = 28 (x̄ = 5.6), Σy = 29 (ȳ = 5.8), Σx² = 186, Σxy = 173</span></li>
+              <li><span class="mono">S<sub>xx</sub> = 186 − 28²/5 = 29.2</span> &nbsp;|&nbsp; <span class="mono">S<sub>xy</sub> = 173 − (28×29)/5 = 10.6</span></li>
+              <li><span class="mono">β̂ = 10.6 / 29.2 = <strong>0.3630</strong></span> &nbsp;|&nbsp; <span class="mono">α̂ = 5.8 − 0.3630(5.6) = <strong>3.7671</strong></span></li>
+              <li><strong>(i) Regression Equation:</strong> <span class="mono">Y' = 3.7671 + 0.3630 X</span></li>
+              <li><strong>(ii) Prediction when X = 7:</strong> <span class="mono">Y' = 3.7671 + 0.3630(7) = <strong>6.308</strong></span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2017 • Q7(b) [9 Marks]</span> Fleet Vehicle Weight (100s lbs) vs. Highway MPG</span></summary>
+          <div class="details-body">
+            <p><strong>Data (n = 10):</strong> Weight (X): 29, 35, 28, 44, 25, 34, 30, 33, 28, 24 &nbsp;|&nbsp; MPG (Y): 31, 27, 29, 25, 31, 29, 28, 28, 28, 33.</p>
+            <ul>
+              <li><span class="mono">Σx = 310 (x̄ = 31), Σy = 289 (ȳ = 28.9), Σx² = 9916, Σxy = 8857</span></li>
+              <li><span class="mono">S<sub>xx</sub> = 9916 − 310²/10 = 306</span> &nbsp;|&nbsp; <span class="mono">S<sub>xy</sub> = 8857 − (310×289)/10 = −102</span></li>
+              <li><span class="mono">β̂ = −102 / 306 = <strong>−1/3 ≈ −0.3333</strong></span> &nbsp;|&nbsp; <span class="mono">α̂ = 28.9 − (−1/3)(31) = <strong>39.2333</strong></span></li>
+              <li><strong>(i) Relationship:</strong> <span class="mono">MPG = 39.233 − 0.333 × Weight</span> (each additional 100 lbs of vehicle weight lowers highway fuel economy by 0.333 mpg on average).</li>
+              <li><strong>(ii) Predict for 4,200 lbs (X = 42):</strong> <span class="mono">Ŷ = 39.2333 − (1/3)(42) = 39.2333 − 14 = <strong>25.23 mpg</strong></span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2024 • Q1(a)–(d) [4 Marks]</span> Interpreting Expenditure = 5654 + 0.88 × Income</span></summary>
+          <div class="details-body">
+            <p><strong>Given:</strong> <span class="mono">r = 0.79</span> and <span class="mono">Expenditure = 5654 + 0.88 × Income</span> (in Tk).</p>
+            <ul>
+              <li><strong>(a) Relationship:</strong> There is a strong positive linear relationship between income and expenditure (<span class="mono">r = 0.79</span>), meaning higher-income households tend to spend significantly more.</li>
+              <li><strong>(c) Average spending with zero income (X = 0):</strong> The intercept <span class="mono">α̂ = <strong>Tk 5,654</strong></span> (autonomous baseline expenditure).</li>
+              <li><strong>(d) Increase in income by 1 Taka:</strong> The slope <span class="mono">β̂ = <strong>Tk 0.88</strong></span>—expenditure is expected to increase by <strong>0.88 Taka</strong> on average.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l7_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l7_theme') || localStorage.getItem('ast101_l6_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l7_done') || '[]');
+    function syncProgress() {
+      const total = 6;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l7_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l7_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Interactive "Beat OLS" Line Fitter ----------
+    const olsPresets = {
+      cars23:  { xLab: "Age (Years)", yLab: "Price ($100s)", defPred: 7, pts: [[8,45],[3,210],[6,100],[9,33],[2,267],[5,134],[6,109],[3,235]] },
+      fin20:   { xLab: "X", yLab: "Y", defPred: 7, pts: [[4,4],[5,6],[3,5],[6,7],[10,7]] },
+      fleet17: { xLab: "Weight (100s lbs)", yLab: "Highway MPG", defPred: 42, pts: [[29,31],[35,27],[28,29],[44,25],[25,31],[34,29],[30,28],[33,28],[28,28],[24,33]] },
+      sales21: { xLab: "Test Score", yLab: "Weekly Sales", defPred: 70, pts: [[55,10],[60,12],[85,28],[75,24],[80,18]] }
+    };
+
+    let curOLS = null;
+    let curPreset = null;
+
+    function computeOLS(pts) {
+      const n = pts.length;
+      const mx = pts.reduce((s, p) => s + p[0], 0) / n;
+      const my = pts.reduce((s, p) => s + p[1], 0) / n;
+      let sxx = 0, syy = 0, sxy = 0;
+      pts.forEach(([x, y]) => {
+        sxx += (x - mx) ** 2;
+        syy += (y - my) ** 2;
+        sxy += (x - mx) * (y - my);
+      });
+      const b = sxy / sxx;
+      const a = my - b * mx;
+      const sse = pts.reduce((s, [x, y]) => s + (y - (a + b * x)) ** 2, 0);
+      return { n, mx, my, a, b, sse, s2: sse / (n - 2) };
+    }
+
+    function loadOLSPreset(key, btn) {
+      if (btn) {
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      curPreset = olsPresets[key];
+      curOLS = computeOLS(curPreset.pts);
+
+      const slA = document.getElementById('sl-a');
+      const slB = document.getElementById('sl-b');
+      const spanA = Math.max(Math.abs(curOLS.a) * 0.6, 5);
+      const spanB = Math.max(Math.abs(curOLS.b) * 1.2, 1.5);
+      slA.min = (curOLS.a - spanA).toFixed(2);
+      slA.max = (curOLS.a + spanA).toFixed(2);
+      slA.step = (spanA / 100).toFixed(3);
+      // Start slightly off so user can try to "Beat OLS"
+      slA.value = (curOLS.a + spanA * 0.28).toFixed(2);
+
+      slB.min = (curOLS.b - spanB).toFixed(2);
+      slB.max = (curOLS.b + spanB).toFixed(2);
+      slB.step = (spanB / 100).toFixed(3);
+      slB.value = (curOLS.b * 0.65).toFixed(2);
+
+      document.getElementById('pred-xlabel').textContent = curPreset.xLab;
+      document.getElementById('pred-x').value = curPreset.defPred;
+      renderOLSPlot();
+      renderPrediction();
+    }
+
+    function snapToOLS() {
+      document.getElementById('sl-a').value = curOLS.a.toFixed(3);
+      document.getElementById('sl-b').value = curOLS.b.toFixed(3);
+      renderOLSPlot();
+    }
+
+    function renderPrediction() {
+      const xVal = parseFloat(document.getElementById('pred-x').value);
+      const out = document.getElementById('pred-out');
+      if (isNaN(xVal)) { out.textContent = "Enter a number for X."; return; }
+      const yHat = curOLS.a + curOLS.b * xVal;
+      const xs = curPreset.pts.map(p => p[0]);
+      const minX = Math.min(...xs), maxX = Math.max(...xs);
+      const extrap = (xVal < minX || xVal > maxX) ? `<br><span style="color:var(--warning)">⚠ Outside observed X-range [${minX}, ${maxX}] (Extrapolation!)</span>` : '';
+      out.innerHTML = `Ŷ = ${curOLS.a.toFixed(3)} ${curOLS.b >= 0 ? '+' : '−'} ${Math.abs(curOLS.b).toFixed(4)}(${xVal}) = <strong>${yHat.toFixed(3)}</strong>${extrap}`;
+    }
+
+    function renderOLSPlot() {
+      const ua = parseFloat(document.getElementById('sl-a').value);
+      const ub = parseFloat(document.getElementById('sl-b').value);
+      document.getElementById('u-a-val').textContent = ua.toFixed(2);
+      document.getElementById('u-b-val').textContent = ub.toFixed(3);
+
+      const userSSE = curPreset.pts.reduce((s, [x, y]) => s + (y - (ua + ub * x)) ** 2, 0);
+      const diffPct = curOLS.sse > 0 ? ((userSSE - curOLS.sse) / curOLS.sse) * 100 : 0;
+      const isOptimal = Math.abs(userSSE - curOLS.sse) < Math.max(0.05, curOLS.sse * 0.005);
+
+      document.getElementById('ols-metrics').innerHTML = [
+        ["Your SSE", userSSE.toFixed(2)],
+        ["Exact OLS SSE (Min)", curOLS.sse.toFixed(2)],
+        ["Gap Above OLS", isOptimal ? "✓ OPTIMAL!" : `+${diffPct.toFixed(1)}%`],
+        ["OLS Intercept (α̂)", curOLS.a.toFixed(3)],
+        ["OLS Slope (β̂)", curOLS.b.toFixed(4)],
+        ["Error Var (s²)", curOLS.s2.toFixed(2)]
+      ].map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+      const svg = document.getElementById('ols-svg');
+      const W = 680, H = 340, padL = 56, padR = 24, padT = 22, padB = 42;
+      const pW = W - padL - padR, pH = H - padT - padB;
+      const xs = curPreset.pts.map(p => p[0]), ys = curPreset.pts.map(p => p[1]);
+      const minX = Math.min(...xs) - (Math.max(...xs) - Math.min(...xs)) * 0.15;
+      const maxX = Math.max(...xs) + (Math.max(...xs) - Math.min(...xs)) * 0.15;
+      const minY = Math.min(...ys) - (Math.max(...ys) - Math.min(...ys)) * 0.22;
+      const maxY = Math.max(...ys) + (Math.max(...ys) - Math.min(...ys)) * 0.22;
+
+      const sx = x => padL + ((x - minX) / (maxX - minX)) * pW;
+      const sy = y => padT + pH - ((y - minY) / (maxY - minY)) * pH;
+
+      let out = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+pH}" stroke="currentColor" opacity="0.45"/>`;
+      out += `<line x1="${padL}" y1="${padT+pH}" x2="${padL+pW}" y2="${padT+pH}" stroke="currentColor" opacity="0.45"/>`;
+
+      for (let i = 0; i <= 4; i++) {
+        const xv = minX + ((maxX - minX) * i) / 4;
+        const yv = minY + ((maxY - minY) * i) / 4;
+        out += `<text x="${sx(xv)}" y="${padT+pH+16}" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">${Number(xv.toFixed(1))}</text>`;
+        out += `<text x="${padL-8}" y="${sy(yv)+4}" text-anchor="end" font-size="10.5" fill="currentColor" opacity="0.75">${Number(yv.toFixed(1))}</text>`;
+      }
+      out += `<text x="${padL+pW/2}" y="${H-6}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">${curPreset.xLab}</text>`;
+      out += `<text x="16" y="${padT+pH/2}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" transform="rotate(-90 16 ${padT+pH/2})">${curPreset.yLab}</text>`;
+
+      // Exact OLS line (green dashed reference)
+      out += `<line x1="${sx(minX)}" y1="${sy(curOLS.a + curOLS.b * minX)}" x2="${sx(maxX)}" y2="${sy(curOLS.a + curOLS.b * maxX)}" stroke="#059669" stroke-width="2" stroke-dasharray="6 4" opacity="0.7"/>`;
+
+      // Residual lines & squared boxes for user line
+      const showBoxes = document.getElementById('chk-boxes').checked;
+      curPreset.pts.forEach(([x, y]) => {
+        const yh = ua + ub * x;
+        const px = sx(x), py = sy(y), pyh = sy(yh);
+        const hPix = Math.abs(py - pyh);
+        if (showBoxes && hPix > 1) {
+          const topY = Math.min(py, pyh);
+          out += `<rect x="${px}" y="${topY}" width="${hPix}" height="${hPix}" fill="rgba(220,38,38,0.12)" stroke="rgba(220,38,38,0.45)" stroke-width="1"/>`;
+        }
+        out += `<line x1="${px}" y1="${py}" x2="${px}" y2="${pyh}" stroke="#dc2626" stroke-width="2"/>`;
+      });
+
+      // User line
+      out += `<line x1="${sx(minX)}" y1="${sy(ua + ub * minX)}" x2="${sx(maxX)}" y2="${sy(ua + ub * maxX)}" stroke="#2563eb" stroke-width="2.8"/>`;
+
+      // Mean point (x̄, ȳ)
+      out += `<circle cx="${sx(curOLS.mx)}" cy="${sy(curOLS.my)}" r="7" fill="none" stroke="#059669" stroke-width="2.4"/>`;
+
+      // Data points
+      curPreset.pts.forEach(([x, y]) => {
+        out += `<circle cx="${sx(x)}" cy="${sy(y)}" r="5.5" fill="#1d4ed8" stroke="#fff" stroke-width="1.6"/>`;
+      });
+
+      out += `<text x="${W-padR}" y="20" text-anchor="end" font-size="11" fill="#059669" font-weight="700">- - - Exact OLS Line (passes through x̄, ȳ)</text>`;
+      svg.innerHTML = out;
+    }
+    loadOLSPreset('cars23', document.querySelector('#sec-4 .tab-btn'));
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "L8 Core Principle",
+        q: "The Ordinary Least Squares (OLS) regression line is chosen to minimize:",
+        opts: ["The sum of residuals Σ(yᵢ − ŷᵢ)", "The sum of squared vertical deviations Σ(yᵢ − ŷᵢ)²", "The sum of horizontal deviations Σ(xᵢ − x̂ᵢ)²", "The standard deviation of X"],
+        ans: 1,
+        exp: "OLS minimizes SSE = Σ(yᵢ − ŷᵢ)², the sum of squared vertical distances between observed points and the fitted line."
+      },
+      {
+        tag: "L8 Normal Equations",
+        q: "For ANY fitted simple linear regression line ŷ = α̂ + β̂x, what is the sum of all residuals Σ(yᵢ − ŷᵢ)?",
+        opts: ["Always positive", "Equal to n − 2", "Always exactly 0", "Equal to r²"],
+        ans: 2,
+        exp: "Directly from the first OLS normal equation, Σeᵢ = Σ(yᵢ − α̂ − β̂xᵢ) = 0."
+      },
+      {
+        tag: "L8 Built-in Property",
+        q: "Which point is GUARANTEED to lie on every OLS simple linear regression line?",
+        opts: ["The origin (0, 0)", "The point of means (x̄, ȳ)", "The minimum point (x_min, y_min)", "The median point"],
+        ans: 1,
+        exp: "Because α̂ = ȳ − β̂x̄, plugging X = x̄ always produces ŷ = (ȳ − β̂x̄) + β̂x̄ = ȳ."
+      },
+      {
+        tag: "L8 Assumptions",
+        q: "Which of the following is NOT one of the 5 classical simple linear regression assumptions?",
+        opts: ["Errors have zero mean", "Errors have constant variance (homoscedasticity)", "Independent variable X must be normally distributed", "Errors are statistically independent"],
+        ans: 2,
+        exp: "Normality is assumed for the error terms εᵢ (given X), NOT for the predictor X itself."
+      },
+      {
+        tag: "Final 2024 Q1(d)",
+        q: "In the fitted equation Expenditure = 5654 + 0.88 × Income, what does 0.88 represent?",
+        opts: ["Correlation coefficient r", "Average expenditure when income is 0", "Expected increase in expenditure (Tk) for each 1 Tk increase in income", "Percentage of variation explained"],
+        ans: 2,
+        exp: "The slope β̂ = 0.88 gives the estimated average change in Y (Expenditure) per 1-unit increase in X (Income)."
+      },
+      {
+        tag: "L8 Concept",
+        q: "Unlike correlation coefficient r, the simple linear regression slope β̂:",
+        opts: ["Is always between −1 and +1", "Is symmetric when X and Y are swapped", "Depends on the units of measurement of X and Y", "Is always positive"],
+        ans: 2,
+        exp: "β̂ carries units of (Y-units / X-units) and is asymmetric (β̂_yx ≠ β̂_xy in general)."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

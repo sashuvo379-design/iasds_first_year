@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 15: Tangent Planes, Normal Lines &amp; Multivariable Extrema | MATH104</title>
+  <!-- KaTeX for crisp math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --primary-hover: #1d4ed8;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --sidebar-w: 280px;
+    }
+
+    body.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-soft: #172554;
+      --primary-hover: #60a5fa;
+      --accent: #a78bfa;
+      --accent-soft: #2e1065;
+      --success: #10b981;
+      --success-soft: #064e3b;
+      --warning: #f59e0b;
+      --warning-soft: #451a03;
+      --danger: #f87171;
+      --danger-soft: #450a0a;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+    .brand h2 { font-size: 1.08rem; font-weight: 800; line-height: 1.3; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+
+    .progress-box {
+      background: var(--surface-alt);
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .nav-list a:hover, .nav-list a.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+    .nav-num {
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .nav-list a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .sources-box {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .sources-box strong { color: var(--text); display: block; margin-bottom: 4px; }
+    .source-pill {
+      display: inline-block;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 99px;
+      margin: 2px 2px 0 0;
+      font-size: 0.72rem;
+    }
+
+    .theme-btn {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 44px 80px;
+      max-width: 1120px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #4f46e5 48%, #059669 100%);
+      color: #fff;
+      padding: 34px 36px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .hero-badge {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(6px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .hero p { font-size: 1rem; opacity: 0.92; max-width: 760px; }
+
+    section {
+      margin-bottom: 44px;
+      scroll-margin-top: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
+    .section-title h2 { font-size: 1.45rem; font-weight: 800; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.12rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tab-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Sandbox Grid */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .canvas-wrap {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+    }
+    canvas {
+      width: 100%;
+      height: 360px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    body.dark canvas { background: #0f172a; }
+
+    .controls-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    select, input[type="range"] { width: 100%; }
+    select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .slider-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .readout-card {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.85rem;
+    }
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--border);
+      gap: 10px;
+      align-items: center;
+    }
+    .readout-row:last-child { border-bottom: none; }
+    .pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .pill-blue { background: var(--primary-soft); color: var(--primary); }
+    .pill-green { background: var(--success-soft); color: var(--success); }
+    .pill-amber { background: var(--warning-soft); color: var(--warning); }
+    .pill-red { background: var(--danger-soft); color: var(--danger); }
+    .pill-purple { background: var(--accent-soft); color: var(--accent); }
+
+    /* Callouts */
+    .callout {
+      padding: 15px 18px;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      background: var(--primary-soft);
+      margin: 14px 0;
+      font-size: 0.93rem;
+    }
+    .callout.note-bn {
+      border-left-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .callout.warn {
+      border-left-color: var(--warning);
+      background: var(--warning-soft);
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-alt);
+      font-weight: 700;
+    }
+
+    /* Guided Examples */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .example-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .step-item {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border-left: 3px solid var(--primary);
+      animation: fadeIn 0.25s ease;
+    }
+    .step-item.visible { display: block; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 7px; }
+    .btn {
+      padding: 7px 13px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Exam Vault */
+    .exam-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+    }
+    .toggle-box.open { display: block; animation: fadeIn 0.25s ease; }
+
+    /* Quiz */
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      background: var(--surface);
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quiz-opt {
+      padding: 11px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--primary); }
+    .quiz-opt.correct {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .quiz-opt.wrong {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .quiz-feedback {
+      margin-top: 10px;
+      font-size: 0.88rem;
+      display: none;
+      padding: 10px 12px;
+      border-radius: 8px;
+    }
+    .quiz-feedback.show { display: block; }
+
+    .checkpoint-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .checkpoint-btn.done {
+      background: var(--success-soft);
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .finale-banner {
+      background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+      color: #fff;
+      padding: 26px 30px;
+      border-radius: 16px;
+      margin-top: 30px;
+      box-shadow: var(--shadow);
+    }
+    .finale-banner h3 { color: #fff; margin-bottom: 6px; font-size: 1.25rem; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar { position: static; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      body { flex-direction: column; }
+      .main { margin-left: 0; padding: 24px 18px 60px; }
+      .sandbox-grid { grid-template-columns: 1fr; }
+      .slider-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-tag">MATH104 &bull; ISRT, Univ. of Dhaka</span>
+      <h2>Lesson 15: Tangent Planes &amp; Extrema</h2>
+      <p>Module 5 Finale &bull; Course Capstone</p>
+    </div>
+
+    <div class="progress-box">
+      <div class="progress-header">
+        <span>Lesson Mastery</span>
+        <span id="progressText">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a href="#sandbox" class="active"><span class="nav-num">1</span> Visual Intuition Sandbox</a></li>
+      <li><a href="#theory"><span class="nav-num">2</span> Tangent Planes &amp; 2nd Deriv. Test</a></li>
+      <li><a href="#examples"><span class="nav-num">3</span> Guided Worked Examples</a></li>
+      <li><a href="#exams"><span class="nav-num">4</span> ISRT Past Exam Vault</a></li>
+      <li><a href="#quiz"><span class="nav-num">5</span> Final Capstone Quiz</a></li>
+    </ul>
+
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Switch to Dark Mode</button>
+
+    <div class="sources-box">
+      <strong>Connected Course Sources:</strong>
+      <span class="source-pill">Lecture 15.pdf</span>
+      <span class="source-pill">Ashraful's Notes</span>
+      <span class="source-pill">Past Year Finals</span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="hero-badge">Lesson 15 of 15 &bull; Course Finale</span>
+        <span class="hero-badge">High Yield: Ellipsoid Tangent Planes &amp; Saddle Points</span>
+        <span class="hero-badge">Interactive 3D Web Lab</span>
+      </div>
+      <h1>Tangent Planes, Normal Lines, Critical Points &amp; Multivariable Extrema</h1>
+      <p>
+        Complete your MATH104 journey! Rotate 3D surfaces with live tangent planes and normal vectors $\nabla F$,
+        visualize local minima, maxima, and saddle points on $f(x, y) = x^4 + y^4 - 4xy + 1$, and test the Hessian
+        discriminant $D = f_{xx}f_{yy} - f_{xy}^2$ interactively.
+      </p>
+    </div>
+
+    <!-- SECTION 1: SANDBOX -->
+    <section id="sandbox">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">1</span>
+          <h2>Visual Intuition Sandbox</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="sandbox" onclick="toggleCheckpoint('sandbox', this)">&#9711; Mark Explored</button>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('tab-tplane', this)">3D Tangent Plane &amp; Normal Line</button>
+          <button class="tab-btn" onclick="switchTab('tab-saddle', this)">3D Extrema &amp; Saddle Explorer</button>
+          <button class="tab-btn" onclick="switchTab('tab-hessian', this)">Interactive 2nd Derivative Test ($D$)</button>
+        </div>
+
+        <!-- TAB 1: 3D TANGENT PLANE -->
+        <div id="tab-tplane" class="tab-panel active">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="tpCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="tpSelect">Choose Surface (Ashraful's Notes &amp; Finals)</label>
+                <select id="tpSelect" onchange="drawTpCanvas()">
+                  <option value="parab">Paraboloid: z = x&sup2; + y&sup2; at (2, -3, 13)</option>
+                  <option value="ellip">Ellipsoid: x&sup2; + 4y&sup2; + z&sup2; = 18 at (1, 2, 1)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Rotate 3D Camera</span><span id="tpYawVal">38&deg;</span></label>
+                <input type="range" id="tpYaw" min="0" max="360" step="5" value="38" oninput="drawTpCanvas()" />
+              </div>
+              <div class="readout-card" id="tpReadout"></div>
+              <p style="font-size: 0.78rem; color: var(--text-muted);">
+                <strong>3D Key:</strong> <span style="color:#d97706; font-weight:700;">Amber patch</span> = Tangent plane;
+                <span style="color:#dc2626; font-weight:700;">Red arrow</span> = Normal line direction $\nabla F(x_0, y_0, z_0)$.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: EXTREMA & SADDLE EXPLORER -->
+        <div id="tab-saddle" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="sadCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label for="sadSelect">Choose Critical Point Landscape</label>
+                <select id="sadSelect" onchange="drawSadCanvas()">
+                  <option value="notes">Ashraful's Notes: f(x,y) = x⁴ + y⁴ - 4xy + 1 (2 Mins + 1 Saddle!)</option>
+                  <option value="min">Bowl (Local Min): z = x&sup2; + y&sup2; (D &gt; 0, f_xx &gt; 0)</option>
+                  <option value="max">Dome (Local Max): z = -x&sup2; - y&sup2; (D &gt; 0, f_xx &lt; 0)</option>
+                  <option value="saddle">Classic Saddle: z = x&sup2; - y&sup2; (D &lt; 0)</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label><span>Rotate 3D Camera</span><span id="sadYawVal">45&deg;</span></label>
+                <input type="range" id="sadYaw" min="0" max="360" step="5" value="45" oninput="drawSadCanvas()" />
+              </div>
+              <div class="readout-card" id="sadReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: INTERACTIVE HESSIAN CLASSIFIER -->
+        <div id="tab-hessian" class="tab-panel">
+          <div class="sandbox-grid">
+            <div class="canvas-wrap">
+              <canvas id="hessCanvas" width="620" height="360"></canvas>
+            </div>
+            <div class="controls-box">
+              <div class="control-group">
+                <label><span>$f_{xx}(a, b)$</span><span id="hFxxVal">2.0</span></label>
+                <input type="range" id="hFxx" min="-4" max="4" step="0.5" value="2" oninput="drawHessCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span>$f_{yy}(a, b)$</span><span id="hFyyVal">2.0</span></label>
+                <input type="range" id="hFyy" min="-4" max="4" step="0.5" value="2" oninput="drawHessCanvas()" />
+              </div>
+              <div class="control-group">
+                <label><span>Mixed Partial $f_{xy}(a, b)$</span><span id="hFxyVal">0.0</span></label>
+                <input type="range" id="hFxy" min="-4" max="4" step="0.5" value="0" oninput="drawHessCanvas()" />
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-outline" onclick="setHess(2, 2, 0)">Local Min</button>
+                <button class="btn btn-outline" onclick="setHess(-2, -2, 0)">Local Max</button>
+                <button class="btn btn-outline" onclick="setHess(2, 2, 3)">Twist to Saddle!</button>
+              </div>
+              <div class="readout-card" id="hessReadout"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CORE THEORY -->
+    <section id="theory">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">2</span>
+          <h2>Core Theory (Lecture 15 + Ashraful's Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="theory" onclick="toggleCheckpoint('theory', this)">&#9711; Mark Read</button>
+      </div>
+
+      <div class="card">
+        <h3>2.1 Tangent Planes, Normal Lines &amp; Acute Angle Between Planes</h3>
+        <p>
+          For a level surface $F(x, y, z) = k$ passing through $P(x_0, y_0, z_0)$, the gradient $\nabla F(x_0, y_0, z_0) = \langle F_x, F_y, F_z\rangle$ is perpendicular (normal) to the surface:
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Geometric Object</th>
+                <th>Formula at $P(x_0, y_0, z_0)$</th>
+                <th>Note for Explicit $z = f(x, y)$</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tangent Plane</strong></td>
+                <td>$F_x(x - x_0) + F_y(y - y_0) + F_z(z - z_0) = 0$</td>
+                <td>Set $F(x, y, z) = f(x, y) - z = 0 \implies z - z_0 = f_x(x - x_0) + f_y(y - y_0)$.</td>
+              </tr>
+              <tr>
+                <td><strong>Normal Line (Parametric)</strong></td>
+                <td>$x = x_0 + F_x t,\;\; y = y_0 + F_y t,\;\; z = z_0 + F_z t$</td>
+                <td>Direction vector is $\nabla F = \langle f_x, f_y, -1\rangle$.</td>
+              </tr>
+              <tr>
+                <td><strong>Acute Angle Between Two Planes</strong></td>
+                <td>$\cos\theta = \dfrac{|\mathbf{n}_1 \cdot \mathbf{n}_2|}{\|\mathbf{n}_1\|\,\|\mathbf{n}_2\|} \implies \theta = \cos^{-1}\!\left(\dfrac{|\mathbf{n}_1 \cdot \mathbf{n}_2|}{\|\mathbf{n}_1\|\,\|\mathbf{n}_2\|}\right)$</td>
+                <td>Use the <strong>absolute value (modulus)</strong> in the numerator to guarantee the acute angle $\theta \in [0^\circ, 90^\circ]$!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2.2 Critical Points &amp; The Multivariable Second Derivative Test</h3>
+        <p>
+          A point $(a, b)$ is a <strong>critical point</strong> of $f(x, y)$ if $f_x(a, b) = 0$ and $f_y(a, b) = 0$ (or if either partial derivative does not exist).
+          To classify a stationary critical point $(a, b)$, compute the <strong>Hessian Discriminant</strong>:
+          $$D = D(a, b) = f_{xx}(a, b)\,f_{yy}(a, b) - \left[f_{xy}(a, b)\right]^2 = \begin{vmatrix} f_{xx} & f_{xy} \\ f_{yx} & f_{yy} \end{vmatrix}$$
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Condition at $(a, b)$</th>
+                <th>Classification</th>
+                <th>3D Local Shape</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill pill-green">$D > 0$ and $f_{xx}(a, b) > 0$</span></td>
+                <td><strong>Local Minimum</strong> at $(a, b)$</td>
+                <td>Upward-opening bowl (cup)</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-blue">$D > 0$ and $f_{xx}(a, b) < 0$</span></td>
+                <td><strong>Local Maximum</strong> at $(a, b)$</td>
+                <td>Downward-opening dome (cap)</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-red">$D < 0$</span></td>
+                <td><strong>Saddle Point</strong> at $(a, b)$</td>
+                <td>Curved up in one direction, down in another (Pringle chip!)</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-amber">$D = 0$</span></td>
+                <td><strong>Test Inconclusive</strong></td>
+                <td>Requires direct inspection of $f(x, y) - f(a, b)$.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: GUIDED WORKED EXAMPLES -->
+    <section id="examples">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">3</span>
+          <h2>Guided Worked Examples (Ashraful's Class Notes)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="examples" onclick="toggleCheckpoint('examples', this)">&#9711; Mark Practiced</button>
+      </div>
+
+      <!-- Example 1: Paraboloid Tangent Plane & Normal Line -->
+      <div class="example-card" data-ex="ex1">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Explicit Surface</span>
+            <h3 style="margin-top: 6px;">Example 1: Tangent Plane &amp; Normal Line to $z = x^2 + y^2$ at $P(2, -3, 13)$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex1')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex1')">Reset</button>
+          </div>
+        </div>
+        <p>Find the tangent plane equation and parametric normal line equations to the paraboloid $z = x^2 + y^2$ at $P(2, -3, 13)$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Write as Level Surface $F(x, y, z) = 0$:</strong> $F(x, y, z) = x^2 + y^2 - z = 0$.</div>
+          <div class="step-item"><strong>Step 2 — Compute Normal Vector $\nabla F$ at $P(2, -3, 13)$:</strong> $F_x = 2x = 4$, &nbsp; $F_y = 2y = -6$, &nbsp; $F_z = -1$. So $\mathbf{n} = \langle 4, -6, -1\rangle$.</div>
+          <div class="step-item"><strong>Step 3 — Tangent Plane Equation:</strong> $4(x - 2) - 6(y + 3) - 1(z - 13) = 0 \implies 4x - 8 - 6y - 18 - z + 13 = 0 \implies \mathbf{4x - 6y - z = 13}$.</div>
+          <div class="step-item"><strong>Step 4 — Parametric Normal Line:</strong> $\mathbf{x = 2 + 4t,\;\; y = -3 - 6t,\;\; z = 13 - t}$.</div>
+        </div>
+      </div>
+
+      <!-- Example 2: Local Extrema & Saddle Points of x^4 + y^4 - 4xy + 1 -->
+      <div class="example-card" data-ex="ex2">
+        <div class="example-top">
+          <div>
+            <span class="pill pill-purple">Ashraful's Notes &bull; Classic Extrema &amp; Saddle</span>
+            <h3 style="margin-top: 6px;">Example 2: Local Max, Min &amp; Saddle Points of $f(x, y) = x^4 + y^4 - 4xy + 1$</h3>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="nextStep('ex2')">Reveal Next Step</button>
+            <button class="btn btn-outline" onclick="resetSteps('ex2')">Reset</button>
+          </div>
+        </div>
+        <p>Find and classify all critical points of $f(x, y) = x^4 + y^4 - 4xy + 1$.</p>
+        <div class="steps-container">
+          <div class="step-item"><strong>Step 1 — Solve $f_x = 0$ and $f_y = 0$:</strong> $f_x = 4x^3 - 4y = 0 \implies y = x^3$. Substitute into $f_y = 4y^3 - 4x = 0 \implies x^9 - x = 0 \implies x(x^4 + 1)(x^2 + 1)(x - 1)(x + 1) = 0$.</div>
+          <div class="step-item"><strong>Step 2 — List All Real Critical Points:</strong> $x = 0, 1, -1$ with $y = x^3$ gives three critical points: <strong>$(0, 0)$, $(1, 1)$, and $(-1, -1)$</strong>.</div>
+          <div class="step-item"><strong>Step 3 — Compute Discriminant $D(x, y)$:</strong> $f_{xx} = 12x^2$, $f_{yy} = 12y^2$, $f_{xy} = -4 \implies D(x, y) = 144x^2 y^2 - 16$.</div>
+          <div class="step-item"><strong>Step 4 — Classify Each Point:</strong><br />
+            &bull; At $(0, 0)$: $D = -16 < 0 \implies$ <strong>Saddle Point</strong> at $(0, 0, 1)$.<br />
+            &bull; At $(1, 1)$: $D = 128 > 0$ and $f_{xx} = 12 > 0 \implies$ <strong>Local Minimum</strong> $f(1, 1) = -1$.<br />
+            &bull; At $(-1, -1)$: $D = 128 > 0$ and $f_{xx} = 12 > 0 \implies$ <strong>Local Minimum</strong> $f(-1, -1) = -1$.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ISRT EXAM VAULT -->
+    <section id="exams">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">4</span>
+          <h2>ISRT Past Exam Vault (Lecture 15 Classics)</h2>
+        </div>
+        <button class="checkpoint-btn" data-cp="exams" onclick="toggleCheckpoint('exams', this)">&#9711; Mark Reviewed</button>
+      </div>
+
+      <!-- Exam Q1: Ellipsoid x^2 + 4y^2 + z^2 = 18 -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-red">Past Year Final &amp; Ashraful's Notes &bull; Complete 3-Part Question</span>
+          <span class="pill pill-amber">6 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Consider the ellipsoid $x^2 + 4y^2 + z^2 = 18$.<br />
+          (a) Find an equation of the tangent plane to the ellipsoid at the point $(1, 2, 1)$.<br />
+          (b) Find parametric equations of the line that is normal to the ellipsoid at $(1, 2, 1)$.<br />
+          (c) Find the acute angle that the tangent plane at $(1, 2, 1)$ makes with the $xy$-plane.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-outline" onclick="toggleBox('exm1-hint')">Toggle Hint</button>
+          <button class="btn btn-primary" onclick="toggleBox('exm1-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm1-hint" class="toggle-box">
+          <strong>Hint:</strong> Set $F(x, y, z) = x^2 + 4y^2 + z^2$. For part (c), the normal vector to the $xy$-plane ($z = 0$) is simply $\mathbf{n}_2 = \langle 0, 0, 1\rangle$!
+        </div>
+        <div id="exm1-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          Let $F(x, y, z) = x^2 + 4y^2 + z^2$. Then $\nabla F = \langle 2x, 8y, 2z\rangle$. At $(1, 2, 1)$: $\mathbf{n}_1 = \nabla F(1, 2, 1) = \langle 2, 16, 2\rangle$ (parallel to $\langle 1, 8, 1\rangle$).<br /><br />
+          <strong>(a) Tangent Plane:</strong>
+          $$2(x - 1) + 16(y - 2) + 2(z - 1) = 0 \implies \mathbf{x + 8y + z = 18}$$
+          <strong>(b) Parametric Normal Line:</strong>
+          $$\mathbf{x = 1 + 2t, \qquad y = 2 + 16t, \qquad z = 1 + 2t}$$
+          <em>(Equivalently, $x = 1 + s, y = 2 + 8s, z = 1 + s$.)</em><br /><br />
+          <strong>(c) Acute Angle with the $xy$-Plane ($\mathbf{n}_2 = \langle 0, 0, 1\rangle$):</strong>
+          $$\cos\theta = \frac{|\langle 1, 8, 1\rangle \cdot \langle 0, 0, 1\rangle|}{\sqrt{1^2 + 8^2 + 1^2}\cdot 1} = \frac{1}{\sqrt{66}} \implies \mathbf{\theta = \cos^{-1}\!\left(\frac{1}{\sqrt{66}}\right) \approx 82.93^\circ}$$
+        </div>
+      </div>
+
+      <!-- Exam Q2: Multivariable Optimization (Open Box / Least Cost) -->
+      <div class="exam-card">
+        <div class="exam-meta">
+          <span class="pill pill-blue">Lecture 15 Application &bull; Multivariable Optimization</span>
+          <span class="pill pill-purple">6 Marks</span>
+        </div>
+        <p>
+          <strong>Question:</strong> Find the dimensions $x, y, z$ of an open-top rectangular box of volume $32\text{ m}^3$ that minimizes the total surface area $S = xy + 2xz + 2yz$.
+        </p>
+        <div class="btn-row" style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="toggleBox('exm2-sol')">Toggle Full Solution</button>
+        </div>
+        <div id="exm2-sol" class="toggle-box">
+          <strong>Full Solution:</strong><br />
+          1. Use volume constraint $xyz = 32 \implies z = \dfrac{32}{xy}$ to reduce $S$ to 2 variables ($x > 0, y > 0$):
+          $$S(x, y) = xy + \frac{64}{y} + \frac{64}{x}$$
+          2. Find critical points ($S_x = 0, S_y = 0$):
+          $$S_x = y - \frac{64}{x^2} = 0 \implies x^2 y = 64; \qquad S_y = x - \frac{64}{y^2} = 0 \implies x y^2 = 64$$
+          Dividing gives $x = y$, so $x^3 = 64 \implies \mathbf{x = 4\text{ m},\; y = 4\text{ m}}$, and $z = \dfrac{32}{16} = \mathbf{2\text{ m}}$.<br />
+          3. Verify minimum via Second Derivative Test at $(4, 4)$:<br />
+          $S_{xx} = \dfrac{128}{x^3} = 2 > 0$, $S_{yy} = \dfrac{128}{y^3} = 2$, $S_{xy} = 1 \implies D = (2)(2) - 1^2 = 3 > 0$. Since $D > 0$ and $S_{xx} > 0$, $(4, 4, 2)$ minimizes surface area ($S_{\min} = 48\text{ m}^2$).
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: FINAL CAPSTONE QUIZ -->
+    <section id="quiz">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="section-icon">5</span>
+          <h2>Final Capstone Quiz</h2>
+        </div>
+        <span class="pill pill-blue" id="quizScoreBadge">Score: 0 / 5</span>
+      </div>
+      <div id="quizContainer"></div>
+
+      <div class="finale-banner">
+        <h3>&#127891; Congratulations — You Have Reached the End of MATH104!</h3>
+        <p style="opacity: 0.94;">
+          All <strong>15 interactive lessons</strong> spanning Modules 1–5 (Functions, Limits, Single-Variable Differentiation,
+          Taylor Series &amp; Vector Curvature, and Multivariable Calculus) are now complete and linked directly to your
+          ISRT lecture slides, Ashraful's handwritten notes, and 2017–2025 past exam papers.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ================= THEME ================= */
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = document.body.classList.contains('dark') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+      drawTpCanvas();
+      drawSadCanvas();
+      drawHessCanvas();
+    }
+
+    /* ================= TABS ================= */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'tab-tplane') drawTpCanvas();
+      if (id === 'tab-saddle') drawSadCanvas();
+      if (id === 'tab-hessian') drawHessCanvas();
+    }
+
+    /* ================= PROGRESS ================= */
+    const state = {
+      checkpoints: { sandbox: false, theory: false, examples: false, exams: false },
+      quizAnswered: {},
+      quizCorrect: 0
+    };
+    function toggleCheckpoint(key, btn) {
+      state.checkpoints[key] = !state.checkpoints[key];
+      btn.classList.toggle('done', state.checkpoints[key]);
+      btn.innerHTML = state.checkpoints[key] ? '&#10003; Completed' : '&#9711; Mark Completed';
+      updateProgress();
+    }
+    function updateProgress() {
+      const cpDone = Object.values(state.checkpoints).filter(Boolean).length;
+      const qDone = Object.keys(state.quizAnswered).length;
+      const pct = Math.round(((cpDone + qDone) / 9) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '%';
+    }
+
+    /* ================= EXAMPLES & TOGGLES ================= */
+    function nextStep(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      const hidden = card.querySelector('.step-item:not(.visible)');
+      if (hidden) hidden.classList.add('visible');
+    }
+    function resetSteps(exId) {
+      const card = document.querySelector(`[data-ex="${exId}"]`);
+      card.querySelectorAll('.step-item').forEach(s => s.classList.remove('visible'));
+    }
+    function toggleBox(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+
+    function getColors() {
+      const dark = document.body.classList.contains('dark');
+      return {
+        bg: dark ? '#0f172a' : '#ffffff',
+        grid: dark ? '#1e293b' : '#cbd5e1',
+        axis: dark ? '#64748b' : '#475569',
+        text: dark ? '#cbd5e1' : '#334155',
+        blue: '#2563eb',
+        purple: '#7c3aed',
+        green: '#059669',
+        amber: '#d97706',
+        amberFill: dark ? 'rgba(245, 158, 11, 0.25)' : 'rgba(217, 119, 6, 0.22)',
+        red: '#dc2626'
+      };
+    }
+
+    function makeProj(w, h, yawDeg, scale, cyOffset = 20) {
+      const yaw = yawDeg * Math.PI / 180;
+      const pitch = 0.42;
+      const cx = w / 2, cy = h / 2 + cyOffset;
+      return (x, y, z) => {
+        const rx = x * Math.cos(yaw) - y * Math.sin(yaw);
+        const ry = x * Math.sin(yaw) + y * Math.cos(yaw);
+        return [cx + rx * scale, cy - (z * Math.cos(pitch) - ry * Math.sin(pitch)) * scale];
+      };
+    }
+
+    function drawWireframe(ctx, f, range, step, proj, color) {
+      ctx.strokeStyle = color; ctx.lineWidth = 1.1;
+      for (let a = -range; a <= range + 1e-4; a += step) {
+        ctx.beginPath(); let s1 = false;
+        for (let b = -range; b <= range + 1e-4; b += step / 2) {
+          const z = f(a, b);
+          if (z !== null && isFinite(z)) {
+            const [sx, sy] = proj(a, b, z);
+            if (!s1) { ctx.moveTo(sx, sy); s1 = true; } else ctx.lineTo(sx, sy);
+          } else s1 = false;
+        }
+        ctx.stroke();
+
+        ctx.beginPath(); let s2 = false;
+        for (let b = -range; b <= range + 1e-4; b += step / 2) {
+          const z = f(b, a);
+          if (z !== null && isFinite(z)) {
+            const [sx, sy] = proj(b, a, z);
+            if (!s2) { ctx.moveTo(sx, sy); s2 = true; } else ctx.lineTo(sx, sy);
+          } else s2 = false;
+        }
+        ctx.stroke();
+      }
+    }
+
+    /* ================= TAB 1: 3D TANGENT PLANE ================= */
+    function drawTpCanvas() {
+      const canvas = document.getElementById('tpCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('tpSelect').value;
+      const yaw = parseFloat(document.getElementById('tpYaw').value);
+      document.getElementById('tpYawVal').textContent = `${yaw}°`;
+      const c = getColors();
+
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (mode === 'parab') {
+        const proj = makeProj(canvas.width, canvas.height, yaw, 48, 55);
+        // Scaled paraboloid z = 0.5(x^2 + y^2) for nice viewing, highlighting point corresponding to (2, -3, 13)
+        drawWireframe(ctx, (x, y) => 0.35*(x*x + y*y), 2.2, 0.44, proj, c.grid);
+
+        const x0 = 1.0, y0 = -1.4, z0 = 0.35*(x0*x0 + y0*y0);
+        const fx = 0.7*x0, fy = 0.7*y0;
+
+        // Tangent plane patch
+        const d = 0.9;
+        const corners = [
+          [x0-d, y0-d], [x0+d, y0-d], [x0+d, y0+d], [x0-d, y0+d]
+        ].map(([x, y]) => proj(x, y, z0 + fx*(x - x0) + fy*(y - y0)));
+
+        ctx.fillStyle = c.amberFill; ctx.strokeStyle = c.amber; ctx.lineWidth = 2;
+        ctx.beginPath();
+        corners.forEach(([sx, sy], i) => i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy));
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        // Normal vector
+        const nLen = Math.hypot(fx, fy, -1);
+        const p0 = proj(x0, y0, z0);
+        const p1 = proj(x0 + (fx/nLen)*1.4, y0 + (fy/nLen)*1.4, z0 - (1/nLen)*1.4);
+        ctx.strokeStyle = c.red; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.stroke();
+        ctx.fillStyle = c.red; ctx.beginPath(); ctx.arc(p0[0], p0[1], 6, 0, Math.PI*2); ctx.fill();
+
+        document.getElementById('tpReadout').innerHTML = `
+          <div class="readout-row"><span>Point P:</span><strong>(2, -3, 13) on z = x² + y²</strong></div>
+          <div class="readout-row"><span>Normal Vector ∇F:</span><span class="pill pill-red">⟨4, -6, -1⟩</span></div>
+          <div class="readout-row"><span>Tangent Plane:</span><strong>4x - 6y - z = 13</strong></div>
+          <div class="readout-row"><span>Normal Line:</span><span>x=2+4t, y=-3-6t, z=13-t</span></div>
+        `;
+      } else {
+        const proj = makeProj(canvas.width, canvas.height, yaw, 42, 10);
+        // Ellipsoid x^2/18 + y^2/4.5 + z^2/18 = 1 (rx = 4.24, ry = 2.12, rz = 4.24)
+        const rx = Math.sqrt(18) * 0.75, ry = Math.sqrt(4.5) * 0.75, rz = Math.sqrt(18) * 0.75;
+        ctx.strokeStyle = c.grid; ctx.lineWidth = 1.1;
+        for (let lat = -1.2; lat <= 1.21; lat += 0.4) {
+          ctx.beginPath();
+          for (let lon = 0; lon <= Math.PI*2 + 0.1; lon += 0.15) {
+            const [sx, sy] = proj(rx*Math.cos(lat)*Math.cos(lon), ry*Math.cos(lat)*Math.sin(lon), rz*Math.sin(lat));
+            if (lon === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+          }
+          ctx.stroke();
+        }
+        for (let lon = 0; lon < Math.PI; lon += Math.PI/6) {
+          ctx.beginPath();
+          for (let lat = 0; lat <= Math.PI*2 + 0.1; lat += 0.15) {
+            const [sx, sy] = proj(rx*Math.cos(lat)*Math.cos(lon), ry*Math.cos(lat)*Math.sin(lon), rz*Math.sin(lat));
+            if (lat === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+          }
+          ctx.stroke();
+        }
+
+        // Point (1, 2, 1) scaled by 0.75
+        const x0 = 0.75, y0 = 1.5, z0 = 0.75;
+        const p0 = proj(x0, y0, z0);
+        // Normal direction (1, 8, 1)
+        const nLen = Math.hypot(1, 8, 1);
+        const nx = 1/nLen, ny = 8/nLen, nz = 1/nLen;
+        const p1 = proj(x0 + nx*1.8, y0 + ny*1.8, z0 + nz*1.8);
+
+        // Build two tangent basis vectors perpendicular to (1, 8, 1)
+        const u1 = [1/Math.sqrt(2), 0, -1/Math.sqrt(2)];
+        const u2 = [-8/Math.sqrt(132), 2/Math.sqrt(132), -8/Math.sqrt(132)];
+        const d = 1.1;
+        const corners = [[-d,-d],[d,-d],[d,d],[-d,d]].map(([a, b]) =>
+          proj(x0 + a*u1[0] + b*u2[0], y0 + a*u1[1] + b*u2[1], z0 + a*u1[2] + b*u2[2])
+        );
+        ctx.fillStyle = c.amberFill; ctx.strokeStyle = c.amber; ctx.lineWidth = 2;
+        ctx.beginPath();
+        corners.forEach(([sx, sy], i) => i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy));
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        ctx.strokeStyle = c.red; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.stroke();
+        ctx.fillStyle = c.red; ctx.beginPath(); ctx.arc(p0[0], p0[1], 6, 0, Math.PI*2); ctx.fill();
+
+        document.getElementById('tpReadout').innerHTML = `
+          <div class="readout-row"><span>Point P:</span><strong>(1, 2, 1) on x² + 4y² + z² = 18</strong></div>
+          <div class="readout-row"><span>Normal Vector ∇F:</span><span class="pill pill-red">⟨2, 16, 2⟩ ∥ ⟨1, 8, 1⟩</span></div>
+          <div class="readout-row"><span>Tangent Plane:</span><strong>x + 8y + z = 18</strong></div>
+          <div class="readout-row"><span>Acute Angle w/ xy-plane:</span><span class="pill pill-purple">cos⁻¹(1/√66) ≈ 82.93°</span></div>
+        `;
+      }
+    }
+
+    /* ================= TAB 2: EXTREMA & SADDLE EXPLORER ================= */
+    function drawSadCanvas() {
+      const canvas = document.getElementById('sadCanvas');
+      const ctx = canvas.getContext('2d');
+      const mode = document.getElementById('sadSelect').value;
+      const yaw = parseFloat(document.getElementById('sadYaw').value);
+      document.getElementById('sadYawVal').textContent = `${yaw}°`;
+      const c = getColors();
+
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const proj = makeProj(canvas.width, canvas.height, yaw, 62, 25);
+
+      let f, critPts, infoHtml;
+      if (mode === 'notes') {
+        f = (x, y) => 0.45 * (Math.pow(x,4) + Math.pow(y,4) - 4*x*y + 1);
+        drawWireframe(ctx, f, 1.55, 0.31, proj, c.blue);
+        critPts = [
+          { pt: [0, 0], col: c.red, lbl: 'Saddle (0,0)' },
+          { pt: [1, 1], col: c.green, lbl: 'Min (1,1)' },
+          { pt: [-1, -1], col: c.green, lbl: 'Min (-1,-1)' }
+        ];
+        infoHtml = `
+          <div class="readout-row"><span>(0, 0): D = -16 &lt; 0</span><span class="pill pill-red">Saddle Point (f = 1)</span></div>
+          <div class="readout-row"><span>(1, 1): D = 128, f_xx = 12</span><span class="pill pill-green">Local Min (f = -1)</span></div>
+          <div class="readout-row"><span>(-1, -1): D = 128, f_xx = 12</span><span class="pill pill-green">Local Min (f = -1)</span></div>
+        `;
+      } else if (mode === 'min') {
+        f = (x, y) => 0.45 * (x*x + y*y);
+        drawWireframe(ctx, f, 1.8, 0.36, proj, c.green);
+        critPts = [{ pt: [0, 0], col: c.green, lbl: 'Local Min (0,0)' }];
+        infoHtml = `<div class="readout-row"><span>At (0, 0):</span><span class="pill pill-green">D = 4 &gt; 0, f_xx = 2 &gt; 0 &rarr; Local Min</span></div>`;
+      } else if (mode === 'max') {
+        f = (x, y) => -0.45 * (x*x + y*y) + 1.2;
+        drawWireframe(ctx, f, 1.8, 0.36, proj, c.blue);
+        critPts = [{ pt: [0, 0], col: c.blue, lbl: 'Local Max (0,0)' }];
+        infoHtml = `<div class="readout-row"><span>At (0, 0):</span><span class="pill pill-blue">D = 4 &gt; 0, f_xx = -2 &lt; 0 &rarr; Local Max</span></div>`;
+      } else {
+        f = (x, y) => 0.45 * (x*x - y*y);
+        drawWireframe(ctx, f, 1.8, 0.36, proj, c.purple);
+        critPts = [{ pt: [0, 0], col: c.red, lbl: 'Saddle (0,0)' }];
+        infoHtml = `<div class="readout-row"><span>At (0, 0):</span><span class="pill pill-red">D = -4 &lt; 0 &rarr; Saddle Point</span></div>`;
+      }
+
+      critPts.forEach(cp => {
+        const [x, y] = cp.pt;
+        const [sx, sy] = proj(x, y, f(x, y));
+        ctx.fillStyle = cp.col;
+        ctx.beginPath(); ctx.arc(sx, sy, 6.5, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = c.text; ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.fillText(cp.lbl, sx + 8, sy - 6);
+      });
+
+      document.getElementById('sadReadout').innerHTML = infoHtml;
+    }
+
+    /* ================= TAB 3: INTERACTIVE HESSIAN CLASSIFIER ================= */
+    function setHess(xx, yy, xy) {
+      document.getElementById('hFxx').value = xx;
+      document.getElementById('hFyy').value = yy;
+      document.getElementById('hFxy').value = xy;
+      drawHessCanvas();
+    }
+
+    function drawHessCanvas() {
+      const canvas = document.getElementById('hessCanvas');
+      const ctx = canvas.getContext('2d');
+      const fxx = parseFloat(document.getElementById('hFxx').value);
+      const fyy = parseFloat(document.getElementById('hFyy').value);
+      const fxy = parseFloat(document.getElementById('hFxy').value);
+      document.getElementById('hFxxVal').textContent = fxx.toFixed(1);
+      document.getElementById('hFyyVal').textContent = fyy.toFixed(1);
+      document.getElementById('hFxyVal').textContent = fxy.toFixed(1);
+
+      const D = fxx * fyy - fxy * fxy;
+      const c = getColors();
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      let badge, col;
+      if (D > 0.01 && fxx > 0) { badge = '<span class="pill pill-green">Local Minimum (Bowl)</span>'; col = c.green; }
+      else if (D > 0.01 && fxx < 0) { badge = '<span class="pill pill-blue">Local Maximum (Dome)</span>'; col = c.blue; }
+      else if (D < -0.01) { badge = '<span class="pill pill-red">Saddle Point (No Extremum)</span>'; col = c.red; }
+      else { badge = '<span class="pill pill-amber">D = 0 (Test Inconclusive)</span>'; col = c.amber; }
+
+      const proj = makeProj(canvas.width, canvas.height, 42, 62, 18);
+      const quadF = (x, y) => 0.14 * (0.5*fxx*x*x + fxy*x*y + 0.5*fyy*y*y);
+      drawWireframe(ctx, quadF, 1.8, 0.36, proj, col);
+
+      const [sx, sy] = proj(0, 0, 0);
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(sx, sy, 6.5, 0, Math.PI*2); ctx.fill();
+
+      document.getElementById('hessReadout').innerHTML = `
+        <div class="readout-row"><span>Discriminant D = f_xx f_yy - (f_xy)²:</span><strong>${D.toFixed(2)}</strong></div>
+        <div class="readout-row"><span>2nd Derivative Verdict:</span>${badge}</div>
+      `;
+    }
+
+    /* ================= INTERACTIVE QUIZ ================= */
+    const quizData = [
+      {
+        q: '1. What is the tangent plane to the ellipsoid x² + 4y² + z² = 18 at (1, 2, 1)? (Past Final & Notes)',
+        opts: ['x + 4y + z = 18', 'x + 8y + z = 18', '2x + 8y + 2z = 18', 'x + 2y + z = 6'],
+        ans: 1,
+        exp: '∇F(1, 2, 1) = ⟨2, 16, 2⟩. Thus 2(x - 1) + 16(y - 2) + 2(z - 1) = 0 ⇒ x + 8y + z = 18.'
+      },
+      {
+        q: '2. What is the acute angle between the tangent plane x + 8y + z = 18 and the xy-plane (z = 0)?',
+        opts: ['cos⁻¹(1 / √66)', 'cos⁻¹(8 / √66)', 'cos⁻¹(1 / 18)', '90°'],
+        ans: 0,
+        exp: 'Normal vectors are ⟨1, 8, 1⟩ and ⟨0, 0, 1⟩, so cos θ = |1| / √(1 + 64 + 1) = 1 / √66.'
+      },
+      {
+        q: '3. What is the tangent plane equation to the paraboloid z = x² + y² at (2, -3, 13)? (Ashraful\'s Notes)',
+        opts: ['4x - 6y - z = 13', '4x + 6y - z = 13', '2x - 3y - z = 0', '4x - 6y + z = 39'],
+        ans: 0,
+        exp: 'F(x,y,z) = x² + y² - z ⇒ ∇F(2,-3,13) = ⟨4, -6, -1⟩ ⇒ 4(x-2) - 6(y+3) - (z-13) = 0 ⇒ 4x - 6y - z = 13.'
+      },
+      {
+        q: '4. At a critical point (a, b), if f_xx = 12, f_yy = 12, and f_xy = -4, how is (a, b) classified?',
+        opts: ['Local Maximum', 'Local Minimum (D = 128 > 0, f_xx > 0)', 'Saddle Point', 'Inconclusive'],
+        ans: 1,
+        exp: 'D = (12)(12) - (-4)² = 144 - 16 = 128 > 0 and f_xx = 12 > 0 ⇒ Local Minimum!'
+      },
+      {
+        q: '5. For f(x, y) = x⁴ + y⁴ - 4xy + 1, what kind of critical point is the origin (0, 0)?',
+        opts: ['Local Minimum', 'Local Maximum', 'Saddle Point (D = -16 < 0)', 'Not a critical point'],
+        ans: 2,
+        exp: 'At (0, 0), f_xx = 0, f_yy = 0, f_xy = -4 ⇒ D = 0 - 16 = -16 < 0 ⇒ Saddle Point.'
+      }
+    ];
+
+    function buildQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = quizData.map((item, idx) => `
+        <div class="quiz-item" id="q-${idx}">
+          <p style="font-weight: 700;">${item.q}</p>
+          <div class="quiz-options">
+            ${item.opts.map((opt, oIdx) => `
+              <button class="quiz-opt" onclick="checkQuiz(${idx}, ${oIdx}, this)">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="quiz-feedback" id="qf-${idx}"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkQuiz(qIdx, oIdx, btn) {
+      if (state.quizAnswered[qIdx] !== undefined) return;
+      state.quizAnswered[qIdx] = oIdx;
+      const item = quizData[qIdx];
+      const buttons = document.querySelectorAll(`#q-${qIdx} .quiz-opt`);
+      const fb = document.getElementById(`qf-${qIdx}`);
+      if (oIdx === item.ans) {
+        btn.classList.add('correct');
+        state.quizCorrect++;
+        fb.style.background = 'var(--success-soft)';
+        fb.style.color = 'var(--success)';
+        fb.innerHTML = '<strong>Correct!</strong> ' + item.exp;
+      } else {
+        btn.classList.add('wrong');
+        buttons[item.ans].classList.add('correct');
+        fb.style.background = 'var(--danger-soft)';
+        fb.style.color = 'var(--danger)';
+        fb.innerHTML = '<strong>Not quite.</strong> ' + item.exp;
+      }
+      fb.classList.add('show');
+      document.getElementById('quizScoreBadge').textContent = `Score: ${state.quizCorrect} / ${quizData.length}`;
+      updateProgress();
+    }
+
+    /* ================= SCROLL SPY ================= */
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section');
+      let current = 'sandbox';
+      sections.forEach(sec => {
+        if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+      });
+      document.querySelectorAll('.nav-list a').forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+
+    /* ================= INIT ================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      drawTpCanvas();
+      drawSadCanvas();
+      drawHessCanvas();
+      buildQuiz();
+    });
+  </script>
+</body>
+</html>

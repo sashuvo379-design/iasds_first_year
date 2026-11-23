@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 12: Recurrence Relations &amp; Generating Functions | MATH 103 — Foundations of Mathematics</title>
+
+  <!-- Google Fonts: Inter, Merriweather & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Merriweather:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX v0.16.11 CSS & JS (jsDelivr CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            serif: ['Merriweather', 'Georgia', 'Cambria', 'serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            darkbg: '#0b1120',
+            darkcard: '#111827',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Theme Tokens -->
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --primary: #4f46e5;
+    }
+    html.dark {
+      --bg: #0b1120;
+      --surface: #111827;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --border: #1e293b;
+      --primary: #818cf8;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    details > summary {
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker {
+      display: none;
+    }
+  </style>
+
+  <!-- Persist Theme Before First Paint (Default: Light Mode) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('math103_theme');
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
+</head>
+
+<body class="bg-[#f8fafc] text-[#0f172a] dark:bg-[#0b1120] dark:text-[#f1f5f9] font-sans antialiased selection:bg-indigo-200 selection:text-indigo-900 dark:selection:bg-indigo-800 dark:selection:text-indigo-100 transition-colors duration-200">
+
+  <!-- ==================== TOP STICKY HEADER ==================== -->
+  <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/85 dark:bg-[#111827]/85 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <!-- Left: Mobile Sidebar Toggle + Course Identity -->
+      <div class="flex items-center gap-3 min-w-0">
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          aria-label="Toggle navigation sidebar"
+          class="lg:hidden p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-sky-500 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
+            M103
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 truncate">
+              MATH 103 • ISRT, DU • Group C
+            </p>
+            <h1 class="text-sm sm:text-base font-serif font-bold text-slate-900 dark:text-white truncate">
+              Lesson 12: Recurrence Relations &amp; Generating Functions
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Module Pill + Progress Pill + Theme Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/70">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          Module 3 • Lesson 12 of 14
+        </span>
+
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300">
+          <span>Progress:</span>
+          <span id="header-progress-text" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+        </div>
+
+        <button
+          type="button"
+          onclick="toggleTheme()"
+          aria-label="Toggle light or dark mode"
+          class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+        >
+          <svg class="w-5 h-5 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+          <svg class="w-5 h-5 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MOBILE SIDEBAR BACKDROP ==================== -->
+  <div id="sidebar-backdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+  <!-- ==================== MAIN LAYOUT CONTAINER ==================== -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col lg:flex-row gap-8 relative">
+
+    <!-- ==================== STICKY LEFT SIDEBAR (280px desktop) ==================== -->
+    <aside
+      id="sidebar"
+      class="fixed inset-y-0 left-0 z-50 w-72 lg:w-[280px] bg-white dark:bg-[#111827] lg:bg-transparent lg:dark:bg-transparent transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out lg:static lg:block shrink-0 overflow-y-auto lg:overflow-visible p-5 lg:p-0 border-r border-slate-200 dark:border-slate-800 lg:border-none"
+    >
+      <div class="lg:sticky lg:top-24 space-y-5 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
+
+        <!-- Mobile Close Row -->
+        <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+          <span class="font-bold text-slate-900 dark:text-white text-sm">MATH 103 • Navigation</span>
+          <button id="close-sidebar-btn" type="button" class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. Course Badge, Theme Toggle & Lesson 12 Progress Bar -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div class="flex items-start justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <div>
+              <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 border border-indigo-200/70 dark:border-indigo-800/60">
+                MATH 103 • ISRT, DU
+              </span>
+              <div class="text-xs font-serif font-bold text-slate-900 dark:text-white mt-1.5">
+                Module 3 • Group C
+              </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400">Discrete Mathematics</div>
+            </div>
+            <button
+              type="button"
+              onclick="toggleTheme()"
+              title="Toggle Light / Dark Mode"
+              class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:border-indigo-500 transition shrink-0"
+            >
+              <svg class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+              </svg>
+              <svg class="w-4 h-4 block dark:hidden text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Lesson 12 Progress</span>
+              <span id="sidebar-progress-pct" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div id="sidebar-progress-bar" class="h-full bg-gradient-to-r from-indigo-600 to-sky-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="sidebar-progress-detail" class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+              0/6 sections · 0/3 labs · 0/5 quiz
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. Scroll-Spy In-Page Table of Contents -->
+        <nav aria-label="Table of contents" class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">On This Page</h2>
+          <ul class="space-y-1 text-xs sm:text-sm">
+            <li><a href="#sec-12-1" data-spy="sec-12-1" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">12.1</span> Recurrence Modeling</a></li>
+            <li><a href="#sec-12-2" data-spy="sec-12-2" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">12.2</span> OGF &amp; Power Series</a></li>
+            <li><a href="#sec-12-3" data-spy="sec-12-3" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">12.3</span> 1st-Order OGF + Lab 1</a></li>
+            <li><a href="#sec-12-4" data-spy="sec-12-4" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">12.4</span> 2nd-Order OGF + Lab 2</a></li>
+            <li><a href="#sec-12-5" data-spy="sec-12-5" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">12.5</span> Char. Eq. + Lab 3</a></li>
+            <li><a href="#sec-12-6" data-spy="sec-12-6" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 hover:text-indigo-700 dark:hover:text-indigo-300 transition"><span class="font-mono text-xs text-indigo-500">12.6</span> Partitions &amp; EGFs</a></li>
+            <li class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800">
+              <a href="#exam-vault" data-spy="exam-vault" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition"><span>🏛️</span> ISRT Past-Exam Vault (6)</a>
+            </li>
+            <li>
+              <a href="#quiz" data-spy="quiz" class="toc-link flex items-center gap-2 px-2.5 py-1.5 rounded-xl font-medium text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition"><span>⚡</span> Quick-Check Quiz (5)</a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- 3. Collapsible 14-Lesson Course Roadmap -->
+        <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
+          <button
+            type="button"
+            onclick="toggleRoadmap()"
+            class="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+          >
+            <span>Course Roadmap (14 Lessons)</span>
+            <svg id="roadmap-chevron" class="w-4 h-4 transform transition-transform rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="roadmap-list" class="mt-3 space-y-2 text-xs">
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-1">Module 1 · Group A (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L01</span><span class="truncate">Real Numbers &amp; Divisibility</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L02</span><span class="truncate">Congruences &amp; Diophantine</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L03</span><span class="truncate">Inequalities &amp; Series</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L04</span><span class="truncate">Complex Numbers &amp; Unity</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L05</span><span class="truncate">Theory of Equations</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L06</span><span class="truncate">Gamma &amp; Beta Functions</span></div><span class="shrink-0 font-bold">✓</span></div>
+            </div>
+
+            <p class="font-semibold text-emerald-600 dark:text-emerald-400 pt-2">Module 2 · Group B (Completed ✓)</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L07</span><span class="truncate">Fundamentals &amp; Formation</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L08</span><span class="truncate">Separable &amp; Homogeneous</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L09</span><span class="truncate">Exact, IF &amp; Bernoulli DEs</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L10</span><span class="truncate">Higher-Order Linear DEs</span></div><span class="shrink-0 font-bold">✓</span></div>
+            </div>
+
+            <p class="font-semibold text-indigo-600 dark:text-indigo-400 pt-2">Module 3 · Group C: Discrete Math &amp; Games</p>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 font-medium"><div class="flex items-center gap-1.5 min-w-0"><span class="font-mono font-bold">L11</span><span class="truncate">Logic &amp; Counting Principles</span></div><span class="shrink-0 font-bold">✓</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold shadow-xs">
+                <span class="font-mono">L12</span>
+                <span class="truncate">Recurrences &amp; Gen. Functions</span>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L13</span><span class="truncate">Graph Theory &amp; Dijkstra</span></div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400"><span class="font-mono">L14</span><span class="truncate">Game Theory</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN LESSON CONTENT ==================== -->
+    <main class="flex-1 min-w-0 max-w-[960px] mx-auto w-full space-y-10 pb-20">
+
+      <!-- ORIENTATION HERO HEADER -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white p-6 sm:p-8 lg:p-10 shadow-lg">
+        <div class="relative z-10 space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-sky-400/20 text-sky-100 border border-sky-300/30">
+              Module 3 • Group C: Discrete Mathematics
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30">
+              ⏱ ~55 min study
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30">
+              ★ 5–8 Marks on Final
+            </span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-xs border border-white/20">
+              Sources: Bóna Ch. 8, ISRT 2023–2025
+            </span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold tracking-tight leading-tight">
+            Lesson 12: Recurrence Relations &amp; Generating Functions
+          </h2>
+
+          <p class="text-sm sm:text-base text-indigo-100 leading-relaxed max-w-3xl">
+            Turn infinite recursive sequences into a single algebraic function! Model population growth &amp; relocation problems, master the 4-step Ordinary Generating Function (OGF) + partial fractions pipeline, cross-check with characteristic equations, and explore integer partitions &amp; Exponential Generating Functions (EGFs).
+          </p>
+
+          <!-- Learning Objectives Card -->
+          <div class="p-4 rounded-2xl bg-white/10 border border-white/15 text-xs sm:text-sm space-y-1.5">
+            <div class="font-bold uppercase tracking-wider text-indigo-200 text-xs mb-1">Learning Objectives</div>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 text-indigo-50">
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Formulate population, step, and staircase problems as recurrence relations.</span></li>
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Define Ordinary Generating Functions $G(x)$ &amp; state their statistical/combinatorial utility.</span></li>
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Solve 1st- and 2nd-order linear recurrences via OGFs and partial fractions.</span></li>
+              <li class="flex items-start gap-2"><span class="text-emerald-300 font-bold">✓</span><span>Verify closed-form answers rapidly using the characteristic equation shortcut.</span></li>
+              <li class="flex items-start gap-2 md:col-span-2"><span class="text-emerald-300 font-bold">✓</span><span>Understand convolution (product formula), partition OGFs, and when EGFs are required.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 12.1: RECURRENCE RELATIONS & MATHEMATICAL MODELING          -->
+      <!-- =================================================================== -->
+      <section id="sec-12-1" data-track-sec="sec-12-1" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 12.1</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Recurrence Relations &amp; Mathematical Modeling
+            </h3>
+          </div>
+          <span id="badge-sec-12-1" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Definition 12.1 · Recurrence Relation</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            A <strong>recurrence relation</strong> for a sequence $\{a_n\}_{n \ge 0}$ is an equation that expresses the $n$-th term $a_n$ as a function of one or more preceding terms $a_{n-1}, a_{n-2}, \dots, a_{n-k}$. Together with $k$ <strong>initial conditions</strong> ($a_0, \dots, a_{k-1}$), it uniquely determines every term of the sequence.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+            <div class="p-2.5 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-indigo-100 dark:border-indigo-900">
+              <strong class="text-indigo-600 dark:text-indigo-400">Order $k$:</strong> Number of steps back ($a_{n+k}$ depends on $a_n$).
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-indigo-100 dark:border-indigo-900">
+              <strong class="text-sky-600 dark:text-sky-400">Linear vs. Nonlinear:</strong> Linear means $a_i$ terms appear only to power $1$ with no products like $a_n a_{n-1}$.
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-indigo-100 dark:border-indigo-900">
+              <strong class="text-emerald-600 dark:text-emerald-400">Homogeneous vs. Non-Homog.:</strong> Non-homogeneous has an extra forcing term $g(n)$ (e.g., $-150$).
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Signature Models Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-indigo-600 dark:text-indigo-400 uppercase text-xs">1. ISRT 2024/2025 Squirrel Model</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">Final 2024 &amp; 2025</span>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300">Doubles yearly; $150$ squirrels relocated each year; initially $500$:</p>
+            <div class="font-mono font-bold text-slate-900 dark:text-white">$a_{n+1} = 2a_n - 150, \qquad a_0 = 500$</div>
+            <div class="text-xs text-slate-500">1st-order, linear, non-homogeneous.</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-sky-600 dark:text-sky-400 uppercase text-xs">2. ISRT 2024 Frog Model (Bóna Ch. 8.1.1)</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">2nd Incourse 2024</span>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300">Grows fourfold yearly; $100$ frogs shipped out each year; initially $50$:</p>
+            <div class="font-mono font-bold text-slate-900 dark:text-white">$a_{n+1} = 4a_n - 100, \qquad a_0 = 50$</div>
+            <div class="text-xs text-slate-500">1st-order, linear, non-homogeneous.</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-emerald-600 dark:text-emerald-400 uppercase text-xs">3. ISRT 2025 Linear Step</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">2nd Incourse 2025</span>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300">Constant arithmetic step $+4$ starting at $a_0 = 1$:</p>
+            <div class="font-mono font-bold text-slate-900 dark:text-white">$a_n = a_{n-1} + 4, \qquad a_0 = 1 \implies a_n = 1 + 4n$</div>
+            <div class="text-xs text-slate-500">1st-order, linear, non-homogeneous ($a_5 = 21$).</div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <span class="font-bold text-violet-600 dark:text-violet-400 uppercase text-xs">4. Staircase / Fibonacci Model</span>
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300">Bóna Ch. 8 Ex. 4</span>
+            </div>
+            <p class="text-slate-700 dark:text-slate-300">Ways to climb $n$ stairs taking $1$ or $2$ steps at a time:</p>
+            <div class="font-mono font-bold text-slate-900 dark:text-white">$f_{n+2} = f_{n+1} + f_n, \qquad f_0 = 1,\; f_1 = 1$</div>
+            <div class="text-xs text-slate-500">2nd-order, linear, homogeneous.</div>
+          </div>
+        </div>
+
+        <!-- Amber Exam Trap Callout -->
+        <div class="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800/70 flex gap-3.5">
+          <div class="text-2xl shrink-0">⚠️</div>
+          <div class="space-y-2 text-xs sm:text-sm text-amber-950/90 dark:text-amber-100/90 leading-relaxed">
+            <h4 class="font-bold text-amber-950 dark:text-amber-200 uppercase text-xs tracking-wider">Exam Trap: "At the Beginning of Each Year, 150 Squirrels Are Relocated"</h4>
+            <p>
+              In Miklós Bóna's <em>A Walk Through Combinatorics</em> (Ch. 8.1.1) and ISRT's grading key for the frog/squirrel problems, the annual cycle is translated directly as <strong>$a_{n+1} = r a_n - d$</strong> (e.g., $a_{n+1} = 2a_n - 150$ or $a_{n+1} = 4a_n - 100$), treating the removal as subtracted from the year's grown population.
+            </p>
+            <p>
+              <em>Note:</em> If relocation occurred strictly <em>before</em> doubling each year, the recurrence would instead be $a_{n+1} = 2(a_n - 150) = 2a_n - 300$. <strong>Exam Best Practice:</strong> Use the standard Bóna/ISRT form $a_{n+1} = 2a_n - 150$, and write one clear sentence stating your convention on the exam script so the grader sees your modeling logic immediately!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 12.2: ORDINARY GENERATING FUNCTIONS (OGFs) & TOOLKIT        -->
+      <!-- =================================================================== -->
+      <section id="sec-12-2" data-track-sec="sec-12-2" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 12.2</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Ordinary Generating Functions (OGFs) &amp; Power Series Toolkit
+            </h3>
+          </div>
+          <span id="badge-sec-12-2" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border-l-4 border-indigo-500 space-y-2">
+          <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm uppercase tracking-wider">Definition 12.2 · Ordinary Generating Function (OGF)</h4>
+          <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            Let $\{a_n\}_{n \ge 0} = (a_0, a_1, a_2, \dots)$ be a sequence of real numbers. Its <strong>ordinary generating function (OGF)</strong> is the <em>formal power series</em>:
+            $$G(x) = \sum_{n=0}^{\infty} a_n x^n = a_0 + a_1 x + a_2 x^2 + a_3 x^3 + \dots$$
+            We write $[x^n]G(x) = a_n$ for the coefficient of $x^n$. Because $G(x)$ is treated as a <em>formal</em> algebraic object ("a clothesline on which we hang a sequence of numbers"), analytic convergence is not required for algebraic manipulation!
+          </p>
+        </div>
+
+        <!-- Why OGFs Matter (ISRT Final 2023 Q1d — 2 Marks) -->
+        <div class="p-5 rounded-2xl bg-sky-50/80 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-900/70 space-y-2.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h4 class="font-bold text-sky-900 dark:text-sky-200 text-sm uppercase tracking-wider">Why OGFs Matter (Exam Answer Box)</h4>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200">ISRT Final 2023 Q1(d) — 2 Marks</span>
+          </div>
+          <ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+            <li><strong>Algebraic Compression:</strong> Converts an infinite system of recurrence equations into a <em>single</em> algebraic equation for $G(x)$.</li>
+            <li><strong>Direct Closed-Form Formulas:</strong> Finds $a_n$ (e.g., $a_{87}$ or $a_{100}$) directly without wastefully computing $a_1, a_2, \dots, a_{n-1}$.</li>
+            <li><strong>Combinatorial Counting &amp; Partitions:</strong> Multiplying OGFs automatically counts integer partitions and constrained selections via coefficient extraction.</li>
+            <li><strong>Bridge to Probability (AST 102):</strong> Directly parallels <em>Probability Generating Functions (PGFs)</em> $P_X(t) = \sum p_k t^k$ and Moment Generating Functions in Applied Statistics!</li>
+          </ul>
+        </div>
+
+        <!-- Master OGF Reference Table -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">Master OGF Reference Table</h4>
+          <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+                <tr>
+                  <th class="px-4 py-3">Closed Form $G(x)$</th>
+                  <th class="px-4 py-3">Power Series Expansion</th>
+                  <th class="px-4 py-3">Coefficient $[x^n]G(x)$</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                <tr>
+                  <td class="px-4 py-2.5 font-semibold">$\dfrac{1}{1 - x}$</td>
+                  <td class="px-4 py-2.5">$1 + x + x^2 + x^3 + \dots$</td>
+                  <td class="px-4 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">$1$</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 font-semibold">$\dfrac{1}{1 - rx}$</td>
+                  <td class="px-4 py-2.5">$1 + rx + r^2 x^2 + r^3 x^3 + \dots$</td>
+                  <td class="px-4 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">$r^n$</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 font-semibold">$\dfrac{x}{1 - x}$</td>
+                  <td class="px-4 py-2.5">$x + x^2 + x^3 + \dots$</td>
+                  <td class="px-4 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">$1$ ($n \ge 1$), $0$ ($n = 0$)</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 font-semibold">$\dfrac{1}{(1 - x)^2}$</td>
+                  <td class="px-4 py-2.5">$1 + 2x + 3x^2 + 4x^3 + \dots$</td>
+                  <td class="px-4 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">$n + 1$</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 font-semibold">$\dfrac{1}{(1 - rx)^2}$</td>
+                  <td class="px-4 py-2.5">$1 + 2rx + 3r^2x^2 + \dots$</td>
+                  <td class="px-4 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">$(n + 1)r^n$</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-2.5 font-semibold">$\dfrac{1}{(1 - rx)^k}$</td>
+                  <td class="px-4 py-2.5">$\displaystyle\sum_{n=0}^{\infty} \binom{n+k-1}{k-1}r^n x^n$</td>
+                  <td class="px-4 py-2.5 font-bold text-indigo-600 dark:text-indigo-400">$\dbinom{n + k - 1}{k - 1}r^n$</td>
+                </tr>
+                <tr class="bg-indigo-50/50 dark:bg-indigo-950/30">
+                  <td class="px-4 py-2.5 font-bold text-indigo-700 dark:text-indigo-300">Index Shifting Rules</td>
+                  <td class="px-4 py-2.5" colspan="2">
+                    $\displaystyle\sum_{n=0}^{\infty} a_{n+1} x^{n+1} = G(x) - a_0 \qquad\text{and}\qquad \sum_{n=0}^{\infty} a_{n+2} x^{n+2} = G(x) - a_0 - a_1 x$
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 12.3: 4-STEP OGF METHOD FOR 1ST-ORDER RECURRENCES + LAB 1   -->
+      <!-- =================================================================== -->
+      <section id="sec-12-3" data-track-sec="sec-12-3" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 12.3</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              The 4-Step OGF Method for First-Order Recurrences
+            </h3>
+          </div>
+          <span id="badge-sec-12-3" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <!-- 4-Step Pipeline Card -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">STEP 1 · DEFINE</div>
+            <p class="text-slate-700 dark:text-slate-300">Let $G(x) = \sum_{n=0}^{\infty} a_n x^n$ be the OGF of $\{a_n\}$.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 mb-1">STEP 2 · MULTIPLY &amp; SUM</div>
+            <p class="text-slate-700 dark:text-slate-300">Multiply the recurrence by $x^{n+1}$ and sum over all $n \ge 0$.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-sky-600 dark:text-sky-400 mb-1">STEP 3 · SOLVE $G(x)$</div>
+            <p class="text-slate-700 dark:text-slate-300">Replace sums using $G(x) - a_0$, $xG(x)$, and $\frac{x}{1-x}$, then isolate $G(x)$.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 mb-1">STEP 4 · PARTIAL FRACTIONS</div>
+            <p class="text-slate-700 dark:text-slate-300">Decompose $G(x)$ into $\frac{A}{1-rx} + \frac{B}{1-x}$ and read off $[x^n]G(x)$!</p>
+          </div>
+        </div>
+
+        <!-- Two Collapsible <details> Derivations -->
+        <div class="space-y-3">
+          <details class="group rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <summary class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Derivation 1 · ISRT Final 2024 Q8(c) &amp; Final 2025 Q7(a)</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Squirrel Population: $a_{n+1} = 2a_n - 150,\; a_0 = 500 \implies a_n = 350\cdot 2^n + 150$</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0 group-open:hidden">Show Steps</span>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 hidden group-open:inline">Hide Steps</span>
+            </summary>
+            <div class="px-5 py-4 bg-white dark:bg-[#111827] border-t border-slate-200 dark:border-slate-700 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+              <p><strong>Step 1 &amp; 2:</strong> Let $G(x) = \sum_{n=0}^{\infty} a_n x^n$. Multiply $a_{n+1} = 2a_n - 150$ by $x^{n+1}$ and sum over $n \ge 0$:
+              $$\sum_{n=0}^{\infty} a_{n+1} x^{n+1} = 2x\sum_{n=0}^{\infty} a_n x^n - 150\sum_{n=0}^{\infty} x^{n+1}$$</p>
+              <p><strong>Step 3 (Solve for $G(x)$):</strong> Using $a_0 = 500$:
+              $$G(x) - 500 = 2xG(x) - \frac{150x}{1 - x} \implies (1 - 2x)G(x) = 500 - \frac{150x}{1 - x} = \frac{500 - 650x}{1 - x}$$
+              $$G(x) = \frac{500 - 650x}{(1 - 2x)(1 - x)}$$</p>
+              <p><strong>Step 4 (Partial Fractions &amp; Extract $[x^n]$):</strong> Set $\frac{500 - 650x}{(1-2x)(1-x)} = \frac{A}{1-2x} + \frac{B}{1-x} \implies A(1-x) + B(1-2x) = 500 - 650x$.</p>
+              <p>• Putting $x = 1$: $B(-1) = -150 \implies B = 150$.<br/>
+                 • Putting $x = \frac{1}{2}$: $A(\frac{1}{2}) = 500 - 325 = 175 \implies A = 350$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Thus $G(x) = \dfrac{350}{1 - 2x} + \dfrac{150}{1 - x} = \displaystyle\sum_{n=0}^{\infty}(350\cdot 2^n + 150)x^n \implies a_n = 350\cdot 2^n + 150$. $\blacksquare$</p>
+            </div>
+          </details>
+
+          <details class="group rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <summary class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-sky-600 dark:text-sky-400 uppercase">Derivation 2 · ISRT 2nd Incourse 2024 Q1 (Bóna Ch. 8.1.1)</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Frog Population: $a_{n+1} = 4a_n - 100,\; a_0 = 50 \implies a_n = \dfrac{50\cdot 4^n + 100}{3}$</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 shrink-0 group-open:hidden">Show Steps</span>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 hidden group-open:inline">Hide Steps</span>
+            </summary>
+            <div class="px-5 py-4 bg-white dark:bg-[#111827] border-t border-slate-200 dark:border-slate-700 space-y-2.5 text-sm text-slate-700 dark:text-slate-300">
+              <p><strong>Step 1 &amp; 2:</strong> Multiply $a_{n+1} = 4a_n - 100$ by $x^{n+1}$ and sum over $n \ge 0$:
+              $$G(x) - 50 = 4xG(x) - \frac{100x}{1 - x} \implies (1 - 4x)G(x) = \frac{50 - 150x}{1 - x} \implies G(x) = \frac{50 - 150x}{(1 - 4x)(1 - x)}$$</p>
+              <p><strong>Step 3 (Partial Fractions):</strong> Write $\frac{50 - 150x}{(1-4x)(1-x)} = \frac{A}{1-4x} + \frac{B}{1-x} \implies A(1-x) + B(1-4x) = 50 - 150x$.</p>
+              <p>• Put $x = 1$: $-3B = -100 \implies B = \frac{100}{3}$.<br/>
+                 • Put $x = \frac{1}{4}$: $\frac{3}{4}A = 50 - \frac{150}{4} = \frac{50}{4} \implies A = \frac{50}{3}$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Thus $G(x) = \dfrac{50/3}{1 - 4x} + \dfrac{100/3}{1 - x} \implies a_n = \dfrac{50\cdot 4^n + 100}{3}$. $\blacksquare$</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- ==================== INTERACTIVE LAB 1: POPULATION RECURRENCE SIMULATOR ==================== -->
+        <div id="lab-1" class="scroll-mt-24 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border-2 border-indigo-200 dark:border-indigo-900/80 p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 01
+              </span>
+              <h4 class="text-lg sm:text-xl font-serif font-bold text-slate-900 dark:text-white">Population Recurrence Simulator &amp; Closed-Form Verifier</h4>
+            </div>
+            <span id="l1-behavior-badge" class="px-3 py-1 rounded-full text-xs font-mono font-extrabold"></span>
+          </div>
+
+          <!-- 5 Preset Buttons -->
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setLab1Preset(2, 150, 500, 6)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-indigo-600 text-white font-semibold transition">ISRT Squirrels (r=2, d=150, a₀=500)</button>
+            <button type="button" onclick="setLab1Preset(4, 100, 50, 5)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">ISRT Frogs (r=4, d=100, a₀=50)</button>
+            <button type="button" onclick="setLab1Preset(2, 500, 500, 6)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Equilibrium (r=2, d=500, a₀=500)</button>
+            <button type="button" onclick="setLab1Preset(1.5, 300, 500, 6)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Decline/Extinction (r=1.5, d=300)</button>
+            <button type="button" onclick="setLab1Preset(1, -4, 1, 6)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">ISRT 2025 Step (r=1, d=−4, a₀=1)</button>
+          </div>
+
+          <!-- 4 Sliders -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-xs">
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>Growth $r$</span><span id="l1-r-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">2.00</span></div>
+              <input id="l1-r" type="range" min="1.0" max="4.0" step="0.25" value="2.0" oninput="updateLab1(true)" class="w-full accent-indigo-600" />
+            </div>
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>Removal $d$</span><span id="l1-d-val" class="font-mono font-bold text-rose-600 dark:text-rose-400">150</span></div>
+              <input id="l1-d" type="range" min="-200" max="600" step="10" value="150" oninput="updateLab1(true)" class="w-full accent-rose-500" />
+            </div>
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>Initial $a_0$</span><span id="l1-a0-val" class="font-mono font-bold text-sky-600 dark:text-sky-400">500</span></div>
+              <input id="l1-a0" type="range" min="0" max="1000" step="10" value="500" oninput="updateLab1(true)" class="w-full accent-sky-500" />
+            </div>
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>Years $N$</span><span id="l1-N-val" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">6</span></div>
+              <input id="l1-N" type="range" min="3" max="10" step="1" value="6" oninput="updateLab1(true)" class="w-full accent-emerald-500" />
+            </div>
+          </div>
+
+          <!-- Formula & Equilibrium Readout -->
+          <div id="l1-formula-box" class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2 text-xs sm:text-sm overflow-x-auto"></div>
+
+          <!-- Dual-Overlay SVG + Verification Table -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div class="lg:col-span-7 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2">
+              <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
+                <span class="font-semibold text-slate-500 dark:text-slate-400">Closed-Form Curve vs. Discrete Iterative Points</span>
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="inline-flex items-center gap-1"><span class="w-3 h-1 rounded-full bg-indigo-600"></span> Closed Form</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Iterative $a_n$</span>
+                  <span class="inline-flex items-center gap-1"><span class="w-3 h-0.5 border-t-2 border-dashed border-amber-500"></span> Equil. $a^*$</span>
+                </div>
+              </div>
+              <svg id="l1-svg" viewBox="0 0 460 250" class="w-full h-auto"></svg>
+            </div>
+
+            <div class="lg:col-span-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 overflow-x-auto max-h-[295px] overflow-y-auto">
+              <table class="w-full text-center font-mono text-xs">
+                <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-sans">
+                  <tr>
+                    <th class="px-2.5 py-2">$n$</th>
+                    <th class="px-2.5 py-2">Iterative</th>
+                    <th class="px-2.5 py-2">Closed Form</th>
+                    <th class="px-2.5 py-2">Match</th>
+                  </tr>
+                </thead>
+                <tbody id="l1-table-body" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 12.4: 2ND-ORDER LINEAR RECURRENCES VIA OGF + LAB 2          -->
+      <!-- =================================================================== -->
+      <section id="sec-12-4" data-track-sec="sec-12-4" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 12.4</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Second-Order Linear Recurrences via OGF &amp; Partial Fractions
+            </h3>
+          </div>
+          <span id="badge-sec-12-4" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          Consider a 2nd-order homogeneous linear recurrence $a_{n+2} = c_1 a_{n+1} + c_2 a_n$ ($n \ge 0$) with initial values $a_0, a_1$. Multiplying by $x^{n+2}$ and summing over all $n \ge 0$:
+          $$\big[G(x) - a_0 - a_1 x\big] = c_1 x\big[G(x) - a_0\big] + c_2 x^2 G(x)$$
+          Solving for $G(x)$ immediately yields the universal rational generating function:
+          $$G(x) = \frac{a_0 + (a_1 - c_1 a_0)x}{1 - c_1 x - c_2 x^2}$$
+        </p>
+
+        <!-- 3 Denominator Factoring Cases -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/35 border border-indigo-200 dark:border-indigo-900/70 space-y-1.5">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase text-xs">1. Distinct Real Roots</div>
+            <p class="text-slate-700 dark:text-slate-300">Factor $1 - c_1 x - c_2 x^2 = (1 - r_1 x)(1 - r_2 x) \implies \frac{A}{1 - r_1 x} + \frac{B}{1 - r_2 x} \implies a_n = A r_1^n + B r_2^n$.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/35 border border-sky-200 dark:border-sky-900/70 space-y-1.5">
+            <div class="font-mono font-bold text-sky-600 dark:text-sky-400 uppercase text-xs">2. Repeated Root $(1 - rx)^2$</div>
+            <p class="text-slate-700 dark:text-slate-300">Decompose into $\frac{A}{1 - rx} + \frac{B}{(1 - rx)^2} \implies a_n = A r^n + B(n + 1)r^n = (C_1 + C_2 n)r^n$.</p>
+          </div>
+          <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/70 space-y-1.5">
+            <div class="font-mono font-bold text-amber-700 dark:text-amber-400 uppercase text-xs">3. Irrational Roots (Fibonacci)</div>
+            <p class="text-slate-700 dark:text-slate-300">$1 - x - x^2 = (1 - \phi x)(1 - \psi x)$ with $\phi, \psi = \frac{1 \pm \sqrt{5}}{2}$ gives Binet's exact closed form!</p>
+          </div>
+        </div>
+
+        <!-- Collapsible Proofs: Bona's Distinct + Fibonacci Staircase -->
+        <div class="space-y-3">
+          <details class="group rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <summary class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">Proof 12.1 · Bóna Ch. 8.1.1 Classic</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Solve $a_{n+2} = 3a_{n+1} - 2a_n$ with $a_0 = 0,\; a_1 = 1 \implies a_n = 2^n - 1$.</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 shrink-0 group-open:hidden">Show Proof</span>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 hidden group-open:inline">Hide Proof</span>
+            </summary>
+            <div class="px-5 py-4 bg-white dark:bg-[#111827] border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p>With $c_1 = 3, c_2 = -2, a_0 = 0, a_1 = 1$: $G(x) = \dfrac{0 + (1 - 0)x}{1 - 3x + 2x^2} = \dfrac{x}{(1 - 2x)(1 - x)}$.</p>
+              <p>Partial fractions: $\dfrac{x}{(1 - 2x)(1 - x)} = \dfrac{A}{1 - 2x} + \dfrac{B}{1 - x} \implies A(1 - x) + B(1 - 2x) = x$.</p>
+              <p>• $x = 1 \implies -B = 1 \implies B = -1$. &nbsp;• $x = \frac{1}{2} \implies \frac{1}{2}A = \frac{1}{2} \implies A = 1$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Hence $G(x) = \dfrac{1}{1 - 2x} - \dfrac{1}{1 - x} = \displaystyle\sum_{n=0}^{\infty}(2^n - 1)x^n \implies a_n = 2^n - 1$. $\blacksquare$</p>
+            </div>
+          </details>
+
+          <details class="group rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <summary class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800/80 flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div>
+                <span class="text-xs font-mono font-bold text-sky-600 dark:text-sky-400 uppercase">Proof 12.2 · Fibonacci Staircase (Bóna Ch. 8 Ex. 4)</span>
+                <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">Derive $F(x) = \dfrac{1}{1 - x - x^2}$ and Binet's formula for $f_{n+2} = f_{n+1} + f_n,\; f_0 = f_1 = 1$.</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 shrink-0 group-open:hidden">Show Proof</span>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 shrink-0 hidden group-open:inline">Hide Proof</span>
+            </summary>
+            <div class="px-5 py-4 bg-white dark:bg-[#111827] border-t border-slate-200 dark:border-slate-700 space-y-2 text-sm text-slate-700 dark:text-slate-300">
+              <p>With $c_1 = 1, c_2 = 1, f_0 = 1, f_1 = 1$: $F(x) = \dfrac{1 + (1 - 1)x}{1 - x - x^2} = \dfrac{1}{1 - x - x^2}$.</p>
+              <p>Factoring $1 - x - x^2 = (1 - \phi x)(1 - \psi x)$ where $\phi = \frac{1+\sqrt{5}}{2}$ and $\psi = \frac{1-\sqrt{5}}{2}$ (note $\phi - \psi = \sqrt{5}$):</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">$$F(x) = \frac{1}{\sqrt{5}}\left(\frac{\phi}{1 - \phi x} - \frac{\psi}{1 - \psi x}\right) \implies f_n = \frac{1}{\sqrt{5}}\left[\left(\frac{1+\sqrt{5}}{2}\right)^{n+1} - \left(\frac{1-\sqrt{5}}{2}\right)^{n+1}\right] \quad \blacksquare$$</p>
+            </div>
+          </details>
+        </div>
+
+        <!-- ==================== INTERACTIVE LAB 2: OGF & PARTIAL-FRACTION PIPELINE ==================== -->
+        <div id="lab-2" class="scroll-mt-24 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border-2 border-indigo-200 dark:border-indigo-900/80 p-5 sm:p-6 space-y-5">
+          <div>
+            <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 02
+            </span>
+            <h4 class="text-lg sm:text-xl font-serif font-bold text-slate-900 dark:text-white">Step-by-Step OGF &amp; Partial-Fraction Pipeline Explorer</h4>
+          </div>
+
+          <!-- 4 Recurrence Selector Tabs -->
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-l2p="0" onclick="selectLab2Problem(0)" class="l2p-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">1. ISRT Squirrels</button>
+            <button type="button" data-l2p="1" onclick="selectLab2Problem(1)" class="l2p-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">2. ISRT Frogs</button>
+            <button type="button" data-l2p="2" onclick="selectLab2Problem(2)" class="l2p-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">3. 2nd-Order Distinct</button>
+            <button type="button" data-l2p="3" onclick="selectLab2Problem(3)" class="l2p-btn px-3 py-1.5 rounded-xl text-xs font-bold transition">4. 2nd-Order Repeated</button>
+          </div>
+
+          <!-- 4-Step Progress Pills -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button type="button" data-l2s="0" onclick="setLab2Step(0)" class="l2s-btn px-3 py-2 rounded-xl text-xs font-bold transition">1. Multiply &amp; Sum</button>
+            <button type="button" data-l2s="1" onclick="setLab2Step(1)" class="l2s-btn px-3 py-2 rounded-xl text-xs font-bold transition">2. Solve for $G(x)$</button>
+            <button type="button" data-l2s="2" onclick="setLab2Step(2)" class="l2s-btn px-3 py-2 rounded-xl text-xs font-bold transition">3. Partial Fractions</button>
+            <button type="button" data-l2s="3" onclick="setLab2Step(3)" class="l2s-btn px-3 py-2 rounded-xl text-xs font-bold transition">4. Extract $[x^n]$</button>
+          </div>
+
+          <!-- Derivation Display + Prev/Next -->
+          <div class="p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-4">
+            <div id="l2-derivation" class="text-xs sm:text-sm space-y-2.5 overflow-x-auto"></div>
+            <div class="flex justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+              <button type="button" onclick="navLab2Step(-1)" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">← Prev Step</button>
+              <button type="button" onclick="navLab2Step(1)" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition">Next Step →</button>
+            </div>
+          </div>
+
+          <!-- Built-in n Slider Evaluator -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div class="md:col-span-5 text-xs">
+              <div class="flex justify-between font-semibold mb-1">
+                <label for="l2-n">Test Index $n \in [0, 10]$</label>
+                <span id="l2-n-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">n = 4</span>
+              </div>
+              <input id="l2-n" type="range" min="0" max="10" step="1" value="4" oninput="updateLab2Eval(true)" class="w-full accent-indigo-600" />
+            </div>
+            <div id="l2-eval-result" class="md:col-span-7 grid grid-cols-2 gap-3 font-mono text-xs text-center"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 12.5: CHARACTERISTIC EQUATION SHORTCUT + LAB 3              -->
+      <!-- =================================================================== -->
+      <section id="sec-12-5" data-track-sec="sec-12-5" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 12.5 · Bridge to Lesson 10 (ODEs)</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Characteristic Equation Shortcut &amp; Bridge to Differential Equations
+            </h3>
+          </div>
+          <span id="badge-sec-12-5" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          For a homogeneous 2nd-order linear recurrence $a_{n+2} - c_1 a_{n+1} - c_2 a_n = 0$, substituting the geometric trial $a_n = r^n$ yields the <strong>Characteristic Equation</strong> $r^2 - c_1 r - c_2 = 0$—the exact discrete twin of Lesson 10's Auxiliary Equation $am^2 + bm + c = 0$!
+        </p>
+
+        <!-- ODE vs Recurrence Analogy & Method Comparison Table -->
+        <div class="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold">
+              <tr>
+                <th class="px-4 py-3">Feature / Root Case</th>
+                <th class="px-4 py-3 text-indigo-600 dark:text-indigo-400">2nd-Order ODE (Lesson 10)</th>
+                <th class="px-4 py-3 text-sky-600 dark:text-sky-400">2nd-Order Recurrence (Lesson 12)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Distinct Real Roots</td>
+                <td class="px-4 py-2.5">$C_1 e^{m_1 x} + C_2 e^{m_2 x}$</td>
+                <td class="px-4 py-2.5">$A r_1^n + B r_2^n$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Repeated Real Root</td>
+                <td class="px-4 py-2.5">$(C_1 + C_2 x)e^{mx}$</td>
+                <td class="px-4 py-2.5">$(A + Bn)r^n$</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2.5 font-semibold">Complex Conjugate Roots</td>
+                <td class="px-4 py-2.5">$e^{\alpha x}(C_1\cos\beta x + C_2\sin\beta x)$</td>
+                <td class="px-4 py-2.5">$\rho^n(C_1\cos n\theta + C_2\sin n\theta)$</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- OGF vs Characteristic Equation Rule Box -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/35 border border-amber-300 dark:border-amber-800/70 text-xs sm:text-sm text-amber-950 dark:text-amber-100 space-y-1.5">
+          <div class="font-bold uppercase text-xs tracking-wider text-amber-900 dark:text-amber-200">ISRT Exam Rule: OGF vs. Characteristic Equation</div>
+          <p><strong>1.</strong> If an ISRT question explicitly says <em>"find the population after $n$ years <strong>through generating function</strong>"</em> (Final 2024 &amp; 2025), you <strong>MUST</strong> show the full 4-step OGF derivation for full marks.</p>
+          <p><strong>2.</strong> Use the Characteristic Equation (and plug in $n = 0, 1, 2$) as a <strong>15-second sanity check</strong> to guarantee zero algebra errors in your partial fractions!</p>
+        </div>
+
+        <!-- ==================== INTERACTIVE LAB 3: CHARACTERISTIC ROOT & SEQUENCE VISUALIZER ==================== -->
+        <div id="lab-3" class="scroll-mt-24 rounded-2xl bg-slate-50 dark:bg-slate-950/70 border-2 border-indigo-200 dark:border-indigo-900/80 p-5 sm:p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="inline-flex items-center gap-1.5 text-xs font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Interactive Lab 03
+              </span>
+              <h4 class="text-lg sm:text-xl font-serif font-bold text-slate-900 dark:text-white">2nd-Order Characteristic Root &amp; Sequence Visualizer ($a_{n+2} = c_1 a_{n+1} + c_2 a_n$)</h4>
+            </div>
+            <span id="l3-root-badge" class="px-3 py-1 rounded-full text-xs font-mono font-extrabold"></span>
+          </div>
+
+          <!-- 4 Quick Presets -->
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="setLab3Preset(3, -2, 0, 1)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-indigo-600 text-white font-semibold transition">Bóna Distinct (c₁=3, c₂=−2)</button>
+            <button type="button" onclick="setLab3Preset(1, 1, 1, 1)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Fibonacci (c₁=1, c₂=1)</button>
+            <button type="button" onclick="setLab3Preset(6, -9, 0, 1)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Repeated Root (c₁=6, c₂=−9)</button>
+            <button type="button" onclick="setLab3Preset(-1, 2, 1, 2)" class="px-2.5 py-1.5 rounded-lg text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition">Alternating (c₁=−1, c₂=2)</button>
+          </div>
+
+          <!-- Sliders -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-xs">
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>$c_1$</span><span id="l3-c1-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">3</span></div>
+              <input id="l3-c1" type="range" min="-4" max="6" step="1" value="3" oninput="updateLab3(true)" class="w-full accent-indigo-600" />
+            </div>
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>$c_2$</span><span id="l3-c2-val" class="font-mono font-bold text-indigo-600 dark:text-indigo-400">-2</span></div>
+              <input id="l3-c2" type="range" min="-9" max="6" step="1" value="-2" oninput="updateLab3(true)" class="w-full accent-indigo-600" />
+            </div>
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>$a_0$</span><span id="l3-a0-val" class="font-mono font-bold text-sky-600 dark:text-sky-400">0</span></div>
+              <input id="l3-a0" type="range" min="-5" max="10" step="1" value="0" oninput="updateLab3(true)" class="w-full accent-sky-500" />
+            </div>
+            <div>
+              <div class="flex justify-between font-semibold mb-1"><span>$a_1$</span><span id="l3-a1-val" class="font-mono font-bold text-sky-600 dark:text-sky-400">1</span></div>
+              <input id="l3-a1" type="range" min="-5" max="10" step="1" value="1" oninput="updateLab3(true)" class="w-full accent-sky-500" />
+            </div>
+          </div>
+
+          <!-- Roots & Closed Form Readout -->
+          <div id="l3-readout" class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2 text-xs sm:text-sm overflow-x-auto"></div>
+
+          <!-- Stem-and-Dot SVG Plot -->
+          <div class="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 space-y-2">
+            <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
+              <span class="font-semibold text-slate-500 dark:text-slate-400">Discrete Sequence Stem-and-Dot Plot ($a_0, a_1, \dots, a_{10}$)</span>
+              <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> $a_n \ge 0$</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> $a_n < 0$</span>
+              </div>
+            </div>
+            <svg id="l3-svg" viewBox="0 0 600 230" class="w-full h-auto"></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 12.6: PRODUCT FORMULA, PARTITIONS & EGFs                    -->
+      <!-- =================================================================== -->
+      <section id="sec-12-6" data-track-sec="sec-12-6" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Section 12.6 · Bóna Ch. 8.1.2–8.2</span>
+            <h3 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 dark:text-white mt-1">
+              Product Formula, Integer Partitions &amp; Exponential Generating Functions (EGFs)
+            </h3>
+          </div>
+          <span id="badge-sec-12-6" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">Reading…</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+          <!-- Product Formula -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase text-xs">1. Product Formula (Convolution)</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              If $A(x) = \sum a_n x^n$ and $B(x) = \sum b_n x^n$, then their product $C(x) = A(x)B(x) = \sum c_n x^n$ has coefficients:
+              $$c_n = \sum_{i=0}^{n} a_i b_{n-i}$$
+              Used whenever an object of size $n$ splits into two independent parts of sizes $i$ and $n - i$.
+            </p>
+          </div>
+
+          <!-- Integer Partitions -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase text-xs">2. Integer Partitions OGF</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              The number of partitions $p(n)$ of integer $n$ has the infinite product OGF:
+              $$\sum_{n=0}^{\infty} p(n)x^n = \prod_{k=1}^{\infty} \frac{1}{1 - x^k}$$
+              <strong>Euler's Theorem:</strong> $\prod(1+x^k) = \prod\frac{1}{1-x^{2k-1}}$ proves partitions into <em>distinct</em> parts equal partitions into <em>odd</em> parts!
+            </p>
+          </div>
+
+          <!-- EGFs -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2">
+            <div class="font-mono font-bold text-sky-600 dark:text-sky-400 uppercase text-xs">3. Exponential Generating Functions</div>
+            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+              For fast factorial-growth sequences (like $f_{n+1} = 2(n+1)f_n + (n+1)!$ or labeled structures), OGFs diverge everywhere. Dividing by $n!$ defines the <strong>EGF</strong>:
+              $$E(x) = \sum_{n=0}^{\infty} f_n \frac{x^n}{n!}$$
+              Multiplying EGFs automatically introduces the binomial factor $\binom{n}{i}$ for labeled objects!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- ISRT PAST-EXAM VAULT (6 WORKED PROBLEMS)                            -->
+      <!-- =================================================================== -->
+      <section id="exam-vault" class="scroll-mt-24 space-y-5">
+        <div>
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Authentic Past Papers (2023–2025) &amp; Bóna Ch. 8</span>
+          <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">🏛️ ISRT Past-Exam Vault (Lesson 12)</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Attempt each question on paper first, then reveal the Hint or Full Step-by-Step Solution independently.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Vault 1 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2024 Q8(c) &amp; Final 2025 Q7(a)</span>
+              <span class="text-xs font-mono text-slate-400">[5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              1. A forest squirrel population doubles every year. At the start of each year, $150$ squirrels are relocated to another reserve. Initially there were $500$ squirrels. Find the population after $n$ years through a generating function.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v1-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v1-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v1-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Set $a_{n+1} = 2a_n - 150$ with $a_0 = 500$, multiply by $x^{n+1}$, sum over $n \ge 0$ to get $G(x) = \frac{500 - 650x}{(1-2x)(1-x)}$, then decompose into partial fractions.
+            </div>
+            <div id="v1-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Model:</strong> $a_{n+1} = 2a_n - 150$ ($n \ge 0$) with $a_0 = 500$. Let $G(x) = \sum_{n=0}^{\infty} a_n x^n$.</p>
+              <p>Multiplying by $x^{n+1}$ and summing over $n \ge 0$:
+              $$G(x) - 500 = 2xG(x) - \frac{150x}{1-x} \implies (1-2x)G(x) = \frac{500 - 650x}{1-x} \implies G(x) = \frac{500 - 650x}{(1-2x)(1-x)}$$</p>
+              <p>Partial fractions: $G(x) = \dfrac{350}{1 - 2x} + \dfrac{150}{1 - x} = \displaystyle\sum_{n=0}^{\infty} (350\cdot 2^n + 150)x^n$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $a_n = 350 \cdot 2^n + 150$. (Check: $a_0 = 500,\; a_1 = 850,\; a_2 = 1550$ ✓) $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 2 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2024 (AST 103) · Q1</span>
+              <span class="text-xs font-mono text-slate-400">[1 + 4 = 5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              2. The frog population of an infinitely large lake grows fourfold each year. On the first day of each year, $100$ frogs are taken out and shipped into another lake. Assuming there were $50$ frogs originally: (a) Find the recurrence relation; (b) Find the explicit formula for the number of frogs after $n$ years.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v2-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v2-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v2-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> $a_{n+1} = 4a_n - 100$ with $a_0 = 50$. Derive $G(x) = \frac{50 - 150x}{(1-4x)(1-x)} = \frac{50/3}{1-4x} + \frac{100/3}{1-x}$.
+            </div>
+            <div id="v2-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>(a)</strong> $a_{n+1} = 4a_n - 100$ for $n \ge 0$, with initial condition $a_0 = 50$.</p>
+              <p><strong>(b)</strong> Multiplying by $x^{n+1}$ and summing gives $G(x) - 50 = 4xG(x) - \frac{100x}{1-x} \implies G(x) = \dfrac{50 - 150x}{(1-4x)(1-x)}$.</p>
+              <p>Decomposing into partial fractions: $G(x) = \dfrac{50/3}{1 - 4x} + \dfrac{100/3}{1 - x}$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $a_n = \dfrac{50\cdot 4^n + 100}{3}$. (Check: $a_0 = 50,\; a_1 = 100,\; a_2 = 300$ ✓) $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 3 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT Final 2023 · Q1(d)</span>
+              <span class="text-xs font-mono text-slate-400">[2 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              3. Define the ordinary generating function and state its importance.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v3-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v3-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v3-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Give the formal power series $G(x) = \sum_{n=0}^{\infty} a_n x^n$ plus 2–3 concrete advantages (solving recurrences algebraically, direct closed forms, counting/probability).
+            </div>
+            <div id="v3-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Definition:</strong> For a sequence of real numbers $\{a_n\}_{n \ge 0}$, the formal power series $G(x) = \sum_{n=0}^{\infty} a_n x^n$ is called its <strong>ordinary generating function (OGF)</strong>.</p>
+              <p><strong>Importance:</strong> (1) Compresses infinitely many recurrence equations into one algebraic equation; (2) yields direct closed-form expressions for $a_n$ without computing intermediate terms; (3) solves complex combinatorial counting and integer partition problems via polynomial/series multiplication; (4) forms the foundation for Probability Generating Functions in statistics. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 4 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">ISRT 2nd Incourse 2025 · Q1(iv)</span>
+              <span class="text-xs font-mono text-slate-400">[1 Mark]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              4. If $a_n = a_{n-1} + 4$ and $a_0 = 1$, find $a_5$.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v4-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v4-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v4-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> This is an arithmetic progression with common difference $4$, so $a_n = a_0 + 4n$.
+            </div>
+            <div id="v4-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1.5">
+              <p>Iterating: $a_0 = 1,\; a_1 = 5,\; a_2 = 9,\; a_3 = 13,\; a_4 = 17,\; a_5 = 21$ (or directly $a_5 = 1 + 4(5) = \mathbf{21}$). $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 5 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">Bóna Ch. 8.1.1 · Worked Classic</span>
+              <span class="text-xs font-mono text-slate-400">[5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              5. Solve the second-order recurrence $a_{n+2} = 3a_{n+1} - 2a_n$ with $a_0 = 0,\; a_1 = 1$ using an ordinary generating function.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v5-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v5-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v5-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> Multiply by $x^{n+2}$ and sum to get $G(x) = \frac{x}{1-3x+2x^2} = \frac{x}{(1-2x)(1-x)}$.
+            </div>
+            <div id="v5-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p>Multiplying by $x^{n+2}$ and summing over $n \ge 0$:
+              $$G(x) - 0 - x = 3x(G(x) - 0) - 2x^2 G(x) \implies (1 - 3x + 2x^2)G(x) = x \implies G(x) = \frac{x}{(1 - 2x)(1 - x)}$$</p>
+              <p>Partial fractions: $G(x) = \dfrac{1}{1 - 2x} - \dfrac{1}{1 - x} = \displaystyle\sum_{n=0}^{\infty} (2^n - 1)x^n$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Answer: $a_n = 2^n - 1$. $\blacksquare$</p>
+            </div>
+          </article>
+
+          <!-- Vault 6 -->
+          <article class="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">Bóna Ch. 8 · Exercise 4 (Staircase)</span>
+              <span class="text-xs font-mono text-slate-400">[5 Marks]</span>
+            </div>
+            <p class="font-semibold text-slate-900 dark:text-white text-sm sm:text-base">
+              6. A child climbs a staircase of $n$ stairs taking $1$ or $2$ steps at a time. Formulate the recurrence relation, find its OGF $F(x)$, and obtain the Binet-form explicit formula.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="toggleVault('v6-hint')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition">💡 Show Hint</button>
+              <button type="button" onclick="toggleVault('v6-sol')" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition">📝 Show Full Solution</button>
+            </div>
+            <div id="v6-hint" class="hidden p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 text-xs sm:text-sm text-amber-900 dark:text-amber-200">
+              <strong>Hint:</strong> The first step is either 1 stair (leaving $n+1$ stairs) or 2 stairs (leaving $n$ stairs), so $f_{n+2} = f_{n+1} + f_n$ with $f_0 = 1, f_1 = 1$.
+            </div>
+            <div id="v6-sol" class="hidden p-4 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-2">
+              <p><strong>Recurrence:</strong> $f_{n+2} = f_{n+1} + f_n$ ($n \ge 0$) with $f_0 = 1,\; f_1 = 1$.</p>
+              <p><strong>OGF:</strong> Multiplying by $x^{n+2}$ and summing: $F(x) - 1 - x = x(F(x) - 1) + x^2 F(x) \implies (1 - x - x^2)F(x) = 1 \implies F(x) = \dfrac{1}{1 - x - x^2}$.</p>
+              <p class="font-bold text-emerald-700 dark:text-emerald-400">Binet Explicit Formula: Factoring $1 - x - x^2 = (1 - \phi x)(1 - \psi x)$ with $\phi, \psi = \frac{1 \pm \sqrt{5}}{2}$ gives $f_n = \dfrac{1}{\sqrt{5}}\left[\left(\dfrac{1+\sqrt{5}}{2}\right)^{n+1} - \left(\dfrac{1-\sqrt{5}}{2}\right)^{n+1}\right]$. $\blacksquare$</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- INTERACTIVE QUICK-CHECK QUIZ (5 AUTO-GRADED MCQS)                   -->
+      <!-- =================================================================== -->
+      <section id="quiz" class="scroll-mt-24 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Self-Assessment</span>
+            <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white mt-0.5">⚡ Quick-Check Quiz</h3>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-xs font-mono font-bold text-indigo-700 dark:text-indigo-300">
+              Score: <span id="quiz-score">0</span> / 5
+            </div>
+            <button
+              type="button"
+              onclick="resetQuiz()"
+              class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition"
+            >
+              Reset Quiz
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span>Quiz Mastery</span>
+            <span id="quiz-mastery-text" class="font-mono">0%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="quiz-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="quiz-container" class="space-y-5"></div>
+      </section>
+
+      <!-- Footer Navigation -->
+      <footer class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm">
+        <a href="math103_lesson11.html" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 hover:border-indigo-500 text-slate-700 dark:text-slate-200 font-semibold transition flex items-center justify-center gap-2">
+          <span>←</span> Lesson 11: Propositional Logic &amp; Counting Principles
+        </a>
+        <a href="math103_lesson13.html" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-xs transition flex items-center justify-center gap-2">
+          Lesson 13: Graph Theory &amp; Shortest-Path Algorithms <span>→</span>
+        </a>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. KATEX RENDERING HELPER
+       ========================================================================= */
+    function renderMath(targetEl = document.body) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(targetEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function fmtNum(v) {
+      if (!Number.isFinite(v)) return '—';
+      if (Math.abs(v - Math.round(v)) < 1e-6) return Math.round(v).toLocaleString();
+      return Number(v.toFixed(2)).toLocaleString();
+    }
+
+    /* =========================================================================
+       2. THEME, SIDEBAR, VAULT & PROGRESS TRACKING (14 MILESTONES)
+       ========================================================================= */
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('math103_theme', isDark ? 'dark' : 'light');
+      updateLab1(false);
+      updateLab3(false);
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    function openSidebar() {
+      sidebar.classList.remove('-translate-x-full');
+      backdrop.classList.remove('hidden');
+    }
+    function closeSidebar() {
+      sidebar.classList.add('-translate-x-full');
+      backdrop.classList.add('hidden');
+    }
+
+    document.getElementById('mobile-menu-btn').addEventListener('click', openSidebar);
+    document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+    backdrop.addEventListener('click', closeSidebar);
+
+    document.querySelectorAll('.toc-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) closeSidebar();
+      });
+    });
+
+    function toggleRoadmap() {
+      document.getElementById('roadmap-list').classList.toggle('hidden');
+      document.getElementById('roadmap-chevron').classList.toggle('rotate-180');
+    }
+
+    function toggleVault(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.toggle('hidden');
+      if (!isHidden) renderMath(el);
+    }
+
+    const viewedSections = new Set();
+    const exploredLabs = new Set();
+    let quizAnsweredCount = 0;
+    let quizCorrectCount = 0;
+
+    function markLabExplored(labId) {
+      if (!exploredLabs.has(labId)) {
+        exploredLabs.add(labId);
+        updateOverallProgress();
+      }
+    }
+
+    function updateOverallProgress() {
+      const total = 6 + 3 + 5; // 6 sections + 3 labs + 5 quiz questions = 14 milestones
+      const done = viewedSections.size + exploredLabs.size + quizAnsweredCount;
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('header-progress-text').textContent = pct + '%';
+      document.getElementById('sidebar-progress-pct').textContent = pct + '%';
+      document.getElementById('sidebar-progress-bar').style.width = pct + '%';
+      document.getElementById('sidebar-progress-detail').textContent =
+        `${viewedSections.size}/6 sections · ${exploredLabs.size}/3 labs · ${quizAnsweredCount}/5 quiz`;
+    }
+
+    function initObservers() {
+      const spyTargets = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link[data-spy]');
+      const spyObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              tocLinks.forEach((link) => {
+                if (link.dataset.spy === id) {
+                  link.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                } else {
+                  link.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-700', 'dark:text-indigo-300', 'font-semibold');
+                }
+              });
+            }
+          });
+        },
+        { rootMargin: '-18% 0px -65% 0px', threshold: 0 }
+      );
+      spyTargets.forEach((sec) => spyObs.observe(sec));
+
+      const secObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const secId = entry.target.dataset.trackSec;
+              if (secId && !viewedSections.has(secId)) {
+                viewedSections.add(secId);
+                const badge = document.getElementById('badge-' + secId);
+                if (badge) {
+                  badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300';
+                  badge.textContent = '✓ Viewed';
+                }
+                updateOverallProgress();
+              }
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      document.querySelectorAll('section[data-track-sec]').forEach((s) => secObs.observe(s));
+    }
+
+    /* =========================================================================
+       3. LAB 1: POPULATION RECURRENCE SIMULATOR & CLOSED-FORM VERIFIER
+       ========================================================================= */
+    function setLab1Preset(r, d, a0, N) {
+      document.getElementById('l1-r').value = r;
+      document.getElementById('l1-d').value = d;
+      document.getElementById('l1-a0').value = a0;
+      document.getElementById('l1-N').value = N;
+      updateLab1(true);
+    }
+
+    function updateLab1(userTriggered) {
+      if (userTriggered) markLabExplored('lab-1');
+      const r = parseFloat(document.getElementById('l1-r').value);
+      const d = parseFloat(document.getElementById('l1-d').value);
+      const a0 = parseFloat(document.getElementById('l1-a0').value);
+      const N = parseInt(document.getElementById('l1-N').value, 10);
+
+      document.getElementById('l1-r-val').textContent = r.toFixed(2);
+      document.getElementById('l1-d-val').textContent = d;
+      document.getElementById('l1-a0-val').textContent = a0;
+      document.getElementById('l1-N-val').textContent = N;
+
+      const isLinear = Math.abs(r - 1) < 1e-6;
+      const eqStar = isLinear ? null : d / (r - 1);
+      const coef = isLinear ? -d : (a0 - eqStar);
+
+      // Compute iterative & closed-form arrays
+      const iterVals = [a0];
+      const closedVals = [a0];
+      const closedFn = (t) => isLinear ? a0 - d * t : coef * Math.pow(r, t) + eqStar;
+
+      for (let n = 1; n <= N; n++) {
+        iterVals.push(r * iterVals[n - 1] - d);
+        closedVals.push(closedFn(n));
+      }
+
+      // Behavior badge
+      let bText = '', bCls = '';
+      if (isLinear) {
+        bText = d === 0 ? 'Steady Constant' : (d < 0 ? 'Linear Arithmetic Growth' : 'Linear Arithmetic Decline');
+        bCls = 'bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200 border border-sky-300 dark:border-sky-700';
+      } else if (Math.abs(a0 - eqStar) < 1e-6) {
+        bText = 'Steady Equilibrium (a₀ = a*)';
+        bCls = 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700';
+      } else if (a0 > eqStar) {
+        bText = 'Exponential Growth';
+        bCls = 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700';
+      } else {
+        bText = 'Decline / Extinction';
+        bCls = 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-700';
+      }
+      const badge = document.getElementById('l1-behavior-badge');
+      badge.className = `px-3 py-1 rounded-full text-xs font-mono font-extrabold ${bCls}`;
+      badge.textContent = bText;
+
+      // Formula readout
+      const dSign = d >= 0 ? `- ${d}` : `+ ${Math.abs(d)}`;
+      const recTex = `a_{n+1} = ${r === 1 ? '' : r}a_n ${dSign}, \\quad a_0 = ${a0}`;
+      let closedTex = '';
+      if (isLinear) {
+        closedTex = `a_n = ${a0} ${dSign}n`;
+      } else {
+        const cStr = Number(coef.toFixed(2));
+        const eStr = Number(eqStar.toFixed(2));
+        const ePart = eStr >= 0 ? `+ ${eStr}` : `- ${Math.abs(eStr)}`;
+        closedTex = `a_n = (${cStr})\\cdot ${r}^n ${ePart}`;
+      }
+
+      const fBox = document.getElementById('l1-formula-box');
+      fBox.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div><strong class="text-indigo-600 dark:text-indigo-400">Recurrence:</strong> $${recTex}$</div>
+          <div><strong class="text-sky-600 dark:text-sky-400">Equilibrium $a^*$:</strong> ${isLinear ? 'None ($r = 1$)' : `$a^* = \\frac{${d}}{${r}-1} = \\mathbf{${Number(eqStar.toFixed(2))}}$`}</div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+          <strong>Exact Closed Form:</strong> &nbsp; $${closedTex}$
+        </div>
+      `;
+      renderMath(fBox);
+
+      // Verification table
+      const tbody = document.getElementById('l1-table-body');
+      tbody.innerHTML = iterVals.map((iv, n) => {
+        const cv = closedVals[n];
+        const ok = Math.abs(iv - cv) < 1e-4;
+        return `
+          <tr>
+            <td class="px-2.5 py-1.5 font-bold text-slate-500">${n}</td>
+            <td class="px-2.5 py-1.5 text-slate-900 dark:text-white">${fmtNum(iv)}</td>
+            <td class="px-2.5 py-1.5 text-indigo-600 dark:text-indigo-400">${fmtNum(cv)}</td>
+            <td class="px-2.5 py-1.5 font-bold text-emerald-600 dark:text-emerald-400">${ok ? '✓' : '—'}</td>
+          </tr>
+        `;
+      }).join('');
+
+      drawLab1SVG(iterVals, closedFn, N, eqStar);
+    }
+
+    function drawLab1SVG(iterVals, closedFn, N, eqStar) {
+      const svg = document.getElementById('l1-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 460, H = 250, padL = 56, padR = 18, padT = 20, padB = 28;
+      const allY = iterVals.slice();
+      if (eqStar !== null && Math.abs(eqStar) < Math.max(...allY.map(Math.abs), 100) * 3) allY.push(eqStar);
+      allY.push(0);
+
+      let yMin = Math.min(...allY);
+      let yMax = Math.max(...allY);
+      if (Math.abs(yMax - yMin) < 10) { yMin -= 50; yMax += 50; }
+      const margin = (yMax - yMin) * 0.12;
+      yMin -= margin; yMax += margin;
+
+      const sx = (t) => padL + (t / N) * (W - padL - padR);
+      const sy = (v) => padT + ((yMax - v) / (yMax - yMin)) * (H - padT - padB);
+
+      let html = `
+        <line x1="${padL}" y1="${sy(0)}" x2="${W - padR}" y2="${sy(0)}" stroke="${axisCol}" stroke-width="1.4" />
+        <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="${axisCol}" stroke-width="1.4" />
+      `;
+
+      // Equilibrium line
+      if (eqStar !== null && eqStar >= yMin && eqStar <= yMax) {
+        html += `
+          <line x1="${padL}" y1="${sy(eqStar)}" x2="${W - padR}" y2="${sy(eqStar)}" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="6 4" />
+          <text x="${W - padR - 4}" y="${sy(eqStar) - 5}" text-anchor="end" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#f59e0b">a*=${Number(eqStar.toFixed(1))}</text>
+        `;
+      }
+
+      // Smooth closed-form curve
+      let d = '';
+      for (let i = 0; i <= 100; i++) {
+        const t = (i / 100) * N;
+        const v = closedFn(t);
+        d += `${i === 0 ? 'M' : 'L'} ${sx(t).toFixed(1)} ${sy(v).toFixed(1)} `;
+      }
+      html += `<path d="${d}" fill="none" stroke="#4f46e5" stroke-width="2.6" />`;
+
+      // Discrete iterative markers + x ticks
+      iterVals.forEach((v, n) => {
+        const cx = sx(n), cy = sy(v);
+        html += `
+          <circle cx="${cx}" cy="${cy}" r="5" fill="#10b981" stroke="${isDark ? '#111827' : '#ffffff'}" stroke-width="1.8" />
+          <text x="${cx}" y="${H - 8}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">${n}</text>
+        `;
+      });
+
+      // Y-axis min/max labels
+      const compact = (val) => Math.abs(val) >= 10000 ? (val / 1000).toFixed(0) + 'k' : Math.round(val);
+      html += `
+        <text x="${padL - 6}" y="${padT + 8}" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">${compact(yMax)}</text>
+        <text x="${padL - 6}" y="${H - padB}" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">${compact(yMin)}</text>
+      `;
+
+      svg.innerHTML = html;
+    }
+
+    /* =========================================================================
+       4. LAB 2: STEP-BY-STEP OGF & PARTIAL-FRACTION PIPELINE EXPLORER
+       ========================================================================= */
+    const lab2Problems = [
+      {
+        title: 'ISRT Squirrels: $a_{n+1} = 2a_n - 150,\\; a_0 = 500$',
+        steps: [
+          '<strong>Step 1 · Multiply by $x^{n+1}$ &amp; Sum ($n \\ge 0$):</strong> $$\\sum_{n=0}^{\\infty} a_{n+1} x^{n+1} = 2x\\sum_{n=0}^{\\infty} a_n x^n - 150\\sum_{n=0}^{\\infty} x^{n+1} \\implies G(x) - 500 = 2xG(x) - \\frac{150x}{1 - x}$$',
+          '<strong>Step 2 · Solve Algebraically for $G(x)$:</strong> $$(1 - 2x)G(x) = 500 - \\frac{150x}{1 - x} = \\frac{500 - 650x}{1 - x} \\implies G(x) = \\frac{500 - 650x}{(1 - 2x)(1 - x)}$$',
+          '<strong>Step 3 · Partial Fraction Decomposition:</strong> $$\\frac{500 - 650x}{(1 - 2x)(1 - x)} = \\frac{A}{1 - 2x} + \\frac{B}{1 - x} \\implies A = 350,\\; B = 150 \\implies G(x) = \\frac{350}{1 - 2x} + \\frac{150}{1 - x}$$',
+          '<strong>Step 4 · Extract $[x^n]G(x)$:</strong> $$G(x) = 350\\sum_{n=0}^{\\infty} 2^n x^n + 150\\sum_{n=0}^{\\infty} x^n \\implies \\mathbf{a_n = 350\\cdot 2^n + 150}$$'
+        ],
+        iter: (n) => { let a = 500; for (let i = 0; i < n; i++) a = 2 * a - 150; return a; },
+        closed: (n) => 350 * Math.pow(2, n) + 150
+      },
+      {
+        title: 'ISRT Frogs: $a_{n+1} = 4a_n - 100,\\; a_0 = 50$',
+        steps: [
+          '<strong>Step 1 · Multiply by $x^{n+1}$ &amp; Sum ($n \\ge 0$):</strong> $$\\sum_{n=0}^{\\infty} a_{n+1} x^{n+1} = 4x\\sum_{n=0}^{\\infty} a_n x^n - 100\\sum_{n=0}^{\\infty} x^{n+1} \\implies G(x) - 50 = 4xG(x) - \\frac{100x}{1 - x}$$',
+          '<strong>Step 2 · Solve Algebraically for $G(x)$:</strong> $$(1 - 4x)G(x) = 50 - \\frac{100x}{1 - x} = \\frac{50 - 150x}{1 - x} \\implies G(x) = \\frac{50 - 150x}{(1 - 4x)(1 - x)}$$',
+          '<strong>Step 3 · Partial Fraction Decomposition:</strong> $$\\frac{50 - 150x}{(1 - 4x)(1 - x)} = \\frac{A}{1 - 4x} + \\frac{B}{1 - x} \\implies A = \\frac{50}{3},\\; B = \\frac{100}{3} \\implies G(x) = \\frac{50/3}{1 - 4x} + \\frac{100/3}{1 - x}$$',
+          '<strong>Step 4 · Extract $[x^n]G(x)$:</strong> $$G(x) = \\frac{50}{3}\\sum_{n=0}^{\\infty} 4^n x^n + \\frac{100}{3}\\sum_{n=0}^{\\infty} x^n \\implies \\mathbf{a_n = \\frac{50\\cdot 4^n + 100}{3}}$$'
+        ],
+        iter: (n) => { let a = 50; for (let i = 0; i < n; i++) a = 4 * a - 100; return a; },
+        closed: (n) => (50 * Math.pow(4, n) + 100) / 3
+      },
+      {
+        title: '2nd-Order Distinct: $a_{n+2} = 3a_{n+1} - 2a_n,\\; a_0 = 0,\\; a_1 = 1$',
+        steps: [
+          '<strong>Step 1 · Multiply by $x^{n+2}$ &amp; Sum ($n \\ge 0$):</strong> $$\\big[G(x) - 0 - x\\big] = 3x\\big[G(x) - 0\\big] - 2x^2 G(x)$$',
+          '<strong>Step 2 · Solve Algebraically for $G(x)$:</strong> $$(1 - 3x + 2x^2)G(x) = x \\implies G(x) = \\frac{x}{(1 - 2x)(1 - x)}$$',
+          '<strong>Step 3 · Partial Fraction Decomposition:</strong> $$\\frac{x}{(1 - 2x)(1 - x)} = \\frac{A}{1 - 2x} + \\frac{B}{1 - x} \\implies A = 1,\\; B = -1 \\implies G(x) = \\frac{1}{1 - 2x} - \\frac{1}{1 - x}$$',
+          '<strong>Step 4 · Extract $[x^n]G(x)$:</strong> $$G(x) = \\sum_{n=0}^{\\infty} 2^n x^n - \\sum_{n=0}^{\\infty} x^n \\implies \\mathbf{a_n = 2^n - 1}$$'
+        ],
+        iter: (n) => {
+          if (n === 0) return 0; if (n === 1) return 1;
+          let p2 = 0, p1 = 1;
+          for (let i = 2; i <= n; i++) { const cur = 3 * p1 - 2 * p2; p2 = p1; p1 = cur; }
+          return p1;
+        },
+        closed: (n) => Math.pow(2, n) - 1
+      },
+      {
+        title: '2nd-Order Repeated: $a_{n+2} = 6a_{n+1} - 9a_n,\\; a_0 = 0,\\; a_1 = 1$',
+        steps: [
+          '<strong>Step 1 · Multiply by $x^{n+2}$ &amp; Sum ($n \\ge 0$):</strong> $$\\big[G(x) - 0 - x\\big] = 6x\\big[G(x) - 0\\big] - 9x^2 G(x)$$',
+          '<strong>Step 2 · Solve Algebraically for $G(x)$:</strong> $$(1 - 6x + 9x^2)G(x) = x \\implies G(x) = \\frac{x}{(1 - 3x)^2}$$',
+          '<strong>Step 3 · Apply Repeated-Factor Expansion:</strong> Recall $\\dfrac{1}{(1 - 3x)^2} = \\displaystyle\\sum_{k=0}^{\\infty} (k + 1)3^k x^k$. Multiply by $x$: $$G(x) = \\sum_{k=0}^{\\infty} (k + 1)3^k x^{k+1}$$',
+          '<strong>Step 4 · Re-index $n = k + 1$ &amp; Extract $[x^n]$:</strong> $$G(x) = \\sum_{n=1}^{\\infty} n\\,3^{n-1} x^n \\implies \\mathbf{a_n = n\\cdot 3^{n-1}} \\quad (a_0 = 0)$$'
+        ],
+        iter: (n) => {
+          if (n === 0) return 0; if (n === 1) return 1;
+          let p2 = 0, p1 = 1;
+          for (let i = 2; i <= n; i++) { const cur = 6 * p1 - 9 * p2; p2 = p1; p1 = cur; }
+          return p1;
+        },
+        closed: (n) => n === 0 ? 0 : n * Math.pow(3, n - 1)
+      }
+    ];
+
+    const lab2State = { prob: 0, step: 0 };
+
+    function selectLab2Problem(idx, userTriggered = true) {
+      lab2State.prob = idx;
+      if (userTriggered) markLabExplored('lab-2');
+      document.querySelectorAll('.l2p-btn').forEach((btn) => {
+        const active = parseInt(btn.dataset.l2p, 10) === idx;
+        btn.className = active
+          ? 'l2p-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition'
+          : 'l2p-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 transition';
+      });
+      setLab2Step(lab2State.step, false);
+      updateLab2Eval(false);
+    }
+
+    function setLab2Step(step, userTriggered = true) {
+      lab2State.step = Math.max(0, Math.min(3, step));
+      if (userTriggered) markLabExplored('lab-2');
+      document.querySelectorAll('.l2s-btn').forEach((btn) => {
+        const active = parseInt(btn.dataset.l2s, 10) === lab2State.step;
+        btn.className = active
+          ? 'l2s-btn px-3 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition'
+          : 'l2s-btn px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-[#111827] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 transition';
+      });
+      const item = lab2Problems[lab2State.prob];
+      const box = document.getElementById('l2-derivation');
+      box.innerHTML = `<div class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">${item.title}</div><div>${item.steps[lab2State.step]}</div>`;
+      renderMath(box);
+    }
+
+    function navLab2Step(delta) {
+      setLab2Step((lab2State.step + delta + 4) % 4, true);
+    }
+
+    function updateLab2Eval(userTriggered) {
+      if (userTriggered) markLabExplored('lab-2');
+      const n = parseInt(document.getElementById('l2-n').value, 10);
+      document.getElementById('l2-n-val').textContent = `n = ${n}`;
+      const item = lab2Problems[lab2State.prob];
+      const iv = item.iter(n);
+      const cv = item.closed(n);
+      document.getElementById('l2-eval-result').innerHTML = `
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+          <div class="font-sans text-[11px] text-slate-500">From Recurrence</div>
+          <div class="text-base font-extrabold text-slate-900 dark:text-white mt-0.5">${fmtNum(iv)}</div>
+        </div>
+        <div class="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+          <div class="font-sans text-[11px] text-emerald-700 dark:text-emerald-400">From OGF Formula</div>
+          <div class="text-base font-extrabold text-emerald-700 dark:text-emerald-300 mt-0.5">${fmtNum(cv)} ✓</div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       5. LAB 3: 2ND-ORDER CHARACTERISTIC ROOT & SEQUENCE VISUALIZER
+       ========================================================================= */
+    function setLab3Preset(c1, c2, a0, a1) {
+      document.getElementById('l3-c1').value = c1;
+      document.getElementById('l3-c2').value = c2;
+      document.getElementById('l3-a0').value = a0;
+      document.getElementById('l3-a1').value = a1;
+      updateLab3(true);
+    }
+
+    function updateLab3(userTriggered) {
+      if (userTriggered) markLabExplored('lab-3');
+      const c1 = parseInt(document.getElementById('l3-c1').value, 10);
+      const c2 = parseInt(document.getElementById('l3-c2').value, 10);
+      const a0 = parseInt(document.getElementById('l3-a0').value, 10);
+      const a1 = parseInt(document.getElementById('l3-a1').value, 10);
+
+      document.getElementById('l3-c1-val').textContent = c1;
+      document.getElementById('l3-c2-val').textContent = c2;
+      document.getElementById('l3-a0-val').textContent = a0;
+      document.getElementById('l3-a1-val').textContent = a1;
+
+      const disc = c1 * c1 + 4 * c2;
+      let badgeTxt = '', badgeCls = '', rootsTex = '', closedTex = '';
+
+      if (disc > 0) {
+        const sq = Math.sqrt(disc);
+        const r1 = (c1 + sq) / 2;
+        const r2 = (c1 - sq) / 2;
+        const A = (a1 - a0 * r2) / (r1 - r2);
+        const B = a0 - A;
+        badgeTxt = 'Distinct Real Roots';
+        badgeCls = 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700';
+        rootsTex = `r_1 = ${r1.toFixed(2)},\\; r_2 = ${r2.toFixed(2)}`;
+        closedTex = `a_n = (${A.toFixed(2)})(${r1.toFixed(2)})^n + (${B.toFixed(2)})(${r2.toFixed(2)})^n`;
+      } else if (disc === 0) {
+        const r = c1 / 2;
+        badgeTxt = 'Repeated Real Root';
+        badgeCls = 'bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200 border border-sky-300 dark:border-sky-700';
+        rootsTex = `r_1 = r_2 = ${r.toFixed(2)}`;
+        if (Math.abs(r) > 1e-6) {
+          const A = a0;
+          const B = a1 / r - a0;
+          closedTex = `a_n = \\big(${A.toFixed(2)} + ${B.toFixed(2)}n\\big)(${r.toFixed(2)})^n`;
+        } else {
+          closedTex = `a_n = 0 \\;\\;(n \\ge 2)`;
+        }
+      } else {
+        const re = c1 / 2;
+        const im = Math.sqrt(-disc) / 2;
+        const rho = Math.hypot(re, im);
+        const theta = Math.atan2(im, re);
+        const C1 = a0;
+        const C2 = (a1 - a0 * re) / im;
+        badgeTxt = 'Complex Conjugate Roots';
+        badgeCls = 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700';
+        rootsTex = `r = ${re.toFixed(2)} \\pm ${im.toFixed(2)}i \\;\\;(\\rho = ${rho.toFixed(2)})`;
+        closedTex = `a_n = (${rho.toFixed(2)})^n\\big[${C1.toFixed(2)}\\cos(${theta.toFixed(2)}n) + ${C2.toFixed(2)}\\sin(${theta.toFixed(2)}n)\\big]`;
+      }
+
+      const badge = document.getElementById('l3-root-badge');
+      badge.className = `px-3 py-1 rounded-full text-xs font-mono font-extrabold ${badgeCls}`;
+      badge.textContent = badgeTxt;
+
+      const s1 = c1 >= 0 ? `- ${c1}r` : `+ ${Math.abs(c1)}r`;
+      const s2 = c2 >= 0 ? `- ${c2}` : `+ ${Math.abs(c2)}`;
+      const rBox = document.getElementById('l3-readout');
+      rBox.innerHTML = `
+        <div class="flex flex-wrap justify-between gap-2">
+          <span><strong>Characteristic Eq:</strong> $r^2 ${s1} ${s2} = 0$</span>
+          <span><strong>Discriminant:</strong> $\\Delta = c_1^2 + 4c_2 = \\mathbf{${disc}}$</span>
+        </div>
+        <div><strong>Roots:</strong> $${rootsTex}$</div>
+        <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center">
+          $$${closedTex}$$
+        </div>
+      `;
+      renderMath(rBox);
+
+      // Compute sequence a_0 .. a_10
+      const seq = [a0, a1];
+      for (let i = 2; i <= 10; i++) seq.push(c1 * seq[i - 1] + c2 * seq[i - 2]);
+      drawLab3StemSVG(seq);
+    }
+
+    function drawLab3StemSVG(seq) {
+      const svg = document.getElementById('l3-svg');
+      const isDark = document.documentElement.classList.contains('dark');
+      const axisCol = isDark ? '#64748b' : '#94a3b8';
+      const txtCol = isDark ? '#94a3b8' : '#64748b';
+
+      const W = 600, H = 230, padL = 48, padR = 22, padT = 26, padB = 30;
+      let yMin = Math.min(0, ...seq);
+      let yMax = Math.max(0, ...seq);
+      if (yMax === yMin) { yMin = -2; yMax = 2; }
+      const pad = (yMax - yMin) * 0.14;
+      yMin -= pad; yMax += pad;
+
+      const sx = (n) => padL + (n / 10) * (W - padL - padR);
+      const sy = (v) => padT + ((yMax - v) / (yMax - yMin)) * (H - padT - padB);
+      const yZero = sy(0);
+
+      let html = `
+        <line x1="${padL}" y1="${yZero}" x2="${W - padR}" y2="${yZero}" stroke="${axisCol}" stroke-width="1.6" />
+        <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H - padB}" stroke="${axisCol}" stroke-width="1.4" />
+      `;
+
+      const compact = (v) => {
+        if (Math.abs(v) >= 1000000) return (v / 1e6).toFixed(1) + 'M';
+        if (Math.abs(v) >= 10000) return (v / 1e3).toFixed(0) + 'k';
+        return Math.round(v);
+      };
+
+      seq.forEach((v, n) => {
+        const cx = sx(n);
+        const cy = sy(v);
+        const col = v >= 0 ? '#10b981' : '#ef4444';
+        const lblY = v >= 0 ? Math.max(padT - 6, cy - 9) : Math.min(H - padB + 12, cy + 16);
+        html += `
+          <line x1="${cx}" y1="${yZero}" x2="${cx}" y2="${cy}" stroke="${col}" stroke-width="2.4" />
+          <circle cx="${cx}" cy="${cy}" r="5" fill="${col}" stroke="${isDark ? '#111827' : '#ffffff'}" stroke-width="1.6" />
+          <text x="${cx}" y="${lblY}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="${col}">${compact(v)}</text>
+          <text x="${cx}" y="${H - 8}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="${txtCol}">a${n}</text>
+        `;
+      });
+
+      svg.innerHTML = html;
+    }
+
+    /* =========================================================================
+       6. QUICK-CHECK INTERACTIVE QUIZ (5 AUTO-GRADED MCQS)
+       ========================================================================= */
+    const quizData = [
+      {
+        q: '1. What is the coefficient $a_n$ of $x^n$ in $G(x) = \\dfrac{350}{1 - 2x} + \\dfrac{150}{1 - x}$?',
+        options: [
+          '$350\\cdot 2^n + 150$',
+          '$350n + 150$',
+          '$500\\cdot 2^n$',
+          '$350\\cdot 2^{n-1} + 150$'
+        ],
+        answer: 0,
+        explanation: 'Since $\\frac{1}{1 - 2x} = \\sum_{n=0}^{\\infty} 2^n x^n$ and $\\frac{1}{1 - x} = \\sum_{n=0}^{\\infty} x^n$, the coefficient of $x^n$ is $a_n = 350\\cdot 2^n + 150$.'
+      },
+      {
+        q: '2. If $G(x) = \\displaystyle\\sum_{n=0}^{\\infty} a_n x^n$, what does $\\displaystyle\\sum_{n=0}^{\\infty} a_{n+1} x^{n+1}$ simplify to?',
+        options: [
+          '$xG(x)$',
+          '$G(x) - a_0$',
+          '$G(x) - a_0 - a_1 x$',
+          '$\\dfrac{G(x)}{x}$'
+        ],
+        answer: 1,
+        explanation: 'Expanding $\\sum_{n=0}^{\\infty} a_{n+1} x^{n+1} = a_1 x + a_2 x^2 + a_3 x^3 + \\dots$, which is simply $G(x)$ missing its constant term $a_0$, i.e., $G(x) - a_0$.'
+      },
+      {
+        q: '3. For the squirrel recurrence $a_{n+1} = 2a_n - 150$, which initial population $a_0$ keeps the population constant forever?',
+        options: [
+          '$a_0 = 75$',
+          '$a_0 = 150$',
+          '$a_0 = 300$',
+          '$a_0 = 500$'
+        ],
+        answer: 1,
+        explanation: 'At equilibrium $a_{n+1} = a_n = a^*$, so $a^* = 2a^* - 150 \\implies a^* = 150$. Indeed, $2(150) - 150 = 150$ forever!'
+      },
+      {
+        q: '4. What is the coefficient $[x^n]\\dfrac{1}{(1 - 3x)^2}$?',
+        options: [
+          '$3^n$',
+          '$n\\cdot 3^n$',
+          '$(n + 1)3^n$',
+          '$\\binom{n + 2}{2}3^n$'
+        ],
+        answer: 2,
+        explanation: 'From the Master OGF Table, $\\frac{1}{(1 - rx)^2} = \\sum_{n=0}^{\\infty} (n + 1)r^n x^n$. Setting $r = 3$ gives $(n + 1)3^n$.'
+      },
+      {
+        q: '5. If $a_n = 2a_{n-1} + 3$ with $a_0 = 1$, what is $a_3$?',
+        options: [
+          '$13$',
+          '$21$',
+          '$29$',
+          '$31$'
+        ],
+        answer: 2,
+        explanation: 'Iterating step-by-step: $a_0 = 1$, $a_1 = 2(1) + 3 = 5$, $a_2 = 2(5) + 3 = 13$, and $a_3 = 2(13) + 3 = 29$.'
+      }
+    ];
+
+    let quizState = [];
+
+    function renderQuiz() {
+      quizState = quizData.map(() => ({ answered: false }));
+      quizAnsweredCount = 0;
+      quizCorrectCount = 0;
+      updateQuizUI();
+
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = quizData.map((item, qIdx) => `
+        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+          <p class="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${item.options.map((opt, optIdx) => `
+              <button
+                type="button"
+                id="q-${qIdx}-opt-${optIdx}"
+                onclick="selectQuizOption(${qIdx}, ${optIdx})"
+                class="text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#111827] hover:border-indigo-400 dark:hover:border-indigo-500 transition flex items-start gap-2.5"
+              >
+                <span class="font-mono text-xs font-bold text-indigo-500 mt-0.5">${String.fromCharCode(65 + optIdx)}.</span>
+                <span>${opt}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div id="quiz-exp-${qIdx}" class="hidden p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed"></div>
+        </div>
+      `).join('');
+
+      renderMath(container);
+    }
+
+    function selectQuizOption(qIdx, optIdx) {
+      if (quizState[qIdx].answered) return;
+      quizState[qIdx].answered = true;
+      quizAnsweredCount++;
+
+      const item = quizData[qIdx];
+      const isCorrect = optIdx === item.answer;
+      if (isCorrect) quizCorrectCount++;
+
+      item.options.forEach((_, idx) => {
+        const btn = document.getElementById(`q-${qIdx}-opt-${idx}`);
+        btn.disabled = true;
+        if (idx === item.answer) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-100 font-semibold flex items-start gap-2.5';
+        } else if (idx === optIdx && !isCorrect) {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/50 text-rose-900 dark:text-rose-100 flex items-start gap-2.5';
+        } else {
+          btn.className = 'text-left px-4 py-3 rounded-xl text-sm border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/40 text-slate-400 dark:text-slate-500 flex items-start gap-2.5';
+        }
+      });
+
+      const expEl = document.getElementById(`quiz-exp-${qIdx}`);
+      expEl.classList.remove('hidden');
+      expEl.className = isCorrect
+        ? 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
+        : 'p-3.5 rounded-xl text-xs sm:text-sm leading-relaxed bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 border border-rose-200 dark:border-rose-800';
+      expEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✕ Not quite.'}</strong> ${item.explanation}`;
+
+      renderMath(expEl);
+      updateQuizUI();
+      updateOverallProgress();
+    }
+
+    function updateQuizUI() {
+      document.getElementById('quiz-score').textContent = quizCorrectCount;
+      const pct = Math.round((quizCorrectCount / quizData.length) * 100);
+      document.getElementById('quiz-mastery-text').textContent = `${pct}% (${quizCorrectCount}/${quizData.length} correct)`;
+      document.getElementById('quiz-mastery-bar').style.width = `${pct}%`;
+    }
+
+    function resetQuiz() {
+      renderQuiz();
+      updateOverallProgress();
+    }
+
+    /* =========================================================================
+       7. INITIALIZATION ON DOMCONTENTLOADED
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      updateLab1(false);
+      selectLab2Problem(0, false);
+      updateLab3(false);
+      renderQuiz();
+      updateOverallProgress();
+      initObservers();
+
+      const initMath = () => {
+        if (typeof renderMathInElement === 'function') {
+          renderMath(document.body);
+        } else {
+          setTimeout(initMath, 60);
+        }
+      };
+      initMath();
+    });
+  </script>
+</body>
+</html>

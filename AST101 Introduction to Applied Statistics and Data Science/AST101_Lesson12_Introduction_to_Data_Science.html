@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 12: Introduction to Data Science, Quality & Governance</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #0f172a, #2563eb, #059669);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      color: #fff; font-weight: 800; font-size: 14.5px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #2563eb, var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #059669 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.28); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 12px; margin: 16px 0; }
+    .grid-5 { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 12px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .btn-primary {
+      padding: 9px 16px; border-radius: 9px; border: none;
+      background: var(--primary); color: #fff; font-weight: 700; font-size: 13.5px;
+      cursor: pointer; transition: background 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    /* Interactive Lab */
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-top: 14px;
+    }
+
+    /* Pipeline Stepper */
+    .pipeline-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+      gap: 8px; margin-bottom: 14px;
+    }
+    .pipe-step {
+      padding: 11px 8px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--text); text-align: center;
+      cursor: pointer; font-size: 12.5px; font-weight: 700; transition: all 0.18s ease;
+    }
+    .pipe-step span { display: block; font-size: 10.5px; color: var(--text-muted); margin-bottom: 3px; }
+    .pipe-step:hover { border-color: var(--primary); }
+    .pipe-step.active {
+      background: var(--primary); border-color: var(--primary); color: #fff;
+      transform: translateY(-2px); box-shadow: var(--shadow-sm);
+    }
+    .pipe-step.active span { color: rgba(255,255,255,0.85); }
+
+    /* Classifier Drill */
+    .drill-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 22px; text-align: center; margin-bottom: 14px;
+    }
+    .drill-prompt { font-size: 18px; font-weight: 800; margin: 8px 0 6px; }
+    .choice-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 9px; margin: 14px 0;
+    }
+    .choice-btn {
+      padding: 10px 10px; border-radius: 9px; border: 1.5px solid var(--border);
+      background: var(--surface-alt); color: var(--text); font-weight: 700;
+      font-size: 13.5px; cursor: pointer; transition: all 0.15s ease;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-soft); }
+    .choice-btn.ok { background: var(--success-soft); border-color: var(--success); color: var(--success); }
+    .choice-btn.err { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
+    .drill-fb {
+      display: none; padding: 12px 15px; border-radius: 9px; text-align: left; font-size: 14px; margin-top: 8px;
+    }
+    .drill-fb.show { display: block; }
+    .drill-fb.ok { background: var(--success-soft); border: 1px solid var(--success); }
+    .drill-fb.err { background: var(--danger-soft); border: 1px solid var(--danger); }
+
+    /* Quality Checklist */
+    .audit-item {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+      border-radius: 9px; background: var(--surface); border: 1px solid var(--border);
+      margin-bottom: 8px; cursor: pointer; font-size: 14px;
+    }
+    .audit-item input { margin-top: 4px; transform: scale(1.15); cursor: pointer; }
+    .audit-item.checked { background: var(--success-soft); border-color: var(--success); }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 12</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L12</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 12 Progress</span>
+          <span id="progress-text">0 / 6</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Data Science &amp; DIKW Pyramid</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. CRISP-DM Life Cycle (Lab 1)</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Big Data (5 Vs) &amp; Taxonomies</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Six Question Types (Lab 2)</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Data Quality &amp; Governance</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 4 of 4 • Course Finale</span>
+          <span class="badge">Lesson 12 of 12 (Slide Deck L12)</span>
+          <span class="badge">⏱ Est. Study Time: 60 mins</span>
+        </div>
+        <h1>Introduction to Data Science, Quality &amp; Governance</h1>
+        <p class="subtitle">
+          Synthesize everything you learned in AST 101—move from raw data to wisdom, navigate the CRISP-DM life cycle, classify Big Data &amp; analytical questions, enforce ISO 8000 data quality, and master data governance roles.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L12 Slides + Kelleher &amp; Tierney</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 36–40</strong></div>
+          <div><span>Past Exams Included</span><strong>1st Incourse '23 &amp; Final '24</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>What is Data Science? DIKW Pyramid &amp; Related Disciplines</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p><strong>Data Science</strong> is an interdisciplinary field combining <strong>statistical methods &amp; mathematics</strong>, <strong>computer science</strong> (Python, R, SQL, distributed systems), <strong>domain knowledge</strong>, and <strong>visualization &amp; communication</strong> to extract non-obvious, useful patterns from data and support evidence-based decisions.</p>
+
+        <!-- DIKW Pyramid SVG -->
+        <div style="text-align:center; background:var(--surface-alt); border:1px solid var(--border); border-radius:12px; padding:18px; margin:16px 0">
+          <h4 style="margin-top:0; margin-bottom:10px">The DIKW Hierarchy (Dr. Masud's Temperature Example)</h4>
+          <svg viewBox="0 0 680 225" width="100%" style="max-width:660px; height:auto">
+            <!-- Wisdom -->
+            <polygon points="340,12 260,60 420,60" fill="#7c3aed"/>
+            <text x="340" y="45" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">WISDOM</text>
+            <text x="435" y="42" font-size="12" fill="currentColor">Use safety thresholds to decide on cooling/ventilation</text>
+            <!-- Knowledge -->
+            <polygon points="256,64 195,112 485,112 424,64" fill="#2563eb"/>
+            <text x="340" y="93" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">KNOWLEDGE</text>
+            <text x="498" y="92" font-size="12" fill="currentColor">Rising temp signals a developing heat problem</text>
+            <!-- Information -->
+            <polygon points="191,116 130,164 550,164 489,116" fill="#0891b2"/>
+            <text x="340" y="145" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">INFORMATION</text>
+            <text x="562" y="144" font-size="12" fill="currentColor">Readings increased over time</text>
+            <!-- Data -->
+            <polygon points="126,168 65,216 615,216 554,168" fill="#059669"/>
+            <text x="340" y="197" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">DATA (Raw observations: 32, 35, 38, 40)</text>
+          </svg>
+        </div>
+
+        <h3>Data Science vs. Data Analytics vs. Machine Learning vs. Statistics</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Primary Emphasis</th><th>Concrete Example</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Data Science</strong></td><td>End-to-end pipeline: problem definition, wrangling, modeling, deployment &amp; communication</td><td>Building a full student-performance prediction system</td></tr>
+              <tr><td><strong>Data Analytics</strong></td><td>Examining data to answer specific questions and generate actionable insights</td><td>Identifying which courses have the highest failure rates</td></tr>
+              <tr><td><strong>Machine Learning (ML)</strong></td><td>Algorithms that automatically learn patterns from data for prediction or decisions</td><td>Predicting the probability that a student may fail a course</td></tr>
+              <tr><td><strong>Statistics</strong></td><td>Variation, uncertainty, relationships, inference, and rigorous evidence</td><td>Hypothesis testing whether a new teaching method raises marks</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip">
+          <strong class="callout-title">Historical Milestones (Kelleher &amp; Tierney Ch. 1)</strong>
+          <strong>1997:</strong> C. F. Jeff Wu's lecture <em>"Statistics = Data Science?"</em> &nbsp;|&nbsp;
+          <strong>2001:</strong> William S. Cleveland proposed Data Science as a partnership of math, CS, and domain expertise; <strong>Leo Breiman</strong> published <em>"Statistical Modeling: The Two Cultures"</em>—contrasting statistics' <em>data-modeling culture</em> (explaining how data were generated) with ML's <em>algorithmic-modeling culture</em> (maximizing predictive accuracy).
+        </div>
+      </section>
+
+      <!-- SECTION 2: INTERACTIVE CRISP-DM EXPLORER -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02 • Interactive Lab 1</div>
+            <h2>The Data Science Life Cycle (CRISP-DM 7-Stage Explorer)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>The <strong>Cross-Industry Standard Process for Data Mining (CRISP-DM)</strong> turns a raw business or scientific problem into a deployed, monitored analytical solution. Remember: the cycle is <strong>iterative</strong>—findings at later stages often send you back to refine data preparation or problem framing. Click any stage below to inspect its tasks, examples, and pitfalls:</p>
+
+        <div class="lab-box">
+          <div class="pipeline-row" id="pipe-row"></div>
+          <div class="lab-panel" id="pipe-detail"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: BIG DATA & TAXONOMIES -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Big Data (The Five Vs), Data Taxonomies &amp; Domain Data</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <p><strong>Big Data</strong> refers to datasets whose size, arrival speed, diversity, or complexity make them difficult to store, manage, or process with conventional tools (like an ordinary spreadsheet). It is commonly described by the <strong>Five Vs</strong>:</p>
+
+        <div class="grid-5">
+          <div class="card"><span class="card-top-tag">1. Volume</span><p style="font-size:13.2px; margin-bottom:0">Massive scale of records (e.g., online marketplace transactions).</p></div>
+          <div class="card"><span class="card-top-tag purple">2. Velocity</span><p style="font-size:13.2px; margin-bottom:0">Rapid speed of generation &amp; real-time checks (e.g., payment fraud).</p></div>
+          <div class="card"><span class="card-top-tag green">3. Variety</span><p style="font-size:13.2px; margin-bottom:0">Diverse formats: tables, images, audio, doctors' notes, logs.</p></div>
+          <div class="card"><span class="card-top-tag amber">4. Veracity</span><p style="font-size:13.2px; margin-bottom:0">Reliability, noise &amp; uncertainty (e.g., GPS signal interference).</p></div>
+          <div class="card"><span class="card-top-tag red">5. Value</span><p style="font-size:13.2px; margin-bottom:0">Actionable usefulness—forecasting demand, cutting costs, saving lives.</p></div>
+        </div>
+
+        <h3>Key Data Distinctions (L12 Slides 18–21)</h3>
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag">Structure</span>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li><strong>Structured:</strong> Fixed tabular schema (SQL tables, sales records).</li>
+              <li><strong>Semi-structured:</strong> Identifiable fields/tags, no rigid table (<strong>JSON, XML, server logs</strong>).</li>
+              <li><strong>Unstructured:</strong> No fixed schema (free text, photos, audio, video).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Raw vs. Derived</span>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li><strong>Raw:</strong> Direct measurements (height, weight, room temp).</li>
+              <li><strong>Derived:</strong> Computed from raw data (average salary, variance, <strong>BMI = weight / height²</strong>—often far more predictive than height or weight alone!).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Captured vs. Exhaust</span>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li><strong>Captured:</strong> Collected intentionally for analysis (surveys, experiments).</li>
+              <li><strong>Exhaust:</strong> By-product of another process (clickstreams, device type, timestamps, <strong>metadata</strong>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Data Types Across Science, Engineering &amp; Design</h3>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="openDomainTab('dom-sci', this)">🔬 Science</button>
+          <button class="tab-btn" onclick="openDomainTab('dom-eng', this)">⚙️ Engineering</button>
+          <button class="tab-btn" onclick="openDomainTab('dom-des', this)">🎨 Design &amp; Value Domains</button>
+        </div>
+        <div id="dom-sci" class="tab-panel active">
+          <div class="table-wrap" style="margin:0">
+            <table>
+              <thead><tr><th>Scientific Field</th><th>Data Examples</th><th>Typical Analysis</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Physics</strong></td><td>Force, acceleration, voltage, wavelength</td><td>Regression, uncertainty analysis</td></tr>
+                <tr><td><strong>Chemistry</strong></td><td>Concentration, pH, reaction time</td><td>Experimental comparison</td></tr>
+                <tr><td><strong>Biology</strong></td><td>Cell counts, gene sequences, growth</td><td>Statistics, bioinformatics</td></tr>
+                <tr><td><strong>Environmental</strong></td><td>Rainfall, air quality, river levels</td><td>Time-series &amp; spatial analysis</td></tr>
+                <tr><td><strong>Astronomy / Medicine</strong></td><td>Telescope spectra; lab values, clinical scans</td><td>Signal/image processing; clinical diagnostics</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="dom-eng" class="tab-panel">
+          <div class="table-wrap" style="margin:0">
+            <table>
+              <thead><tr><th>Engineering Area</th><th>Data Examples</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Mechanical / Civil</strong></td><td>Torque, vibration, temperature; concrete strength, soil, displacement</td></tr>
+                <tr><td><strong>Electrical / Chemical</strong></td><td>Current, voltage, power, frequency; pressure, flow rate, concentration</td></tr>
+                <tr><td><strong>Industrial / Computer</strong></td><td>Production rate, downtime, defects; CPU utilization, latency, error logs</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="dom-des" class="tab-panel">
+          <div class="grid-2" style="margin:0">
+            <div class="card">
+              <h4>Design Data Examples</h4>
+              <ul style="font-size:13.5px; margin-bottom:0">
+                <li><strong>Product / Industrial:</strong> Dimensions, weight, material, prototype tests, user feedback.</li>
+                <li><strong>UX / Digital Media:</strong> Task completion time, error rate, ratings, click patterns, viewing duration.</li>
+                <li><strong>Graphic / Architecture:</strong> Color values, layout measures; energy use, occupancy.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h4>4 Value Domains of Data</h4>
+              <ul style="font-size:13.5px; margin-bottom:0">
+                <li><strong>Scientific:</strong> Genomics, astronomy, climate science.</li>
+                <li><strong>Commercial:</strong> Forecasting, fraud detection, customer segmentation.</li>
+                <li><strong>Social:</strong> Public health, policy, urban planning.</li>
+                <li><strong>Artistic:</strong> Data visualization, generative art.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: SIX TYPES OF QUESTIONS + LAB 2 -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • Interactive Lab 2</div>
+            <h2>Six Types of Analytical Questions Classifier</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <p>Every data project begins with a clear information goal. Dr. Masud's slides highlight six analytical question types—from summarizing what happened (<strong>Descriptive</strong>) to uncovering patterns (<strong>Exploratory</strong>), explaining why (<strong>Diagnostic</strong>), forecasting what comes next (<strong>Predictive</strong>), testing interventions (<strong>Causal</strong>), and optimizing action (<strong>Prescriptive</strong>). <em>(In scientific progression: Descriptive → Exploratory → Inferential → Predictive → Causal → Mechanistic.)</em></p>
+
+        <div class="lab-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px">
+            <strong style="font-size:14px">Scenario Drill: Match the Question to Its Analytical Type</strong>
+            <span style="font-size:13px; font-weight:700">Card <span id="q-idx">1</span>/8 &nbsp;|&nbsp; <span style="color:var(--success)">Score: <span id="q-score">0</span></span></span>
+          </div>
+
+          <div class="drill-card">
+            <div style="font-size:12px; color:var(--text-muted); font-weight:700; text-transform:uppercase">Real-World Question</div>
+            <div class="drill-prompt" id="q-prompt">Loading...</div>
+            <div class="choice-grid" id="q-choices">
+              <button class="choice-btn" onclick="answerQ('Descriptive', this)">Descriptive</button>
+              <button class="choice-btn" onclick="answerQ('Exploratory', this)">Exploratory</button>
+              <button class="choice-btn" onclick="answerQ('Diagnostic', this)">Diagnostic</button>
+              <button class="choice-btn" onclick="answerQ('Predictive', this)">Predictive</button>
+              <button class="choice-btn" onclick="answerQ('Causal', this)">Causal</button>
+              <button class="choice-btn" onclick="answerQ('Prescriptive', this)">Prescriptive</button>
+            </div>
+            <div class="drill-fb" id="q-fb"></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between">
+            <button class="btn-ghost" style="flex:0 0 auto" onclick="restartQ()">↺ Restart</button>
+            <button class="btn-primary" id="q-next" onclick="nextQ()">Next Scenario →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: DATA QUALITY & GOVERNANCE -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • ISO 8000 &amp; Accountability</div>
+            <h2>Data Quality (8 Dimensions &amp; Strategies) &amp; Data Governance</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <p><strong>Data Quality</strong> is the degree to which data is <em>suitable for its intended purpose</em> ("fitness for use", standardized in the <strong>ISO 8000</strong> series)—it is much broader than accuracy alone! Its <strong>8 Dimensions</strong> are: <strong>Accuracy</strong>, <strong>Completeness</strong>, <strong>Consistency</strong>, <strong>Uniqueness</strong>, <strong>Validity</strong>, <strong>Timeliness</strong>, <strong>Integrity</strong>, and <strong>Representativeness</strong>.</p>
+
+        <div class="callout trap">
+          <strong class="callout-title">Critical Rule (L12 Slide 32): Never Delete Outliers Blindly!</strong>
+          Suppose a temperature sensor (normal range 0–100°C) logs <span class="mono">25.1, 25.3, 250.7, 25.4°C</span>. That <span class="mono">250.7°C</span> reading could be a sensor malfunction, a unit-conversion error, OR a <strong>genuine exceptional event</strong> (like a fire!). Always investigate the source and context before correcting or excluding.
+        </div>
+
+        <h3>Interactive 8-Strategy Data Quality Audit Checklist</h3>
+        <div class="lab-panel" id="audit-list"></div>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:8px" id="audit-status">0 / 8 quality checks verified.</p>
+
+        <h3>Data Governance &amp; Accountability Roles</h3>
+        <p><strong>Data Governance</strong> is the system of policies, responsibilities, decision authority, standards, and controls governing how data is managed and used across its entire life cycle (covering <em>Ownership, Privacy/Confidentiality, Access Control/Security, Legal &amp; Ethical Compliance, Metadata, Lineage/Provenance, Retention/Disposal,</em> and <em>Sharing/Reuse</em>). It is <strong>not</strong> just storage or security—it is the accountability framework around them.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Governance Role</th><th>Core Responsibility</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Data Owner</strong></td><td>Accountable for high-level decisions about a dataset and its permitted uses</td></tr>
+              <tr><td><strong>Data Steward</strong></td><td>Maintains variable definitions, data quality practices, and appropriate day-to-day handling</td></tr>
+              <tr><td><strong>Data Custodian</strong></td><td>Manages technical storage, access permissions, backups, and IT infrastructure</td></tr>
+              <tr><td><strong>Data Analyst / Scientist</strong></td><td>Uses data strictly within approved purposes and documents all transformations/models</td></tr>
+              <tr><td><strong>Privacy / Compliance Officer</strong></td><td>Advises on privacy laws, consent, and regulatory requirements</td></tr>
+              <tr><td><strong>Data Subject</strong></td><td>The individual person whose personal data is collected and processed</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 6: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (1st Incourse '23 &amp; Final '24)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Questions &amp; Model Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2024 • Q2(a)–(f) [12 Marks]</span> Complete Data Science Exam Question &amp; Model Answers</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>(a) What is data science? Mention two common applications. [2]:</strong> Data science is an interdisciplinary field combining statistics, computing, mathematics, domain expertise, and communication to extract actionable insights from data. <em>Applications:</em> (1) Spam filtering / movie &amp; product recommendation systems; (2) Credit-card fraud detection or medical disease risk prediction.</li>
+              <li><strong>(b) Differentiate structured vs. unstructured data with one example each. [2]:</strong> <em>Structured data</em> follow a fixed tabular schema of rows and columns (e.g., a relational database of student exam scores or sales records). <em>Unstructured data</em> have no predefined tabular schema (e.g., free-text customer reviews, medical X-ray images, or audio/video files).</li>
+              <li><strong>(c) Define Big Data &amp; mention one distinguishing characteristic. [2]:</strong> Big Data refers to datasets whose scale, speed, or diversity exceed the capacity of traditional storage and analysis tools. Distinguishing characteristic: <strong>Volume</strong> (massive size), <strong>Velocity</strong> (high-speed real-time streams), or <strong>Variety</strong> (mixing tables, text, images, and sensor logs).</li>
+              <li><strong>(d) What is data preprocessing and why is it important? [2]:</strong> Data preprocessing (data preparation/wrangling) is cleaning, deduplicating, handling missing values, standardizing units/formats, and transforming raw data into an analysis-ready dataset. It is critical because raw data often contain errors, inconsistencies, and bias ("garbage in, garbage out").</li>
+              <li><strong>(e) Name two tools/languages commonly used in data science. [2]:</strong> <strong>Python</strong> and <strong>R</strong> (also SQL, Hadoop, Excel, Tableau, SPSS, SAS).</li>
+              <li><strong>(f) Role of data visualization &amp; one common technique. [2]:</strong> Visualization converts complex numbers into graphical form so patterns, trends, distributions, and outliers pop out immediately and can be communicated clearly to stakeholders. <em>Common technique:</em> Scatter plot, histogram, box plot, or interactive dashboard.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2023 • Q1(a),(b) [2.5 Marks]</span> Role of Statistics &amp; Alignment of Statistics, Applied Statistics &amp; Data Science</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>(a) Role of Statistics in Data Science:</strong> Statistics provides the mathematical backbone for reasoning about variation and uncertainty—covering sampling design, EDA, estimation, hypothesis testing, regression modeling, and evaluating whether detected patterns are genuine or due to chance.</li>
+              <li><strong>(b) Are Statistics, Applied Statistics, and Data Science aligned? How?</strong> <strong>Yes!</strong> Theoretical <em>Statistics</em> develops the mathematical laws and theorems; <em>Applied Statistics</em> applies those methods to solve real-world problems in medicine, economics, and science; and <em>Data Science</em> expands applied statistics by integrating computer science, big-data engineering, machine learning, and data governance to extract end-to-end insights from massive, often unstructured datasets.</li>
+            </ul>
+          </div>
+        </details>
+
+        <div class="callout tip" style="margin-top:20px">
+          <strong class="callout-title">🎉 Course Complete — All 12 Lessons of AST 101 Built!</strong>
+          You now have a complete, offline-ready, interactive 12-lesson web course covering every lecture slide (`L1`–`L12`), handwritten proof, and 2017–2025 ISRT exam topic in <strong>AST 101: Introduction to Applied Statistics and Data Science</strong>.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l12_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l12_theme') || localStorage.getItem('ast101_l11_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l12_done') || '[]');
+    function syncProgress() {
+      const total = 6;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l12_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l12_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Lab 1: CRISP-DM 7-Stage Pipeline ----------
+    const stages = [
+      {
+        num: "Stage 1", title: "Problem Definition",
+        summary: "Translate stakeholder needs into a clear, measurable analytical objective with target population, constraints, and success criteria.",
+        example: "<strong>Unclear:</strong> 'Analyze student data.'<br><strong>Better:</strong> 'Identify factors associated with low programming performance and evaluate interventions to raise pass rates.'",
+        pitfall: "Skipping stakeholder alignment leads to solving the wrong problem accurately."
+      },
+      {
+        num: "Stage 2", title: "Data Collection & Understanding",
+        summary: "Gather initial data from surveys, experiments, databases, IoT sensors, public archives, or transaction logs, then inspect its size, units, dates, and potential biases.",
+        example: "Check record counts, variable types, measurement scales, and whether key groups are under-represented.",
+        pitfall: "Assuming secondary data matches your research question without verifying its definitions."
+      },
+      {
+        num: "Stage 3", title: "Data Preparation",
+        summary: "Clean, merge, and construct the final Analytics Base Table (often 60–80% of project effort!): deduplicate, handle missing values, fix formats, standardize units, and engineer derived features (like BMI).",
+        example: "Attendance recorded as both <code>75%</code> and <code>0.75</code> MUST be standardized before averaging.",
+        pitfall: "Failing to document cleaning decisions—every transformation can alter downstream results!"
+      },
+      {
+        num: "Stage 4", title: "Exploratory Data Analysis (EDA)",
+        summary: "Summarize and visualize distributions and relationships using means/medians/SDs, histograms, box plots, scatter plots, correlations, and time-series plots.",
+        example: "Finding that higher attendance goes with higher marks—an <em>association</em>, NOT automatic proof of causation.",
+        pitfall: "Jumping straight into complex ML models without plotting the data first."
+      },
+      {
+        num: "Stage 5", title: "Modelling & Analysis",
+        summary: "Select and fit analytical techniques matched to the question: Descriptive stats, Regression, Classification, Clustering, Time-Series forecasting, or Hypothesis Testing.",
+        example: "Predicting electricity consumption (Regression) vs. flagging fraudulent transactions (Classification) vs. grouping customers (Clustering).",
+        pitfall: "Over-engineering: the simplest model that adequately solves the problem is often preferable."
+      },
+      {
+        num: "Stage 6", title: "Evaluation & Validation",
+        summary: "Assess accuracy, error rates, precision/recall, uncertainty, interpretability, fairness/bias, and legal/ethical compliance on UNSEEN data.",
+        example: "Test a student-failure model on a holdout group of students not used during training, checking for systematic group errors.",
+        pitfall: "<strong>Golden Rule (Kelleher):</strong> NEVER evaluate a model solely on the data it was trained on!"
+      },
+      {
+        num: "Stage 7", title: "Communication & Deployment",
+        summary: "Deliver insights via reports, dashboards, APIs, decision-support systems, or policy briefs—and monitor continuously as real-world populations drift.",
+        example: "Deploying a forecasting service and tracking prediction drift over time.",
+        pitfall: "Treating deployment as 'the end'—data distributions shift, so models require ongoing monitoring and iteration."
+      }
+    ];
+
+    function renderPipe(activeIdx) {
+      const row = document.getElementById('pipe-row');
+      row.innerHTML = stages.map((s, i) => `
+        <button class="pipe-step ${i === activeIdx ? 'active' : ''}" onclick="renderPipe(${i})">
+          <span>${s.num}</span>${s.title}
+        </button>
+      `).join('');
+      const st = stages[activeIdx];
+      document.getElementById('pipe-detail').innerHTML = `
+        <h4 style="margin-top:0; color:var(--primary)">${st.num}: ${st.title}</h4>
+        <p>${st.summary}</p>
+        <p style="font-size:14px"><strong>Slide Example:</strong> ${st.example}</p>
+        <p style="font-size:13.8px; color:var(--danger); margin-bottom:0"><strong>⚠ Watch Out:</strong> ${st.pitfall}</p>
+      `;
+    }
+    renderPipe(0);
+
+    // ---------- Domain Data Tabs ----------
+    function openDomainTab(id, btn) {
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      ['dom-sci', 'dom-eng', 'dom-des'].forEach(k => document.getElementById(k).classList.toggle('active', k === id));
+    }
+
+    // ---------- Lab 2: Six Question Types Classifier ----------
+    const qDeck = [
+      { q: "What was the average AST 101 exam score and share of defective parts last month?", ans: "Descriptive", exp: "Summarizes what happened using tables, averages, proportions, and dashboards." },
+      { q: "Why did regional retail sales decline sharply in Q3?", ans: "Diagnostic", exp: "Investigates WHY an observed change occurred via group comparisons and correlation." },
+      { q: "Which factory machines are most likely to fail within the next 30 days?", ans: "Predictive", exp: "Forecasts likely future/unseen outcomes using regression, classification, or time-series models." },
+      { q: "How should we schedule production shifts to minimize total operating cost?", ans: "Prescriptive", exp: "Recommends the optimal action/decision using optimization and simulation." },
+      { q: "Are there natural clusters of customers with similar shopping habits?", ans: "Exploratory", exp: "Discovers hidden patterns or groupings using clustering and anomaly detection." },
+      { q: "Does attending peer tutoring actually cause exam scores to improve?", ans: "Causal", exp: "Evaluates the true cause-and-effect impact of changing X, requiring randomized experiments or causal designs." },
+      { q: "What is the probability that a given email is spam?", ans: "Predictive", exp: "Classification of an unseen/missing target label is a core Predictive task." },
+      { q: "What percentage of surveyed households own two or more television sets?", ans: "Descriptive", exp: "Purely describes an observed sample distribution without inferring or predicting." }
+    ];
+    let qPos = 0, qScore = 0, qDone = false;
+
+    function renderQ() {
+      qDone = false;
+      const item = qDeck[qPos];
+      document.getElementById('q-idx').textContent = qPos + 1;
+      document.getElementById('q-score').textContent = qScore;
+      document.getElementById('q-prompt').textContent = `"${item.q}"`;
+      document.getElementById('q-next').textContent = qPos < qDeck.length - 1 ? "Next Scenario →" : "Restart Drill ↺";
+      const fb = document.getElementById('q-fb');
+      fb.className = 'drill-fb'; fb.innerHTML = '';
+      document.querySelectorAll('#q-choices .choice-btn').forEach(b => { b.disabled = false; b.className = 'choice-btn'; });
+    }
+    function answerQ(choice, btn) {
+      if (qDone) return;
+      qDone = true;
+      const item = qDeck[qPos], ok = choice === item.ans;
+      document.querySelectorAll('#q-choices .choice-btn').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === item.ans) b.classList.add('ok');
+      });
+      const fb = document.getElementById('q-fb');
+      if (ok) {
+        qScore++;
+        fb.className = 'drill-fb show ok';
+        fb.innerHTML = `<strong>✓ Correct! (${item.ans})</strong> — ${item.exp}`;
+      } else {
+        btn.classList.add('err');
+        fb.className = 'drill-fb show err';
+        fb.innerHTML = `<strong>✗ Not quite.</strong> This is a <strong>${item.ans}</strong> question. ${item.exp}`;
+      }
+      document.getElementById('q-score').textContent = qScore;
+    }
+    function nextQ() { qPos = qPos < qDeck.length - 1 ? qPos + 1 : 0; if (qPos === 0) qScore = 0; renderQ(); }
+    function restartQ() { qPos = 0; qScore = 0; renderQ(); }
+    renderQ();
+
+    // ---------- 8-Strategy Quality Audit Checklist ----------
+    const strategies = [
+      "1. Define quality requirements: specify accuracy, completeness, units, ranges, and acceptable error rates (e.g., 0.1°C resolution).",
+      "2. Standardise collection: uniform units, documented procedures, trained collectors, and calibrated instruments.",
+      "3. Validate at entry: enforce rules (marks 0–100, non-blank IDs, ISO date formats)—noting validation checks rules, not absolute truth.",
+      "4. Handle missing data systematically: unbiased deletion, mean/median/model imputation, explicit missing category, or re-collection.",
+      "5. Detect duplicates carefully: check IDs and timestamps (identical names alone do not prove duplicate customers).",
+      "6. Investigate outliers before acting: use box plots, IQR, z-scores, and source records; exclude only with evidence.",
+      "7. Document all transformations: record sources, unit conversions, deduplication rules, code, date, and responsible person.",
+      "8. Monitor continuously: track missing-value rates, error rates, duplicate counts, and validation failures over time."
+    ];
+    let auditChecked = new Array(8).fill(false);
+    function renderAudit() {
+      const box = document.getElementById('audit-list');
+      box.innerHTML = strategies.map((s, i) => `
+        <label class="audit-item ${auditChecked[i] ? 'checked' : ''}">
+          <input type="checkbox" ${auditChecked[i] ? 'checked' : ''} onchange="toggleAudit(${i})" />
+          <span>${s}</span>
+        </label>
+      `).join('');
+      const cnt = auditChecked.filter(Boolean).length;
+      document.getElementById('audit-status').textContent = `${cnt} / 8 ISO 8000 quality strategies verified${cnt === 8 ? ' — Audit Ready! ✓' : '.'}`;
+    }
+    function toggleAudit(i) { auditChecked[i] = !auditChecked[i]; renderAudit(); }
+    renderAudit();
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "L12 Big Data",
+        q: "Which of the 'Five Vs' of Big Data refers specifically to data reliability, noise, and trustworthiness (e.g., GPS interference)?",
+        opts: ["Volume", "Velocity", "Variety", "Veracity"],
+        ans: 3,
+        exp: "Veracity captures data reliability and uncertainty; Volume = size, Velocity = speed, Variety = formats, Value = usefulness."
+      },
+      {
+        tag: "L12 Data Types",
+        q: "JSON files, XML documents, and server event logs are classic examples of:",
+        opts: ["Structured data", "Semi-structured data", "Unstructured data", "Primary experimental data"],
+        ans: 1,
+        exp: "Semi-structured data have identifiable tags/fields (like JSON key-value pairs) without a rigid row-and-column relational schema."
+      },
+      {
+        tag: "L12 Exhaust Data",
+        q: "Clickstreams, device types, and timestamps automatically logged as a by-product of online shopping are called:",
+        opts: ["Captured data", "Exhaust data", "Derived data", "Census data"],
+        ans: 1,
+        exp: "Exhaust data (including metadata) are generated as a by-product of processes whose primary purpose is something else."
+      },
+      {
+        tag: "Kelleher Golden Rule",
+        q: "What is the 'Golden Rule' of model evaluation in Data Science / Machine Learning?",
+        opts: ["Always use deep learning", "Never evaluate a model on the same data it was trained on", "Delete all outliers automatically", "Always maximize the number of variables"],
+        ans: 1,
+        exp: "Evaluating on training data overestimates performance due to overfitting; models must be validated on unseen holdout data."
+      },
+      {
+        tag: "L12 Governance Roles",
+        q: "Which Data Governance role is responsible for managing technical storage, access controls, backups, and IT infrastructure?",
+        opts: ["Data Owner", "Data Steward", "Data Custodian", "Data Subject"],
+        ans: 2,
+        exp: "The Data Custodian manages storage, backups, and technical infrastructure; the Owner makes policy decisions and the Steward maintains definitions/quality."
+      },
+      {
+        tag: "L12 Data Quality",
+        q: "Which international standard series provides a formal framework for Data Quality?",
+        opts: ["ISO 8000", "CRISP-DM 2000", "NoSQL 101", "GDPR-9000"],
+        ans: 0,
+        exp: "Dr. Masud's L12 Slide 32 cites the ISO 8000 series as the framework for Data Quality ('fitness for use')."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

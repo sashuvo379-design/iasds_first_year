@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECON107 • Lesson 5: Elasticity &amp; Policy Applications</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --bg-elevated: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f4c81;
+      --primary-light: #e0f2fe;
+      --accent: #0d9488;
+      --accent-light: #ccfbf1;
+      --warn: #d97706;
+      --warn-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --purple: #7c3aed;
+      --purple-light: #ede9fe;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      --radius: 14px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-elevated: #111827;
+      --bg-subtle: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #38bdf8;
+      --primary-light: rgba(56, 189, 248, 0.14);
+      --accent: #2dd4bf;
+      --accent-light: rgba(45, 212, 191, 0.14);
+      --warn: #fbbf24;
+      --warn-light: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.14);
+      --success: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.14);
+      --purple: #a78bfa;
+      --purple-light: rgba(167, 139, 250, 0.14);
+      --shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* Top Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1rem; }
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+    }
+    [data-theme="dark"] .brand-badge { color: #0b1120; }
+    .top-controls { display: flex; align-items: center; gap: 0.75rem; }
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-subtle);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .progress-bar-wrap { width: 72px; height: 7px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.3s ease;
+    }
+    .btn-icon {
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+    .scroll-track { height: 3px; background: transparent; width: 100%; }
+    .scroll-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.1s linear; }
+
+    /* Layout */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 4.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .sidebar-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.3rem; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.5rem 0.65rem;
+      border-radius: 9px;
+      transition: all 0.18s;
+    }
+    .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+    .nav-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .nav-link.active .nav-num { background: var(--primary); color: #fff; }
+    [data-theme="dark"] .nav-link.active .nav-num { color: #0b1120; }
+    .sidebar-meta {
+      margin-top: 1.1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .sidebar-meta strong { color: var(--text); }
+
+    /* Main */
+    .main { display: flex; flex-direction: column; gap: 2rem; min-width: 0; }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #b45309 48%, #0f4c81 100%);
+      color: #ffffff;
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+    }
+    .pill-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-accent { background: var(--accent-light); color: var(--accent); }
+    .pill-warn { background: var(--warn-light); color: var(--warn); }
+    .pill-purple { background: var(--purple-light); color: var(--purple); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+
+    .hero h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.65rem; }
+    .hero p { color: rgba(255, 255, 255, 0.92); max-width: 72ch; font-size: 1rem; }
+    .hero-stats {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.85rem;
+    }
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+    }
+    .hero-stat-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.85; }
+    .hero-stat-val { font-size: 1rem; font-weight: 700; margin-top: 0.15rem; }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.85rem;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 5rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-kicker {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+    .section-card h2 { font-size: 1.45rem; line-height: 1.25; }
+    .section-card h3 { font-size: 1.1rem; margin: 1.15rem 0 0.5rem; }
+    .section-card p { margin-bottom: 0.85rem; color: var(--text); }
+    .muted { color: var(--text-muted); }
+
+    /* Callouts */
+    .callout {
+      border-left: 4px solid var(--primary);
+      background: var(--primary-light);
+      padding: 1rem 1.2rem;
+      border-radius: 0 12px 12px 0;
+      margin: 1rem 0;
+    }
+    .callout.accent { border-left-color: var(--accent); background: var(--accent-light); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-light); }
+    .callout.purple { border-left-color: var(--purple); background: var(--purple-light); }
+    .callout-title { font-weight: 700; margin-bottom: 0.3rem; font-size: 0.95rem; }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
+    .mini-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+    }
+    .mini-card h4 { font-size: 1rem; margin-bottom: 0.45rem; display: flex; align-items: center; gap: 0.4rem; }
+    .mini-card ul { padding-left: 1.15rem; font-size: 0.91rem; color: var(--text-muted); }
+    .mini-card li { margin-bottom: 0.35rem; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.72rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-subtle); font-weight: 700; color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+
+    /* Interactive Labs */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      margin-top: 1rem;
+    }
+    .canvas-wrap {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+    }
+    .control-panel {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .readout-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-size: 0.88rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .preset-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .chip-btn {
+      padding: 0.42rem 0.75rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .chip-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .chip-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .chip-btn.active { color: #0b1120; }
+
+    /* Tabs & Buttons */
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .tab-btn {
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    [data-theme="dark"] .tab-btn.active { color: #0b1120; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    input[type="range"] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .slider-label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; }
+
+    /* Inputs & Math Box */
+    .eq-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+      margin: 0.85rem 0;
+    }
+    .eq-field {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+    .eq-field label { display: block; font-size: 0.76rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .eq-field input {
+      width: 100%;
+      padding: 0.4rem 0.55rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .math-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 0.85rem 1.05rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    /* Tax Bar */
+    .split-bar {
+      display: flex;
+      height: 22px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.55rem 0;
+      border: 1px solid var(--border);
+    }
+    .split-cons { background: var(--danger); color: #fff; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: width 0.2s; }
+    .split-prod { background: var(--primary); color: #fff; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; transition: width 0.2s; }
+
+    /* Accordion */
+    .accordion { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+    .acc-item { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated); }
+    .acc-btn {
+      width: 100%;
+      background: var(--bg-subtle);
+      color: var(--text);
+      border: none;
+      padding: 0.95rem 1.15rem;
+      text-align: left;
+      font-size: 0.94rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .acc-btn:hover { filter: brightness(0.97); }
+    .acc-chevron { transition: transform 0.2s; font-size: 0.85rem; }
+    .acc-item.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 1.1rem 1.2rem; border-top: 1px solid var(--border); font-size: 0.92rem; }
+    .acc-item.open .acc-body { display: block; }
+
+    /* Quiz */
+    .quiz-q {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      margin-bottom: 1rem;
+      background: var(--bg-subtle);
+    }
+    .quiz-q-title { font-weight: 700; margin-bottom: 0.7rem; }
+    .quiz-opts { display: grid; gap: 0.45rem; }
+    .quiz-opt {
+      text-align: left;
+      padding: 0.65rem 0.9rem;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .quiz-opt.is-correct { background: var(--success-light); border-color: var(--success); font-weight: 600; }
+    .quiz-opt.is-wrong { background: var(--danger-light); border-color: var(--danger); }
+    .quiz-exp { margin-top: 0.65rem; font-size: 0.86rem; color: var(--text-muted); display: none; }
+    .quiz-exp.show { display: block; }
+
+    /* Done Button */
+    .done-btn {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .done-btn.completed { background: var(--success-light); color: var(--success); border-color: var(--success); }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-2, .grid-3, .lab-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-badge">ECON107</span>
+        <span>Lesson 5: Elasticity &amp; Policy Applications</span>
+      </div>
+      <div class="top-controls">
+        <div class="progress-pill">
+          <span id="progressText">0/6 Done</span>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+        </div>
+        <button class="btn-icon" id="themeToggle" type="button">🌙 Dark</button>
+      </div>
+    </div>
+    <div class="scroll-track"><div class="scroll-fill" id="scrollFill"></div></div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Lesson 5 Roadmap</div>
+      <ul class="nav-list">
+        <li><a class="nav-link active" href="#sec-def"><span class="nav-num">1</span> Elasticity Concepts</a></li>
+        <li><a class="nav-link" href="#sec-midpoint"><span class="nav-num">2</span> Midpoint Calculator</a></li>
+        <li><a class="nav-link" href="#sec-revlab"><span class="nav-num">3</span> Slope vs. Elasticity &amp; TR</a></li>
+        <li><a class="nav-link" href="#sec-supply-inc"><span class="nav-num">4</span> Supply &amp; Income Elasticity</a></li>
+        <li><a class="nav-link" href="#sec-policy"><span class="nav-num">5</span> Policy &amp; Tax Incidence Lab</a></li>
+        <li><a class="nav-link" href="#sec-pyq"><span class="nav-num">6</span> ISRT PYQ Vault</a></li>
+        <li><a class="nav-link" href="#sec-quiz"><span class="nav-num">7</span> Mastery Check</a></li>
+      </ul>
+      <div class="sidebar-meta">
+        <div><strong>Course:</strong> ECON107 (4 Credits)</div>
+        <div><strong>Module 1 Finale:</strong> 1st In-Course Scope</div>
+        <div><strong>Sources:</strong> ECON107_L5.pdf, Ch. 4</div>
+        <div><strong>Exam Focus:</strong> Heavy Math &amp; Policy Essays</div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-badges">
+          <span class="pill pill-glass">Module 1 Finale • 1st In-Course Scope</span>
+          <span class="pill pill-glass">Lecture 5 • ECON107</span>
+          <span class="pill pill-glass">Math + Revenue + Policy Heavy</span>
+        </div>
+        <h1>Elasticity of Demand &amp; Supply and Policy Applications</h1>
+        <p>
+          Move beyond direction ("up or down") to magnitude ("how much?"). Master price elasticity calculations,
+          understand why elasticity varies along a straight line while slope stays constant, connect elasticity to
+          Total Revenue, and apply it to agriculture, tax incidence, import restrictions, and minimum wages.
+        </p>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Core Formula</div>
+            <div class="hero-stat-val">E_D = |%ΔQ / %ΔP|</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Key Paradox</div>
+            <div class="hero-stat-val">Bumper Harvest &amp; Oil Quota</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Interactive Tools</div>
+            <div class="hero-stat-val">Midpoint + TR + Tax Labs</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Past Questions</div>
+            <div class="hero-stat-val">6 High-Weight ISRT PYQs</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Price Elasticity of Demand -->
+      <section class="section-card" id="sec-def">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 01 • Core Definitions</div>
+            <h2>Price Elasticity of Demand (E<sub>D</sub>) &amp; Determinants</h2>
+          </div>
+          <button class="done-btn" data-section="s1">✓ Mark Done</button>
+        </div>
+
+        <div class="callout">
+          <div class="callout-title">Definition (ECON107_L5 / Samuelson &amp; Nordhaus)</div>
+          The <strong>price elasticity of demand (E<sub>D</sub>)</strong> measures how responsive quantity demanded is to a
+          change in price: <strong>E<sub>D</sub> = (% change in quantity demanded) ÷ (% change in price)</strong>.
+          By convention, economists drop the minus sign and report E<sub>D</sub> as a positive number.
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Value of E<sub>D</sub></th>
+                <th>Category</th>
+                <th>Meaning</th>
+                <th>Effect on Total Revenue (TR = P × Q)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>E<sub>D</sub> &gt; 1</strong></td>
+                <td><span class="pill pill-success">Price-Elastic</span></td>
+                <td>%ΔQ &gt; %ΔP (e.g., cars, luxuries, restaurant meals)</td>
+                <td><strong>P ↓ ⇒ TR ↑</strong> &nbsp;|&nbsp; <strong>P ↑ ⇒ TR ↓</strong></td>
+              </tr>
+              <tr>
+                <td><strong>E<sub>D</sub> = 1</strong></td>
+                <td><span class="pill pill-primary">Unit-Elastic</span></td>
+                <td>%ΔQ = %ΔP (borderline case; rectangular hyperbola)</td>
+                <td><strong>P change ⇒ TR unchanged</strong> (Max TR)</td>
+              </tr>
+              <tr>
+                <td><strong>E<sub>D</sub> &lt; 1</strong></td>
+                <td><span class="pill pill-warn">Price-Inelastic</span></td>
+                <td>%ΔQ &lt; %ΔP (e.g., rice, salt, cooking oil, insulin)</td>
+                <td><strong>P ↓ ⇒ TR ↓</strong> &nbsp;|&nbsp; <strong>P ↑ ⇒ TR ↑</strong></td>
+              </tr>
+              <tr>
+                <td><strong>E<sub>D</sub> = ∞</strong></td>
+                <td><span class="pill pill-purple">Perfectly Elastic</span></td>
+                <td>Horizontal demand curve; tiny price rise cuts Q to zero</td>
+                <td>Firm is a pure price taker</td>
+              </tr>
+              <tr>
+                <td><strong>E<sub>D</sub> = 0</strong></td>
+                <td><span class="pill pill-danger">Perfectly Inelastic</span></td>
+                <td>Vertical demand curve; Q does not respond to price at all</td>
+                <td>TR moves strictly in proportion to P</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>What Determines Price Elasticity?</h3>
+        <div class="grid-3">
+          <div class="mini-card">
+            <h4>💎 Luxuries vs. Necessities</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              <strong>Luxuries</strong> (cars, vacations, perfume) have <em>high</em> elasticity; <strong>necessities</strong>
+              (rice, electricity, cooking oil, life-saving medicine) have <em>low</em> elasticity.
+            </p>
+          </div>
+          <div class="mini-card">
+            <h4>🔄 Availability of Substitutes</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Goods with many close substitutes (e.g., a specific brand of soda) are highly elastic; goods with few
+              substitutes (e.g., gasoline or addictive tobacco for heavy smokers) are inelastic.
+            </p>
+          </div>
+          <div class="mini-card">
+            <h4>⏳ Time Horizon</h4>
+            <p class="muted" style="font-size:0.88rem; margin:0;">
+              Demand is more <strong>inelastic in the short run</strong> and more <strong>elastic in the long run</strong>
+              (e.g., when gas prices spike, drivers eventually buy fuel-efficient cars or switch to transit).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Midpoint Elasticity Calculator -->
+      <section class="section-card" id="sec-midpoint">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 02 • Exact Numerical Method</div>
+            <h2>Midpoint (Arc) Elasticity Calculator with ISRT PYQ Presets</h2>
+          </div>
+          <button class="done-btn" data-section="s2">✓ Mark Done</button>
+        </div>
+
+        <p class="muted" style="font-size:0.92rem;">
+          To avoid ambiguity over whether to divide by the initial or final price/quantity, economists use the
+          <strong>Midpoint Formula</strong>: dividing $\Delta Q$ by average quantity $(Q_1 + Q_2)/2$ and $\Delta P$ by average price $(P_1 + P_2)/2$.
+        </p>
+
+        <div class="preset-chips" style="margin-bottom:0.75rem;">
+          <button class="chip-btn active" onclick="loadMidPreset(15, 8, 150, 270, '1st In-course 2025 Q2(b)', this)">📄 2025 PYQ (P: 15→8)</button>
+          <button class="chip-btn" onclick="loadMidPreset(20, 50, 200, 150, '1st In-course 2023 Q5(a)', this)">📄 2023 PYQ Q5a (P: 20→50)</button>
+          <button class="chip-btn" onclick="loadMidPreset(15, 12, 5, 16, '1st In-course 2023 Q5(b)', this)">📄 2023 PYQ Q5b (P: 15→12)</button>
+          <button class="chip-btn" onclick="loadMidPreset(10, 30, 500, 400, '1st In-course 2024 Q4(b)', this)">📄 2024 PYQ (P: 10→30)</button>
+        </div>
+
+        <div class="eq-inputs">
+          <div class="eq-field"><label for="mP1">Initial Price (P₁)</label><input type="number" id="mP1" value="15" step="1" /></div>
+          <div class="eq-field"><label for="mP2">New Price (P₂)</label><input type="number" id="mP2" value="8" step="1" /></div>
+          <div class="eq-field"><label for="mQ1">Initial Quantity (Q₁)</label><input type="number" id="mQ1" value="150" step="5" /></div>
+          <div class="eq-field"><label for="mQ2">New Quantity (Q₂)</label><input type="number" id="mQ2" value="270" step="5" /></div>
+        </div>
+
+        <div class="math-box" id="midOutput"></div>
+      </section>
+
+      <!-- Section 3: Linear Demand Elasticity & Total Revenue Lab -->
+      <section class="section-card" id="sec-revlab">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 03 • Interactive Visualizer (Final 2017 &amp; 2024 PYQ)</div>
+            <h2>Why Elasticity ≠ Slope &amp; The Total Revenue (TR) Box</h2>
+          </div>
+          <button class="done-btn" data-section="s3">✓ Mark Done</button>
+        </div>
+
+        <p class="muted" style="font-size:0.92rem;">
+          Consider the linear demand curve <strong>Q = 100 − 2P</strong> (Final 2017 Q2b &amp; Samuelson Ch. 4 Q11).
+          Its <strong>slope is constant</strong> ($dQ/dP = -2$), yet its <strong>point elasticity</strong>
+          $E_D = |dQ/dP| \times (P/Q) = 2P/Q$ changes at every single point! Drag the price slider to watch $E_D$ and the shaded <strong>Total Revenue ($P \times Q$)</strong> box change live:
+        </p>
+
+        <div class="preset-chips" style="margin-bottom:0.75rem;">
+          <button class="chip-btn" onclick="setRevPrice(49)">Test P = 49 (Elastic)</button>
+          <button class="chip-btn active" onclick="setRevPrice(25)">Test P = 25 (Midpoint / Max TR)</button>
+          <button class="chip-btn" onclick="setRevPrice(1)">Test P = 1 (Inelastic)</button>
+        </div>
+
+        <div class="lab-grid">
+          <div class="canvas-wrap">
+            <canvas id="revCanvas" width="520" height="370"></canvas>
+          </div>
+          <div class="control-panel">
+            <div>
+              <div class="slider-label">
+                <span>Price (P) along Q = 100 − 2P</span>
+                <span id="revPVal" style="color:var(--primary);">$25</span>
+              </div>
+              <input type="range" id="revPSlider" min="1" max="49" step="1" value="25" />
+            </div>
+            <div class="readout-card" id="revReadout"></div>
+            <div class="mini-card" style="font-size:0.84rem;">
+              <strong>Geometric Shortcut (Segment Ratio):</strong><br>
+              At any point on a straight-line demand curve, <strong>E<sub>D</sub> = (Length below point) ÷ (Length above point)</strong>.
+              That's why above the midpoint $E_D &gt; 1$, at the midpoint $E_D = 1$, and below the midpoint $E_D &lt; 1$!
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Price Elasticity of Supply & Income Elasticity -->
+      <section class="section-card" id="sec-supply-inc">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 04 • Beyond Own-Price Demand</div>
+            <h2>Price Elasticity of Supply (E<sub>S</sub>) &amp; Income Elasticity (E<sub>I</sub>)</h2>
+          </div>
+          <button class="done-btn" data-section="s4">✓ Mark Done</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="mini-card" style="border-top:4px solid var(--accent);">
+            <h4>🏭 Price Elasticity of Supply (E<sub>S</sub>)</h4>
+            <p style="font-size:0.88rem;">
+              <strong>E<sub>S</sub> = (% change in quantity supplied) ÷ (% change in price)</strong>.
+            </p>
+            <ul>
+              <li><strong>Momentary Run:</strong> Supply is fixed (vertical, $E_S = 0$ — e.g., fresh fish at morning auction).</li>
+              <li><strong>Short Run:</strong> Firms can adjust labor/materials but not plant size (moderately elastic).</li>
+              <li><strong>Long Run:</strong> New factories can be built and firms can enter/exit (highly elastic).</li>
+            </ul>
+          </div>
+
+          <div class="mini-card" style="border-top:4px solid var(--purple);">
+            <h4>💰 Income Elasticity of Demand (E<sub>I</sub>)</h4>
+            <p style="font-size:0.88rem;">
+              <strong>E<sub>I</sub> = (%ΔQ ÷ %ΔI) = (∂Q / ∂I) × (I / Q)</strong>.
+            </p>
+            <ul>
+              <li><strong>E<sub>I</sub> &gt; 1:</strong> Luxury good (demand grows faster than income).</li>
+              <li><strong>0 &lt; E<sub>I</sub> &lt; 1:</strong> Normal necessity (demand grows slower than income).</li>
+              <li><strong>E<sub>I</sub> &lt; 0:</strong> Inferior good (demand falls when income rises).</li>
+              <li><strong>Growth Forecast (Final 2023 Q3b):</strong> <code>%ΔQ ≈ E_I × (%ΔI)</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Major Policy Applications & Tax Incidence Lab -->
+      <section class="section-card" id="sec-policy">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 05 • Interactive Policy Lab</div>
+            <h2>Tax Incidence, Agriculture Paradox &amp; Minimum Wages</h2>
+          </div>
+          <button class="done-btn" data-section="s5">✓ Mark Done</button>
+        </div>
+
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="pol-tax">💸 1. Tax Incidence Simulator (Gas / Cigarettes)</button>
+          <button class="tab-btn" data-tab="pol-agri">🌾 2. Bumper Harvest &amp; Restrictions</button>
+          <button class="tab-btn" data-tab="pol-wage">👷 3. Minimum Wage Controversy</button>
+        </div>
+
+        <!-- Tab 1: Tax Incidence -->
+        <div class="tab-panel active" id="pol-tax">
+          <div class="callout">
+            <div class="callout-title">Golden Rule of Tax Incidence (ECON107_L5)</div>
+            Tax burden does <em>not</em> depend on who legally writes the check to the government—it depends on
+            <strong>relative elasticities</strong>. The <strong>more inelastic side</strong> bears the larger share of the tax!
+            <br><em>Consumer Share = E<sub>S</sub> / (E<sub>D</sub> + E<sub>S</sub>) &nbsp;|&nbsp; Producer Share = E<sub>D</sub> / (E<sub>D</sub> + E<sub>S</sub>)</em>
+          </div>
+
+          <div class="preset-chips" style="margin-bottom:0.85rem;">
+            <button class="chip-btn active" onclick="setTaxPreset(0.2, 1.8, 2.0, 'Gasoline Tax ($2/gal — Slide Example)', this)">⛽ Gasoline Tax ($2)</button>
+            <button class="chip-btn" onclick="setTaxPreset(0.15, 1.5, 2.0, 'Heavy Smokers (Highly Inelastic Demand)', this)">🚬 Heavy Smokers (PYQ 2017)</button>
+            <button class="chip-btn" onclick="setTaxPreset(2.5, 1.5, 2.0, 'Casual Smokers (Elastic Demand)', this)">🚭 Casual Smokers (PYQ 2017)</button>
+          </div>
+
+          <div class="lab-grid">
+            <div class="canvas-wrap">
+              <canvas id="taxCanvas" width="520" height="340"></canvas>
+            </div>
+            <div class="control-panel">
+              <div>
+                <div class="slider-label">
+                  <span>Demand Elasticity (E<sub>D</sub>)</span>
+                  <span id="taxEdVal" style="color:var(--primary);">0.20 (Inelastic)</span>
+                </div>
+                <input type="range" id="taxEdSlider" min="0.1" max="3.0" step="0.05" value="0.2" />
+              </div>
+              <div>
+                <div class="slider-label">
+                  <span>Supply Elasticity (E<sub>S</sub>)</span>
+                  <span id="taxEsVal" style="color:var(--accent);">1.80 (Elastic)</span>
+                </div>
+                <input type="range" id="taxEsSlider" min="0.2" max="3.0" step="0.1" value="1.8" />
+              </div>
+              <div>
+                <div class="slider-label">
+                  <span>Per-Unit Excise Tax (t)</span>
+                  <span id="taxAmtVal" style="color:var(--danger);">$2.00</span>
+                </div>
+                <input type="range" id="taxAmtSlider" min="0.5" max="4.0" step="0.25" value="2.0" />
+              </div>
+
+              <div class="readout-card" id="taxReadout"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Agriculture & Restrictions -->
+        <div class="tab-panel" id="pol-agri">
+          <div class="grid-2">
+            <div class="mini-card" style="border-top:4px solid var(--danger);">
+              <h4>🌾 The Paradox of the Bumper Harvest</h4>
+              <p style="font-size:0.89rem;">
+                If <em>one</em> farmer has a bumper crop, their income rises. If <em>all</em> farmers have a bumper crop,
+                market supply shifts sharply rightward (S → S'). Because demand for basic food (wheat, rice, corn) is
+                <strong>price-inelastic (E<sub>D</sub> &lt; 1)</strong>, the percentage drop in price is far larger than the
+                percentage rise in quantity sold—so <strong>total farm revenue (P × Q) FALLS</strong>!
+              </p>
+            </div>
+            <div class="mini-card" style="border-top:4px solid var(--success);">
+              <h4>🛢️ Crop / Import Restrictions (PYQ 2023 &amp; 2025)</h4>
+              <p style="font-size:0.89rem;">
+                The flip side of the paradox! When government restricts corn acreage (Final 2023 Q3c) or restricts
+                cooking-oil imports (1st In-course 2025 Q5), market supply shifts <strong>leftward (S → S')</strong>.
+                Because household demand for staple food/oil is <strong>inelastic</strong>, price rises steeply while
+                quantity falls only slightly—causing <strong>total domestic producer revenue to RISE</strong>!
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Minimum Wage -->
+        <div class="tab-panel" id="pol-wage">
+          <div class="grid-2">
+            <div class="mini-card" style="border-left:4px solid var(--warn);">
+              <h4>⚖️ Price Floor Above Equilibrium (Fig 4-12)</h4>
+              <p style="font-size:0.89rem;">
+                A binding <strong>minimum wage (W<sub>min</sub> &gt; W<sub>market</sub>)</strong> creates a surplus of
+                unskilled labor (Q<sub>S</sub> &gt; Q<sub>D</sub>), generating <strong>unemployment</strong> equal to the
+                gap between workers seeking jobs and employers willing to hire.
+              </p>
+            </div>
+            <div class="mini-card" style="border-left:4px solid var(--primary);">
+              <h4>📊 Why Elasticity Matters in the Debate</h4>
+              <p style="font-size:0.89rem;">
+                Empirical studies show that the demand for low-skilled/teenage labor is relatively <strong>inelastic</strong>
+                ($E_D \approx 0.1 \text{ to } 0.3$). Thus a moderate minimum wage hike causes relatively small job losses
+                while raising <strong>total wage income</strong> of low-skilled workers as a group—explaining why economists
+                still debate its net social impact.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 6: ISRT PYQ Vault -->
+      <section class="section-card" id="sec-pyq">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 06 • Exam Preparation</div>
+            <h2>ISRT Past Exam Question (PYQ) Vault (2017–2025)</h2>
+          </div>
+          <button class="done-btn" data-section="s6">✓ Mark Done</button>
+        </div>
+
+        <div class="accordion">
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-primary">1st In-course 2025 • Q2(b) &amp; Q5 [8 Marks]</span> Midpoint elasticity (Q: 150→270, P: 15→8) AND how cooking-oil import restrictions benefit domestic producers.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Q2(b) Calculation:</strong> %ΔQ = (270 − 150) / 210 = 120 / 210 = 0.5714 (57.14%). %ΔP = (15 − 8) / 11.5 = 7 / 11.5 = 0.6087 (60.87%). Therefore <strong>E<sub>D</sub> = 0.5714 / 0.6087 = 0.939 (&lt; 1)</strong>. <em>Interpretation:</em> Demand is <strong>slightly price-inelastic</strong> (a 1% price drop raises quantity demanded by only 0.94%).</p>
+              <p style="margin:0;"><strong>Q5 Cooking Oil Import Restriction:</strong> Blocking foreign oil shifts overall market supply leftward (S → S'), raising domestic price from P₁ to P₂. Because cooking oil is an essential household staple, its demand is <strong>price-inelastic (E<sub>D</sub> &lt; 1)</strong>. Consumers cannot easily cut usage, so the large percentage increase in price far outweighs the small percentage drop in quantity bought—causing <strong>total revenue of domestic producers to increase</strong>.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-accent">Final 2023 • Q3(b,c) [9 Marks]</span> Demand function Q = 300 − 5P + 2I (at P = 25, I = 4000): find E_D, E_I, and 3% income growth potential; plus corn production restrictions.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Step 1 (Evaluate Q):</strong> Q = 300 − 5(25) + 2(4000) = 300 − 125 + 8000 = <strong>8,175</strong>.</p>
+              <p><strong>(i) Price Elasticity:</strong> E<sub>D</sub> = |∂Q/∂P| × (P/Q) = 5 × (25 / 8175) = <strong>0.0153</strong> (highly price-inelastic).</p>
+              <p><strong>(ii) Income Elasticity:</strong> E<sub>I</sub> = (∂Q/∂I) × (I/Q) = 2 × (4000 / 8175) = <strong>0.9786</strong> (normal necessity; 1% rise in income raises Q by 0.98%).</p>
+              <p style="margin:0;"><strong>(iii) Growth Potential (3% income rise):</strong> %ΔQ = E<sub>I</sub> × 3% = 0.9786 × 3% = <strong>2.94% per year</strong> (sales expand nearly in lockstep with income). <em>(c) Corn Restriction:</em> Shifts supply left against inelastic food demand → price jumps steeply, raising total farm revenue.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-warn">Final 2017 • Q2(b,c) [9 Marks]</span> For Q = 100 − 2P, find elasticities at P = 1 and P = 25; distinguish slope vs. elasticity; cigarette tax for heavy vs. casual smokers.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>(b) Q = 100 − 2P:</strong> Slope = dQ/dP = −2 (constant everywhere). Point elasticity E<sub>D</sub> = |−2| × (P/Q) = 2P / (100 − 2P).</p>
+              <ul style="padding-left:1.2rem; margin-bottom:0.65rem;">
+                <li>At <strong>P = 1</strong>: Q = 98 ⇒ E<sub>D</sub> = 2(1)/98 = <strong>0.0204</strong> (highly inelastic).</li>
+                <li>At <strong>P = 25</strong>: Q = 50 ⇒ E<sub>D</sub> = 2(25)/50 = <strong>1.00</strong> (unit-elastic midpoint).</li>
+              </ul>
+              <p style="margin:0;"><strong>(c) Cigarette Tax:</strong> <strong>Heavy smokers</strong> are addicted → highly <em>inelastic</em> demand → a tobacco tax shifts almost entirely forward onto consumers (steep price hike, tiny drop in smoking). <strong>Casual smokers</strong> have <em>elastic</em> demand → tax causes a large drop in quantity smoked and a smaller retail price hike (more burden falls on producers).</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-purple">1st In-course 2023 • Q6 [4 Marks]</span> Two goods: Rice and Car. Justify their price elasticity and illustrate what happens to revenue when price rises.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p><strong>Rice (Necessity → Inelastic, E<sub>D</sub> &lt; 1):</strong> Essential staple with few substitutes. When price rises (P₁ → P₂), quantity falls only slightly → <strong>Total Revenue INCREASES</strong> (gained price rectangle &gt; lost quantity rectangle).</p>
+              <p style="margin:0;"><strong>Car (Luxury → Elastic, E<sub>D</sub> &gt; 1):</strong> Expensive discretionary item with substitutes (public transit, used cars). When price rises, quantity drops sharply → <strong>Total Revenue DECREASES</strong>.</p>
+            </div>
+          </div>
+
+          <div class="acc-item">
+            <button class="acc-btn" type="button">
+              <span><span class="pill pill-danger">Final 2024 • Q3(b) &amp; 1st In-course 2024 • Q4(a)</span> Explain why elasticity of demand varies along a linear demand curve and is different from slope.</span>
+              <span class="acc-chevron">▼</span>
+            </button>
+            <div class="acc-body">
+              <p style="margin:0;">Slope measures absolute rate of change ($\Delta Q / \Delta P = -b$), which is constant along any straight line $Q = a - bP$. Elasticity measures <em>percentage</em> responsiveness: $E_D = |\Delta Q / \Delta P| \times (P/Q) = b \cdot (P/Q)$. Even though $b$ is constant, the ratio $P/Q$ starts at $\infty$ at the vertical intercept ($Q=0$), equals $1/b$ at the midpoint ($E_D = 1$), and falls to $0$ at the horizontal intercept ($P=0$). Hence elasticity falls continuously as you move down a linear demand curve.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Quick Mastery Check -->
+      <section class="section-card" id="sec-quiz">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Section 07 • Self-Assessment</div>
+            <h2>Lesson 5 Quick Mastery Check</h2>
+          </div>
+          <button class="btn btn-outline" type="button" onclick="resetQuiz()">↻ Reset Quiz</button>
+        </div>
+        <div id="quizContainer"></div>
+        <div class="callout accent" id="quizSummary" style="display:none;"></div>
+      </section>
+
+      <footer>
+        ECON107 Interactive Course Series • Lesson 5: Elasticity &amp; Policy Applications • Module 1 Complete • ISRT, University of Dhaka
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme Toggle ----------
+    const themeToggle = document.getElementById('themeToggle');
+    const savedTheme = localStorage.getItem('econ107_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('econ107_theme', next);
+      themeToggle.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      drawRevLab(); drawTaxLab();
+    });
+
+    // ---------- Scroll Progress & Active Nav ----------
+    const scrollFill = document.getElementById('scrollFill');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.section-card');
+    window.addEventListener('scroll', () => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      scrollFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      let currentId = '';
+      sections.forEach(sec => { if (sec.getBoundingClientRect().top <= 140) currentId = sec.id; });
+      navLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + currentId));
+    });
+
+    // ---------- Completion Tracker ----------
+    const doneBtns = document.querySelectorAll('.done-btn');
+    let completedSet = new Set(JSON.parse(localStorage.getItem('econ107_l5_done') || '[]'));
+    function updateProgressUI() {
+      document.getElementById('progressText').textContent = `${completedSet.size}/${doneBtns.length} Done`;
+      document.getElementById('progressBar').style.width = `${(completedSet.size / doneBtns.length) * 100}%`;
+      doneBtns.forEach(btn => {
+        const isDone = completedSet.has(btn.dataset.section);
+        btn.classList.toggle('completed', isDone);
+        btn.textContent = isDone ? '✓ Completed' : '✓ Mark Done';
+      });
+    }
+    doneBtns.forEach(btn => btn.addEventListener('click', () => {
+      const k = btn.dataset.section;
+      completedSet.has(k) ? completedSet.delete(k) : completedSet.add(k);
+      localStorage.setItem('econ107_l5_done', JSON.stringify([...completedSet]));
+      updateProgressUI();
+    }));
+    updateProgressUI();
+
+    // ---------- Accordion & Tabs ----------
+    document.querySelectorAll('.acc-btn').forEach(btn => btn.addEventListener('click', () => btn.parentElement.classList.toggle('open')));
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const parent = btn.closest('.section-card');
+        parent.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+        parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        parent.querySelector('#' + btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'pol-tax') drawTaxLab();
+      });
+    });
+
+    // ---------- Lab 1: Midpoint Elasticity Calculator ----------
+    let midLabel = '1st In-course 2025 Q2(b)';
+    function loadMidPreset(p1, p2, q1, q2, label, btn) {
+      document.getElementById('mP1').value = p1;
+      document.getElementById('mP2').value = p2;
+      document.getElementById('mQ1').value = q1;
+      document.getElementById('mQ2').value = q2;
+      midLabel = label;
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+      calcMidpoint();
+    }
+
+    function calcMidpoint() {
+      const p1 = parseFloat(document.getElementById('mP1').value) || 0;
+      const p2 = parseFloat(document.getElementById('mP2').value) || 0;
+      const q1 = parseFloat(document.getElementById('mQ1').value) || 0;
+      const q2 = parseFloat(document.getElementById('mQ2').value) || 0;
+      const dQ = Math.abs(q2 - q1), avgQ = (q1 + q2) / 2;
+      const dP = Math.abs(p2 - p1), avgP = (p1 + p2) / 2;
+      if (dP === 0 || avgQ === 0 || avgP === 0) {
+        document.getElementById('midOutput').innerHTML = 'Enter valid distinct prices and positive quantities.';
+        return;
+      }
+      const pctQ = dQ / avgQ;
+      const pctP = dP / avgP;
+      const ed = pctQ / pctP;
+      const cat = ed > 1.01 ? 'Price-Elastic (E_D > 1)' : ed < 0.99 ? 'Price-Inelastic (E_D < 1)' : 'Unit-Elastic (E_D ≈ 1)';
+      const tr1 = p1 * q1, tr2 = p2 * q2;
+      document.getElementById('midOutput').innerHTML = `
+        <strong>Case:</strong> ${midLabel}<br>
+        <strong>%ΔQ (Midpoint):</strong> |${q2} − ${q1}| / ((${q1}+${q2})/2) = ${dQ} / ${avgQ.toFixed(1)} = <strong>${(pctQ * 100).toFixed(2)}%</strong><br>
+        <strong>%ΔP (Midpoint):</strong> |${p2} − ${p1}| / ((${p1}+${p2})/2) = ${dP} / ${avgP.toFixed(2)} = <strong>${(pctP * 100).toFixed(2)}%</strong><br>
+        <strong>Elasticity |E<sub>D</sub>|:</strong> ${(pctQ * 100).toFixed(2)}% ÷ ${(pctP * 100).toFixed(2)}% = <strong>${ed.toFixed(3)}</strong> → <strong>${cat}</strong><br>
+        <strong>Revenue Check:</strong> TR₁ = ${(tr1).toLocaleString()} → TR₂ = ${(tr2).toLocaleString()} (${tr2 > tr1 ? 'TR Rose ↑' : tr2 < tr1 ? 'TR Fell ↓' : 'TR Unchanged'})
+      `;
+    }
+    ['mP1', 'mP2', 'mQ1', 'mQ2'].forEach(id => document.getElementById(id).addEventListener('input', () => { midLabel = 'Custom Values'; calcMidpoint(); }));
+    calcMidpoint();
+
+    // ---------- Lab 2: Linear Demand Elasticity & TR Box ----------
+    const revCanvas = document.getElementById('revCanvas');
+    const rCtx = revCanvas.getContext('2d');
+    const revSlider = document.getElementById('revPSlider');
+
+    function setRevPrice(p) {
+      revSlider.value = p;
+      drawRevLab();
+    }
+
+    function drawRevLab() {
+      const P = parseFloat(revSlider.value);
+      const Q = 100 - 2 * P;
+      const TR = P * Q;
+      const ed = (2 * P) / Q;
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const W = revCanvas.width, H = revCanvas.height;
+      const pad = { l: 55, r: 24, t: 24, b: 46 };
+      const sx = q => pad.l + (q / 105) * (W - pad.l - pad.r);
+      const sy = p => H - pad.b - (p / 55) * (H - pad.t - pad.b);
+
+      rCtx.clearRect(0, 0, W, H);
+
+      // Axes
+      rCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      rCtx.lineWidth = 2;
+      rCtx.beginPath();
+      rCtx.moveTo(pad.l, pad.t); rCtx.lineTo(pad.l, H - pad.b); rCtx.lineTo(W - pad.r, H - pad.b);
+      rCtx.stroke();
+
+      rCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      rCtx.font = 'bold 12px system-ui, sans-serif';
+      rCtx.textAlign = 'center';
+      rCtx.fillText('Quantity (Q = 100 − 2P)', (pad.l + W - pad.r) / 2, H - 12);
+      rCtx.save();
+      rCtx.translate(18, (pad.t + H - pad.b) / 2);
+      rCtx.rotate(-Math.PI / 2);
+      rCtx.fillText('Price ($)', 0, 0);
+      rCtx.restore();
+
+      // Total Revenue Rectangle
+      const rectColor = ed > 1.02 ? 'rgba(22, 163, 74, 0.22)' : ed < 0.98 ? 'rgba(217, 119, 6, 0.22)' : 'rgba(15, 76, 129, 0.24)';
+      const strokeColor = ed > 1.02 ? '#16a34a' : ed < 0.98 ? '#d97706' : '#0f4c81';
+      rCtx.fillStyle = rectColor;
+      rCtx.fillRect(pad.l, sy(P), sx(Q) - pad.l, (H - pad.b) - sy(P));
+      rCtx.strokeStyle = strokeColor;
+      rCtx.lineWidth = 2;
+      rCtx.strokeRect(pad.l, sy(P), sx(Q) - pad.l, (H - pad.b) - sy(P));
+
+      // TR Label inside box
+      if (Q > 14 && P > 6) {
+        rCtx.fillStyle = isDark ? '#f1f5f9' : '#0f172a';
+        rCtx.font = 'bold 13px system-ui, sans-serif';
+        rCtx.textAlign = 'center';
+        rCtx.fillText(`TR = $${TR}`, (pad.l + sx(Q)) / 2, (sy(P) + H - pad.b) / 2 + 5);
+      }
+
+      // Demand Line (0, 50) to (100, 0)
+      rCtx.strokeStyle = isDark ? '#38bdf8' : '#0f4c81';
+      rCtx.lineWidth = 3.2;
+      rCtx.beginPath();
+      rCtx.moveTo(sx(0), sy(50)); rCtx.lineTo(sx(100), sy(0));
+      rCtx.stroke();
+
+      // Midpoint marker (50, 25)
+      rCtx.fillStyle = '#7c3aed';
+      rCtx.beginPath(); rCtx.arc(sx(50), sy(25), 5, 0, Math.PI * 2); rCtx.fill();
+      rCtx.font = '11px system-ui, sans-serif';
+      rCtx.textAlign = 'left';
+      rCtx.fillText('Midpoint (E_D = 1)', sx(50) + 10, sy(25) - 6);
+
+      // Active Point
+      rCtx.fillStyle = strokeColor;
+      rCtx.beginPath(); rCtx.arc(sx(Q), sy(P), 7, 0, Math.PI * 2); rCtx.fill();
+      rCtx.strokeStyle = '#fff'; rCtx.lineWidth = 2; rCtx.stroke();
+
+      document.getElementById('revPVal').textContent = `$${P} (Q = ${Q})`;
+      const badgeClass = ed > 1.02 ? 'pill-success' : ed < 0.98 ? 'pill-warn' : 'pill-primary';
+      const zoneText = ed > 1.02 ? 'Elastic Zone (E_D > 1)' : ed < 0.98 ? 'Inelastic Zone (E_D < 1)' : 'Unit-Elastic Midpoint (E_D = 1)';
+      const revTip = ed > 1.02
+        ? 'Lowering price will INCREASE Total Revenue (TR).'
+        : ed < 0.98
+        ? 'Raising price will INCREASE Total Revenue (TR).'
+        : 'Total Revenue is at its MAXIMUM ($1,250)!';
+
+      document.getElementById('revReadout').innerHTML = `
+        <span class="status-badge ${badgeClass}">${zoneText}</span>
+        <div><strong>Constant Slope (dQ/dP):</strong> −2.00</div>
+        <div><strong>Point Elasticity (E<sub>D</sub> = 2P/Q):</strong> <strong>${ed.toFixed(2)}</strong></div>
+        <div><strong>Total Revenue (P × Q):</strong> <strong>$${TR.toLocaleString()}</strong></div>
+        <div class="muted" style="font-size:0.82rem; margin-top:0.25rem;">💡 ${revTip}</div>
+      `;
+    }
+    revSlider.addEventListener('input', drawRevLab);
+    drawRevLab();
+
+    // ---------- Lab 3: Tax Incidence Simulator ----------
+    const taxCanvas = document.getElementById('taxCanvas');
+    const tCtx = taxCanvas.getContext('2d');
+    const taxEdSlider = document.getElementById('taxEdSlider');
+    const taxEsSlider = document.getElementById('taxEsSlider');
+    const taxAmtSlider = document.getElementById('taxAmtSlider');
+    let taxLabel = 'Gasoline Tax ($2/gal — Slide Example)';
+
+    function setTaxPreset(ed, es, t, label, btn) {
+      taxEdSlider.value = ed;
+      taxEsSlider.value = es;
+      taxAmtSlider.value = t;
+      taxLabel = label;
+      btn.parentElement.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      drawTaxLab();
+    }
+
+    function drawTaxLab() {
+      const ed = parseFloat(taxEdSlider.value);
+      const es = parseFloat(taxEsSlider.value);
+      const tax = parseFloat(taxAmtSlider.value);
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+      // Initial Equilibrium at Q0 = 100, P0 = 2.00
+      const Q0 = 100, P0 = 2.0;
+      const consShare = es / (ed + es);
+      const prodShare = ed / (ed + es);
+      const dPc = tax * consShare;
+      const dPp = tax * prodShare;
+      const Pcons = P0 + dPc;
+      const Pprod = P0 - dPp;
+      // Approximate Q1 using elasticity at (100, 2): dQ/Q0 = -ed * (dPc / P0)
+      const Q1 = Math.max(15, Q0 * (1 - ed * (dPc / P0)));
+
+      // Draw Graph
+      const W = taxCanvas.width, H = taxCanvas.height;
+      const pad = { l: 55, r: 24, t: 22, b: 44 };
+      const maxQ = 140, maxP = 6.5;
+      const sx = q => pad.l + (q / maxQ) * (W - pad.l - pad.r);
+      const sy = p => H - pad.b - (p / maxP) * (H - pad.t - pad.b);
+
+      tCtx.clearRect(0, 0, W, H);
+
+      // Axes
+      tCtx.strokeStyle = isDark ? '#94a3b8' : '#334155';
+      tCtx.lineWidth = 2;
+      tCtx.beginPath();
+      tCtx.moveTo(pad.l, pad.t); tCtx.lineTo(pad.l, H - pad.b); tCtx.lineTo(W - pad.r, H - pad.b);
+      tCtx.stroke();
+
+      tCtx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
+      tCtx.font = 'bold 12px system-ui, sans-serif';
+      tCtx.textAlign = 'center';
+      tCtx.fillText('Quantity (Q)', (pad.l + W - pad.r) / 2, H - 12);
+      tCtx.save();
+      tCtx.translate(18, (pad.t + H - pad.b) / 2);
+      tCtx.rotate(-Math.PI / 2);
+      tCtx.fillText('Price ($)', 0, 0);
+      tCtx.restore();
+
+      // Slopes of local linear D and S passing through (Q0, P0)
+      // ed = (1/|slopeD|) * (P0/Q0) => |slopeD| = P0 / (Q0 * ed)
+      const slopeD = -(P0 / (Q0 * ed));
+      const slopeS = (P0 / (Q0 * es));
+
+      function plotLine(fn, color, dashed) {
+        tCtx.save();
+        if (dashed) tCtx.setLineDash([5, 5]);
+        tCtx.strokeStyle = color;
+        tCtx.lineWidth = dashed ? 2 : 3;
+        tCtx.beginPath();
+        let started = false;
+        for (let q = 5; q <= maxQ - 5; q += 1) {
+          const p = fn(q);
+          if (p >= 0.1 && p <= maxP - 0.1) {
+            if (!started) { tCtx.moveTo(sx(q), sy(p)); started = true; }
+            else tCtx.lineTo(sx(q), sy(p));
+          }
+        }
+        tCtx.stroke();
+        tCtx.restore();
+      }
+
+      // Consumer & Producer Tax Burden Rectangles
+      tCtx.fillStyle = 'rgba(220, 38, 38, 0.24)';
+      tCtx.fillRect(pad.l, sy(Pcons), sx(Q1) - pad.l, sy(P0) - sy(Pcons));
+      tCtx.fillStyle = 'rgba(15, 76, 129, 0.24)';
+      tCtx.fillRect(pad.l, sy(P0), sx(Q1) - pad.l, sy(Pprod) - sy(P0));
+
+      // Curves
+      plotLine(q => P0 + slopeD * (q - Q0), isDark ? '#38bdf8' : '#0f4c81', false); // D
+      plotLine(q => P0 + slopeS * (q - Q0), '#94a3b8', true); // S
+      plotLine(q => P0 + tax + slopeS * (q - Q0), isDark ? '#2dd4bf' : '#0d9488', false); // S + tax
+
+      // Initial E and New E'
+      tCtx.fillStyle = '#64748b';
+      tCtx.beginPath(); tCtx.arc(sx(Q0), sy(P0), 5, 0, Math.PI * 2); tCtx.fill();
+      tCtx.fillStyle = '#dc2626';
+      tCtx.beginPath(); tCtx.arc(sx(Q1), sy(Pcons), 6.5, 0, Math.PI * 2); tCtx.fill();
+      tCtx.strokeStyle = '#fff'; tCtx.lineWidth = 2; tCtx.stroke();
+
+      // Update labels & readout
+      document.getElementById('taxEdVal').textContent = `${ed.toFixed(2)} (${ed < 1 ? 'Inelastic' : ed > 1 ? 'Elastic' : 'Unit'})`;
+      document.getElementById('taxEsVal').textContent = `${es.toFixed(2)} (${es < 1 ? 'Inelastic' : es > 1 ? 'Elastic' : 'Unit'})`;
+      document.getElementById('taxAmtVal').textContent = `$${tax.toFixed(2)}`;
+
+      const cPct = Math.round(consShare * 100);
+      const pPct = 100 - cPct;
+      document.getElementById('taxReadout').innerHTML = `
+        <span class="status-badge pill-primary">${taxLabel}</span>
+        <div><strong>Pre-Tax Price:</strong> $2.00 → <strong>Buyers Pay:</strong> $${Pcons.toFixed(2)} &nbsp;|&nbsp; <strong>Sellers Net:</strong> $${Pprod.toFixed(2)}</div>
+        <div class="split-bar">
+          <div class="split-cons" style="width:${cPct}%">Buyers ${cPct}%</div>
+          <div class="split-prod" style="width:${pPct}%">Sellers ${pPct}%</div>
+        </div>
+        <div style="font-size:0.83rem;">
+          <strong>Consumer Burden:</strong> $${dPc.toFixed(2)} &nbsp;|&nbsp; <strong>Producer Burden:</strong> $${dPp.toFixed(2)}
+        </div>
+        <div class="muted" style="font-size:0.8rem; margin-top:0.2rem;">
+          ${cPct > 55 ? 'Demand is more inelastic than supply → tax shifts primarily FORWARD to consumers.'
+            : pPct > 55 ? 'Supply is more inelastic than demand → tax shifts primarily BACKWARD to producers.'
+            : 'Similar elasticities → tax burden is split roughly evenly.'}
+        </div>
+      `;
+    }
+    [taxEdSlider, taxEsSlider, taxAmtSlider].forEach(s => s.addEventListener('input', () => { taxLabel = 'Custom Elasticities'; drawTaxLab(); }));
+    drawTaxLab();
+
+    // ---------- Quick Mastery Check Quiz ----------
+    const quizData = [
+      {
+        q: "1. If demand for rice is price-inelastic (E_D < 1) and the price of rice rises by 10%, what happens to total revenue?",
+        opts: [
+          "Total revenue decreases.",
+          "Total revenue increases.",
+          "Total revenue remains unchanged.",
+          "Quantity demanded drops to zero."
+        ],
+        ans: 1,
+        exp: "When demand is inelastic, the percentage drop in quantity is smaller than the percentage rise in price, so total revenue (P × Q) increases."
+      },
+      {
+        q: "2. Along a straight-line downward-sloping demand curve Q = 100 − 2P, where is Total Revenue maximized?",
+        opts: [
+          "At P = $49 (near the top)",
+          "At P = $1 (near the bottom)",
+          "At the midpoint P = $25, Q = 50 (where E_D = 1)",
+          "Total revenue is constant everywhere along a linear demand curve."
+        ],
+        ans: 2,
+        exp: "Total revenue reaches its maximum precisely at the midpoint of a linear demand curve where E_D = 1 (here P = 25, Q = 50, TR = $1,250)."
+      },
+      {
+        q: "3. Why does a bumper harvest hurt farmers' total income (Paradox of the Bumper Harvest)?",
+        opts: [
+          "Demand for basic food crops is elastic.",
+          "Demand for basic food crops is inelastic, so the sharp price drop outweighs the small gain in quantity sold.",
+          "Supply shifts to the left during a good harvest.",
+          "Farmers face zero fixed costs."
+        ],
+        ans: 1,
+        exp: "A bumper crop shifts supply rightward along an inelastic food demand curve, causing prices to plunge proportionally more than quantity rises—lowering total farm revenue."
+      },
+      {
+        q: "4. A $2 excise tax is imposed on a product whose demand is highly INELASTIC and whose supply is highly ELASTIC (like gasoline or cigarettes for heavy smokers). Who bears most of the tax?",
+        opts: [
+          "Consumers (tax is shifted forward into higher retail prices).",
+          "Producers (tax is shifted backward into lower net prices).",
+          "Neither—deadweight loss absorbs 100% of the tax.",
+          "The burden is always split 50/50."
+        ],
+        ans: 0,
+        exp: "Tax incidence falls most heavily on the more inelastic side of the market. When demand is inelastic relative to supply, consumers bear most of the tax."
+      },
+      {
+        q: "5. If a product's income elasticity of demand is E_I = 0.98 and consumer income grows by 3% per year, what is the expected annual sales growth?",
+        opts: ["0.98%", "2.94%", "3.06%", "−2.94%"],
+        ans: 1,
+        exp: "Expected %ΔQ = E_I × %ΔI = 0.98 × 3% = 2.94% per year."
+      },
+      {
+        q: "6. A binding minimum wage set ABOVE the market-clearing wage in an unskilled labor market leads to:",
+        opts: [
+          "A shortage of unskilled workers.",
+          "A surplus of unskilled workers (unemployment).",
+          "Zero change in employment or wages.",
+          "A leftward shift of the labor supply curve."
+        ],
+        ans: 1,
+        exp: "A binding price floor (W_min > W_market) causes quantity of labor supplied to exceed quantity of labor demanded, creating unemployment."
+      }
+    ];
+
+    let quizAnswers = {};
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-q';
+        div.innerHTML = `
+          <div class="quiz-q-title">${item.q}</div>
+          <div class="quiz-opts">
+            ${item.opts.map((opt, oIdx) => `<button class="quiz-opt" type="button" onclick="answerQuiz(${idx}, ${oIdx}, this)">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-exp" id="qexp-${idx}">${item.exp}</div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('quizSummary').style.display = 'none';
+    }
+
+    function answerQuiz(qIdx, oIdx, btn) {
+      if (quizAnswers[qIdx] !== undefined) return;
+      quizAnswers[qIdx] = oIdx;
+      const allBtns = btn.closest('.quiz-q').querySelectorAll('.quiz-opt');
+      const correctIdx = quizData[qIdx].ans;
+      allBtns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === correctIdx) b.classList.add('is-correct');
+        else if (i === oIdx) b.classList.add('is-wrong');
+      });
+      document.getElementById(`qexp-${qIdx}`).classList.add('show');
+
+      if (Object.keys(quizAnswers).length === quizData.length) {
+        let score = 0;
+        quizData.forEach((q, i) => { if (quizAnswers[i] === q.ans) score++; });
+        const summary = document.getElementById('quizSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `
+          <div class="callout-title">Mastery Check Complete: ${score} / ${quizData.length} (${Math.round(score / quizData.length * 100)}%)</div>
+          ${score === quizData.length
+            ? "Module 1 Complete! You've conquered all 1st In-Course topics (Lessons 1–5) and are ready to launch Module 2 with Lesson 6 (Utility Theory & Consumer Choice)!"
+            : "Great effort! Review the explanations above and reset the quiz to hit 100% before starting Module 2."}
+        `;
+      }
+    }
+
+    function resetQuiz() { quizAnswers = {}; renderQuiz(); }
+    renderQuiz();
+  </script>
+</body>
+</html>

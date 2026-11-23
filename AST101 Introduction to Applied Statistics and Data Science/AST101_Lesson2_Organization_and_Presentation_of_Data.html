@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 2: Organization & Presentation of Data</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed;
+      top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      z-index: 1000;
+      transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      padding: 22px 18px;
+      overflow-y: auto;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; font-weight: 800; font-size: 15px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card {
+      background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px;
+    }
+    .progress-card-top {
+      display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px;
+    }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1080px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #0f766e 0%, #2563eb 55%, #4f46e5 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 280px; height: 280px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -90px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 740px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 14px 18px; margin: 14px 0; font-family: var(--font-mono);
+      font-size: 14px; overflow-x: auto;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 16px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px 13px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 13px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+    .tab-btn {
+      padding: 8px 14px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .btn-primary {
+      padding: 9px 16px; border-radius: 9px; border: none;
+      background: var(--primary); color: #fff; font-weight: 700; font-size: 13.5px;
+      cursor: pointer; transition: background 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    /* Interactive Lab Box */
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px;
+    }
+    .input-field, textarea.input-field {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+    .mini-input {
+      width: 82px; padding: 6px 8px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+    .stat-pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+    .stat-pill {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      padding: 5px 11px; border-radius: 99px; font-size: 12.5px; font-weight: 700;
+    }
+
+    /* Stem-and-Leaf Monospace Box */
+    .stem-leaf-pre {
+      font-family: var(--font-mono);
+      font-size: 14.5px;
+      line-height: 1.7;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* Shape cards */
+    .shape-card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px; text-align: center;
+    }
+    .shape-card strong { display: block; font-size: 13px; margin-top: 6px; }
+    .shape-card span { font-size: 11.5px; color: var(--text-muted); }
+
+    /* Accordion */
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 2</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L2</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 2 Progress</span>
+          <span id="progress-text">0 / 8</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Raw Data &amp; Qualitative Graphs</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Quantitative Frequency Tables</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Histograms, Density &amp; Shapes</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Cumulative Tables &amp; Ogives</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Interactive Histogram &amp; Ogive Lab</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Stem-and-Leaf &amp; Split-Stem Lab</a></li>
+          <li><a class="nav-link" href="#sec-7" data-sec="sec-7"><span class="nav-check">✓</span>7. Good Graphs vs. Misleading Graphs</a></li>
+          <li><a class="nav-link" href="#sec-8" data-sec="sec-8"><span class="nav-check">✓</span>8. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 1 of 4 • 1st Incourse Core</span>
+          <span class="badge">Lesson 2 of 12</span>
+          <span class="badge">⏱ Est. Study Time: 60 mins</span>
+        </div>
+        <h1>Organization &amp; Presentation of Data</h1>
+        <p class="subtitle">
+          Turn raw observations into crystal-clear tables and charts—master pie angles, class boundaries, unequal-width frequency density histograms, ogives, split stem-and-leaf plots, and real ISRT exam problems.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Slide Deck</span><strong>L2_Organization &amp; Presentation</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 11–15</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2017–2025</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Raw Data &amp; Organizing Qualitative Data</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p><strong>Raw data</strong> are observations recorded in the exact sequence in which they are collected, before any sorting, ranking, or grouping. The most convenient way to organize raw data is a <strong>Frequency Distribution</strong>—a table listing each category (or class) alongside the number of observations (<span class="mono">f</span>) belonging to it.</p>
+
+        <div class="formula-box">
+          Relative Frequency = f / Σf &nbsp;&nbsp;|&nbsp;&nbsp; Percentage = (Relative Frequency) × 100 &nbsp;&nbsp;|&nbsp;&nbsp; Pie Angle = (Relative Frequency) × 360°
+        </div>
+
+        <h3>Graphs for Qualitative (Categorical) Data</h3>
+        <div class="grid-4">
+          <div class="card">
+            <span class="card-top-tag">Bar Diagram</span>
+            <p style="font-size:13.5px; margin-bottom:0">Separated vertical/horizontal bars whose heights represent category frequencies. <em>Limitation:</em> Poor when bar heights vary wildly (highly heterogeneous).</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Pie Chart</span>
+            <p style="font-size:13.5px; margin-bottom:0">A 360° circle sliced proportionally to relative frequencies. <em>Limitation:</em> Poor when there are too many categories or highly uneven slices.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Clustered / Stacked Bar</span>
+            <p style="font-size:13.5px; margin-bottom:0">Displays two or more interrelated categorical sets in one chart (derived from an <em>r × c</em> cross table / contingency table).</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">Pareto Chart</span>
+            <p style="font-size:13.5px; margin-bottom:0">A categorical bar chart whose vertical bars are strictly arranged in <strong>descending order</strong> (highest frequency to lowest).</p>
+          </div>
+        </div>
+
+        <h3>Interactive Pie Chart Calculator <span class="exam-badge">1st Incourse 2022, 2024 &amp; 2025</span></h3>
+        <p>Pre-loaded with the exact <strong>Family Expenditure</strong> problem repeated in three consecutive ISRT 1st Incourse exams. Edit any value to recalculate angles and redraw the SVG pie live:</p>
+        <div class="lab-panel">
+          <div class="grid-2" style="align-items:center">
+            <div>
+              <div class="table-wrap" style="margin:0">
+                <table>
+                  <thead>
+                    <tr><th>Item</th><th>Expenditure</th><th>Rel. Freq</th><th>Angle (°)</th></tr>
+                  </thead>
+                  <tbody id="pie-table-body"></tbody>
+                </table>
+              </div>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-top:8px; margin-bottom:0">Tip: In the exam, always show the 4-column table (Category, Frequency, Relative Frequency / %, Angle in degrees) and verify that angles sum to <strong>360°</strong>.</p>
+            </div>
+            <div style="text-align:center">
+              <svg id="pie-svg" viewBox="0 0 280 240" width="280" height="240"></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02</div>
+            <h2>Quantitative Frequency Distributions &amp; Class Construction</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>When quantitative observations are organized into intervals, the result is called <strong>grouped data</strong>. Mastering the exact terminology prevents costly mistakes in later lessons (mean, median, mode, ogives):</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Core Terminology</h4>
+            <ul style="margin-bottom:0; font-size:14px">
+              <li><strong>Class Interval:</strong> Range of values between a lower and upper limit (e.g., <span class="mono">801–1000</span>).</li>
+              <li><strong>Class Limits:</strong> Stated endpoints of a class (Lower Limit = 801, Upper Limit = 1000).</li>
+              <li><strong>Class Boundaries:</strong> Exact cut-points that eliminate gaps between adjacent classes (subtract 0.5 from lower limit and add 0.5 to upper limit for integers → <span class="mono">800.5 to 1000.5</span>; for 1-decimal data like <span class="mono">7.8–8.8</span>, subtract/add <span class="mono">0.05</span>).</li>
+              <li><strong>Class Width (Size):</strong> Upper Boundary − Lower Boundary (e.g., <span class="mono">1000.5 − 800.5 = 200</span>).</li>
+              <li><strong>Class Midpoint (Mark):</strong> <span class="mono">(Lower + Upper) / 2</span>.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>3 Decisions When Building a Table</h4>
+            <ol style="margin-bottom:0; font-size:14px">
+              <li><strong>Number of Classes (usually 5 to 20):</strong>
+                <ul>
+                  <li><strong>2<sup>k</sup> Rule:</strong> Pick smallest integer <em>k</em> such that <span class="mono">2<sup>k</sup> ≥ n</span>. (For <em>n</em> = 40: 2<sup>5</sup> = 32 &lt; 40 ≤ 64 = 2<sup>6</sup> → <strong>6 classes</strong>).</li>
+                  <li><strong>Sturges' Formula:</strong> <span class="mono">k = 1 + 3.3 × log<sub>10</sub>(n)</span>. (For <em>n</em> = 40: <span class="mono">1 + 3.3(1.602) = 6.29 ≈ 6</span>).</li>
+                </ul>
+              </li>
+              <li><strong>Approximate Class Width:</strong> <span class="mono">(Max − Min) / Number of classes</span>, rounded up to a convenient number.</li>
+              <li><strong>Starting Point:</strong> Any convenient number ≤ Minimum value.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="callout trap">
+          <strong class="callout-title">Exam Trap (Final 2017 Q1c, Final 2019 Q1g &amp; Final 2025 Q2a)</strong>
+          <strong>When are class limits and class boundaries the same?</strong> When classes are written as <strong>continuous / overlapping intervals</strong> (exclusive form), such as <span class="mono">10–20, 20–30, 30–40</span> (meaning 10 to less than 20, etc.)—there are no gaps to bridge! For inclusive intervals like <span class="mono">10–19, 20–29</span>, you <em>must</em> use class boundaries (<span class="mono">9.5–19.5, 19.5–29.5</span>) so histogram bars touch with no gaps.
+        </div>
+
+        <h3>Special Frequency Table Types</h3>
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag">Single-Valued Classes</span>
+            <p style="font-size:13.5px; margin-bottom:0">Used for <strong>discrete data</strong> taking only a few distinct integers (e.g., 0, 1, 2, 3, 4, 5 vehicles owned per household).</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag amber">Open-Ended Classes</span>
+            <p style="font-size:13.5px; margin-bottom:0">First class has no lower limit (<em>"Below 110"</em>) or last class has no upper limit (<em>"54 and above"</em>). Useful for extreme tails, but prevents computing an exact arithmetic mean.</p>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">Unequal Class Intervals</span>
+            <p style="font-size:13.5px; margin-bottom:0">Used when data are very unevenly distributed (e.g., absentee days: 0–6, 6–10, 10–14, 14–20, 20–28, 28–30, 30–40). Requires <strong>Frequency Density</strong> for graphing!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Histograms, Frequency Polygons, Unequal-Width Density &amp; Shapes</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Feature</th><th>Bar Diagram</th><th>Histogram</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Variable Type</strong></td><td>Qualitative (categorical) or discrete single-valued</td><td>Quantitative continuous (grouped class intervals)</td></tr>
+              <tr><td><strong>Gaps Between Bars</strong></td><td>Equal gaps between bars</td><td><strong>No gaps</strong> — bars are drawn adjacent at class boundaries</td></tr>
+              <tr><td><strong>Bar Width</strong></td><td>Uniform &amp; arbitrary (height alone carries info)</td><td>Proportional to <strong>class width</strong> (<strong>area</strong> represents frequency)</td></tr>
+              <tr><td><strong>Reordering X-axis</strong></td><td>Categories can be reordered (e.g., Pareto chart)</td><td>Strictly fixed numerical order</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Frequency Polygon:</strong> Formed by plotting points at each <strong>class midpoint</strong> against its frequency (or density) and joining successive points with straight lines (anchored to the x-axis at the midpoints of one extra empty class on each end). As <em>n</em> grows large and class width shrinks, the polygon smooths into a <strong>Frequency Curve</strong>.</p>
+        <p><strong>Why Relative Frequency Histograms?</strong> When comparing two populations of vastly different sizes (e.g., Philadelphia's 1.48M vs. Erie's 105K adults), raw frequencies dwarf the smaller city; relative frequencies put both on the same 0–1 proportion scale.</p>
+
+        <h3>Unequal Class Intervals &amp; Frequency Density <span class="exam-badge">High-Yield Exam Topic</span></h3>
+        <p>In a histogram, <strong>the area of each rectangle must be proportional to the class frequency (or relative frequency)</strong>. If class widths differ, plotting raw frequency on the y-axis visually exaggerates wider classes! Instead, compute <strong>Class Density</strong>:</p>
+        <div class="formula-box">
+          Class Density = Relative Frequency / Class Width = (f / N) / w &nbsp;&nbsp;⇒&nbsp;&nbsp; Area of bar = Density × w = Relative Frequency<br>
+          Reverse Formula (1st Incourse 2023): &nbsp; f = N × (Class Density × Class Width)
+        </div>
+
+        <h3>Common Shapes of a Histogram</h3>
+        <div class="grid-4">
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><path d="M10 52 Q35 50 45 25 Q60 2 75 25 Q85 50 110 52" fill="rgba(37,99,235,0.18)" stroke="#2563eb" stroke-width="2.5"/></svg>
+            <strong>Bell-Shaped</strong><span>Symmetric, single central peak</span>
+          </div>
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><rect x="14" y="18" width="92" height="34" fill="rgba(5,150,105,0.18)" stroke="#059669" stroke-width="2.5"/></svg>
+            <strong>Uniform</strong><span>Flat / rectangular</span>
+          </div>
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><path d="M10 52 Q24 5 42 22 Q68 48 110 52" fill="rgba(217,119,6,0.18)" stroke="#d97706" stroke-width="2.5"/></svg>
+            <strong>Right-Skewed</strong><span>Long tail to the right (+)</span>
+          </div>
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><path d="M10 52 Q52 48 78 22 Q96 5 110 52" fill="rgba(124,58,237,0.18)" stroke="#7c3aed" stroke-width="2.5"/></svg>
+            <strong>Left-Skewed</strong><span>Long tail to the left (−)</span>
+          </div>
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><path d="M10 52 Q28 4 46 38 Q60 50 74 38 Q92 4 110 52" fill="rgba(220,38,38,0.16)" stroke="#dc2626" stroke-width="2.5"/></svg>
+            <strong>Bimodal</strong><span>Two distinct peaks</span>
+          </div>
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><path d="M12 10 Q32 52 60 52 Q88 52 108 10" fill="none" stroke="#2563eb" stroke-width="2.5"/></svg>
+            <strong>U-Shaped</strong><span>High at both ends, low center</span>
+          </div>
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><path d="M12 50 Q78 46 106 8" fill="none" stroke="#059669" stroke-width="2.5"/></svg>
+            <strong>J-Shaped</strong><span>Rises steeply to the right</span>
+          </div>
+          <div class="shape-card">
+            <svg viewBox="0 0 120 60" width="110" height="55"><path d="M14 8 Q42 46 108 50" fill="none" stroke="#d97706" stroke-width="2.5"/></svg>
+            <strong>Reverse J-Shaped</strong><span>Drops steeply from the left</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04</div>
+            <h2>Cumulative Frequency Distributions &amp; Ogives</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <p>A <strong>Cumulative Frequency Distribution</strong> gives the running total of observations falling <em>below the upper boundary</em> of each class. Dividing by total observations <em>N</em> yields the <strong>Cumulative Relative Frequency</strong> (and ×100 gives <strong>Cumulative Percentage</strong>).</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">How to Draw an Ogive (Final 2019 Q3a)</span>
+            <ol style="margin-bottom:0; font-size:14px">
+              <li>Find the exact <strong>class boundaries</strong> and compute cumulative frequencies (<em>cf</em>).</li>
+              <li>Mark class boundaries on the horizontal (X) axis and cumulative frequency (0 to <em>N</em>) on the vertical (Y) axis.</li>
+              <li>Start with a dot at <span class="mono">(First Lower Boundary, 0)</span>.</li>
+              <li>Plot dots above each <strong>Upper Class Boundary</strong> at height equal to its cumulative frequency.</li>
+              <li>Connect successive dots with straight line segments.</li>
+            </ol>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">Reading Values from an Ogive (Final 2019 Q3b)</span>
+            <ul style="margin-bottom:0; font-size:14px">
+              <li><strong>Median (Q<sub>2</sub>):</strong> Locate <span class="mono">N/2</span> (or 50%) on the Y-axis → move horizontally to the ogive → drop vertically to the X-axis.</li>
+              <li><strong>Q<sub>1</sub> &amp; Q<sub>3</sub>:</strong> Same process starting at <span class="mono">N/4</span> (25%) and <span class="mono">3N/4</span> (75%).</li>
+              <li><strong>Count between <em>a</em> and <em>b</em>:</strong> Read <span class="mono">cf(b)</span> and <span class="mono">cf(a)</span> from the curve, then subtract: <span class="mono">cf(b) − cf(a)</span>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: INTERACTIVE LAB 1 -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • Interactive Lab 1</div>
+            <h2>Dynamic Density Histogram &amp; Ogive Explorer</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <p>Switch between classic datasets from Dr. Masud's slides and past ISRT exams. Toggle <strong>Raw Frequency vs. Frequency Density</strong> to see why unequal intervals require density correction, and drag the <strong>Ogive Sliders</strong> to estimate counts in any range <span class="mono">[a, b]</span>.</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Dataset:</strong>
+            <div class="tabs" style="margin:0">
+              <button class="tab-btn active" onclick="loadHistPreset('absentee', this)">Absentee Days (Unequal)</button>
+              <button class="tab-btn" onclick="loadHistPreset('incourse23', this)">1st Incourse 2023 (A+ Count)</button>
+              <button class="tab-btn" onclick="loadHistPreset('final17', this)">Final 2017 (Ogive 255–547)</button>
+              <button class="tab-btn" onclick="loadHistPreset('ipods', this)">iPods Sold (Equal)</button>
+            </div>
+          </div>
+
+          <div class="control-row">
+            <strong style="font-size:13.5px">Histogram Y-Axis:</strong>
+            <button class="tab-btn active" id="mode-density-btn" onclick="setHistMode('density')">✓ Frequency Density (Correct)</button>
+            <button class="tab-btn" id="mode-freq-btn" onclick="setHistMode('freq')">⚠ Raw Frequency (Compare)</button>
+            <label style="font-size:13.5px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; margin-left:auto">
+              <input type="checkbox" id="show-poly" checked onchange="renderHistLab()" /> Show Frequency Polygon
+            </label>
+          </div>
+
+          <div id="hist-warning" class="callout trap" style="display:none; margin:10px 0">
+            <strong class="callout-title">Distortion Alert!</strong>
+            This dataset has <strong>unequal class widths</strong>. Plotting raw frequency makes wider classes look disproportionately huge in area! Switch back to <strong>Frequency Density</strong> for an accurate visual distribution.
+          </div>
+
+          <div class="grid-2">
+            <div class="lab-panel" style="margin-top:0">
+              <h4 style="margin-top:0" id="hist-chart-title">Density Histogram</h4>
+              <svg id="hist-svg" viewBox="0 0 460 270" width="100%" style="height:auto"></svg>
+            </div>
+            <div class="lab-panel" style="margin-top:0">
+              <h4 style="margin-top:0">Interactive Ogive (Cumulative Frequency)</h4>
+              <svg id="ogive-svg" viewBox="0 0 460 270" width="100%" style="height:auto"></svg>
+              <div style="margin-top:10px; font-size:13px">
+                <div class="control-row" style="margin-bottom:6px">
+                  <span>Lower X (<strong>a</strong>): <strong id="ogive-a-val"></strong></span>
+                  <input type="range" id="ogive-a" style="flex:1" oninput="renderOgiveOnly()" />
+                </div>
+                <div class="control-row" style="margin-bottom:6px">
+                  <span>Upper X (<strong>b</strong>): <strong id="ogive-b-val"></strong></span>
+                  <input type="range" id="ogive-b" style="flex:1" oninput="renderOgiveOnly()" />
+                </div>
+                <div class="stat-pills" id="ogive-stats"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrap" style="margin-top:14px; margin-bottom:0">
+            <table>
+              <thead>
+                <tr><th>Class Interval</th><th>Width (w)</th><th>Midpoint (m)</th><th>Freq (f)</th><th>Cum. Freq (cf)</th><th>Rel. Freq</th><th>Density (rf/w)</th></tr>
+              </thead>
+              <tbody id="hist-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: STEM-AND-LEAF + LAB 2 -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • Concept + Interactive Lab 2</div>
+            <h2>Stem-and-Leaf Displays, Split Stems &amp; Dotplots</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <p>In a <strong>Stem-and-Leaf Display</strong>, each number is split into a leading <strong>stem</strong> and a trailing <strong>leaf</strong>. Unlike a histogram, it preserves the <em>exact original observations</em> while simultaneously revealing distribution shape.</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Histogram vs. Stem-and-Leaf (Final 2024 Q3a)</span>
+            <ul style="margin-bottom:0; font-size:14px">
+              <li><strong>Stem-and-Leaf:</strong> Best for <em>small</em> quantitative datasets where keeping exact values matters. Not suitable for huge <em>n</em> or highly heterogeneous data.</li>
+              <li><strong>Histogram:</strong> Preferable for <em>large</em> quantitative datasets because grouping into classes scales cleanly to thousands of observations.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Multiple Rows Per Stem Notation</span>
+            <ul style="margin-bottom:0; font-size:14px">
+              <li><strong>2 Rows/Stem:</strong> <span class="mono">.</span> holds leaves <span class="mono">0–4</span>; <span class="mono">*</span> holds leaves <span class="mono">5–9</span>.</li>
+              <li><strong>5 Rows/Stem:</strong> <span class="mono">.</span> (<span class="mono">0–1</span>), <span class="mono">t</span> (<span class="mono">2–3</span>), <span class="mono">f</span> (<span class="mono">4–5</span>), <span class="mono">s</span> (<span class="mono">6–7</span>), <span class="mono">*</span> (<span class="mono">8–9</span>).</li>
+              <li><strong>Left Depth Column:</strong> Cumulative counts inward from both ends toward the row containing the median (shown in parentheses, e.g., <span class="mono">(18)</span>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <p><strong>Dotplot:</strong> Plots each observation as a dot above a horizontal number line—especially handy for quickly spotting <strong>outliers</strong> (extreme values) in small datasets.</p>
+
+        <h3>Interactive Stem-and-Leaf &amp; Split-Stem Generator</h3>
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Load Preset:</strong>
+            <button class="tab-btn active" onclick="loadStemPreset('ages23', this)">Slide: 23 Ages</button>
+            <button class="tab-btn" onclick="loadStemPreset('inc23', this)">1st Incourse 2023 Q2b</button>
+            <button class="tab-btn" onclick="loadStemPreset('fin22', this)">Final 2022 Q2e</button>
+          </div>
+          <textarea id="stem-input" class="input-field" rows="2" oninput="renderStemLab()"></textarea>
+          <div class="control-row" style="margin-top:10px">
+            <strong style="font-size:13.5px">Rows per Stem:</strong>
+            <button class="tab-btn active" id="sr-1" onclick="setStemRows(1)">1 Row (0–9)</button>
+            <button class="tab-btn" id="sr-2" onclick="setStemRows(2)">2 Rows (. / *)</button>
+            <button class="tab-btn" id="sr-5" onclick="setStemRows(5)">5 Rows (. t f s *)</button>
+          </div>
+          <div class="stat-pills" id="stem-stats"></div>
+          <pre class="stem-leaf-pre" id="stem-output"></pre>
+        </div>
+      </section>
+
+      <!-- SECTION 7 -->
+      <section class="lesson-section" id="sec-7">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 07</div>
+            <h2>Principles of Good Graphs vs. Misleading Graphs</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-7')">Mark Complete</button>
+        </div>
+
+        <p>In <strong>1st Incourse 2023 Q3(a)</strong>, students were asked: <em>"What points must be taken into consideration while presenting statistical data graphically?"</em></p>
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag green">Checklist for Honest, Clear Graphs</span>
+            <ul style="margin-bottom:0; font-size:14px">
+              <li>Clear, self-explanatory <strong>title</strong> and <strong>data source</strong> (so readers can verify reliability).</li>
+              <li>Properly labeled <strong>X and Y axes</strong> with exact <strong>measurement units</strong>.</li>
+              <li>Unbiased, consistent <strong>scale</strong> (start frequency/bar Y-axes at 0, or clearly mark a scale break).</li>
+              <li>Choose the <strong>right chart type</strong> for the variable's measurement scale (e.g., Bar/Pie for qualitative, Histogram/Ogive for continuous quantitative).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag red">Interactive Demo: Truncated Y-Axis (GM MPG)</span>
+            <p style="font-size:13.5px">Same data (<span class="mono">2008: 21.9, 2009: 22.6, 2010: 22.9, 2011: 23.2 MPG</span>)—toggle the Y-axis to see how truncation manufactures a dramatic illusion:</p>
+            <div class="tabs" style="margin:6px 0 10px">
+              <button class="tab-btn active" id="mpg-honest-btn" onclick="drawMPG(false)">Honest Scale (0–25)</button>
+              <button class="tab-btn" id="mpg-trunc-btn" onclick="drawMPG(true)">Misleading Truncated (21–24)</button>
+            </div>
+            <svg id="mpg-svg" viewBox="0 0 340 165" width="100%" style="max-width:340px; height:auto; background:var(--surface); border-radius:8px; border:1px solid var(--border)"></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-8">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 08 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2017–2025)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-8')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Questions &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2023 • Q3(b) [4.5 Marks]</span> Reverse-Engineering an Unequal-Width Density Histogram</span></summary>
+          <div class="details-body">
+            <p><strong>Question:</strong> A teacher studied the number of A+ secured by <strong>N = 50</strong> students. The graph shows Class Interval on X-axis and <strong>Class Density</strong> on Y-axis: <span class="mono">0–6 (0.05)</span>, <span class="mono">6–10 (0.075)</span>, <span class="mono">10–14 (0.04)</span>, <span class="mono">14–20 (0.02)</span>, <span class="mono">20–28 (0.01)</span>, <span class="mono">28–30 (0.02)</span>. (i) Name the graph &amp; what is special? (ii) Construct the frequency table. (iii) Compute the mean.</p>
+            <p><strong>Worked Solution:</strong></p>
+            <ul>
+              <li><strong>(i)</strong> It is a <strong>Density Histogram (Histogram for Unequal Class Intervals)</strong>. Its special feature is that class widths vary (6, 4, 4, 6, 8, 2), so the Y-axis plots <em>Class Density = Relative Frequency / Class Width</em>, making each bar's <strong>area</strong> equal to its relative frequency.</li>
+              <li><strong>(ii) Frequency Table</strong> using <span class="mono">Rel. Freq = Density × Width</span> and <span class="mono">f = 50 × Rel. Freq</span>:
+                <ul>
+                  <li>0–6 (w=6, m=3): rf = 0.05 × 6 = 0.30 → <strong>f = 15</strong> (f·m = 45)</li>
+                  <li>6–10 (w=4, m=8): rf = 0.075 × 4 = 0.30 → <strong>f = 15</strong> (f·m = 120)</li>
+                  <li>10–14 (w=4, m=12): rf = 0.04 × 4 = 0.16 → <strong>f = 8</strong> (f·m = 96)</li>
+                  <li>14–20 (w=6, m=17): rf = 0.02 × 6 = 0.12 → <strong>f = 6</strong> (f·m = 102)</li>
+                  <li>20–28 (w=8, m=24): rf = 0.01 × 8 = 0.08 → <strong>f = 4</strong> (f·m = 96)</li>
+                  <li>28–30 (w=2, m=29): rf = 0.02 × 2 = 0.04 → <strong>f = 2</strong> (f·m = 58)</li>
+                  <li>Check: Σrf = 1.00, Σf = <strong>50</strong> ✓</li>
+                </ul>
+              </li>
+              <li><strong>(iii) Mean:</strong> <span class="mono">x̄ = Σ(f·m) / N = (45 + 120 + 96 + 102 + 96 + 58) / 50 = 517 / 50 = 10.34 A+ grades per student</span>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2017 • Q2(d) [5 Marks]</span> Drawing an Ogive &amp; Finding Observations Between 255 and 547</span></summary>
+          <div class="details-body">
+            <p><strong>Data:</strong> Classes 100–200 (100), 200–300 (500), 300–400 (700), 400–500 (800), 500–600 (700), 600–700 (500), 700–800 (100). Total <em>N</em> = 3,400.</p>
+            <p><strong>Worked Solution:</strong></p>
+            <ul>
+              <li><strong>Cumulative Frequencies (cf):</strong> (100, 0), (200, 100), (300, 600), (400, 1300), (500, 2100), (600, 2800), (700, 3300), (800, 3400).</li>
+              <li><strong>Linear Interpolation (matches exact reading from straight-line Ogive):</strong>
+                <ul>
+                  <li>At X = 255 (inside 200–300): <span class="mono">cf(255) = 100 + [(255 − 200)/100] × 500 = 100 + 275 = 375</span>.</li>
+                  <li>At X = 547 (inside 500–600): <span class="mono">cf(547) = 2100 + [(547 − 500)/100] × 700 = 2100 + 329 = 2429</span>.</li>
+                </ul>
+              </li>
+              <li><strong>Observations between 255 and 547:</strong> <span class="mono">2429 − 375 = 2,054</span> observations (verify this live in Interactive Lab 1 above!).</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2022 • Q1 [2 Marks]</span> Reading a Stem-and-Leaf Plot with Leaf Unit = 0.1</span></summary>
+          <div class="details-body">
+            <p><strong>Plot (Leaf Unit = 0.1):</strong> 1 | 12 &nbsp;;&nbsp; 2 | 23559 &nbsp;;&nbsp; 3 | 34455778 &nbsp;;&nbsp; 4 | 3456778899 &nbsp;;&nbsp; 5 | 223346667778889</p>
+            <p><strong>Worked Solution:</strong></p>
+            <ul>
+              <li><strong>(a) Total observations (n):</strong> 2 + 5 + 8 + 10 + 15 = <strong>40</strong>.</li>
+              <li><strong>(b) Maximum value:</strong> Stem 5, leaf 9 with Leaf Unit 0.1 → <strong>5.9</strong>.</li>
+              <li><strong>(c) Median:</strong> Average of 20th and 21st ordered values. Row 1–3 have 2 + 5 + 8 = 15 values. Counting into Row 4 (<span class="mono">3,4,5,6,7,7,8,8,9,9</span>): 20th is 4.7, 21st is 4.7 → <strong>Median = 4.7</strong>.</li>
+              <li><strong>(d) Shape:</strong> Frequencies rise steadily from 2 → 5 → 8 → 10 → 15, with a long tail toward smaller values → <strong>Negatively (Left) Skewed</strong>.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">1st Incourse 2023 • Q2(b) [2 Marks]</span> Constructing a Split Stem-and-Leaf Plot</span></summary>
+          <div class="details-body">
+            <p><strong>Data (n = 20):</strong> 57, 58, 44, 55, 52, 54, 45, 51, 52, 54, 58, 48, 51, 58, 47, 50, 52, 53, 52, 49.</p>
+            <p><strong>Worked Solution:</strong> Because all 20 values fall into only two stems (4 and 5), a 1-row stem plot would be too cramped. Use <strong>2 rows per stem</strong> (Stem width = 10, Leaf unit = 1; <span class="mono">.</span> for 0–4, <span class="mono">*</span> for 5–9):</p>
+            <pre class="stem-leaf-pre" style="margin-top:8px">4 . | 4
+4 * | 5 7 8 9
+5 . | 0 1 1 2 2 2 2 3 4 4
+5 * | 5 7 8 8 8</pre>
+            <p style="margin-bottom:0"><em>(You can also test a 5-row split in Interactive Lab 2 above!)</em></p>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2025 • Radar Chart &amp; Q2(a)</span> Interpreting a Radar Chart &amp; Class Boundaries</span></summary>
+          <div class="details-body">
+            <ul>
+              <li><strong>Radar Chart (Final 2025):</strong> Shows scores across 5 subjects (Stats ≈ 80, Math ≈ 72, Economics ≈ 72, CS ≈ 65, English ≈ 60). Highest performance is in <strong>Stats</strong>; overall performance is <strong>fairly balanced</strong> (scores cluster between 60 and 80 without extreme collapse in any subject, though slightly stronger in quantitative subjects).</li>
+              <li><strong>Why Class Boundaries over Class Limits (Final 2025 Q2a):</strong> Continuous variables can take values between integer limits (e.g., 19.6 lies between 10–19 and 20–29). Class boundaries close those gaps so histogram bars touch seamlessly and every possible real measurement falls uniquely into a class.</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l2_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l2_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l2_done') || '[]');
+    function syncProgress() {
+      const total = 8;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l2_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l2_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Interactive Pie Calculator ----------
+    const pieData = [
+      { name: "Food", val: 250, color: "#2563eb" },
+      { name: "Rent", val: 100, color: "#059669" },
+      { name: "Clothing", val: 75, color: "#d97706" },
+      { name: "Sundries", val: 100, color: "#7c3aed" }
+    ];
+
+    function renderPie() {
+      const total = pieData.reduce((s, d) => s + Math.max(0, Number(d.val) || 0), 0) || 1;
+      const tbody = document.getElementById('pie-table-body');
+      tbody.innerHTML = pieData.map((d, i) => {
+        const rf = d.val / total;
+        const ang = rf * 360;
+        return `<tr>
+          <td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${d.color};margin-right:6px"></span><strong>${d.name}</strong></td>
+          <td><input class="mini-input" type="number" min="0" value="${d.val}" onchange="updatePie(${i}, this.value)" /></td>
+          <td>${rf.toFixed(4)} (${(rf*100).toFixed(1)}%)</td>
+          <td><strong>${ang.toFixed(1)}°</strong></td>
+        </tr>`;
+      }).join('') + `<tr style="font-weight:700;background:var(--surface-alt)"><td>Total</td><td>${total}</td><td>1.0000 (100%)</td><td>360.0°</td></tr>`;
+
+      const svg = document.getElementById('pie-svg');
+      const cx = 140, cy = 120, r = 95;
+      let startAngle = -Math.PI / 2;
+      let paths = '';
+      pieData.forEach(d => {
+        const frac = Math.max(0, d.val) / total;
+        if (frac <= 0) return;
+        const sweep = frac * 2 * Math.PI;
+        const endAngle = startAngle + sweep;
+        const x1 = cx + r * Math.cos(startAngle), y1 = cy + r * Math.sin(startAngle);
+        const x2 = cx + r * Math.cos(endAngle), y2 = cy + r * Math.sin(endAngle);
+        const largeArc = sweep > Math.PI ? 1 : 0;
+        const mid = startAngle + sweep / 2;
+        const lx = cx + (r * 0.62) * Math.cos(mid), ly = cy + (r * 0.62) * Math.sin(mid);
+        paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z" fill="${d.color}" stroke="#fff" stroke-width="2"/>`;
+        if (frac >= 0.08) {
+          paths += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="11.5" font-weight="700">${d.name}</text>`;
+          paths += `<text x="${lx}" y="${ly+14}" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="10.5">${(frac*360).toFixed(0)}°</text>`;
+        }
+        startAngle = endAngle;
+      });
+      svg.innerHTML = paths;
+    }
+    function updatePie(i, val) { pieData[i].val = Math.max(0, parseFloat(val) || 0); renderPie(); }
+    renderPie();
+
+    // ---------- Interactive Lab 1: Density Histogram & Ogive ----------
+    const histPresets = {
+      absentee: {
+        title: "Student Absentee Record (Unequal Widths)",
+        unequal: true,
+        bins: [[0,6,11],[6,10,10],[10,14,7],[14,20,4],[20,28,4],[28,30,3],[30,40,1]],
+        defA: 6, defB: 20
+      },
+      incourse23: {
+        title: "1st Incourse 2023: Number of A+ (N=50)",
+        unequal: true,
+        bins: [[0,6,15],[6,10,15],[10,14,8],[14,20,6],[20,28,4],[28,30,2]],
+        defA: 6, defB: 14
+      },
+      final17: {
+        title: "Final 2017 Q2(d): Ogive Problem (N=3400)",
+        unequal: false,
+        bins: [[100,200,100],[200,300,500],[300,400,700],[400,500,800],[500,600,700],[600,700,500],[700,800,100]],
+        defA: 255, defB: 547
+      },
+      ipods: {
+        title: "Slide Table 2.9: iPods Sold (Equal Widths)",
+        unequal: false,
+        bins: [[4.5,9.5,3],[9.5,14.5,6],[14.5,19.5,8],[19.5,24.5,8],[24.5,29.5,5]],
+        defA: 9.5, defB: 24.5
+      }
+    };
+
+    let currentPresetKey = 'absentee';
+    let histMode = 'density';
+
+    function loadHistPreset(key, btn) {
+      currentPresetKey = key;
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const p = histPresets[key];
+      const minX = p.bins[0][0], maxX = p.bins[p.bins.length - 1][1];
+      const slA = document.getElementById('ogive-a'), slB = document.getElementById('ogive-b');
+      slA.min = minX; slA.max = maxX; slA.step = (maxX - minX) > 100 ? 1 : 0.5; slA.value = p.defA;
+      slB.min = minX; slB.max = maxX; slB.step = slA.step; slB.value = p.defB;
+      renderHistLab();
+    }
+
+    function setHistMode(mode) {
+      histMode = mode;
+      document.getElementById('mode-density-btn').classList.toggle('active', mode === 'density');
+      document.getElementById('mode-freq-btn').classList.toggle('active', mode === 'freq');
+      renderHistLab();
+    }
+
+    function interpOgive(bins, x) {
+      let cf = 0;
+      if (x <= bins[0][0]) return 0;
+      for (const [lo, hi, f] of bins) {
+        if (x <= hi) return cf + ((x - lo) / (hi - lo)) * f;
+        cf += f;
+      }
+      return cf;
+    }
+
+    function renderHistLab() {
+      const p = histPresets[currentPresetKey];
+      const N = p.bins.reduce((s, b) => s + b[2], 0);
+      document.getElementById('hist-warning').style.display = (p.unequal && histMode === 'freq') ? 'block' : 'none';
+      document.getElementById('hist-chart-title').textContent = `${p.title} — ${histMode === 'density' ? 'Density' : 'Raw Frequency'}`;
+
+      // Table
+      let cf = 0;
+      const rows = p.bins.map(([lo, hi, f]) => {
+        const w = hi - lo, m = (lo + hi) / 2, rf = f / N, dens = rf / w;
+        cf += f;
+        return `<tr><td>${lo} – ${hi}</td><td>${w}</td><td>${m}</td><td><strong>${f}</strong></td><td>${cf}</td><td>${rf.toFixed(3)}</td><td><strong>${dens.toFixed(4)}</strong></td></tr>`;
+      }).join('');
+      document.getElementById('hist-table-body').innerHTML = rows;
+
+      // Histogram SVG
+      const svg = document.getElementById('hist-svg');
+      const W = 460, H = 270, padL = 52, padR = 16, padT = 18, padB = 38;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const minX = p.bins[0][0], maxX = p.bins[p.bins.length - 1][1];
+      const vals = p.bins.map(([lo, hi, f]) => histMode === 'density' ? (f / N) / (hi - lo) : f);
+      const maxY = Math.max(...vals) * 1.15;
+
+      const sx = x => padL + ((x - minX) / (maxX - minX)) * plotW;
+      const sy = y => padT + plotH - (y / maxY) * plotH;
+
+      let out = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="currentColor" opacity="0.4"/>`;
+      out += `<line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="currentColor" opacity="0.4"/>`;
+
+      // Y ticks
+      for (let i = 0; i <= 4; i++) {
+        const yv = (maxY * i) / 4;
+        const yp = sy(yv);
+        out += `<line x1="${padL}" y1="${yp}" x2="${W-padR}" y2="${yp}" stroke="currentColor" opacity="0.1"/>`;
+        out += `<text x="${padL-6}" y="${yp+4}" text-anchor="end" font-size="10.5" fill="currentColor" opacity="0.75">${histMode === 'density' ? yv.toFixed(3) : Math.round(yv)}</text>`;
+      }
+
+      // Bars + polygon points
+      let polyPts = [];
+      p.bins.forEach(([lo, hi, f], i) => {
+        const yv = vals[i];
+        const x1 = sx(lo), x2 = sx(hi), y1 = sy(yv), y0 = sy(0);
+        const fillCol = (p.unequal && histMode === 'freq') ? 'rgba(220,38,38,0.35)' : 'rgba(37,99,235,0.38)';
+        const strokeCol = (p.unequal && histMode === 'freq') ? '#dc2626' : '#2563eb';
+        out += `<rect x="${x1}" y="${y1}" width="${x2-x1}" height="${y0-y1}" fill="${fillCol}" stroke="${strokeCol}" stroke-width="1.8"/>`;
+        out += `<text x="${x1}" y="${padT+plotH+15}" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.8">${lo}</text>`;
+        if (i === p.bins.length - 1) out += `<text x="${x2}" y="${padT+plotH+15}" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.8">${hi}</text>`;
+        polyPts.push(`${((x1+x2)/2).toFixed(1)},${y1.toFixed(1)}`);
+      });
+
+      if (document.getElementById('show-poly').checked) {
+        out += `<polyline points="${polyPts.join(' ')}" fill="none" stroke="#7c3aed" stroke-width="2.4"/>`;
+        polyPts.forEach(pt => {
+          const [px, py] = pt.split(',');
+          out += `<circle cx="${px}" cy="${py}" r="3.5" fill="#7c3aed"/>`;
+        });
+      }
+      svg.innerHTML = out;
+      renderOgiveOnly();
+    }
+
+    function renderOgiveOnly() {
+      const p = histPresets[currentPresetKey];
+      const N = p.bins.reduce((s, b) => s + b[2], 0);
+      let a = parseFloat(document.getElementById('ogive-a').value);
+      let b = parseFloat(document.getElementById('ogive-b').value);
+      if (a > b) { const t = a; a = b; b = t; }
+      document.getElementById('ogive-a-val').textContent = a;
+      document.getElementById('ogive-b-val').textContent = b;
+
+      const cfA = interpOgive(p.bins, a), cfB = interpOgive(p.bins, b);
+      const between = cfB - cfA;
+      document.getElementById('ogive-stats').innerHTML = `
+        <span class="stat-pill">cf(${a}) ≈ ${cfA.toFixed(1)}</span>
+        <span class="stat-pill">cf(${b}) ≈ ${cfB.toFixed(1)}</span>
+        <span class="stat-pill" style="color:var(--success)">Between [${a}, ${b}] ≈ ${between.toFixed(1)} (${((between/N)*100).toFixed(1)}%)</span>
+      `;
+
+      const svg = document.getElementById('ogive-svg');
+      const W = 460, H = 270, padL = 52, padR = 16, padT = 18, padB = 38;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const minX = p.bins[0][0], maxX = p.bins[p.bins.length - 1][1];
+      const sx = x => padL + ((x - minX) / (maxX - minX)) * plotW;
+      const sy = y => padT + plotH - (y / N) * plotH;
+
+      let out = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="currentColor" opacity="0.4"/>`;
+      out += `<line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="currentColor" opacity="0.4"/>`;
+
+      for (let i = 0; i <= 4; i++) {
+        const yv = (N * i) / 4, yp = sy(yv);
+        out += `<line x1="${padL}" y1="${yp}" x2="${W-padR}" y2="${yp}" stroke="currentColor" opacity="0.1"/>`;
+        out += `<text x="${padL-6}" y="${yp+4}" text-anchor="end" font-size="10.5" fill="currentColor" opacity="0.75">${Math.round(yv)}</text>`;
+      }
+
+      // Highlight band [a, b]
+      out += `<rect x="${sx(a)}" y="${padT}" width="${sx(b)-sx(a)}" height="${plotH}" fill="rgba(5,150,105,0.12)"/>`;
+
+      let pts = [`${sx(minX)},${sy(0)}`];
+      let cf = 0;
+      p.bins.forEach(([lo, hi, f], i) => {
+        cf += f;
+        pts.push(`${sx(hi)},${sy(cf)}`);
+        if (i === 0) out += `<text x="${sx(lo)}" y="${padT+plotH+15}" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.8">${lo}</text>`;
+        out += `<text x="${sx(hi)}" y="${padT+plotH+15}" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.8">${hi}</text>`;
+      });
+
+      out += `<polyline points="${pts.join(' ')}" fill="none" stroke="#059669" stroke-width="2.6"/>`;
+      pts.forEach(pt => { const [px, py] = pt.split(','); out += `<circle cx="${px}" cy="${py}" r="3.5" fill="#059669"/>`; });
+
+      // Drop lines for a and b
+      [[a, cfA, '#d97706'], [b, cfB, '#2563eb']].forEach(([xv, yv, col]) => {
+        out += `<line x1="${sx(xv)}" y1="${sy(0)}" x2="${sx(xv)}" y2="${sy(yv)}" stroke="${col}" stroke-dasharray="4 3" stroke-width="1.6"/>`;
+        out += `<line x1="${padL}" y1="${sy(yv)}" x2="${sx(xv)}" y2="${sy(yv)}" stroke="${col}" stroke-dasharray="4 3" stroke-width="1.6"/>`;
+        out += `<circle cx="${sx(xv)}" cy="${sy(yv)}" r="4.5" fill="${col}"/>`;
+      });
+
+      svg.innerHTML = out;
+    }
+    loadHistPreset('absentee', document.querySelector('#sec-5 .tab-btn'));
+
+    // ---------- Interactive Lab 2: Stem-and-Leaf Generator ----------
+    const stemPresets = {
+      ages23: "22, 24, 32, 37, 31, 35, 37, 30, 31, 36, 26, 22, 29, 26, 29, 38, 31, 34, 30, 30, 28, 27, 36",
+      inc23: "57, 58, 44, 55, 52, 54, 45, 51, 52, 54, 58, 48, 51, 58, 47, 50, 52, 53, 52, 49",
+      fin22: "44, 44, 45, 46, 46, 47, 47, 48, 48, 48, 49, 49, 50, 50, 50, 51, 51, 52, 52, 53, 53, 54, 55, 55"
+    };
+    let stemRowsMode = 1;
+
+    function loadStemPreset(key, btn) {
+      btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('stem-input').value = stemPresets[key];
+      renderStemLab();
+    }
+    function setStemRows(r) {
+      stemRowsMode = r;
+      [1, 2, 5].forEach(k => document.getElementById('sr-' + k).classList.toggle('active', k === r));
+      renderStemLab();
+    }
+    function renderStemLab() {
+      const raw = document.getElementById('stem-input').value;
+      const nums = raw.split(/[\s,;]+/).map(Number).filter(n => !isNaN(n) && isFinite(n)).sort((a, b) => a - b);
+      if (!nums.length) {
+        document.getElementById('stem-output').textContent = "Enter integers separated by commas or spaces.";
+        document.getElementById('stem-stats').innerHTML = '';
+        return;
+      }
+      const n = nums.length;
+      const med = n % 2 === 1 ? nums[(n - 1) / 2] : (nums[n / 2 - 1] + nums[n / 2]) / 2;
+      const freqMap = {};
+      nums.forEach(x => freqMap[x] = (freqMap[x] || 0) + 1);
+      const maxF = Math.max(...Object.values(freqMap));
+      const modes = Object.keys(freqMap).filter(k => freqMap[k] === maxF).join(', ');
+
+      document.getElementById('stem-stats').innerHTML = `
+        <span class="stat-pill">n = ${n}</span>
+        <span class="stat-pill">Min = ${nums[0]}</span>
+        <span class="stat-pill">Max = ${nums[n-1]}</span>
+        <span class="stat-pill" style="color:var(--primary)">Median = ${med}</span>
+        <span class="stat-pill" style="color:var(--accent)">Mode = ${modes} (f=${maxF})</span>
+      `;
+
+      const minStem = Math.floor(nums[0] / 10), maxStem = Math.floor(nums[n - 1] / 10);
+      const defs = stemRowsMode === 1
+        ? [{ sym: ' ', lo: 0, hi: 9 }]
+        : stemRowsMode === 2
+          ? [{ sym: '.', lo: 0, hi: 4 }, { sym: '*', lo: 5, hi: 9 }]
+          : [{ sym: '.', lo: 0, hi: 1 }, { sym: 't', lo: 2, hi: 3 }, { sym: 'f', lo: 4, hi: 5 }, { sym: 's', lo: 6, hi: 7 }, { sym: '*', lo: 8, hi: 9 }];
+
+      let rows = [];
+      for (let st = minStem; st <= maxStem; st++) {
+        defs.forEach(d => {
+          const leaves = nums.filter(x => Math.floor(x / 10) === st && (x % 10) >= d.lo && (x % 10) <= d.hi).map(x => Math.abs(Math.round(x)) % 10);
+          rows.push({ st, sym: d.sym, leaves });
+        });
+      }
+      // Trim leading/trailing empty split rows
+      while (rows.length && rows[0].leaves.length === 0) rows.shift();
+      while (rows.length && rows[rows.length - 1].leaves.length === 0) rows.pop();
+
+      // Compute Minitab-style depths
+      let cumFromTop = 0;
+      const midLow = Math.floor((n + 1) / 2);
+      let lines = [`Depth | Stem   | Leaf  (Leaf Unit = 1.0, Stem Width = 10)`];
+      lines.push(`------+--------+-----------------------------------------`);
+      rows.forEach((r, idx) => {
+        const cnt = r.leaves.length;
+        const prevTop = cumFromTop;
+        cumFromTop += cnt;
+        const cumFromBot = n - prevTop;
+        let depthStr = '';
+        if (prevTop < midLow && cumFromTop >= midLow) {
+          depthStr = `(${cnt})`;
+        } else if (cumFromTop < midLow) {
+          depthStr = `${cumFromTop}`;
+        } else {
+          depthStr = `${cumFromBot}`;
+        }
+        const label = `${String(r.st).padStart(3)} ${r.sym}`;
+        lines.push(`${depthStr.padStart(5)} | ${label.padEnd(6)} | ${r.leaves.join(' ')}`);
+      });
+      document.getElementById('stem-output').textContent = lines.join('\n');
+    }
+    loadStemPreset('ages23', document.querySelector('#sec-6 .tab-btn'));
+
+    // ---------- Misleading Graph Demo ----------
+    function drawMPG(truncated) {
+      document.getElementById('mpg-honest-btn').classList.toggle('active', !truncated);
+      document.getElementById('mpg-trunc-btn').classList.toggle('active', truncated);
+      const data = [[2008, 21.9], [2009, 22.6], [2010, 22.9], [2011, 23.2]];
+      const minY = truncated ? 21 : 0, maxY = truncated ? 24 : 25;
+      const svg = document.getElementById('mpg-svg');
+      const padL = 38, padR = 16, padT = 16, padB = 28, W = 340, H = 165;
+      const pW = W - padL - padR, pH = H - padT - padB;
+      const sx = i => padL + (i / 3) * pW;
+      const sy = v => padT + pH - ((v - minY) / (maxY - minY)) * pH;
+      const col = truncated ? '#dc2626' : '#059669';
+
+      let out = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+pH}" stroke="currentColor" opacity="0.4"/>`;
+      out += `<line x1="${padL}" y1="${padT+pH}" x2="${W-padR}" y2="${padT+pH}" stroke="currentColor" opacity="0.4"/>`;
+      [minY, (minY+maxY)/2, maxY].forEach(yv => {
+        out += `<text x="${padL-6}" y="${sy(yv)+4}" text-anchor="end" font-size="10" fill="currentColor">${yv}</text>`;
+      });
+      const pts = data.map((d, i) => `${sx(i)},${sy(d[1])}`).join(' ');
+      out += `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="3"/>`;
+      data.forEach((d, i) => {
+        out += `<circle cx="${sx(i)}" cy="${sy(d[1])}" r="4" fill="${col}"/>`;
+        out += `<text x="${sx(i)}" y="${sy(d[1])-8}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${col}">${d[1]}</text>`;
+        out += `<text x="${sx(i)}" y="${padT+pH+16}" text-anchor="middle" font-size="10" fill="currentColor">${d[0]}</text>`;
+      });
+      svg.innerHTML = out;
+    }
+    drawMPG(false);
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "1st Incourse 2025 • MCQ #4",
+        q: "Which of the following graphs is appropriate for presenting a qualitative variable?",
+        opts: ["Line diagram", "Stem-and-leaf plot", "Bar chart", "Histogram"],
+        ans: 2,
+        exp: "A Bar chart (or Pie/Pareto chart) is used for qualitative categories. Histograms and stem-and-leaf plots are for quantitative data."
+      },
+      {
+        tag: "L2 Core Rule",
+        q: "When drawing a histogram for a frequency distribution with UNEQUAL class intervals, what must be plotted on the vertical (Y) axis?",
+        opts: ["Raw frequency (f)", "Cumulative frequency (cf)", "Class Density (Relative Frequency / Class Width)", "Class midpoint"],
+        ans: 2,
+        exp: "Plotting Class Density ensures that the area of each bar equals its relative frequency, preventing wider classes from appearing exaggerated."
+      },
+      {
+        tag: "L2 Core Rule",
+        q: "In a 'less-than' Ogive, cumulative frequencies are plotted directly above the:",
+        opts: ["Class midpoints", "Lower class limits", "Upper class boundaries", "Class widths"],
+        ans: 2,
+        exp: "Because cumulative frequency counts values strictly below the upper edge of each class, dots are plotted above the Upper Class Boundaries."
+      },
+      {
+        tag: "L2 Construction",
+        q: "Using the 2^k rule for n = 40 observations, what is the recommended number of classes?",
+        opts: ["5", "6", "7", "8"],
+        ans: 1,
+        exp: "2^5 = 32 (< 40), whereas 2^6 = 64 (≥ 40). Thus k = 6 classes (Sturges' formula also gives 1 + 3.3 log10(40) ≈ 6.29 ≈ 6)."
+      },
+      {
+        tag: "L2 Stem-and-Leaf",
+        q: "In a 5-row-per-stem plot, which leaves belong on the row labeled 's'?",
+        opts: ["0 and 1", "2 and 3", "4 and 5", "6 and 7"],
+        ans: 3,
+        exp: "The 5-row mnemonic is: '.' (0–1), 't' (two-three: 2–3), 'f' (four-five: 4–5), 's' (six-seven: 6–7), '*' (8–9)."
+      },
+      {
+        tag: "L2 Pareto Chart",
+        q: "How does a Pareto chart differ from an ordinary categorical bar chart?",
+        opts: ["Bars touch with no gaps", "Bars are arranged from highest frequency to lowest", "It uses class boundaries on the X-axis", "It plots cumulative frequency only"],
+        ans: 1,
+        exp: "A Pareto chart is a categorical bar chart sorted strictly in descending order of frequency to highlight the most frequent categories first."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>

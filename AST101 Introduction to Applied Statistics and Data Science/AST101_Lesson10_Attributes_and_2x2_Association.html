@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AST 101 — Lesson 10: Attributes & 2×2 Measures of Association</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --accent: #7c3aed;
+      --accent-soft: #f5f3ff;
+      --success: #059669;
+      --success-soft: #ecfdf5;
+      --warning: #d97706;
+      --warning-soft: #fffbeb;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.07);
+      --radius: 14px;
+      --radius-sm: 8px;
+      --sidebar-w: 280px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #60a5fa;
+      --primary-dark: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.14);
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.14);
+      --success: #34d399;
+      --success-soft: rgba(52, 211, 153, 0.14);
+      --warning: #fbbf24;
+      --warning-soft: rgba(251, 191, 36, 0.14);
+      --danger: #f87171;
+      --danger-soft: rgba(248, 113, 113, 0.14);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.68;
+      font-size: 16px;
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    #reading-progress {
+      position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+      background: linear-gradient(90deg, #059669, #0284c7, #7c3aed);
+      z-index: 1000; transition: width 0.1s linear;
+    }
+
+    .app-shell { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--surface);
+      border-right: 1px solid var(--border); position: fixed;
+      top: 0; bottom: 0; left: 0; padding: 22px 18px;
+      overflow-y: auto; z-index: 200; display: flex;
+      flex-direction: column; gap: 18px; transition: transform 0.25s ease;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #059669, #0284c7);
+      color: #fff; font-weight: 800; font-size: 14.5px;
+      display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h2 { font-size: 14px; font-weight: 700; line-height: 1.2; }
+    .brand-text p { font-size: 12px; color: var(--text-muted); }
+
+    .progress-card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 12px 14px; }
+    .progress-card-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .progress-track { height: 7px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill {
+      height: 100%; width: 0%; background: linear-gradient(90deg, #059669, #0284c7);
+      border-radius: 99px; transition: width 0.35s ease;
+    }
+
+    .nav-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); font-weight: 700; padding: 0 8px;
+    }
+    .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: var(--radius-sm); color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: all 0.18s ease;
+    }
+    .nav-link:hover { background: var(--surface-alt); color: var(--text); }
+    .nav-link.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+    .nav-check {
+      width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border);
+      display: grid; place-items: center; font-size: 11px; flex-shrink: 0;
+      color: transparent; transition: all 0.2s ease;
+    }
+    .nav-link.done .nav-check { background: var(--success); border-color: var(--success); color: #fff; }
+
+    .sidebar-footer {
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-ghost {
+      flex: 1; padding: 8px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .btn-ghost:hover { background: var(--surface-alt); }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 150;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 16px; align-items: center; justify-content: space-between;
+    }
+
+    /* Main */
+    .main {
+      margin-left: var(--sidebar-w); flex: 1;
+      padding: 36px 42px 80px; max-width: 1100px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #065f46 0%, #059669 45%, #0284c7 100%);
+      color: #fff; border-radius: 18px; padding: 36px 38px;
+      margin-bottom: 34px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ""; position: absolute; width: 290px; height: 290px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07); top: -95px; right: -60px; pointer-events: none;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px;
+      border-radius: 99px; font-size: 12px; font-weight: 600;
+      background: rgba(255, 255, 255, 0.16); color: #fff; backdrop-filter: blur(4px);
+    }
+    .hero h1 { font-size: 30px; line-height: 1.22; margin-bottom: 10px; font-weight: 800; letter-spacing: -0.02em; }
+    .hero p.subtitle { font-size: 15.5px; opacity: 0.92; max-width: 760px; margin-bottom: 20px; }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+      background: rgba(15, 23, 42, 0.22); border-radius: 12px; padding: 14px 16px; font-size: 13px;
+    }
+    .hero-meta div span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.78; }
+    .hero-meta div strong { font-weight: 700; }
+
+    /* Sections */
+    .lesson-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 30px 32px; margin-bottom: 28px; box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .section-num {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--primary); margin-bottom: 4px;
+    }
+    .section-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.015em; }
+    .mark-done-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .mark-done-btn.completed {
+      background: var(--success-soft); border-color: var(--success); color: var(--success);
+    }
+
+    h3 { font-size: 17.5px; font-weight: 700; margin: 22px 0 10px; color: var(--text); }
+    h4 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+    p { margin-bottom: 12px; color: var(--text); }
+    ul, ol { margin: 8px 0 14px 22px; }
+    li { margin-bottom: 6px; }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; margin: 16px 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+
+    .card {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px;
+    }
+    .card-top-tag {
+      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; padding: 3px 8px; border-radius: 6px; margin-bottom: 8px;
+      background: var(--primary-soft); color: var(--primary);
+    }
+    .card-top-tag.purple { background: var(--accent-soft); color: var(--accent); }
+    .card-top-tag.green { background: var(--success-soft); color: var(--success); }
+    .card-top-tag.amber { background: var(--warning-soft); color: var(--warning); }
+    .card-top-tag.red { background: var(--danger-soft); color: var(--danger); }
+
+    .formula-box {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0;
+      padding: 13px 16px; margin: 12px 0; font-family: var(--font-mono);
+      font-size: 13.8px; overflow-x: auto; line-height: 1.78;
+    }
+
+    .callout {
+      border-left: 4px solid var(--primary); background: var(--primary-soft);
+      padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 16px 0; font-size: 14.5px;
+    }
+    .callout.trap { border-left-color: var(--danger); background: var(--danger-soft); }
+    .callout.tip { border-left-color: var(--success); background: var(--success-soft); }
+    .callout.warn { border-left-color: var(--warning); background: var(--warning-soft); }
+    .callout strong.callout-title {
+      display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    .table-wrap {
+      overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.8px; }
+    th, td { padding: 10px 13px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface-alt); font-weight: 700; font-size: 12.8px; }
+    tr:last-child td { border-bottom: none; }
+
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 14px; }
+    .tab-btn {
+      padding: 7px 13px; border-radius: 99px; border: 1px solid var(--border);
+      background: var(--surface-alt); color: var(--text-muted); font-size: 13px;
+      font-weight: 600; cursor: pointer; transition: all 0.18s ease;
+    }
+    .tab-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .lab-box {
+      background: var(--surface-alt); border: 2px solid var(--primary);
+      border-radius: 14px; padding: 22px; margin-top: 12px;
+    }
+    .lab-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-top: 14px;
+    }
+    .control-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .cell-input {
+      width: 82px; padding: 7px 9px; border-radius: 7px;
+      border: 1.5px solid var(--border); background: var(--surface); color: var(--text);
+      font-family: var(--font-mono); font-size: 14.5px; font-weight: 700; text-align: center;
+    }
+    .cell-input:focus { outline: none; border-color: var(--primary); }
+
+    .metric-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px; margin: 14px 0;
+    }
+    .metric-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 12px; text-align: center;
+    }
+    .metric-tile span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700; }
+    .metric-tile strong { font-size: 16.5px; font-weight: 800; color: var(--primary); font-family: var(--font-mono); }
+
+    details {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 10px; padding: 13px 16px; margin: 10px 0;
+    }
+    details summary {
+      cursor: pointer; font-weight: 700; font-size: 14.5px; list-style: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary::after { content: "+"; font-size: 18px; font-weight: 700; color: var(--primary); flex-shrink: 0; }
+    details[open] summary::after { content: "−"; }
+    details .details-body {
+      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 14.5px;
+    }
+
+    .proof-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin: 8px 0;
+      font-family: var(--font-mono); font-size: 13.5px;
+    }
+
+    .exam-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--warning-soft); color: var(--warning); margin-right: 6px;
+    }
+    .proof-badge {
+      display: inline-block; font-size: 11.5px; font-weight: 700; padding: 2px 9px;
+      border-radius: 99px; background: var(--accent-soft); color: var(--accent); margin-right: 6px;
+    }
+    .mono {
+      font-family: var(--font-mono); font-size: 0.9em; background: var(--surface-alt);
+      padding: 2px 6px; border-radius: 5px;
+    }
+
+    /* MCQ Arena */
+    .mcq-item {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px 20px; margin-bottom: 14px;
+    }
+    .mcq-q { font-weight: 700; margin-bottom: 12px; font-size: 15px; }
+    .mcq-tag {
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;
+      background: var(--primary-soft); color: var(--primary); margin-right: 8px;
+    }
+    .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+    .mcq-opt {
+      text-align: left; padding: 10px 13px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; cursor: pointer;
+    }
+    .mcq-opt:hover:not(:disabled) { border-color: var(--primary); }
+    .mcq-opt.selected-correct { background: var(--success-soft); border-color: var(--success); color: var(--success); font-weight: 700; }
+    .mcq-opt.selected-wrong { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); font-weight: 700; }
+    .mcq-exp {
+      display: none; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);
+      padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .mcq-exp.show { display: block; }
+
+    @media (max-width: 960px) {
+      .mobile-bar { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-md); }
+      .main { margin-left: 0; padding: 20px 18px 60px; }
+      .lesson-section { padding: 22px 18px; }
+      .hero { padding: 26px 22px; }
+      .hero h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="reading-progress"></div>
+
+  <div class="mobile-bar">
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleSidebar()">☰ Contents</button>
+    <strong style="font-size:14px">AST 101 • Lesson 10</strong>
+    <button class="btn-ghost" style="flex:0 0 auto" onclick="toggleTheme()">🌓 Theme</button>
+  </div>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">L10</div>
+        <div class="brand-text">
+          <h2>AST 101 Interactive</h2>
+          <p>ISRT, University of Dhaka</p>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-card-top">
+          <span>Lesson 10 Progress</span>
+          <span id="progress-text">0 / 6</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Lesson Sections</div>
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="#sec-1" data-sec="sec-1"><span class="nav-check">✓</span>1. Attributes &amp; Contingency Tables</a></li>
+          <li><a class="nav-link" href="#sec-2" data-sec="sec-2"><span class="nav-check">✓</span>2. Association vs. Correlation</a></li>
+          <li><a class="nav-link" href="#sec-3" data-sec="sec-3"><span class="nav-check">✓</span>3. Yule's Q, Yule's Y &amp; Odds Ratio</a></li>
+          <li><a class="nav-link" href="#sec-4" data-sec="sec-4"><span class="nav-check">✓</span>4. Interactive 2×2 Table Analyzer</a></li>
+          <li><a class="nav-link" href="#sec-5" data-sec="sec-5"><span class="nav-check">✓</span>5. Proofs &amp; Identities Vault</a></li>
+          <li><a class="nav-link" href="#sec-6" data-sec="sec-6"><span class="nav-check">✓</span>6. Past ISRT Exam Arena</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn-ghost" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-ghost" onclick="resetProgress()">↺ Reset</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <!-- Hero -->
+      <header class="hero">
+        <div class="hero-badges">
+          <span class="badge">Module 3 of 4 • Final Exam Core (Q8)</span>
+          <span class="badge">Lesson 10 of 12 (Slide Deck L10)</span>
+          <span class="badge">⏱ Est. Study Time: 55 mins</span>
+        </div>
+        <h1>Attributes &amp; 2×2 Measures of Association</h1>
+        <p class="subtitle">
+          Analyze relationships between categorical attributes—construct r×c contingency tables, distinguish association from correlation, master Yule's Q, Yule's Y (colligation), and Odds Ratio (OR), and prove their exact algebraic identities.
+        </p>
+        <div class="hero-meta">
+          <div><span>Course</span><strong>AST 101 (4 Credits)</strong></div>
+          <div><span>Sources</span><strong>L10 Slides + Mihad Notes</strong></div>
+          <div><span>Syllabus Coverage</span><strong>Lectures 35–36</strong></div>
+          <div><span>Past Exams Included</span><strong>ISRT 2019–2025</strong></div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section class="lesson-section" id="sec-1">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 01</div>
+            <h2>Attributes &amp; Contingency Tables (<em>r × c</em>)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-1')">Mark Complete</button>
+        </div>
+
+        <p>An <strong>attribute</strong> is a qualitative characteristic or quality marked by its <em>presence or absence</em> (or category membership) in members of a population—such as gender, smoking status, blood group, or passing an exam.</p>
+        <p>A <strong>Contingency Table</strong> (also called a <em>cross-classification table</em> or <em>crosstab</em>) organizes frequency counts of a sample cross-classified by two categorical variables: variable <em>X</em> with <strong><em>r</em> rows</strong> and variable <em>Y</em> with <strong><em>c</em> columns</strong>, yielding <strong><em>r × c</em> cells</strong>. The simplest contingency table is a <strong>2 × 2 table</strong> for two dichotomous (binary) attributes.</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <span class="card-top-tag">Standard 2×2 Cell Labeling</span>
+            <div class="table-wrap" style="margin:8px 0 0; background:var(--surface)">
+              <table>
+                <thead><tr><th>Attribute A \ B</th><th>B Present</th><th>B Absent</th><th>Row Total</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>A Present</strong></td><td><strong>a</strong></td><td><strong>b</strong></td><td>a + b</td></tr>
+                  <tr><td><strong>A Absent</strong></td><td><strong>c</strong></td><td><strong>d</strong></td><td>c + d</td></tr>
+                  <tr><td><strong>Col Total</strong></td><td>a + c</td><td>b + d</td><td><strong>n = a+b+c+d</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">Symmetric vs. Asymmetric Measures</span>
+            <ul style="font-size:14px; margin-bottom:0">
+              <li><strong>Symmetric Measures:</strong> Give the <em>exact same value</em> if the roles of <em>X</em> and <em>Y</em> are swapped (it does not matter which is independent or dependent). Examples: <strong>Yule's Q, Yule's Y, Odds Ratio (OR), Pearson's r, χ², Φ, V</strong>.</li>
+              <li><strong>Asymmetric Measures:</strong> Change value when <em>X</em> and <em>Y</em> are reversed because direction matters. Examples: <strong>Somers' D, Regression slope β̂, Correlation ratio η</strong>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section class="lesson-section" id="sec-2">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 02 • Final 2024 &amp; Final 2025 Q8(a)</div>
+            <h2>Association vs. Correlation</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-2')">Mark Complete</button>
+        </div>
+
+        <p>In statistics, an <strong>association</strong> is <em>any</em> relationship between two measured quantities that renders them statistically dependent. Rather than saying two categorical variables are "dependent," statisticians conventionally say they are <strong>associated</strong>.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Dimension</th><th>Association</th><th>Correlation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Scope</strong></td><td>Broad: <em>any</em> statistical dependence between two variables</td><td>Special case of association: specifically <strong>linear</strong> (or monotonic) relationship</td></tr>
+              <tr><td><strong>Variable Types</strong></td><td>Mainly used for <strong>qualitative / categorical</strong> variables in contingency tables</td><td>Used for <strong>quantitative</strong> (interval/ratio) or ranked variables</td></tr>
+              <tr><td><strong>Key Measures</strong></td><td>Yule's <em>Q</em>, Yule's <em>Y</em>, Odds Ratio (<em>OR</em>), χ², Φ, Pearson's <em>C</em>, Tschuprow's <em>T</em>, Cramér's <em>V</em></td><td>Karl Pearson's <em>r</em>, Spearman's <em>r<sub>s</sub></em></td></tr>
+              <tr><td><strong>Direction</strong></td><td>Many measures (χ², <em>C, T, V</em>) measure strength only (no sign)</td><td>Always reports both <strong>direction</strong> (+/−) and <strong>strength</strong> in <span class="mono">[−1, +1]</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip">
+          <strong class="callout-title">Golden Exam Sentence (Mihad's Notes)</strong>
+          <strong>"Every correlation is an association, but not every association is a correlation."</strong><br>
+          <em>Bonus (Final 2020 Q8a):</em> A <strong>contingency table</strong> cross-classifies counts of <em>categorical</em> attributes, whereas a <strong>correlation table</strong> (bivariate frequency distribution) cross-classifies counts of two <em>quantitative</em> variables grouped into numerical class intervals.
+        </div>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section class="lesson-section" id="sec-3">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 03</div>
+            <h2>Measures for 2×2 Tables: Yule's <em>Q</em>, Yule's <em>Y</em> &amp; Odds Ratio (<em>OR</em>)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-3')">Mark Complete</button>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <span class="card-top-tag">1. Yule's Q (Association)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13.2px">
+              Q = (ad − bc) / (ad + bc)
+            </div>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li><strong>Range:</strong> <span class="mono">[−1, +1]</span> (Symmetric).</li>
+              <li><span class="mono">Q = 0</span> ⇒ no association.</li>
+              <li><span class="mono">Q = ±1</span> ⇒ complete/strongest association.</li>
+              <li><em>Note:</em> Equals +1 or −1 whenever <em>any single cell</em> is 0!</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag purple">2. Yule's Y (Colligation)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13.2px">
+              Y = (√(ad) − √(bc)) / (√(ad) + √(bc))
+            </div>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li>Also called <strong>Coefficient of Colligation</strong>.</li>
+              <li><strong>Range:</strong> <span class="mono">[−1, +1]</span> (Symmetric).</li>
+              <li>Same sign as <em>Q</em>, but always smaller in magnitude (<span class="mono">|Y| ≤ |Q|</span>) for moderate associations.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <span class="card-top-tag green">3. Odds Ratio (OR)</span>
+            <div class="formula-box" style="margin:8px 0; padding:8px 10px; font-size:13.2px">
+              Odds(E) = P(E) / [1 − P(E)]<br>
+              OR = (a/b) / (c/d) = (a/c) / (b/d) = ad / bc
+            </div>
+            <ul style="font-size:13.5px; margin-bottom:0">
+              <li><strong>Range:</strong> <span class="mono">[0, ∞)</span> (Symmetric: <span class="mono">OR(A|B) = OR(B|A)</span>).</li>
+              <li><span class="mono">OR = 1</span> ⇒ independence (no association).</li>
+              <li><span class="mono">OR &gt; 1</span> ⇒ positive association; <span class="mono">OR &lt; 1</span> ⇒ negative.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <strong class="callout-title">How to Interpret OR &lt; 1 on the Exam (L10 Slide 28)</strong>
+          For Film Attendance vs. High Grades (<span class="mono">a=30, b=70, c=70, d=30</span>), <span class="mono">OR = (30×30)/(70×70) = <strong>0.184</strong></span>:<br>
+          1) "The odds of getting a high grade are <strong>0.184 times</strong> as large for film attendees compared to non-attendees."<br>
+          2) Equivalently (taking the reciprocal <span class="mono">1 / 0.184 = <strong>5.44</strong></span>): "The odds of getting a high grade are <strong>5.44 times higher</strong> for students who did NOT attend campus films compared to those who did."
+        </div>
+      </section>
+
+      <!-- SECTION 4: INTERACTIVE 2x2 ANALYZER -->
+      <section class="lesson-section" id="sec-4">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 04 • Interactive Lab</div>
+            <h2>Live 2×2 Contingency Table Analyzer &amp; Identity Verifier</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-4')">Mark Complete</button>
+        </div>
+
+        <p>Load any slide or ISRT Final Exam 2×2 problem—or edit cells <strong>a, b, c, d</strong> directly—to compute <strong>OR, Yule's Q, Yule's Y, and χ²</strong>, verify both algebraic identities live, and generate an exam-ready interpretation.</p>
+
+        <div class="lab-box">
+          <div class="control-row">
+            <strong style="font-size:13.5px">Presets:</strong>
+            <button class="tab-btn active" onclick="load2x2('film', this)">Slide: Film vs Grade</button>
+            <button class="tab-btn" onclick="load2x2('fin25', this)">Final 2025 Q8(c): Workshop vs Pass</button>
+            <button class="tab-btn" onclick="load2x2('fin24', this)">Final 2024 Q8(c): Gender vs Tuition</button>
+            <button class="tab-btn" onclick="load2x2('mihad', this)">Mihad Notes: Review vs Pass</button>
+            <button class="tab-btn" onclick="load2x2('indep', this)">Perfect Independence (OR = 1)</button>
+          </div>
+
+          <div class="grid-2" style="align-items:center">
+            <div class="table-wrap" style="background:var(--surface); margin:0">
+              <table>
+                <thead>
+                  <tr><th id="t-corner">Row \ Col</th><th id="t-c1">Col 1</th><th id="t-c2">Col 2</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong id="t-r1">Row 1</strong></td>
+                    <td><input class="cell-input" type="number" min="0" id="c-a" value="30" oninput="analyze2x2()"></td>
+                    <td><input class="cell-input" type="number" min="0" id="c-b" value="70" oninput="analyze2x2()"></td>
+                    <td><strong id="tot-r1">100</strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong id="t-r2">Row 2</strong></td>
+                    <td><input class="cell-input" type="number" min="0" id="c-c" value="70" oninput="analyze2x2()"></td>
+                    <td><input class="cell-input" type="number" min="0" id="c-d" value="30" oninput="analyze2x2()"></td>
+                    <td><strong id="tot-r2">100</strong></td>
+                  </tr>
+                  <tr style="background:var(--surface-alt); font-weight:700">
+                    <td>Total</td>
+                    <td id="tot-c1">100</td>
+                    <td id="tot-c2">100</td>
+                    <td id="tot-n">200</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="lab-panel" style="margin-top:0">
+              <h4 style="margin-top:0">Row-wise Percentage Comparison</h4>
+              <svg id="bar2x2-svg" viewBox="0 0 380 135" width="100%" style="height:auto"></svg>
+            </div>
+          </div>
+
+          <div class="metric-grid" id="metrics-2x2"></div>
+
+          <div class="lab-panel" id="identity-check" style="font-size:13.8px"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: PROOFS VAULT -->
+      <section class="lesson-section" id="sec-5">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 05 • High-Yield Final Exam Proofs</div>
+            <h2>Proofs &amp; Identities Vault (OR, Yule's Q &amp; Yule's Y)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-5')">Mark Complete</button>
+        </div>
+
+        <details open>
+          <summary><span><span class="proof-badge">Identity 1</span> <span class="exam-badge">Final 2022 Q8(b) &amp; Final 2025 Q8(b) [3 Marks]</span> Prove Q = (OR − 1) / (OR + 1)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Start from Yule's Q = (ad − bc) / (ad + bc), where OR = ad / bc (assuming bc ≠ 0).</div>
+            <div class="proof-step">Divide both numerator and denominator by bc:<br>
+            Q = [ (ad − bc) / bc ] / [ (ad + bc) / bc ] = [ (ad / bc) − 1 ] / [ (ad / bc) + 1 ] = <strong>(OR − 1) / (OR + 1)</strong>.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Identity 2</span> <span class="exam-badge">Final 2024 Q8(c)</span> Prove Y = (√OR − 1) / (√OR + 1)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Start from Yule's Y = (√(ad) − √(bc)) / (√(ad) + √(bc)).</div>
+            <div class="proof-step">Divide both numerator and denominator by √(bc):<br>
+            Y = [ √(ad/bc) − 1 ] / [ √(ad/bc) + 1 ] = <strong>(√OR − 1) / (√OR + 1)</strong>.  [Proved]</div>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="proof-badge">Identity 3</span> Link Between Y, Q, and OR (L10 Slide 30): Y = (1/Q) − 2√OR / (OR − 1)</span></summary>
+          <div class="details-body">
+            <div class="proof-step">Multiply numerator and denominator of Y = (√OR − 1) / (√OR + 1) by (√OR − 1):<br>
+            Y = (√OR − 1)² / [ (√OR + 1)(√OR − 1) ] = (OR − 2√OR + 1) / (OR − 1)</div>
+            <div class="proof-step">Split into two fractions: Y = (OR + 1) / (OR − 1) − 2√OR / (OR − 1).</div>
+            <div class="proof-step">Since Q = (OR − 1) / (OR + 1), its reciprocal is 1/Q = (OR + 1) / (OR − 1).<br>
+            Therefore: <strong>Y = (1 / Q) − [ 2√OR / (OR − 1) ]</strong>.  [Proved]</div>
+          </div>
+        </details>
+      </section>
+
+      <!-- SECTION 6: PAST EXAM ARENA -->
+      <section class="lesson-section" id="sec-6">
+        <div class="section-header">
+          <div>
+            <div class="section-num">Section 06 • Exam Mastery</div>
+            <h2>ISRT Past Exam Arena (AST 101: 2019–2025)</h2>
+          </div>
+          <button class="mark-done-btn" onclick="toggleDone('sec-6')">Mark Complete</button>
+        </div>
+
+        <h3>Part A: Auto-Graded Objective Quiz (MCQs)</h3>
+        <div id="mcq-container"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:14px 0 28px; flex-wrap:wrap; gap:10px;">
+          <strong id="mcq-score-banner">Quiz Score: 0 / 6 answered</strong>
+          <button class="btn-ghost" style="flex:0 0 auto" onclick="renderMCQs()">↺ Reset Quiz</button>
+        </div>
+
+        <h3>Part B: Past ISRT Subjective Exam Problems &amp; Worked Solutions</h3>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2025 • Q8(c) [7 Marks]</span> Preparatory Workshop vs. Admission Test Success</span></summary>
+          <div class="details-body">
+            <p><strong>Problem:</strong> Among 120 students who attended a workshop, 84 passed (so 36 failed). Among 80 who did not attend, 36 passed (so 44 failed). Total <em>n</em> = 200.</p>
+            <ul>
+              <li><strong>Table:</strong> <span class="mono">a = 84, b = 36, c = 36, d = 44</span> (Row totals: 120, 80; Col totals: 120, 80).</li>
+              <li><strong>Odds Ratio:</strong> <span class="mono">OR = (84 × 44) / (36 × 36) = 3696 / 1296 = <strong>2.852</strong></span>. (The odds of passing are 2.85 times higher for workshop attendees than for non-attendees.)</li>
+              <li><strong>Yule's Q:</strong> <span class="mono">Q = (3696 − 1296) / (3696 + 1296) = 2400 / 4992 = <strong>+0.4808</strong></span> (verify: <span class="mono">(2.852 − 1)/(2.852 + 1) = 0.4808</span>).</li>
+              <li><strong>Chi-Square (χ²):</strong> <span class="mono">χ² = 200(2400)² / (120 × 80 × 120 × 80) = <strong>12.50</strong></span>.</li>
+              <li><strong>Comment:</strong> Positive, moderate association between attending the workshop and passing the admission test.</li>
+              <li><strong>Part (2) — Why does this NOT prove causation? [2 Marks]:</strong> This is an <strong>observational study</strong>, not a randomized controlled experiment. Students self-selected into the workshop; <strong>confounding variables</strong> (such as higher motivation, stronger prior academic background, or more study hours) could explain both workshop attendance and higher pass rates. Association does not imply causation!</li>
+            </ul>
+          </div>
+        </details>
+
+        <details>
+          <summary><span><span class="exam-badge">Final 2024 • Q8(c) [6 Marks]</span> Tuition Fee Increase vs. Gender (N = 600)</span></summary>
+          <div class="details-body">
+            <p><strong>Problem:</strong> 600 students surveyed; 200 support tuition increase (400 against). 50 out of 200 female students were against (so 150 female support). Find the remaining cells, compute Yule's <em>Y</em> and <em>OR</em>, and verify <span class="mono">Y = (√OR − 1)/(√OR + 1)</span>.</p>
+            <ul>
+              <li><strong>Reconstructing the 2×2 Table by subtraction from totals:</strong><br>
+                Female Support <span class="mono">a = 200 − 50 = 150</span>; Female Against <span class="mono">b = 50</span> (Row 1 = 200).<br>
+                Male Support <span class="mono">c = 200 − 150 = 50</span>; Male Against <span class="mono">d = 400 − 50 = 350</span> (Row 2 = 400).</li>
+              <li><strong>Odds Ratio:</strong> <span class="mono">OR = (150 × 350) / (50 × 50) = 52,500 / 2,500 = <strong>21.0</strong></span>.</li>
+              <li><strong>Yule's Y (Colligation):</strong> <span class="mono">Y = (√52500 − √2500) / (√52500 + √2500) = (229.129 − 50) / (229.129 + 50) = <strong>+0.6417</strong></span>.</li>
+              <li><strong>Verification:</strong> <span class="mono">(√21 − 1) / (√21 + 1) = (4.5826 − 1) / (4.5826 + 1) = 3.5826 / 5.5826 = <strong>0.6417</strong></span> ✓</li>
+              <li><strong>Comment:</strong> Strong positive association between gender (being female) and supporting the tuition decision (female students had 21 times higher odds of supporting than male students).</li>
+            </ul>
+          </div>
+        </details>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Theme, Sidebar, Progress ----------
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('ast101_l10_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('ast101_l10_theme') || localStorage.getItem('ast101_l9_theme') || localStorage.getItem('ast101_l1_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open')));
+
+    window.addEventListener('scroll', () => {
+      const st = window.scrollY;
+      const dh = document.documentElement.scrollHeight - window.innerHeight;
+      document.getElementById('reading-progress').style.width = (dh > 0 ? (st / dh) * 100 : 0) + '%';
+      let cur = 'sec-1';
+      document.querySelectorAll('.lesson-section').forEach(s => { if (st >= s.offsetTop - 130) cur = s.id; });
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.sec === cur));
+    });
+
+    let completedSecs = JSON.parse(localStorage.getItem('ast101_l10_done') || '[]');
+    function syncProgress() {
+      const total = 6;
+      document.getElementById('progress-text').textContent = `${completedSecs.length} / ${total}`;
+      document.getElementById('progress-fill').style.width = `${(completedSecs.length / total) * 100}%`;
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('done', completedSecs.includes(l.dataset.sec)));
+      document.querySelectorAll('.lesson-section').forEach(s => {
+        const btn = s.querySelector('.mark-done-btn');
+        const done = completedSecs.includes(s.id);
+        btn.classList.toggle('completed', done);
+        btn.textContent = done ? '✓ Completed' : 'Mark Complete';
+      });
+    }
+    function toggleDone(id) {
+      completedSecs = completedSecs.includes(id) ? completedSecs.filter(x => x !== id) : [...completedSecs, id];
+      localStorage.setItem('ast101_l10_done', JSON.stringify(completedSecs));
+      syncProgress();
+    }
+    function resetProgress() { completedSecs = []; localStorage.removeItem('ast101_l10_done'); syncProgress(); }
+    syncProgress();
+
+    // ---------- Interactive 2x2 Table Analyzer ----------
+    const presets2x2 = {
+      film:  { corner: "Film \\ Grade", r1: "Attended Film", r2: "Did Not Attend", c1: "High Grade", c2: "Low Grade", a: 30, b: 70, c: 70, d: 30 },
+      fin25: { corner: "Workshop \\ Test", r1: "Attended", r2: "Did Not Attend", c1: "Passed", c2: "Failed", a: 84, b: 36, c: 36, d: 44 },
+      fin24: { corner: "Gender \\ Tuition", r1: "Female", r2: "Male", c1: "Support", c2: "Against", a: 150, b: 50, c: 50, d: 350 },
+      mihad: { corner: "Review \\ Exam", r1: "Attended", r2: "Did Not Attend", c1: "Passed", c2: "Failed", a: 90, b: 30, c: 40, d: 40 },
+      indep: { corner: "Attr A \\ Attr B", r1: "A Present", r2: "A Absent", c1: "B Present", c2: "B Absent", a: 50, b: 50, c: 50, d: 50 }
+    };
+    let curMeta = presets2x2.film;
+
+    function load2x2(key, btn) {
+      if (btn) {
+        btn.parentElement.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      curMeta = presets2x2[key];
+      document.getElementById('t-corner').textContent = curMeta.corner;
+      document.getElementById('t-r1').textContent = curMeta.r1;
+      document.getElementById('t-r2').textContent = curMeta.r2;
+      document.getElementById('t-c1').textContent = curMeta.c1;
+      document.getElementById('t-c2').textContent = curMeta.c2;
+      document.getElementById('c-a').value = curMeta.a;
+      document.getElementById('c-b').value = curMeta.b;
+      document.getElementById('c-c').value = curMeta.c;
+      document.getElementById('c-d').value = curMeta.d;
+      analyze2x2();
+    }
+
+    function analyze2x2() {
+      const a = Math.max(0, parseFloat(document.getElementById('c-a').value) || 0);
+      const b = Math.max(0, parseFloat(document.getElementById('c-b').value) || 0);
+      const c = Math.max(0, parseFloat(document.getElementById('c-c').value) || 0);
+      const d = Math.max(0, parseFloat(document.getElementById('c-d').value) || 0);
+
+      const r1 = a + b, r2 = c + d, c1 = a + c, c2 = b + d, n = r1 + r2;
+      document.getElementById('tot-r1').textContent = r1;
+      document.getElementById('tot-r2').textContent = r2;
+      document.getElementById('tot-c1').textContent = c1;
+      document.getElementById('tot-c2').textContent = c2;
+      document.getElementById('tot-n').textContent = n;
+
+      const ad = a * d, bc = b * c;
+      const OR = bc > 0 ? ad / bc : Infinity;
+      const Q = (ad + bc) > 0 ? (ad - bc) / (ad + bc) : 0;
+      const sAD = Math.sqrt(ad), sBC = Math.sqrt(bc);
+      const Y = (sAD + sBC) > 0 ? (sAD - sBC) / (sAD + sBC) : 0;
+      const denomChi = r1 * r2 * c1 * c2;
+      const chi2 = denomChi > 0 ? (n * (ad - bc) ** 2) / denomChi : 0;
+
+      const fmtOR = !isFinite(OR) ? '∞' : OR.toFixed(4);
+      document.getElementById('metrics-2x2').innerHTML = [
+        ["Odds Ratio (OR)", fmtOR],
+        ["Reciprocal (1/OR)", (OR > 0 && isFinite(OR)) ? (1 / OR).toFixed(3) : '—'],
+        ["Yule's Q", Q.toFixed(4)],
+        ["Yule's Y (Colligation)", Y.toFixed(4)],
+        ["Chi-Square (χ²)", chi2.toFixed(3)],
+        ["Phi (Φ = √(χ²/n))", n > 0 ? Math.sqrt(chi2 / n).toFixed(4) : '0']
+      ].map(([k, v]) => `<div class="metric-tile"><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+      // Identity verification + interpretation
+      const qFromOR = isFinite(OR) ? (OR - 1) / (OR + 1) : 1;
+      const yFromOR = isFinite(OR) ? (Math.sqrt(OR) - 1) / (Math.sqrt(OR) + 1) : 1;
+      const absQ = Math.abs(Q);
+      const strength = absQ < 0.01 ? "No" : absQ < 0.30 ? "Weak" : absQ < 0.60 ? "Moderate" : "Strong";
+      const dir = Q > 0.01 ? "positive" : Q < -0.01 ? "negative" : "";
+
+      let orSentence = '';
+      if (Math.abs(OR - 1) < 0.005) {
+        orSentence = `OR ≈ 1.00 indicates <strong>statistical independence</strong> (no association).`;
+      } else if (OR > 1 && isFinite(OR)) {
+        orSentence = `The odds of <strong>${curMeta.c1}</strong> are <strong>${OR.toFixed(2)} times higher</strong> for <em>${curMeta.r1}</em> compared to <em>${curMeta.r2}</em>.`;
+      } else if (OR > 0 && OR < 1) {
+        orSentence = `The odds of <strong>${curMeta.c1}</strong> are <strong>${OR.toFixed(3)} times</strong> as large for <em>${curMeta.r1}</em> vs. <em>${curMeta.r2}</em> (equivalently, <strong>${(1/OR).toFixed(2)} times higher</strong> for <em>${curMeta.r2}</em>).`;
+      } else {
+        orSentence = `Contains a zero cell, producing complete association (|Q| = |Y| = 1).`;
+      }
+
+      document.getElementById('identity-check').innerHTML = `
+        <strong>Identity Checks:</strong>
+        <span class="mono">(OR − 1)/(OR + 1) = ${qFromOR.toFixed(4)} = Q</span> ✓ &nbsp;|&nbsp;
+        <span class="mono">(√OR − 1)/(√OR + 1) = ${yFromOR.toFixed(4)} = Y</span> ✓<br>
+        <strong>Exam-Style Comment:</strong> There is a <strong>${strength} ${dir} association</strong> (${Q >= 0 ? 'Q = +' : 'Q = '}${Q.toFixed(3)}, Y = ${Y.toFixed(3)}). ${orSentence}
+      `;
+
+      // Draw row-wise 100% stacked bar SVG
+      const p1 = r1 > 0 ? (a / r1) * 100 : 0;
+      const p2 = r2 > 0 ? (c / r2) * 100 : 0;
+      const svg = document.getElementById('bar2x2-svg');
+      const barW = 240, x0 = 115;
+      svg.innerHTML = `
+        <text x="${x0-8}" y="38" text-anchor="end" font-size="11.5" font-weight="700" fill="currentColor">${curMeta.r1}</text>
+        <rect x="${x0}" y="22" width="${(p1/100)*barW}" height="26" fill="#059669" rx="4"/>
+        <rect x="${x0+(p1/100)*barW}" y="22" width="${((100-p1)/100)*barW}" height="26" fill="#e2e8f0" rx="4"/>
+        <text x="${x0+barW+8}" y="39" font-size="11" font-weight="700" fill="#059669">${p1.toFixed(1)}%</text>
+
+        <text x="${x0-8}" y="82" text-anchor="end" font-size="11.5" font-weight="700" fill="currentColor">${curMeta.r2}</text>
+        <rect x="${x0}" y="66" width="${(p2/100)*barW}" height="26" fill="#2563eb" rx="4"/>
+        <rect x="${x0+(p2/100)*barW}" y="66" width="${((100-p2)/100)*barW}" height="26" fill="#e2e8f0" rx="4"/>
+        <text x="${x0+barW+8}" y="83" font-size="11" font-weight="700" fill="#2563eb">${p2.toFixed(1)}%</text>
+
+        <text x="${x0 + barW/2}" y="118" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.75">Share in "${curMeta.c1}" by Row Group</text>
+      `;
+    }
+    load2x2('film', document.querySelector('#sec-4 .tab-btn'));
+
+    // ---------- Past Exam MCQ Arena ----------
+    const mcqData = [
+      {
+        tag: "L10 Definitions",
+        q: "Which of the following is also called the 'Coefficient of Colligation'?",
+        opts: ["Yule's Q", "Yule's Y", "Odds Ratio (OR)", "Cramér's V"],
+        ans: 1,
+        exp: "Yule's Y = (√ad − √bc) / (√ad + √bc) is formally known as the Coefficient of Colligation."
+      },
+      {
+        tag: "L10 Odds Ratio",
+        q: "In a 2×2 contingency table, what value of the Odds Ratio (OR) indicates NO association (independence)?",
+        opts: ["OR = 0", "OR = 1", "OR = −1", "OR = ∞"],
+        ans: 1,
+        exp: "When attributes are independent, ad = bc ⇒ OR = ad / bc = 1 (and both Q = 0 and Y = 0)."
+      },
+      {
+        tag: "L10 Identity",
+        q: "If the Odds Ratio for a 2×2 table is OR = 4, what is Yule's Q?",
+        opts: ["0.333", "0.500", "0.600", "0.750"],
+        ans: 2,
+        exp: "Q = (OR − 1) / (OR + 1) = (4 − 1) / (4 + 1) = 3 / 5 = 0.600."
+      },
+      {
+        tag: "L10 Identity",
+        q: "If the Odds Ratio for a 2×2 table is OR = 9, what is Yule's Y?",
+        opts: ["0.50", "0.67", "0.80", "0.90"],
+        ans: 0,
+        exp: "Y = (√OR − 1) / (√OR + 1) = (√9 − 1) / (√9 + 1) = (3 − 1) / (3 + 1) = 2 / 4 = 0.50."
+      },
+      {
+        tag: "L10 Symmetry",
+        q: "If you swap the rows and columns of a 2×2 table, what happens to the Odds Ratio (OR)?",
+        opts: ["It becomes 1 / OR", "It changes sign", "It remains completely unchanged (symmetric)", "It doubles"],
+        ans: 2,
+        exp: "OR(A|B) = (a/b)/(c/d) = ad/bc = (a/c)/(b/d) = OR(B|A). The Odds Ratio is symmetric!"
+      },
+      {
+        tag: "Final 2025 Q8(c)",
+        q: "A 2×2 observational survey shows OR = 2.85 between attending a workshop and passing an exam. Can we conclude the workshop CAUSED the higher pass rate?",
+        opts: ["Yes, because OR > 1", "Yes, because χ² = 12.5 is large", "No — observational data may be affected by self-selection and confounding factors", "Only if Yule's Q > 0.5"],
+        ans: 2,
+        exp: "Association in an observational study does not prove causation; confounders like prior preparation or motivation were not controlled via random assignment."
+      }
+    ];
+
+    let mcqState = {};
+    function renderMCQs() {
+      mcqState = {};
+      const c = document.getElementById('mcq-container');
+      c.innerHTML = '';
+      mcqData.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'mcq-item';
+        div.innerHTML = `
+          <div class="mcq-q"><span class="mcq-tag">${item.tag}</span>${idx + 1}. ${item.q}</div>
+          <div class="mcq-options">
+            ${item.opts.map((o, oi) => `<button class="mcq-opt" onclick="pickMCQ(${idx},${oi},this)">${String.fromCharCode(97+oi)}) ${o}</button>`).join('')}
+          </div>
+          <div class="mcq-exp" id="mcq-exp-${idx}"></div>
+        `;
+        c.appendChild(div);
+      });
+      updateMCQBanner();
+    }
+    function pickMCQ(qi, oi, btn) {
+      if (mcqState[qi] !== undefined) return;
+      const item = mcqData[qi], ok = oi === item.ans;
+      mcqState[qi] = ok;
+      btn.parentElement.querySelectorAll('.mcq-opt').forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.ans) b.classList.add('selected-correct');
+      });
+      if (!ok) btn.classList.add('selected-wrong');
+      const exp = document.getElementById(`mcq-exp-${qi}`);
+      exp.className = 'mcq-exp show';
+      exp.innerHTML = `${ok ? '<strong style="color:var(--success)">✓ Correct!</strong>' : '<strong style="color:var(--danger)">✗ Incorrect.</strong>'} ${item.exp}`;
+      updateMCQBanner();
+    }
+    function updateMCQBanner() {
+      const ans = Object.keys(mcqState).length;
+      const cor = Object.values(mcqState).filter(Boolean).length;
+      document.getElementById('mcq-score-banner').textContent = `Quiz Score: ${cor} / ${mcqData.length} correct (${ans} answered)`;
+    }
+    renderMCQs();
+  </script>
+</body>
+</html>
