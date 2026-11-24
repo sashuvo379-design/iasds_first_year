@@ -12,6 +12,7 @@ const STORAGE_KEYS = {
   lineHeight: 'iasds_line_height_v1',
   focusMode: 'iasds_focus_mode_v1',
   sidebarCollapsed: 'iasds_sidebar_collapsed_v1',
+  tocCollapsed: 'iasds_toc_collapsed_v1',
 };
 
 function safeRead(key, fallback) {
@@ -153,6 +154,7 @@ export function getReadingPrefs() {
     lineHeight: safeRead(STORAGE_KEYS.lineHeight, 'normal'),
     focusMode: Boolean(safeRead(STORAGE_KEYS.focusMode, false)),
     sidebarCollapsed: Boolean(safeRead(STORAGE_KEYS.sidebarCollapsed, false)),
+    tocCollapsed: Boolean(safeRead(STORAGE_KEYS.tocCollapsed, false)),
   };
 }
 

@@ -24,6 +24,8 @@ const SVG = {
   search: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
   menu: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>',
   sidebar: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>',
+  panelRight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg>',
+  panelRightClose: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg>',
   type: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>',
   moon: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>',
   help: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>',
@@ -527,6 +529,11 @@ function renderHeader({ root, activeNav, isLesson }) {
         }
         <button type="button" id="siteThemeToggle" class="btn btn--ghost btn--icon" aria-label="Toggle color theme" title="Toggle theme (t)">${SVG.moon}</button>
         <button type="button" id="shortcutsHelpBtn" class="btn btn--ghost btn--icon" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">${SVG.help}</button>
+        ${
+          isLesson
+            ? `<button type="button" id="tocToggleBtn" class="btn btn--ghost btn--icon toc-toggle-btn" aria-label="Toggle On This Page sidebar" aria-expanded="true" title="Toggle On This Page">${SVG.panelRight}</button>`
+            : ''
+        }
       </div>
     </div>
   </header>`;
@@ -898,7 +905,10 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
     </main>
 
     <aside id="tocAside" class="toc-aside" aria-label="Table of contents">
-      <div class="toc-title">On This Page</div>
+      <div class="toc-aside__head">
+        <div class="toc-title">On This Page</div>
+        <button type="button" id="tocCollapseBtn" class="btn btn--ghost btn--icon" aria-label="Collapse On This Page sidebar" title="Collapse On This Page">${SVG.panelRightClose}</button>
+      </div>
       <nav aria-label="Section headings">
         <ul id="desktopTocList" class="toc-list"></ul>
       </nav>

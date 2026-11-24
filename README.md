@@ -99,5 +99,6 @@ All user state is saved privately in the browser via `localStorage` (no account,
 | `iasds_line_height_v1` | Reading line spacing (`"compact"`, `"normal"`, `"relaxed"`) |
 | `iasds_focus_mode_v1` | Boolean for distraction-free Focus Mode |
 | `iasds_sidebar_collapsed_v1` | Boolean for desktop sidebar collapse state |
+| `iasds_toc_collapsed_v1` | Boolean for desktop "On This Page" TOC collapse state |
 
 To clear study history and bookmarks, open **About & Guide** and click **Reset all progress** (requires confirmation).

@@ -843,15 +843,26 @@
   }
 }
 
-/* Sidebar collapsed or Focus Mode on Desktop */
-html[data-sidebar-collapsed="true"] .lesson-shell,
+/* Sidebar / TOC collapsed or Focus Mode on Desktop */
 html[data-focus-mode="true"] .lesson-shell {
   grid-template-columns: minmax(0, 1fr);
 }
 
+html[data-sidebar-collapsed="true"] .lesson-shell {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 @media (min-width: 1280px) {
-  html[data-sidebar-collapsed="true"]:not([data-focus-mode="true"]) .lesson-shell {
+  html[data-sidebar-collapsed="true"]:not([data-focus-mode="true"]):not([data-toc-collapsed="true"]) .lesson-shell {
     grid-template-columns: minmax(0, 1fr) var(--toc-width);
+  }
+
+  html[data-toc-collapsed="true"]:not([data-focus-mode="true"]):not([data-sidebar-collapsed="true"]) .lesson-shell {
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  }
+
+  html[data-sidebar-collapsed="true"][data-toc-collapsed="true"] .lesson-shell {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -860,8 +871,19 @@ html[data-focus-mode="true"] .course-sidebar {
   display: none;
 }
 
-html[data-focus-mode="true"] .toc-aside {
+html[data-focus-mode="true"] .toc-aside,
+html[data-toc-collapsed="true"] .toc-aside {
   display: none;
+}
+
+.toc-toggle-btn {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .toc-toggle-btn {
+    display: inline-flex;
+  }
 }
 
 /* ---------- Left Course Sidebar & Mobile Drawer ---------- */
@@ -1149,6 +1171,14 @@ html[data-focus-mode="true"] .toc-aside {
   }
 }
 
+.toc-aside__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
 .toc-title {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
@@ -1156,7 +1186,7 @@ html[data-focus-mode="true"] .toc-aside {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-3);
+  margin-bottom: 0;
 }
 
 .toc-list {

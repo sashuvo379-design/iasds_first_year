@@ -75,6 +75,14 @@ function applyReadingPrefs() {
   document.documentElement.dataset.lineHeight = prefs.lineHeight;
   document.documentElement.dataset.focusMode = prefs.focusMode ? 'true' : 'false';
   document.documentElement.dataset.sidebarCollapsed = prefs.sidebarCollapsed ? 'true' : 'false';
+  document.documentElement.dataset.tocCollapsed = prefs.tocCollapsed ? 'true' : 'false';
+
+  const tocToggleBtn = document.getElementById('tocToggleBtn');
+  if (tocToggleBtn) {
+    const tocVisible = !prefs.focusMode && !prefs.tocCollapsed;
+    tocToggleBtn.setAttribute('aria-expanded', tocVisible ? 'true' : 'false');
+    tocToggleBtn.title = tocVisible ? 'Collapse On This Page' : 'Show On This Page';
+  }
 
   document.querySelectorAll('[data-set-font]').forEach((btn) => {
     btn.setAttribute('aria-pressed', btn.dataset.setFont === prefs.fontSize ? 'true' : 'false');
@@ -189,6 +197,32 @@ function initSidebar() {
       closeDrawer();
     }
   });
+
+  // Right "On This Page" TOC collapse / expand buttons (desktop)
+  const tocToggleBtn = document.getElementById('tocToggleBtn');
+  const tocCollapseBtn = document.getElementById('tocCollapseBtn');
+
+  const setTocCollapsed = (collapsed) => {
+    if (!collapsed && document.documentElement.dataset.focusMode === 'true') {
+      saveReadingPref('focusMode', false);
+    }
+    saveReadingPref('tocCollapsed', collapsed);
+    applyReadingPrefs();
+    window.dispatchEvent(new Event('resize'));
+  };
+
+  if (tocCollapseBtn) {
+    tocCollapseBtn.addEventListener('click', () => setTocCollapsed(true));
+  }
+
+  if (tocToggleBtn) {
+    tocToggleBtn.addEventListener('click', () => {
+      const currentlyHidden =
+        document.documentElement.dataset.focusMode === 'true' ||
+        document.documentElement.dataset.tocCollapsed === 'true';
+      setTocCollapsed(!currentlyHidden);
+    });
+  }
 }
 
 /* ---------- Dialog Helpers ---------- */
