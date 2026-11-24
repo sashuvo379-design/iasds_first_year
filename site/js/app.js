@@ -148,6 +148,7 @@ function initReadingControls() {
       saveReadingPref('focusMode', next);
       applyReadingPrefs();
       window.dispatchEvent(new Event('resize'));
+      window.setTimeout(() => window.dispatchEvent(new Event('resize')), 200);
       showToast(next ? 'Focus mode enabled' : 'Focus mode off');
     });
   }
@@ -187,6 +188,7 @@ function initSidebar() {
       }
       applyReadingPrefs();
       window.dispatchEvent(new Event('resize'));
+      window.setTimeout(() => window.dispatchEvent(new Event('resize')), 200);
     }
   });
 
@@ -209,6 +211,7 @@ function initSidebar() {
     saveReadingPref('tocCollapsed', collapsed);
     applyReadingPrefs();
     window.dispatchEvent(new Event('resize'));
+    window.setTimeout(() => window.dispatchEvent(new Event('resize')), 200);
   };
 
   if (tocCollapseBtn) {
