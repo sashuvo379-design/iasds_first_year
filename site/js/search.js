@@ -226,6 +226,22 @@ export async function initSearchPage() {
         link.innerHTML = `Lesson ${doc.lessonNumber}: ${highlightText(doc.title, terms)}`;
         li.appendChild(link);
 
+        if (doc.stars) {
+          const badgeWrap = document.createElement('div');
+          badgeWrap.className = 'lesson-row__badges';
+          const sb = document.createElement('span');
+          sb.className = `star-badge star-badge--${doc.stars}`;
+          sb.textContent = `${'★'.repeat(doc.stars)} ${doc.stars === 3 ? 'High-yield' : doc.stars === 2 ? 'Regular' : 'Low-yield'}`;
+          badgeWrap.appendChild(sb);
+          if (doc.frequencyTag) {
+            const pill = document.createElement('span');
+            pill.className = 'scope-pill';
+            pill.textContent = doc.frequencyTag;
+            badgeWrap.appendChild(pill);
+          }
+          li.appendChild(badgeWrap);
+        }
+
         const snippet = document.createElement('p');
         snippet.className = 'search-result__snippet';
         snippet.innerHTML = buildSnippet(doc.text, terms);

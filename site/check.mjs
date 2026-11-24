@@ -95,7 +95,17 @@ if (manifest) {
     if (!fs.existsSync(outFile)) {
       fail(`Missing generated lesson file in dist/: ${l.url}`);
     }
+    if (![1, 2, 3].includes(l.stars)) {
+      fail(`Invalid or missing star rating on ${l.id}: ${l.stars}`);
+    }
+    if (!Array.isArray(l.scopes) || l.scopes.length === 0) {
+      fail(`Missing exam scopes on ${l.id}`);
+    }
   }
+}
+
+if (!fs.existsSync(path.join(DIST_DIR, 'exam-prep', 'index.html'))) {
+  fail('Missing generated Exam Prep page: dist/exam-prep/index.html');
 }
 
 if (searchIndex) {
@@ -146,6 +156,12 @@ for (const filePath of distHtmlFiles) {
   if (isLesson) {
     if (!/<article[\s>]/i.test(html)) fail(`[${relFile}] Lesson page missing <article>`);
     if (!/<aside[\s>]/i.test(html)) fail(`[${relFile}] Lesson page missing <aside>`);
+    if (!/data-exam-stars=["'][123]["']/.test(html)) {
+      fail(`[${relFile}] Lesson page missing unit-level data-exam-stars ratings`);
+    }
+    if (/All 14 Lessons Built!|\uF393/.test(html)) {
+      fail(`[${relFile}] Uncleaned builder artifact or broken entity found`);
+    }
   }
 
   // Strip <script> and <style> before checking href/src attributes so JS string templates aren't mistaken for HTML links

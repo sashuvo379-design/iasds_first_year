@@ -7,6 +7,15 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import {
+  COURSE_BLUEPRINTS,
+  EXAM_ARCHITECTURE,
+  LESSON_RATINGS,
+  SCOPE_LABELS,
+  STAR_META,
+  enhanceLessonContent,
+  rateUnitHeading,
+} from './data/exam-intelligence.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,7 +71,8 @@ function decodeEntities(str) {
     .replace(/&bull;|&middot;/g, '·')
     .replace(/&nbsp;/g, ' ')
     .replace(/&times;/g, '×')
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)));
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)));
 }
 
 function slugify(str) {
@@ -489,6 +499,7 @@ function renderHeader({ root, activeNav, isLesson }) {
         </a>
         <nav class="site-nav" aria-label="Primary">
           <a class="site-nav__link" href="${root}index.html"${activeNav === 'home' ? ' aria-current="page"' : ''}>Courses</a>
+          <a class="site-nav__link" href="${root}exam-prep/index.html"${activeNav === 'exam-prep' ? ' aria-current="page"' : ''}>Exam Prep</a>
           <a class="site-nav__link" href="${root}search/index.html"${activeNav === 'search' ? ' aria-current="page"' : ''}>Search</a>
           <a class="site-nav__link" href="${root}about/index.html"${activeNav === 'about' ? ' aria-current="page"' : ''}>About &amp; Guide</a>
         </nav>
@@ -606,6 +617,7 @@ function renderFooter(root) {
       <div>${SITE_NAME} &middot; ${SITE_TAGLINE}</div>
       <nav class="site-footer__links" aria-label="Footer">
         <a href="${root}index.html">Courses</a>
+        <a href="${root}exam-prep/index.html">Exam Prep</a>
         <a href="${root}search/index.html">Search</a>
         <a href="${root}about/index.html">About &amp; Shortcuts</a>
       </nav>
@@ -710,6 +722,16 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
     });
   }
 
+  // Apply empirical exam cleanups (remove AI completion banners, strip heading emojis, inject 2025 supplements)
+  const examInfo = LESSON_RATINGS[lesson.id] || {
+    stars: 2,
+    scopes: ['final'],
+    frequencyTag: 'Core Curriculum',
+    examSummary: 'Core first-year topic.',
+  };
+  const starMeta = STAR_META[examInfo.stars] || STAR_META[2];
+  contentHtml = enhanceLessonContent(lesson.id, course.code, contentHtml);
+
   // Handle ECON107 raw LaTeX while protecting currency $ amounts
   let needsKatex = hasSourceKatex;
   let katexMode = hasSourceKatex ? 'standard' : '';
@@ -759,14 +781,32 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
     lessonJsUrl = `assets/lesson-scripts/${jsFile}`;
   }
 
-  // Extract headings and plain text for reading time & search index
-  const headings = [...contentHtml.matchAll(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/gi)]
-    .map((m) => stripTags(m[1]))
-    .filter((t) => t.length > 0 && !/^on this page$/i.test(t));
-
-  const plainText = stripTags(contentHtml);
+  // Extract plain text BEFORE injecting unit star badges so search snippets stay clean
+  const plainText = stripTags(`${contentHtml} ${examInfo.examSummary || ''}`);
   const wordCount = plainText ? plainText.split(/\s+/).length : 0;
   const readingMinutes = Math.max(4, Math.round(wordCount / 200));
+
+  // Rate every visible <h2> / <h3> unit and inject unit-level ★ / ★★ / ★★★ badges + TOC data attributes
+  const headings = [];
+  let highYieldUnits = 0;
+  contentHtml = contentHtml.replace(/<(h[23])(\s[^>]*)?>([\s\S]*?)<\/\1>/gi, (full, tag, attrs = '', inner) => {
+    if (/\b(?:lesson-dup-heading|sr-only)\b/i.test(attrs)) return full;
+    const cleanText = latexToReadableUnicode(stripTags(inner));
+    if (!cleanText || /^on this page$/i.test(cleanText)) return full;
+    headings.push(cleanText);
+    const { stars: unitStars, reason: unitReason } = rateUnitHeading(
+      lesson.id,
+      course.code,
+      cleanText,
+      examInfo.stars
+    );
+    if (unitStars === 3) highYieldUnits++;
+    const uMeta = STAR_META[unitStars] || STAR_META[2];
+    const tooltip = `${uMeta.label} — ${unitReason}`;
+    const badgeHtml = ` <span class="unit-star-badge unit-star-badge--${unitStars}" title="${escapeHtml(tooltip)}" aria-label="${unitStars} of 3 stars exam importance: ${escapeHtml(uMeta.shortLabel)}">${uMeta.glyph}${unitStars === 1 ? ' <span class="unit-star-badge__note">Low-yield</span>' : ''}</span>`;
+    const dataAttrs = ` data-exam-stars="${unitStars}" data-exam-reason="${escapeHtml(tooltip)}"`;
+    return `<${tag}${attrs}${dataAttrs}>${inner}${badgeHtml}</${tag}>`;
+  });
 
   // Prev / Next across course boundaries
   const prevLesson = flatIndex > 0 ? flatLessons[flatIndex - 1] : null;
@@ -777,10 +817,15 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
   const sidebarCourseLinks = course.lessons
     .map((l) => {
       const current = l.id === lesson.id;
+      const lExam = LESSON_RATINGS[l.id] || { stars: 2 };
+      const lGlyph = '★'.repeat(lExam.stars);
       return `<li>
         <a class="sidebar-nav-link" href="${l.slug}.html" data-lesson-id="${l.id}" data-completed="false"${current ? ' aria-current="page"' : ''}>
           <span class="sidebar-nav-link__icon" aria-hidden="true">${SVG.circle}</span>
-          <span><strong>${l.lessonNumber}.</strong> ${escapeHtml(l.title)}</span>
+          <span class="sidebar-nav-link__body">
+            <span><strong>${l.lessonNumber}.</strong> ${escapeHtml(l.title)}</span>
+            <span class="sidebar-star sidebar-star--${lExam.stars}" title="${lExam.stars} of 3 stars exam importance" aria-label="${lExam.stars} stars">${lGlyph}</span>
+          </span>
         </a>
       </li>`;
     })
@@ -874,8 +919,16 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
             <span>Lesson ${lesson.lessonNumber} of ${course.lessons.length}</span>
             <span>&middot;</span>
             <span>${readingMinutes} min read</span>
+            <span class="star-badge star-badge--${examInfo.stars}" title="${escapeHtml(starMeta.description)}">${starMeta.glyph} ${escapeHtml(starMeta.shortLabel)}</span>
+            ${examInfo.group ? `<span class="scope-pill scope-pill--group">${escapeHtml(examInfo.group)}</span>` : ''}
+            ${(examInfo.scopes || []).map((s) => `<span class="scope-pill">${escapeHtml(SCOPE_LABELS[s] || s)}</span>`).join('')}
           </div>
           <h1>${escapeHtml(lesson.title)}</h1>
+          ${
+            examInfo.examSummary
+              ? `<div class="lesson-exam-note"><strong>ISRT Exam Pattern (${escapeHtml(examInfo.frequencyTag)}):</strong> ${escapeHtml(examInfo.examSummary)}</div>`
+              : ''
+          }
           <div class="lesson-header__actions">
             <button type="button" id="markCompleteBtn" class="btn btn--secondary" aria-pressed="false">
               ${SVG.circle}<span>Mark as complete</span>
@@ -888,10 +941,15 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
 
         <details id="mobileTocWrap" class="mobile-toc">
           <summary class="mobile-toc__summary">
-            <span>On this page</span>
+            <span>On this page (with ★ unit priority)</span>
             ${SVG.chevronDown}
           </summary>
           <div class="mobile-toc__body">
+            <div class="toc-legend" aria-label="Unit exam importance key">
+              <span class="toc-legend__item"><span class="toc-legend__stars--3">★★★</span> High-yield</span>
+              <span class="toc-legend__item"><span class="toc-legend__stars--2">★★</span> Regular</span>
+              <span class="toc-legend__item"><span class="toc-legend__stars--1">★</span> Low-yield</span>
+            </div>
             <ul id="mobileTocList" class="toc-list"></ul>
           </div>
         </details>
@@ -908,6 +966,11 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
       <div class="toc-aside__head">
         <div class="toc-title">On This Page</div>
         <button type="button" id="tocCollapseBtn" class="btn btn--ghost btn--icon" aria-label="Collapse On This Page sidebar" title="Collapse On This Page">${SVG.panelRightClose}</button>
+      </div>
+      <div class="toc-legend" aria-label="Unit exam importance key">
+        <span class="toc-legend__item"><span class="toc-legend__stars--3">★★★</span> High</span>
+        <span class="toc-legend__item"><span class="toc-legend__stars--2">★★</span> Core</span>
+        <span class="toc-legend__item"><span class="toc-legend__stars--1">★</span> Low</span>
       </div>
       <nav aria-label="Section headings">
         <ul id="desktopTocList" class="toc-list"></ul>
@@ -966,19 +1029,30 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
   lesson.wordCount = wordCount;
   lesson.usesKatex = needsKatex;
   lesson.usesTailwind = usesTailwind;
+  lesson.stars = examInfo.stars;
+  lesson.scopes = examInfo.scopes || ['final'];
+  lesson.group = examInfo.group || '';
+  lesson.frequencyTag = examInfo.frequencyTag || '';
+  lesson.examSummary = examInfo.examSummary || '';
+  lesson.highYieldUnits = highYieldUnits;
   lesson.searchText = plainText.slice(0, 12000); // Plenty for full-text search while keeping JSON fast
 }
 
 /* ---------- Render Home Page ---------- */
 function buildHomePage(courses, totalLessons) {
+  const totalHighYield = courses.reduce(
+    (sum, c) => sum + c.lessons.filter((l) => l.stars === 3).length,
+    0
+  );
   const cardsHtml = courses
     .map((c) => {
       const lessonIds = c.lessons.map((l) => l.id).join(',');
+      const highYieldCount = c.lessons.filter((l) => l.stars === 3).length;
       return `
       <a class="course-card" href="${c.url}" data-course-card data-lesson-ids="${lessonIds}">
         <div class="course-card__top">
           <span class="course-code">${escapeHtml(c.code)}</span>
-          <span class="course-card__count">${c.lessons.length} lessons</span>
+          <span class="course-card__count">${c.lessons.length} lessons &middot; <strong style="color:var(--color-ochre-text)">${highYieldCount} ★★★</strong></span>
         </div>
         <h3 class="course-card__title">${escapeHtml(c.name)}</h3>
         <p class="course-card__desc">${escapeHtml(c.summary)}</p>
@@ -1001,7 +1075,7 @@ function buildHomePage(courses, totalLessons) {
       <span class="editorial-header__eyebrow">ISRT &middot; UNIVERSITY OF DHAKA &middot; YEAR 1</span>
       <h1>Applied Statistics &amp; Data Science</h1>
       <p class="editorial-header__lead">
-        A calm, self-contained academic study archive covering all seven first-year IASDS courses—complete with interactive laboratories, proofs, worked past-exam vaults, and mastery checks.
+        A calm, self-contained academic study archive covering all seven first-year IASDS courses—complete with interactive laboratories, proofs, worked past-exam vaults, and empirical <strong>★ / ★★ / ★★★</strong> unit importance ratings from 2017–2025 ISRT papers.
       </p>
 
       <div class="progress-summary" aria-label="Overall study progress">
@@ -1013,6 +1087,10 @@ function buildHomePage(courses, totalLessons) {
           <div>
             <span class="stat-item__value" id="overallCompletedCount">0 / ${totalLessons}</span>
             <span class="stat-item__label">Lessons completed</span>
+          </div>
+          <div>
+            <span class="stat-item__value">${totalHighYield}</span>
+            <span class="stat-item__label">★★★ High-yield lessons</span>
           </div>
         </div>
         <div class="progress-summary__bar-wrap">
@@ -1026,6 +1104,15 @@ function buildHomePage(courses, totalLessons) {
         </div>
       </div>
     </header>
+
+    <section class="home-exam-banner" aria-label="ISRT Exam Preparation Hub">
+      <div>
+        <span class="home-exam-banner__eyebrow">PAST-PAPER INTELLIGENCE &middot; 1ST INCOURSE, 2ND INCOURSE &amp; YEAR FINAL</span>
+        <h2 class="home-exam-banner__title">Prepare Strategically with ISRT Question Patterns (2017–2025)</h2>
+        <p class="home-exam-banner__desc">Filter all ${totalLessons} lessons by 1st Incourse, 2nd Incourse, or Year Final, inspect <strong>★★★</strong> recurring proofs and classic Q1 traps, and spot <strong>★</strong> low-yield sections before exam week.</p>
+      </div>
+      <a class="btn btn--primary" href="exam-prep/index.html">Open Exam Prep Hub ${SVG.arrowRight}</a>
+    </section>
 
     <section id="homeUtilityGrid" class="home-utility-grid" aria-label="Resume and saved sections" hidden>
       <div id="continueCard" class="panel-card" hidden>
@@ -1069,15 +1156,26 @@ function buildHomePage(courses, totalLessons) {
 function buildCoursePages(courses) {
   for (const course of courses) {
     const root = '../../';
+    const bp = COURSE_BLUEPRINTS[course.code];
+    const highYieldCount = course.lessons.filter((l) => l.stars === 3).length;
+
     const rowsHtml = course.lessons
-      .map(
-        (l) => `
-        <li class="lesson-row" data-lesson-row data-lesson-id="${l.id}" data-status="not-started">
+      .map((l) => {
+        const sMeta = STAR_META[l.stars] || STAR_META[2];
+        const scopeCsv = (l.scopes || []).join(',');
+        return `
+        <li class="lesson-row" data-lesson-row data-lesson-id="${l.id}" data-status="not-started" data-stars="${l.stars}" data-scopes="${escapeHtml(scopeCsv)}">
           <a class="lesson-row__link" href="${l.slug}.html">
             <span class="lesson-row__num">${String(l.lessonNumber).padStart(2, '0')}</span>
             <span>
               <span class="lesson-row__title">${escapeHtml(l.title)}</span>
-              <span class="lesson-row__meta">${l.readingMinutes} min read &middot; ${l.headings.length} sections</span>
+              <span class="lesson-row__badges">
+                <span class="star-badge star-badge--${l.stars}" title="${escapeHtml(sMeta.description)}">${sMeta.glyph} ${escapeHtml(sMeta.shortLabel)}</span>
+                ${l.group ? `<span class="scope-pill scope-pill--group">${escapeHtml(l.group)}</span>` : ''}
+                ${(l.scopes || []).map((s) => `<span class="scope-pill">${escapeHtml(SCOPE_LABELS[s] || s)}</span>`).join('')}
+                <span class="lesson-row__meta" style="display:inline;margin:0">${l.readingMinutes} min &middot; ${l.headings.length} units (${l.highYieldUnits} ★★★)</span>
+              </span>
+              ${l.examSummary ? `<span class="lesson-row__exam-note">${escapeHtml(l.examSummary)}</span>` : ''}
             </span>
             <span class="lesson-row__status">
               <span class="status-badge" data-status-badge data-status="not-started">
@@ -1085,9 +1183,59 @@ function buildCoursePages(courses) {
               </span>
             </span>
           </a>
-        </li>`
-      )
+        </li>`;
+      })
       .join('\n');
+
+    const blueprintHtml = bp
+      ? `<details class="course-blueprint" open>
+          <summary class="course-blueprint__summary">
+            <div class="course-blueprint__title-wrap">
+              <span class="course-code">EXAM PATTERN</span>
+              <span class="course-blueprint__title">ISRT Past-Paper Blueprint (2019–2025)</span>
+              <span class="scope-pill">${escapeHtml(bp.credits)} Credits &middot; Final: ${escapeHtml(bp.finalMarks)}m / ${escapeHtml(bp.finalDuration)}</span>
+            </div>
+            <span class="course-blueprint__chevron" aria-hidden="true">${SVG.chevronDown}</span>
+          </summary>
+          <div class="course-blueprint__body">
+            <p style="margin:var(--space-3) 0 0;color:var(--color-text-secondary)">
+              <strong>Year Final Format:</strong> ${escapeHtml(bp.finalFormat)}<br>
+              <strong>Incourse Format:</strong> ${escapeHtml(bp.incourseFormat)}
+            </p>
+            <div class="blueprint-scope-grid">
+              <div class="blueprint-scope-box">
+                <span class="blueprint-scope-box__label">1st Incourse (25m)</span>
+                <span class="blueprint-scope-box__val">${escapeHtml(bp.incourse1Scope)}</span>
+              </div>
+              <div class="blueprint-scope-box">
+                <span class="blueprint-scope-box__label">2nd Incourse (25m)</span>
+                <span class="blueprint-scope-box__val">${escapeHtml(bp.incourse2Scope)}</span>
+              </div>
+              <div class="blueprint-scope-box">
+                <span class="blueprint-scope-box__label">Year Final (70m)</span>
+                <span class="blueprint-scope-box__val">${escapeHtml(bp.finalScope)}</span>
+              </div>
+            </div>
+            <div class="blueprint-columns">
+              <div>
+                <h3 class="blueprint-subhead">Recurring High-Yield Archetypes (★★★)</h3>
+                <ul class="blueprint-list">
+                  ${bp.signaturePatterns.map((p) => `<li>${escapeHtml(p)}</li>`).join('\n')}
+                </ul>
+              </div>
+              <div>
+                <h3 class="blueprint-subhead">Classic ISRT Exam Traps to Avoid</h3>
+                <ul class="blueprint-list">
+                  ${bp.classicTraps.map((t) => `<li>${escapeHtml(t)}</li>`).join('\n')}
+                </ul>
+              </div>
+            </div>
+            <div class="blueprint-timesaver">
+              <strong>Smart Revision Priority:</strong> ${escapeHtml(bp.timeSavers)}
+            </div>
+          </div>
+        </details>`
+      : '';
 
     const assetsBlock = course.nonHtmlAssets.length
       ? `<section aria-labelledby="courseAssetsHeading">
@@ -1112,7 +1260,7 @@ function buildCoursePages(courses) {
       </nav>
 
       <header class="editorial-header">
-        <span class="editorial-header__eyebrow">${escapeHtml(course.code)} &middot; ${course.lessons.length} LESSONS</span>
+        <span class="editorial-header__eyebrow">${escapeHtml(course.code)} &middot; ${course.lessons.length} LESSONS &middot; ${highYieldCount} ★★★ HIGH-YIELD</span>
         <h1>${escapeHtml(course.name)}</h1>
         <p class="editorial-header__lead">${escapeHtml(course.summary)}</p>
 
@@ -1130,13 +1278,19 @@ function buildCoursePages(courses) {
         </div>
       </header>
 
+      ${blueprintHtml}
+
       <section aria-labelledby="syllabusHeading">
         <div class="section-heading">
-          <h2 id="syllabusHeading">Lessons</h2>
+          <h2 id="syllabusHeading">Lessons &amp; Exam Importance</h2>
+          <span class="section-heading__meta">Each lesson &amp; unit rated ★ to ★★★</span>
         </div>
 
-        <div id="courseFilterBar" class="filter-bar" role="group" aria-label="Filter lessons by status">
+        <div id="courseFilterBar" class="filter-bar" role="group" aria-label="Filter lessons by exam priority, exam scope, or status">
           <button type="button" class="filter-chip" data-filter="all" aria-pressed="true">All (${course.lessons.length})</button>
+          <button type="button" class="filter-chip" data-filter="stars-3" aria-pressed="false">★★★ High-yield (${highYieldCount})</button>
+          <button type="button" class="filter-chip" data-filter="scope-inc1" aria-pressed="false">1st Incourse</button>
+          <button type="button" class="filter-chip" data-filter="scope-inc2" aria-pressed="false">2nd Incourse</button>
           <button type="button" class="filter-chip" data-filter="not-started" aria-pressed="false">Not started</button>
           <button type="button" class="filter-chip" data-filter="in-progress" aria-pressed="false">In progress</button>
           <button type="button" class="filter-chip" data-filter="completed" aria-pressed="false">Completed</button>
@@ -1145,7 +1299,7 @@ function buildCoursePages(courses) {
         <ol class="lesson-list">
           ${rowsHtml}
         </ol>
-        <p id="courseFilterEmpty" class="panel-card__meta" hidden>No lessons match the selected status filter.</p>
+        <p id="courseFilterEmpty" class="panel-card__meta" hidden>No lessons match the selected filter.</p>
       </section>
       ${assetsBlock}
     </main>`;
@@ -1163,6 +1317,205 @@ function buildCoursePages(courses) {
     ensureDir(path.dirname(outPath));
     fs.writeFileSync(outPath, html, 'utf8');
   }
+}
+
+/* ---------- Render Dedicated Exam Prep Hub Page ---------- */
+function buildExamPrepPage(courses, flatLessons) {
+  const root = '../';
+  const count3 = flatLessons.filter((l) => l.stars === 3).length;
+  const count2 = flatLessons.filter((l) => l.stars === 2).length;
+  const count1 = flatLessons.filter((l) => l.stars === 1).length;
+
+  const courseChips = courses
+    .map(
+      (c) =>
+        `<button type="button" class="filter-chip" data-val="${escapeHtml(c.code)}" aria-pressed="false">${escapeHtml(c.code)}</button>`
+    )
+    .join('\n            ');
+
+  const masterRowsHtml = flatLessons
+    .map((l) => {
+      const sMeta = STAR_META[l.stars] || STAR_META[2];
+      const scopeCsv = (l.scopes || []).join(',');
+      return `
+      <li class="lesson-row" data-exam-lesson-row data-lesson-id="${escapeHtml(l.id)}" data-course="${escapeHtml(l.courseCode)}" data-stars="${l.stars}" data-scopes="${escapeHtml(scopeCsv)}" data-status="not-started">
+        <a class="lesson-row__link" href="${root}${l.url}">
+          <span class="lesson-row__num">${escapeHtml(l.courseCode)}<br>L${String(l.lessonNumber).padStart(2, '0')}</span>
+          <span>
+            <span class="lesson-row__title">${escapeHtml(l.title)}</span>
+            <span class="lesson-row__badges">
+              <span class="star-badge star-badge--${l.stars}">${sMeta.glyph} ${escapeHtml(sMeta.shortLabel)}</span>
+              ${l.group ? `<span class="scope-pill scope-pill--group">${escapeHtml(l.group)}</span>` : ''}
+              ${(l.scopes || []).map((s) => `<span class="scope-pill">${escapeHtml(SCOPE_LABELS[s] || s)}</span>`).join('')}
+              <span class="scope-pill">${escapeHtml(l.frequencyTag)}</span>
+            </span>
+            <span class="lesson-row__exam-note">${escapeHtml(l.examSummary)}</span>
+          </span>
+          <span class="lesson-row__status">
+            <span class="status-badge" data-status-badge data-status="not-started">
+              ${SVG.circle}<span>Not started</span>
+            </span>
+          </span>
+        </a>
+      </li>`;
+    })
+    .join('\n');
+
+  const blueprintsAccordionHtml = courses
+    .map((c, idx) => {
+      const bp = COURSE_BLUEPRINTS[c.code];
+      if (!bp) return '';
+      return `
+      <details class="course-blueprint"${idx === 0 ? ' open' : ''}>
+        <summary class="course-blueprint__summary">
+          <div class="course-blueprint__title-wrap">
+            <span class="course-code">${escapeHtml(c.code)}</span>
+            <span class="course-blueprint__title">${escapeHtml(c.name)}</span>
+            <span class="scope-pill">${escapeHtml(bp.credits)} Credits &middot; ${escapeHtml(bp.finalDuration)}</span>
+          </div>
+          <span class="course-blueprint__chevron" aria-hidden="true">${SVG.chevronDown}</span>
+        </summary>
+        <div class="course-blueprint__body">
+          <p style="margin:var(--space-3) 0 0;color:var(--color-text-secondary)">
+            <strong>Year Final:</strong> ${escapeHtml(bp.finalFormat)}<br>
+            <strong>Incourse:</strong> ${escapeHtml(bp.incourseFormat)}
+          </p>
+          <div class="blueprint-scope-grid">
+            <div class="blueprint-scope-box">
+              <span class="blueprint-scope-box__label">1st Incourse</span>
+              <span class="blueprint-scope-box__val">${escapeHtml(bp.incourse1Scope)}</span>
+            </div>
+            <div class="blueprint-scope-box">
+              <span class="blueprint-scope-box__label">2nd Incourse</span>
+              <span class="blueprint-scope-box__val">${escapeHtml(bp.incourse2Scope)}</span>
+            </div>
+            <div class="blueprint-scope-box">
+              <span class="blueprint-scope-box__label">Year Final</span>
+              <span class="blueprint-scope-box__val">${escapeHtml(bp.finalScope)}</span>
+            </div>
+          </div>
+          <div class="blueprint-columns">
+            <div>
+              <h3 class="blueprint-subhead">Signature Exam Archetypes (★★★)</h3>
+              <ul class="blueprint-list">
+                ${bp.signaturePatterns.map((p) => `<li>${escapeHtml(p)}</li>`).join('\n')}
+              </ul>
+            </div>
+            <div>
+              <h3 class="blueprint-subhead">Classic ISRT Traps</h3>
+              <ul class="blueprint-list">
+                ${bp.classicTraps.map((t) => `<li>${escapeHtml(t)}</li>`).join('\n')}
+              </ul>
+            </div>
+          </div>
+          <div class="blueprint-timesaver">
+            <strong>Time-Saver Note:</strong> ${escapeHtml(bp.timeSavers)} &mdash; <a href="${root}${c.url}">Open ${escapeHtml(c.code)} syllabus &rarr;</a>
+          </div>
+        </div>
+      </details>`;
+    })
+    .join('\n');
+
+  const bodyContent = `
+  <main id="main-content" class="page-container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="${root}index.html">Home</a>
+      <span class="breadcrumb__sep" aria-hidden="true">/</span>
+      <span class="breadcrumb__current" aria-current="page">Exam Prep</span>
+    </nav>
+
+    <header class="editorial-header">
+      <span class="editorial-header__eyebrow">EMPIRICAL PAST-PAPER ANALYSIS &middot; 2017–2025</span>
+      <h1>ISRT Exam Pattern &amp; Priority Guide</h1>
+      <p class="editorial-header__lead">
+        Synthesized directly from ISRT 1st Incourse, 2nd Incourse, and Year Final examination papers alongside Batch-32 course materials. Every lesson and every section unit across the archive carries an empirical <strong>★</strong>, <strong>★★</strong>, or <strong>★★★</strong> importance rating.
+      </p>
+    </header>
+
+    <section class="exam-arch-grid" aria-label="Official ISRT exam structure">
+      <div class="exam-arch-card">
+        <div class="exam-arch-card__kicker">INCOURSE EXAMS (2 &times; 25 MARKS)</div>
+        <h2 class="exam-arch-card__title">1st &amp; 2nd Incourses</h2>
+        <p>${escapeHtml(EXAM_ARCHITECTURE.incourse.summary)}</p>
+      </div>
+      <div class="exam-arch-card">
+        <div class="exam-arch-card__kicker">YEAR FINAL (70 MARKS &middot; 3–4 HRS)</div>
+        <h2 class="exam-arch-card__title">Compulsory Q1 + Any 5 of 7</h2>
+        <p>${escapeHtml(EXAM_ARCHITECTURE.yearFinal.summary)}</p>
+      </div>
+      <div class="exam-arch-card">
+        <div class="exam-arch-card__kicker">EMPIRICAL UNIT RATING KEY</div>
+        <h2 class="exam-arch-card__title">How to Read ★ Badges</h2>
+        <p>
+          <strong style="color:var(--color-ochre-text)">★★★ High-yield (${count3} lessons):</strong> Tested almost every year; master all proofs &amp; drills.<br>
+          <strong style="color:var(--color-accent)">★★ Regular (${count2} lessons):</strong> Rotated core topics.<br>
+          <strong>★ Low-yield (${count1} lessons + 78 sub-units):</strong> Rarely or never asked on written Finals; study last.
+        </p>
+      </div>
+    </section>
+
+    <div class="callout callout--note" style="margin-top:0;margin-bottom:var(--space-6)">
+      <div class="callout__title">Note on Lab &amp; Programming Finals (CSE130 &amp; CSE131)</div>
+      <p style="margin:0">${escapeHtml(EXAM_ARCHITECTURE.ancillaryNote)}</p>
+    </div>
+
+    <section aria-labelledby="blueprintsHeading" style="margin-bottom:var(--space-7)">
+      <div class="section-heading">
+        <h2 id="blueprintsHeading">Course-by-Course Exam Blueprints &amp; Trap Checklists</h2>
+        <span class="section-heading__meta">Click any course to expand</span>
+      </div>
+      ${blueprintsAccordionHtml}
+    </section>
+
+    <section aria-labelledby="matrixHeading">
+      <div class="section-heading">
+        <h2 id="matrixHeading">Interactive Priority &amp; Exam-Scope Planner</h2>
+        <span class="section-heading__meta">Tracks your live completion status</span>
+      </div>
+
+      <div class="exam-controls-panel" role="region" aria-label="Filter lessons for exam revision">
+        <div class="exam-filter-row" id="examScopeFilters" role="group" aria-label="Filter by exam">
+          <span class="exam-filter-row__label">Target Exam:</span>
+          <button type="button" class="filter-chip" data-val="all" aria-pressed="true">All Exams</button>
+          <button type="button" class="filter-chip" data-val="inc1" aria-pressed="false">1st Incourse</button>
+          <button type="button" class="filter-chip" data-val="inc2" aria-pressed="false">2nd Incourse</button>
+          <button type="button" class="filter-chip" data-val="final" aria-pressed="false">Year Final</button>
+        </div>
+        <div class="exam-filter-row" id="examStarFilters" role="group" aria-label="Filter by star importance">
+          <span class="exam-filter-row__label">Importance:</span>
+          <button type="button" class="filter-chip" data-val="all" aria-pressed="true">All Ratings (${flatLessons.length})</button>
+          <button type="button" class="filter-chip" data-val="3" aria-pressed="false">★★★ High-yield (${count3})</button>
+          <button type="button" class="filter-chip" data-val="2" aria-pressed="false">★★ Regular (${count2})</button>
+          <button type="button" class="filter-chip" data-val="1" aria-pressed="false">★ Low-yield (${count1})</button>
+        </div>
+        <div class="exam-filter-row" id="examCourseFilters" role="group" aria-label="Filter by course">
+          <span class="exam-filter-row__label">Course:</span>
+          <button type="button" class="filter-chip" data-val="all" aria-pressed="true">All 7 Courses</button>
+          ${courseChips}
+        </div>
+      </div>
+
+      <p id="examResultsCount" class="exam-results-count" role="status" aria-live="polite">Showing ${flatLessons.length} of ${flatLessons.length} lessons</p>
+      <ol class="lesson-list">
+        ${masterRowsHtml}
+      </ol>
+      <p id="examFilterEmpty" class="panel-card__meta" hidden>No lessons match this combination of exam, rating, and course filters.</p>
+    </section>
+  </main>`;
+
+  const html = renderPageShell({
+    root,
+    pageType: 'exam-prep',
+    title: `Exam Prep & Question Patterns — ${SITE_NAME}`,
+    description:
+      'Empirical ISRT 1st Incourse, 2nd Incourse, and Year Final question patterns (2017–2025) with ★ / ★★ / ★★★ priority filters across all 7 IASDS courses.',
+    activeNav: 'exam-prep',
+    bodyContent,
+  });
+
+  const outPath = path.join(DIST_DIR, 'exam-prep', 'index.html');
+  ensureDir(path.dirname(outPath));
+  fs.writeFileSync(outPath, html, 'utf8');
 }
 
 /* ---------- Render Search Page ---------- */
@@ -1233,6 +1586,7 @@ function buildAboutPage(courses, totalLessons) {
       <h2 id="navGuideHeading">Navigation &amp; Reading Tools</h2>
       <ul>
         <li><strong>Three-column study layout:</strong> Browse lessons in the collapsible left sidebar, read and run interactive laboratories in the center column, and jump between sections using the sticky right-hand table of contents.</li>
+        <li><strong>Empirical ★ exam importance badges:</strong> Every lesson and every section heading is rated <strong>★★★</strong> (high-yield exam staple), <strong>★★</strong> (regular core topic), or <strong>★</strong> (low-yield supplementary unit) based on 2017–2025 ISRT Incourse and Year Final papers. Visit the <a href="${root}exam-prep/index.html">Exam Prep Hub</a> to filter topics by exam.</li>
         <li><strong>Reading controls:</strong> Click the typography button in the top bar on any lesson to adjust font size (3 steps), line spacing, or enter <em>Focus mode</em> to hide both sidebars.</li>
         <li><strong>Section bookmarks:</strong> Click the bookmark icon beside any lesson heading to pin key proofs, formulas, or exam questions to your <em>Saved sections</em> list on the Home page.</li>
         <li><strong>Print-ready lessons:</strong> Use your browser’s Print dialog or the <em>Print lesson</em> button; navigation bars drop out automatically for clean paper notes.</li>
@@ -1339,9 +1693,10 @@ export function buildSite() {
     }
   }
 
-  // Build Home, Course, Search, About, and 404 pages
+  // Build Home, Course, Exam Prep, Search, About, and 404 pages
   buildHomePage(courses, flatLessons.length);
   buildCoursePages(courses);
+  buildExamPrepPage(courses, flatLessons);
   buildSearchPage(courses, flatLessons.length);
   buildAboutPage(courses, flatLessons.length);
   build404Page();
@@ -1365,6 +1720,9 @@ export function buildSite() {
       lessonNumber: l.lessonNumber,
       title: l.title,
       url: l.url,
+      stars: l.stars,
+      scopes: l.scopes,
+      frequencyTag: l.frequencyTag,
       headings: l.headings,
       text: l.searchText,
     })),
@@ -1394,6 +1752,10 @@ export function buildSite() {
         url: l.url,
         sourceFile: l.sourceFile,
         readingMinutes: l.readingMinutes,
+        stars: l.stars,
+        scopes: l.scopes,
+        frequencyTag: l.frequencyTag,
+        highYieldUnits: l.highYieldUnits,
         usesKatex: l.usesKatex,
         usesTailwind: l.usesTailwind,
       })),

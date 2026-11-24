@@ -40,7 +40,7 @@ function readableMathText(str) {
 
 function getCleanHeadingText(el) {
   const clone = el.cloneNode(true);
-  clone.querySelectorAll('.heading-bookmark-btn, .katex-mathml').forEach((n) => n.remove());
+  clone.querySelectorAll('.heading-bookmark-btn, .unit-star-badge, .katex-mathml').forEach((n) => n.remove());
   return readableMathText(clone.textContent || '');
 }
 
@@ -115,7 +115,9 @@ export function initLessonToc(lessonMeta, onNotify) {
     h.id = id;
 
     const level = h.tagName.toLowerCase(); // 'h2' or 'h3'
-    items.push({ el: h, id, text, level });
+    const stars = Number(h.dataset.examStars || 0);
+    const reason = h.dataset.examReason || '';
+    items.push({ el: h, id, text, level, stars, reason });
 
     // Attach bookmark button to every section heading
     if (!h.querySelector('.heading-bookmark-btn')) {
@@ -163,8 +165,21 @@ export function initLessonToc(lessonMeta, onNotify) {
       const a = document.createElement('a');
       a.className = 'toc-link';
       a.href = `#${item.id}`;
-      a.textContent = item.text;
       a.dataset.tocId = item.id;
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'toc-link__text';
+      textSpan.textContent = item.text;
+      a.appendChild(textSpan);
+
+      if (item.stars >= 1 && item.stars <= 3) {
+        const starSpan = document.createElement('span');
+        starSpan.className = `toc-star toc-star--${item.stars}`;
+        starSpan.textContent = '★'.repeat(item.stars);
+        if (item.reason) starSpan.title = item.reason;
+        starSpan.setAttribute('aria-label', `${item.stars} of 3 stars exam importance`);
+        a.appendChild(starSpan);
+      }
       a.addEventListener('click', () => {
         if (closeMobileDetails && mobileTocWrap) {
           mobileTocWrap.open = false;

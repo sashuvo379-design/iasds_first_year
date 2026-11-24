@@ -433,13 +433,95 @@ function initCoursePage() {
       });
       let visible = 0;
       for (const row of rows) {
-        const show = filter === 'all' || row.dataset.status === filter;
+        let show = true;
+        if (filter === 'stars-3') {
+          show = row.dataset.stars === '3';
+        } else if (filter.startsWith('scope-')) {
+          const targetScope = filter.slice(6);
+          const scopes = (row.dataset.scopes || '').split(',');
+          show = scopes.includes(targetScope);
+        } else if (filter !== 'all') {
+          show = row.dataset.status === filter;
+        }
         row.hidden = !show;
         if (show) visible++;
       }
       if (emptyMsg) emptyMsg.hidden = visible > 0;
     });
   }
+}
+
+/* ---------- Exam Prep Hub Hydration ---------- */
+function initExamPrepPage() {
+  const rows = Array.from(document.querySelectorAll('[data-exam-lesson-row]'));
+  const countEl = document.getElementById('examResultsCount');
+  const emptyEl = document.getElementById('examFilterEmpty');
+
+  for (const row of rows) {
+    const id = row.dataset.lessonId;
+    const status = getLessonStatus(id);
+    row.dataset.status = status;
+    const badge = row.querySelector('[data-status-badge]');
+    if (badge) {
+      badge.dataset.status = status;
+      if (status === 'completed') {
+        badge.innerHTML = `${ICONS.checkCircle}<span>Completed</span>`;
+      } else if (status === 'in-progress') {
+        badge.innerHTML = `${ICONS.clock}<span>In progress</span>`;
+      } else {
+        badge.innerHTML = `${ICONS.circle}<span>Not started</span>`;
+      }
+    }
+  }
+
+  let activeScope = 'all';
+  let activeStars = 'all';
+  let activeCourse = 'all';
+
+  const applyFilters = () => {
+    let visible = 0;
+    for (const row of rows) {
+      const scopes = (row.dataset.scopes || '').split(',');
+      const matchScope = activeScope === 'all' || scopes.includes(activeScope);
+      const matchStars = activeStars === 'all' || row.dataset.stars === activeStars;
+      const matchCourse = activeCourse === 'all' || row.dataset.course === activeCourse;
+      const show = matchScope && matchStars && matchCourse;
+      row.hidden = !show;
+      if (show) visible++;
+    }
+    if (countEl) {
+      countEl.textContent = `Showing ${visible} of ${rows.length} lessons`;
+    }
+    if (emptyEl) {
+      emptyEl.hidden = visible > 0;
+    }
+  };
+
+  const bindGroup = (groupId, setter) => {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    group.addEventListener('click', (ev) => {
+      const chip = ev.target.closest('.filter-chip');
+      if (!chip) return;
+      group.querySelectorAll('.filter-chip').forEach((c) => {
+        c.setAttribute('aria-pressed', c === chip ? 'true' : 'false');
+      });
+      setter(chip.dataset.val || 'all');
+      applyFilters();
+    });
+  };
+
+  bindGroup('examScopeFilters', (val) => {
+    activeScope = val;
+  });
+  bindGroup('examStarFilters', (val) => {
+    activeStars = val;
+  });
+  bindGroup('examCourseFilters', (val) => {
+    activeCourse = val;
+  });
+
+  applyFilters();
 }
 
 /* ---------- Lesson Page Hydration ---------- */
@@ -619,6 +701,8 @@ function boot() {
     initHomePage();
   } else if (pageType === 'course') {
     initCoursePage();
+  } else if (pageType === 'exam-prep') {
+    initExamPrepPage();
   } else if (pageType === 'lesson') {
     lessonActions = initLessonPage();
   } else if (pageType === 'search') {

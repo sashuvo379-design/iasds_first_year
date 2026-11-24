@@ -34,6 +34,8 @@ npm run check
 │   ├── build.mjs                 # Static site generator & search indexer
 │   ├── dev.mjs                   # Local HTTP server + file watcher + live reload
 │   ├── check.mjs                 # HTML, link, manifest & search index validator
+│   ├── data/
+│   │   └── exam-intelligence.mjs # Empirical 2017–2025 ISRT exam blueprints & ★ unit ratings
 │   ├── assets/favicon.svg        # Site SVG emblem
 │   ├── css/
 │   │   ├── themes.css            # Light (Warm Paper) & Dark (Charcoal-Slate) tokens
