@@ -917,8 +917,8 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
 
   const headParts = [];
   if (usesTailwind) {
-    headParts.push(`<script src="${root}js/tw-config.js"></script>`);
     headParts.push(`<script src="https://cdn.tailwindcss.com"></script>`);
+    headParts.push(`<script src="${root}js/tw-config.js"></script>`);
   }
   if (needsKatex) {
     headParts.push(
