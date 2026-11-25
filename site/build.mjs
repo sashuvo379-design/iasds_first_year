@@ -47,6 +47,9 @@ const SVG = {
   circle: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>',
   chevronDown: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
   printer: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>',
+  layers: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>',
+  target: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  sliders: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>',
 };
 
 /* ---------- Utilities ---------- */
@@ -1038,24 +1041,46 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
   lesson.searchText = plainText.slice(0, 12000); // Plenty for full-text search while keeping JSON fast
 }
 
-/* ---------- Render Home Page ---------- */
+/* ---------- Course Content Inventory Tags (for Homepage Catalog Map) ---------- */
+const COURSE_INVENTORY_TAGS = {
+  AST101: ['Notes', 'Calculators', 'Proofs', 'PYQs', 'MCQs'],
+  AST102: ['Notes', '4-Tab Labs', 'Proofs', 'PYQs', 'Quizzes'],
+  MATH103: ['Groups A–C', 'Visualizers', 'Solvers', 'PYQs', 'Quizzes'],
+  MATH104: ['Sandboxes', 'Notes', 'Examples', 'PYQs', 'Quizzes'],
+  MATH105: ['2D/3D Labs', 'Trap Alerts', 'PYQs', 'Quizzes'],
+  MATH106: ['2D/3D Labs', 'Solvers', 'T/F & PYQs'],
+  ECON107: ['Notes', 'Graph Labs', 'Solvers', 'PYQs', 'Quizzes'],
+};
+
+/* ---------- Render Home Page (Clean Dashboard + Complete Archive Catalog) ---------- */
 function buildHomePage(courses, totalLessons) {
-  const totalHighYield = courses.reduce(
+  const totalHighYieldLessons = courses.reduce(
     (sum, c) => sum + c.lessons.filter((l) => l.stars === 3).length,
     0
   );
+  const totalUnits = courses.reduce(
+    (sum, c) => sum + c.lessons.reduce((s, l) => s + l.headings.length, 0),
+    0
+  );
+  const totalCredits = courses.reduce(
+    (sum, c) => sum + ((COURSE_BLUEPRINTS[c.code] && COURSE_BLUEPRINTS[c.code].credits) || 0),
+    0
+  );
+
+  // 1. Clean Dashboard Course Cards — Headline + Metrics + Progress ONLY (zero prose paragraphs)
   const cardsHtml = courses
     .map((c) => {
       const lessonIds = c.lessons.map((l) => l.id).join(',');
       const highYieldCount = c.lessons.filter((l) => l.stars === 3).length;
+      const bp = COURSE_BLUEPRINTS[c.code];
+      const crLabel = bp ? `${bp.credits} Cr &middot; ` : '';
       return `
       <a class="course-card" href="${c.url}" data-course-card data-lesson-ids="${lessonIds}">
         <div class="course-card__top">
           <span class="course-code">${escapeHtml(c.code)}</span>
-          <span class="course-card__count">${c.lessons.length} lessons &middot; <strong style="color:var(--color-ochre-text)">${highYieldCount} ★★★</strong></span>
+          <span class="course-card__count">${crLabel}${c.lessons.length} lessons &middot; <strong class="course-card__stars">${highYieldCount} ★★★</strong></span>
         </div>
         <h3 class="course-card__title">${escapeHtml(c.name)}</h3>
-        <p class="course-card__desc">${escapeHtml(c.summary)}</p>
         <div class="course-card__footer">
           <div class="progress-meta">
             <span data-course-progress-text>0 of ${c.lessons.length} completed</span>
@@ -1069,33 +1094,127 @@ function buildHomePage(courses, totalLessons) {
     })
     .join('\n');
 
+  // 2. Structured Archive Summary Matrix (maps every course's contents at a glance)
+  const matrixRowsHtml = courses
+    .map((c) => {
+      const bp = COURSE_BLUEPRINTS[c.code];
+      const units = c.lessons.reduce((s, l) => s + l.headings.length, 0);
+      const hyUnits = c.lessons.reduce((s, l) => s + (l.highYieldUnits || 0), 0);
+      const tags = COURSE_INVENTORY_TAGS[c.code] || ['Lectures', 'Interactive Labs', 'PYQs'];
+      return `
+      <tr>
+        <td><a class="catalog-matrix__code" href="#catalog-${escapeHtml(c.slug)}"><span class="course-code">${escapeHtml(c.code)}</span></a></td>
+        <td><a class="catalog-matrix__course-link" href="${c.url}">${escapeHtml(c.name)}</a></td>
+        <td class="catalog-matrix__num">${bp ? bp.credits : '&mdash;'}</td>
+        <td class="catalog-matrix__num">${c.lessons.length}</td>
+        <td class="catalog-matrix__num">${units}</td>
+        <td class="catalog-matrix__num catalog-matrix__hy">${hyUnits} ★★★</td>
+        <td>
+          <div class="catalog-tag-list">
+            ${tags.map((t) => `<span class="scope-pill">${escapeHtml(t)}</span>`).join('')}
+          </div>
+        </td>
+      </tr>`;
+    })
+    .join('\n');
+
+  // 3. Complete 98-Lesson Master Catalog (organized by course, headline + ★ badge only)
+  const catalogFilterChipsHtml = courses
+    .map(
+      (c) =>
+        `<button type="button" class="filter-chip" data-catalog-filter="${escapeHtml(c.code)}" aria-pressed="false">${escapeHtml(c.code)} (${c.lessons.length})</button>`
+    )
+    .join('\n          ');
+
+  const catalogGroupsHtml = courses
+    .map((c) => {
+      const bp = COURSE_BLUEPRINTS[c.code];
+      const highYieldCount = c.lessons.filter((l) => l.stars === 3).length;
+      const itemsHtml = c.lessons
+        .map((l) => {
+          const glyph = '★'.repeat(l.stars);
+          return `
+          <li class="catalog-item" data-catalog-item data-lesson-id="${escapeHtml(l.id)}" data-stars="${l.stars}" data-status="not-started">
+            <a class="catalog-item__link" href="${l.url}">
+              <span class="catalog-item__status" data-catalog-status-icon aria-hidden="true">${SVG.circle}</span>
+              <span class="catalog-item__num">${String(l.lessonNumber).padStart(2, '0')}</span>
+              <span class="catalog-item__title">${escapeHtml(l.title)}</span>
+              ${l.group ? `<span class="scope-pill scope-pill--group catalog-item__group">${escapeHtml(l.group.replace('Group ', 'G-'))}</span>` : ''}
+              <span class="star-badge star-badge--${l.stars} catalog-item__star" aria-label="${l.stars} of 3 stars">${glyph}</span>
+            </a>
+          </li>`;
+        })
+        .join('\n');
+
+      return `
+      <details id="catalog-${escapeHtml(c.slug)}" class="catalog-group" data-catalog-group="${escapeHtml(c.code)}" open>
+        <summary class="catalog-group__summary">
+          <div class="catalog-group__left">
+            <span class="course-code">${escapeHtml(c.code)}</span>
+            <span class="catalog-group__title">${escapeHtml(c.name)}</span>
+          </div>
+          <div class="catalog-group__right">
+            ${bp ? `<span class="scope-pill">${bp.credits} Cr &middot; Final ${bp.finalDuration}</span>` : ''}
+            <span class="scope-pill">${c.lessons.length} Lessons &middot; ${highYieldCount} ★★★</span>
+            <span class="catalog-group__chevron" aria-hidden="true">${SVG.chevronDown}</span>
+          </div>
+        </summary>
+        <div class="catalog-group__body">
+          <div class="catalog-group__bar">
+            <div class="catalog-group__scopes">
+              ${
+                bp
+                  ? `<span class="scope-pill">1st Inc: ${escapeHtml(bp.incourse1Scope.replace(/\s*\(.*?\)/g, ''))}</span>
+                     <span class="scope-pill">2nd Inc: ${escapeHtml(bp.incourse2Scope.replace(/\s*\(.*?\)/g, ''))}</span>`
+                  : ''
+              }
+            </div>
+            <a class="catalog-group__open" href="${c.url}">Open ${escapeHtml(c.code)} page &rarr;</a>
+          </div>
+          <ol class="catalog-grid">
+            ${itemsHtml}
+          </ol>
+        </div>
+      </details>`;
+    })
+    .join('\n');
+
   const bodyContent = `
   <main id="main-content" class="page-container">
-    <header class="editorial-header">
-      <span class="editorial-header__eyebrow">ISRT &middot; UNIVERSITY OF DHAKA &middot; YEAR 1</span>
-      <h1>Applied Statistics &amp; Data Science</h1>
-      <p class="editorial-header__lead">
-        A calm, self-contained academic study archive covering all seven first-year IASDS courses—complete with interactive laboratories, proofs, worked past-exam vaults, and empirical <strong>★ / ★★ / ★★★</strong> unit importance ratings from 2017–2025 ISRT papers.
-      </p>
+    <header class="editorial-header editorial-header--dashboard">
+      <div class="dashboard-title-row">
+        <div>
+          <span class="editorial-header__eyebrow">ISRT &middot; UNIVERSITY OF DHAKA &middot; YEAR 1</span>
+          <h1>Applied Statistics &amp; Data Science</h1>
+        </div>
+      </div>
 
-      <div class="progress-summary" aria-label="Overall study progress">
+      <div class="progress-summary" aria-label="Archive summary and study progress">
         <div class="progress-summary__stats">
           <div>
             <span class="stat-item__value">${courses.length}</span>
-            <span class="stat-item__label">Core courses</span>
+            <span class="stat-item__label">Courses (${totalCredits} Cr)</span>
+          </div>
+          <div>
+            <span class="stat-item__value">${totalLessons}</span>
+            <span class="stat-item__label">Lessons</span>
+          </div>
+          <div>
+            <span class="stat-item__value">${totalUnits.toLocaleString('en-US')}</span>
+            <span class="stat-item__label">Topic units</span>
+          </div>
+          <div>
+            <span class="stat-item__value">${totalHighYieldLessons}</span>
+            <span class="stat-item__label">★★★ High-yield</span>
           </div>
           <div>
             <span class="stat-item__value" id="overallCompletedCount">0 / ${totalLessons}</span>
-            <span class="stat-item__label">Lessons completed</span>
-          </div>
-          <div>
-            <span class="stat-item__value">${totalHighYield}</span>
-            <span class="stat-item__label">★★★ High-yield lessons</span>
+            <span class="stat-item__label">Completed</span>
           </div>
         </div>
         <div class="progress-summary__bar-wrap">
           <div class="progress-meta">
-            <span>Overall curriculum progress</span>
+            <span>Overall progress</span>
             <span id="overallProgressPct">0%</span>
           </div>
           <div class="progress-track">
@@ -1104,15 +1223,6 @@ function buildHomePage(courses, totalLessons) {
         </div>
       </div>
     </header>
-
-    <section class="home-exam-banner" aria-label="ISRT Exam Preparation Hub">
-      <div>
-        <span class="home-exam-banner__eyebrow">PAST-PAPER INTELLIGENCE &middot; 1ST INCOURSE, 2ND INCOURSE &amp; YEAR FINAL</span>
-        <h2 class="home-exam-banner__title">Prepare Strategically with ISRT Question Patterns (2017–2025)</h2>
-        <p class="home-exam-banner__desc">Filter all ${totalLessons} lessons by 1st Incourse, 2nd Incourse, or Year Final, inspect <strong>★★★</strong> recurring proofs and classic Q1 traps, and spot <strong>★</strong> low-yield sections before exam week.</p>
-      </div>
-      <a class="btn btn--primary" href="exam-prep/index.html">Open Exam Prep Hub ${SVG.arrowRight}</a>
-    </section>
 
     <section id="homeUtilityGrid" class="home-utility-grid" aria-label="Resume and saved sections" hidden>
       <div id="continueCard" class="panel-card" hidden>
@@ -1128,13 +1238,81 @@ function buildHomePage(courses, totalLessons) {
       </div>
     </section>
 
-    <section aria-labelledby="coursesHeading">
+    <section class="home-section" aria-labelledby="portalMapHeading">
       <div class="section-heading">
-        <h2 id="coursesHeading">First-Year Courses</h2>
-        <span class="section-heading__meta">${totalLessons} interactive lessons</span>
+        <h2 id="portalMapHeading">Portal Directory</h2>
+      </div>
+      <nav class="portal-map-grid" aria-label="Website sections">
+        <a class="portal-tile" href="#coursesHeading">
+          <span class="portal-tile__icon">${SVG.layers}</span>
+          <span class="portal-tile__title">Courses</span>
+          <span class="scope-pill">${courses.length}</span>
+        </a>
+        <a class="portal-tile" href="exam-prep/index.html">
+          <span class="portal-tile__icon">${SVG.target}</span>
+          <span class="portal-tile__title">Exam Prep &amp; Patterns</span>
+          <span class="star-badge star-badge--3">★★★</span>
+        </a>
+        <a class="portal-tile" href="search/index.html">
+          <span class="portal-tile__icon">${SVG.search}</span>
+          <span class="portal-tile__title">Full-Text Search</span>
+          <kbd>/</kbd>
+        </a>
+        <a class="portal-tile" href="about/index.html">
+          <span class="portal-tile__icon">${SVG.sliders}</span>
+          <span class="portal-tile__title">Guide &amp; Controls</span>
+          <kbd>?</kbd>
+        </a>
+      </nav>
+    </section>
+
+    <section class="home-section" aria-labelledby="coursesHeading">
+      <div class="section-heading">
+        <h2 id="coursesHeading">Courses</h2>
       </div>
       <div class="course-grid">
         ${cardsHtml}
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="inventoryHeading">
+      <div class="section-heading">
+        <h2 id="inventoryHeading">Archive Summary Map</h2>
+      </div>
+      <div class="catalog-matrix-wrap">
+        <table class="info-table catalog-matrix">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Course</th>
+              <th>Cr</th>
+              <th>Lessons</th>
+              <th>Units</th>
+              <th>High-Yield</th>
+              <th>Carried Modules</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${matrixRowsHtml}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="home-section" aria-labelledby="catalogHeading">
+      <div class="section-heading">
+        <h2 id="catalogHeading">Lesson Catalog</h2>
+        <button type="button" id="catalogToggleAllBtn" class="btn btn--secondary btn--sm" data-expanded="true">Collapse all</button>
+      </div>
+
+      <div id="catalogFilterBar" class="filter-bar" role="group" aria-label="Filter catalog">
+        <button type="button" class="filter-chip" data-catalog-filter="all" aria-pressed="true">All (${totalLessons})</button>
+        <button type="button" class="filter-chip" data-catalog-filter="stars-3" aria-pressed="false">★★★ High-yield (${totalHighYieldLessons})</button>
+        ${catalogFilterChipsHtml}
+      </div>
+
+      <div id="catalogContainer" class="catalog-stack">
+        ${catalogGroupsHtml}
       </div>
     </section>
   </main>`;
@@ -1143,7 +1321,7 @@ function buildHomePage(courses, totalLessons) {
     root: './',
     pageType: 'home',
     title: `${SITE_NAME} — Applied Statistics & Data Science`,
-    description: `Complete first-year learning portal for Applied Statistics and Data Science (${courses.length} courses, ${totalLessons} interactive lessons).`,
+    description: `First-year IASDS dashboard and curriculum catalog (${courses.length} courses, ${totalLessons} lessons, ${totalUnits} topic units).`,
     activeNav: 'home',
     bodyContent,
     includeReset: true,
@@ -1173,9 +1351,8 @@ function buildCoursePages(courses) {
                 <span class="star-badge star-badge--${l.stars}" title="${escapeHtml(sMeta.description)}">${sMeta.glyph} ${escapeHtml(sMeta.shortLabel)}</span>
                 ${l.group ? `<span class="scope-pill scope-pill--group">${escapeHtml(l.group)}</span>` : ''}
                 ${(l.scopes || []).map((s) => `<span class="scope-pill">${escapeHtml(SCOPE_LABELS[s] || s)}</span>`).join('')}
-                <span class="lesson-row__meta" style="display:inline;margin:0">${l.readingMinutes} min &middot; ${l.headings.length} units (${l.highYieldUnits} ★★★)</span>
+                <span class="lesson-row__meta" style="display:inline;margin:0">${l.readingMinutes} min &middot; ${l.headings.length} units</span>
               </span>
-              ${l.examSummary ? `<span class="lesson-row__exam-note">${escapeHtml(l.examSummary)}</span>` : ''}
             </span>
             <span class="lesson-row__status">
               <span class="status-badge" data-status-badge data-status="not-started">
@@ -1188,7 +1365,7 @@ function buildCoursePages(courses) {
       .join('\n');
 
     const blueprintHtml = bp
-      ? `<details class="course-blueprint" open>
+      ? `<details class="course-blueprint">
           <summary class="course-blueprint__summary">
             <div class="course-blueprint__title-wrap">
               <span class="course-code">EXAM PATTERN</span>
@@ -1262,7 +1439,6 @@ function buildCoursePages(courses) {
       <header class="editorial-header">
         <span class="editorial-header__eyebrow">${escapeHtml(course.code)} &middot; ${course.lessons.length} LESSONS &middot; ${highYieldCount} ★★★ HIGH-YIELD</span>
         <h1>${escapeHtml(course.name)}</h1>
-        <p class="editorial-header__lead">${escapeHtml(course.summary)}</p>
 
         <div class="progress-summary">
           <div class="progress-summary__bar-wrap">

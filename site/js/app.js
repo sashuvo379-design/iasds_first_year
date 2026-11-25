@@ -385,6 +385,107 @@ function initHomePage() {
     utilityGrid.hidden = visiblePanels === 0 && !hasSaved;
     utilityGrid.classList.toggle('home-utility-grid--both', visiblePanels > 0 && hasSaved);
   }
+
+  // Hydrate Complete Lesson Catalog live completion icons & filters
+  const catalogItems = Array.from(document.querySelectorAll('[data-catalog-item]'));
+  for (const item of catalogItems) {
+    const status = getLessonStatus(item.dataset.lessonId);
+    item.dataset.status = status;
+    const iconSlot = item.querySelector('[data-catalog-status-icon]');
+    if (iconSlot) {
+      iconSlot.innerHTML =
+        status === 'completed' ? ICONS.checkCircle : status === 'in-progress' ? ICONS.clock : ICONS.circle;
+    }
+  }
+
+  const catalogGroups = Array.from(document.querySelectorAll('[data-catalog-group]'));
+  const toggleAllBtn = document.getElementById('catalogToggleAllBtn');
+  const syncToggleBtn = () => {
+    if (!toggleAllBtn) return;
+    const visibleGroups = catalogGroups.filter((g) => !g.hidden);
+    const anyOpen = visibleGroups.some((g) => g.open);
+    toggleAllBtn.dataset.expanded = anyOpen ? 'true' : 'false';
+    toggleAllBtn.textContent = anyOpen ? 'Collapse all' : 'Expand all';
+  };
+
+  if (toggleAllBtn) {
+    toggleAllBtn.addEventListener('click', () => {
+      const willOpen = toggleAllBtn.dataset.expanded !== 'true';
+      for (const g of catalogGroups) {
+        if (!g.hidden) g.open = willOpen;
+      }
+      syncToggleBtn();
+    });
+  }
+
+  for (const g of catalogGroups) {
+    g.addEventListener('toggle', syncToggleBtn);
+  }
+
+  const catalogFilterBar = document.getElementById('catalogFilterBar');
+  const applyCatalogFilter = (filterVal) => {
+    for (const group of catalogGroups) {
+      const code = group.dataset.catalogGroup;
+      const groupItems = Array.from(group.querySelectorAll('[data-catalog-item]'));
+      if (filterVal === 'all') {
+        group.hidden = false;
+        groupItems.forEach((it) => {
+          it.hidden = false;
+        });
+      } else if (filterVal === 'stars-3') {
+        let count = 0;
+        for (const it of groupItems) {
+          const show = it.dataset.stars === '3';
+          it.hidden = !show;
+          if (show) count++;
+        }
+        group.hidden = count === 0;
+        if (count > 0) group.open = true;
+      } else {
+        const matchCourse = code === filterVal;
+        group.hidden = !matchCourse;
+        if (matchCourse) {
+          group.open = true;
+          groupItems.forEach((it) => {
+            it.hidden = false;
+          });
+        }
+      }
+    }
+    syncToggleBtn();
+  };
+
+  if (catalogFilterBar) {
+    catalogFilterBar.addEventListener('click', (ev) => {
+      const chip = ev.target.closest('.filter-chip');
+      if (!chip) return;
+      catalogFilterBar.querySelectorAll('.filter-chip').forEach((c) => {
+        c.setAttribute('aria-pressed', c === chip ? 'true' : 'false');
+      });
+      applyCatalogFilter(chip.dataset.catalogFilter || 'all');
+    });
+  }
+
+  // Matrix table course-code jump links: unhide & open target catalog group before scrolling
+  document.querySelectorAll('.catalog-matrix__code').forEach((anchor) => {
+    anchor.addEventListener('click', () => {
+      if (catalogFilterBar) {
+        const allChip = catalogFilterBar.querySelector('[data-catalog-filter="all"]');
+        if (allChip) {
+          catalogFilterBar.querySelectorAll('.filter-chip').forEach((c) => {
+            c.setAttribute('aria-pressed', c === allChip ? 'true' : 'false');
+          });
+          applyCatalogFilter('all');
+        }
+      }
+      const targetId = (anchor.getAttribute('href') || '').slice(1);
+      const targetGroup = targetId ? document.getElementById(targetId) : null;
+      if (targetGroup && targetGroup.tagName.toLowerCase() === 'details') {
+        targetGroup.open = true;
+        syncToggleBtn();
+      }
+    });
+  });
 }
 
 /* ---------- Course Page Hydration ---------- */
