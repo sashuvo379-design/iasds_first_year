@@ -503,7 +503,7 @@ function renderHeader({ root, activeNav, isLesson }) {
         <nav class="site-nav" aria-label="Primary">
           <a class="site-nav__link" href="${root}index.html"${activeNav === 'home' ? ' aria-current="page"' : ''}>Courses</a>
           <a class="site-nav__link" href="${root}exam-prep/index.html"${activeNav === 'exam-prep' ? ' aria-current="page"' : ''}>Exam Prep</a>
-          <a class="site-nav__link" href="${root}search/index.html"${activeNav === 'search' ? ' aria-current="page"' : ''}>Search</a>
+          <a class="site-nav__link" href="${root}bookmarks/index.html"${activeNav === 'bookmarks' ? ' aria-current="page"' : ''}>Bookmarks</a>
           <a class="site-nav__link" href="${root}about/index.html"${activeNav === 'about' ? ' aria-current="page"' : ''}>About &amp; Guide</a>
         </nav>
       </div>
@@ -621,6 +621,7 @@ function renderFooter(root) {
       <nav class="site-footer__links" aria-label="Footer">
         <a href="${root}index.html">Courses</a>
         <a href="${root}exam-prep/index.html">Exam Prep</a>
+        <a href="${root}bookmarks/index.html">Bookmarks</a>
         <a href="${root}search/index.html">Search</a>
         <a href="${root}about/index.html">About &amp; Shortcuts</a>
       </nav>
@@ -1041,49 +1042,21 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
   lesson.searchText = plainText.slice(0, 12000); // Plenty for full-text search while keeping JSON fast
 }
 
-/* ---------- Course Content Inventory Tags (for Homepage Catalog Map) ---------- */
-const COURSE_INVENTORY_TAGS = {
-  AST101: ['Notes', 'Calculators', 'Proofs', 'PYQs', 'MCQs'],
-  AST102: ['Notes', '4-Tab Labs', 'Proofs', 'PYQs', 'Quizzes'],
-  MATH103: ['Groups A–C', 'Visualizers', 'Solvers', 'PYQs', 'Quizzes'],
-  MATH104: ['Sandboxes', 'Notes', 'Examples', 'PYQs', 'Quizzes'],
-  MATH105: ['2D/3D Labs', 'Trap Alerts', 'PYQs', 'Quizzes'],
-  MATH106: ['2D/3D Labs', 'Solvers', 'T/F & PYQs'],
-  ECON107: ['Notes', 'Graph Labs', 'Solvers', 'PYQs', 'Quizzes'],
-};
-
-/* ---------- Render Home Page (Clean Dashboard + Complete Archive Catalog) ---------- */
+/* ---------- Render Home Page (Minimal Doorway Dashboard) ---------- */
 function buildHomePage(courses, totalLessons) {
-  const totalHighYieldLessons = courses.reduce(
-    (sum, c) => sum + c.lessons.filter((l) => l.stars === 3).length,
-    0
-  );
-  const totalUnits = courses.reduce(
-    (sum, c) => sum + c.lessons.reduce((s, l) => s + l.headings.length, 0),
-    0
-  );
-  const totalCredits = courses.reduce(
-    (sum, c) => sum + ((COURSE_BLUEPRINTS[c.code] && COURSE_BLUEPRINTS[c.code].credits) || 0),
-    0
-  );
-
-  // 1. Clean Dashboard Course Cards — Headline + Metrics + Progress ONLY (zero prose paragraphs)
   const cardsHtml = courses
     .map((c) => {
       const lessonIds = c.lessons.map((l) => l.id).join(',');
-      const highYieldCount = c.lessons.filter((l) => l.stars === 3).length;
-      const bp = COURSE_BLUEPRINTS[c.code];
-      const crLabel = bp ? `${bp.credits} Cr &middot; ` : '';
       return `
       <a class="course-card" href="${c.url}" data-course-card data-lesson-ids="${lessonIds}">
         <div class="course-card__top">
           <span class="course-code">${escapeHtml(c.code)}</span>
-          <span class="course-card__count">${crLabel}${c.lessons.length} lessons &middot; <strong class="course-card__stars">${highYieldCount} ★★★</strong></span>
+          <span class="course-card__count">${c.lessons.length} lessons</span>
         </div>
         <h3 class="course-card__title">${escapeHtml(c.name)}</h3>
         <div class="course-card__footer">
           <div class="progress-meta">
-            <span data-course-progress-text>0 of ${c.lessons.length} completed</span>
+            <span data-course-progress-text>0 / ${c.lessons.length}</span>
             <span data-course-progress-pct>0%</span>
           </div>
           <div class="progress-track">
@@ -1094,118 +1067,21 @@ function buildHomePage(courses, totalLessons) {
     })
     .join('\n');
 
-  // 2. Structured Archive Summary Matrix (maps every course's contents at a glance)
-  const matrixRowsHtml = courses
-    .map((c) => {
-      const bp = COURSE_BLUEPRINTS[c.code];
-      const units = c.lessons.reduce((s, l) => s + l.headings.length, 0);
-      const hyUnits = c.lessons.reduce((s, l) => s + (l.highYieldUnits || 0), 0);
-      const tags = COURSE_INVENTORY_TAGS[c.code] || ['Lectures', 'Interactive Labs', 'PYQs'];
-      return `
-      <tr>
-        <td><a class="catalog-matrix__code" href="#catalog-${escapeHtml(c.slug)}"><span class="course-code">${escapeHtml(c.code)}</span></a></td>
-        <td><a class="catalog-matrix__course-link" href="${c.url}">${escapeHtml(c.name)}</a></td>
-        <td class="catalog-matrix__num">${bp ? bp.credits : '&mdash;'}</td>
-        <td class="catalog-matrix__num">${c.lessons.length}</td>
-        <td class="catalog-matrix__num">${units}</td>
-        <td class="catalog-matrix__num catalog-matrix__hy">${hyUnits} ★★★</td>
-        <td>
-          <div class="catalog-tag-list">
-            ${tags.map((t) => `<span class="scope-pill">${escapeHtml(t)}</span>`).join('')}
-          </div>
-        </td>
-      </tr>`;
-    })
-    .join('\n');
-
-  // 3. Complete 98-Lesson Master Catalog (organized by course, headline + ★ badge only)
-  const catalogFilterChipsHtml = courses
-    .map(
-      (c) =>
-        `<button type="button" class="filter-chip" data-catalog-filter="${escapeHtml(c.code)}" aria-pressed="false">${escapeHtml(c.code)} (${c.lessons.length})</button>`
-    )
-    .join('\n          ');
-
-  const catalogGroupsHtml = courses
-    .map((c) => {
-      const bp = COURSE_BLUEPRINTS[c.code];
-      const highYieldCount = c.lessons.filter((l) => l.stars === 3).length;
-      const itemsHtml = c.lessons
-        .map((l) => {
-          const glyph = '★'.repeat(l.stars);
-          return `
-          <li class="catalog-item" data-catalog-item data-lesson-id="${escapeHtml(l.id)}" data-stars="${l.stars}" data-status="not-started">
-            <a class="catalog-item__link" href="${l.url}">
-              <span class="catalog-item__status" data-catalog-status-icon aria-hidden="true">${SVG.circle}</span>
-              <span class="catalog-item__num">${String(l.lessonNumber).padStart(2, '0')}</span>
-              <span class="catalog-item__title">${escapeHtml(l.title)}</span>
-              ${l.group ? `<span class="scope-pill scope-pill--group catalog-item__group">${escapeHtml(l.group.replace('Group ', 'G-'))}</span>` : ''}
-              <span class="star-badge star-badge--${l.stars} catalog-item__star" aria-label="${l.stars} of 3 stars">${glyph}</span>
-            </a>
-          </li>`;
-        })
-        .join('\n');
-
-      return `
-      <details id="catalog-${escapeHtml(c.slug)}" class="catalog-group" data-catalog-group="${escapeHtml(c.code)}" open>
-        <summary class="catalog-group__summary">
-          <div class="catalog-group__left">
-            <span class="course-code">${escapeHtml(c.code)}</span>
-            <span class="catalog-group__title">${escapeHtml(c.name)}</span>
-          </div>
-          <div class="catalog-group__right">
-            ${bp ? `<span class="scope-pill">${bp.credits} Cr &middot; Final ${bp.finalDuration}</span>` : ''}
-            <span class="scope-pill">${c.lessons.length} Lessons &middot; ${highYieldCount} ★★★</span>
-            <span class="catalog-group__chevron" aria-hidden="true">${SVG.chevronDown}</span>
-          </div>
-        </summary>
-        <div class="catalog-group__body">
-          <div class="catalog-group__bar">
-            <div class="catalog-group__scopes">
-              ${
-                bp
-                  ? `<span class="scope-pill">1st Inc: ${escapeHtml(bp.incourse1Scope.replace(/\s*\(.*?\)/g, ''))}</span>
-                     <span class="scope-pill">2nd Inc: ${escapeHtml(bp.incourse2Scope.replace(/\s*\(.*?\)/g, ''))}</span>`
-                  : ''
-              }
-            </div>
-            <a class="catalog-group__open" href="${c.url}">Open ${escapeHtml(c.code)} page &rarr;</a>
-          </div>
-          <ol class="catalog-grid">
-            ${itemsHtml}
-          </ol>
-        </div>
-      </details>`;
-    })
-    .join('\n');
-
   const bodyContent = `
   <main id="main-content" class="page-container">
     <header class="editorial-header editorial-header--dashboard">
-      <div class="dashboard-title-row">
-        <div>
-          <span class="editorial-header__eyebrow">ISRT &middot; UNIVERSITY OF DHAKA &middot; YEAR 1</span>
-          <h1>Applied Statistics &amp; Data Science</h1>
-        </div>
-      </div>
+      <span class="editorial-header__eyebrow">ISRT &middot; UNIVERSITY OF DHAKA &middot; YEAR 1</span>
+      <h1>Applied Statistics &amp; Data Science</h1>
 
       <div class="progress-summary" aria-label="Archive summary and study progress">
         <div class="progress-summary__stats">
           <div>
             <span class="stat-item__value">${courses.length}</span>
-            <span class="stat-item__label">Courses (${totalCredits} Cr)</span>
+            <span class="stat-item__label">Courses</span>
           </div>
           <div>
             <span class="stat-item__value">${totalLessons}</span>
             <span class="stat-item__label">Lessons</span>
-          </div>
-          <div>
-            <span class="stat-item__value">${totalUnits.toLocaleString('en-US')}</span>
-            <span class="stat-item__label">Topic units</span>
-          </div>
-          <div>
-            <span class="stat-item__value">${totalHighYieldLessons}</span>
-            <span class="stat-item__label">★★★ High-yield</span>
           </div>
           <div>
             <span class="stat-item__value" id="overallCompletedCount">0 / ${totalLessons}</span>
@@ -1224,46 +1100,14 @@ function buildHomePage(courses, totalLessons) {
       </div>
     </header>
 
-    <section id="homeUtilityGrid" class="home-utility-grid" aria-label="Resume and saved sections" hidden>
-      <div id="continueCard" class="panel-card" hidden>
-        <div class="panel-card__label">${SVG.bookOpen}<span>Continue where you left off</span></div>
-        <div id="continueTitle" class="panel-card__title"></div>
-        <div id="continueMeta" class="panel-card__meta"></div>
-        <a id="continueLink" class="btn btn--primary" href="index.html">Resume lesson ${SVG.arrowRight}</a>
+    <section id="continueBar" class="continue-bar" aria-label="Continue studying" hidden>
+      <div class="continue-bar__left">
+        <span class="continue-bar__icon" aria-hidden="true">${SVG.bookOpen}</span>
+        <span class="continue-bar__label">Continue:</span>
+        <span id="continueTitle" class="continue-bar__title"></span>
+        <span id="continueCourse" class="course-code"></span>
       </div>
-
-      <div id="savedBookmarksCard" class="panel-card" hidden>
-        <div class="panel-card__label">${SVG.bookmark}<span>Saved sections</span></div>
-        <ul id="savedBookmarksList" class="saved-list"></ul>
-      </div>
-    </section>
-
-    <section class="home-section" aria-labelledby="portalMapHeading">
-      <div class="section-heading">
-        <h2 id="portalMapHeading">Portal Directory</h2>
-      </div>
-      <nav class="portal-map-grid" aria-label="Website sections">
-        <a class="portal-tile" href="#coursesHeading">
-          <span class="portal-tile__icon">${SVG.layers}</span>
-          <span class="portal-tile__title">Courses</span>
-          <span class="scope-pill">${courses.length}</span>
-        </a>
-        <a class="portal-tile" href="exam-prep/index.html">
-          <span class="portal-tile__icon">${SVG.target}</span>
-          <span class="portal-tile__title">Exam Prep &amp; Patterns</span>
-          <span class="star-badge star-badge--3">★★★</span>
-        </a>
-        <a class="portal-tile" href="search/index.html">
-          <span class="portal-tile__icon">${SVG.search}</span>
-          <span class="portal-tile__title">Full-Text Search</span>
-          <kbd>/</kbd>
-        </a>
-        <a class="portal-tile" href="about/index.html">
-          <span class="portal-tile__icon">${SVG.sliders}</span>
-          <span class="portal-tile__title">Guide &amp; Controls</span>
-          <kbd>?</kbd>
-        </a>
-      </nav>
+      <a id="continueLink" class="btn btn--primary btn--sm" href="index.html">Resume ${SVG.arrowRight}</a>
     </section>
 
     <section class="home-section" aria-labelledby="coursesHeading">
@@ -1275,45 +1119,32 @@ function buildHomePage(courses, totalLessons) {
       </div>
     </section>
 
-    <section class="home-section" aria-labelledby="inventoryHeading">
+    <section class="home-section" aria-labelledby="sectionsHeading">
       <div class="section-heading">
-        <h2 id="inventoryHeading">Archive Summary Map</h2>
+        <h2 id="sectionsHeading">Study Tools</h2>
       </div>
-      <div class="catalog-matrix-wrap">
-        <table class="info-table catalog-matrix">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Course</th>
-              <th>Cr</th>
-              <th>Lessons</th>
-              <th>Units</th>
-              <th>High-Yield</th>
-              <th>Carried Modules</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${matrixRowsHtml}
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="home-section" aria-labelledby="catalogHeading">
-      <div class="section-heading">
-        <h2 id="catalogHeading">Lesson Catalog</h2>
-        <button type="button" id="catalogToggleAllBtn" class="btn btn--secondary btn--sm" data-expanded="true">Collapse all</button>
-      </div>
-
-      <div id="catalogFilterBar" class="filter-bar" role="group" aria-label="Filter catalog">
-        <button type="button" class="filter-chip" data-catalog-filter="all" aria-pressed="true">All (${totalLessons})</button>
-        <button type="button" class="filter-chip" data-catalog-filter="stars-3" aria-pressed="false">★★★ High-yield (${totalHighYieldLessons})</button>
-        ${catalogFilterChipsHtml}
-      </div>
-
-      <div id="catalogContainer" class="catalog-stack">
-        ${catalogGroupsHtml}
-      </div>
+      <nav class="portal-map-grid" aria-label="Study tools and pages">
+        <a class="portal-tile" href="exam-prep/index.html">
+          <span class="portal-tile__icon">${SVG.target}</span>
+          <span class="portal-tile__title">Exam Prep &amp; Patterns</span>
+          <span class="portal-tile__arrow" aria-hidden="true">${SVG.arrowRight}</span>
+        </a>
+        <a class="portal-tile" href="search/index.html">
+          <span class="portal-tile__icon">${SVG.search}</span>
+          <span class="portal-tile__title">Search Lessons</span>
+          <kbd>/</kbd>
+        </a>
+        <a class="portal-tile" href="bookmarks/index.html">
+          <span class="portal-tile__icon">${SVG.bookmark}</span>
+          <span class="portal-tile__title">Saved Bookmarks</span>
+          <span id="homeBookmarkCount" class="scope-pill">0</span>
+        </a>
+        <a class="portal-tile" href="about/index.html">
+          <span class="portal-tile__icon">${SVG.sliders}</span>
+          <span class="portal-tile__title">Guide &amp; Settings</span>
+          <kbd>?</kbd>
+        </a>
+      </nav>
     </section>
   </main>`;
 
@@ -1321,13 +1152,53 @@ function buildHomePage(courses, totalLessons) {
     root: './',
     pageType: 'home',
     title: `${SITE_NAME} — Applied Statistics & Data Science`,
-    description: `First-year IASDS dashboard and curriculum catalog (${courses.length} courses, ${totalLessons} lessons, ${totalUnits} topic units).`,
+    description: `First-year IASDS learning dashboard (${courses.length} courses, ${totalLessons} lessons).`,
     activeNav: 'home',
     bodyContent,
-    includeReset: true,
+    includeReset: false,
   });
 
   fs.writeFileSync(path.join(DIST_DIR, 'index.html'), html, 'utf8');
+}
+
+/* ---------- Render Dedicated Saved Bookmarks Page ---------- */
+function buildBookmarksPage() {
+  const root = '../';
+  const bodyContent = `
+  <main id="main-content" class="page-container page-container--narrow">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="${root}index.html">Home</a>
+      <span class="breadcrumb__sep" aria-hidden="true">/</span>
+      <span class="breadcrumb__current" aria-current="page">Saved Bookmarks</span>
+    </nav>
+
+    <header class="editorial-header editorial-header--dashboard">
+      <span class="editorial-header__eyebrow">PINNED SECTIONS</span>
+      <h1>Saved Bookmarks</h1>
+    </header>
+
+    <section aria-label="Bookmarked lesson sections">
+      <div id="bookmarksEmptyState" class="panel-card">
+        <div class="panel-card__title">No saved sections yet</div>
+        <p class="panel-card__meta" style="margin-bottom:var(--space-3)">Click the bookmark icon beside any heading inside a lesson to pin key proofs, formulas, or exam problems here.</p>
+        <a class="btn btn--primary btn--sm" href="${root}index.html">Browse Courses ${SVG.arrowRight}</a>
+      </div>
+      <ul id="savedBookmarksList" class="saved-list" hidden></ul>
+    </section>
+  </main>`;
+
+  const html = renderPageShell({
+    root,
+    pageType: 'bookmarks',
+    title: `Saved Bookmarks — ${SITE_NAME}`,
+    description: 'Your pinned lesson sections, theorems, and formulas saved locally in this browser.',
+    activeNav: 'bookmarks',
+    bodyContent,
+  });
+
+  const outPath = path.join(DIST_DIR, 'bookmarks', 'index.html');
+  ensureDir(path.dirname(outPath));
+  fs.writeFileSync(outPath, html, 'utf8');
 }
 
 /* ---------- Render Course Pages ---------- */
@@ -1869,10 +1740,11 @@ export function buildSite() {
     }
   }
 
-  // Build Home, Course, Exam Prep, Search, About, and 404 pages
+  // Build Home, Course, Exam Prep, Bookmarks, Search, About, and 404 pages
   buildHomePage(courses, flatLessons.length);
   buildCoursePages(courses);
   buildExamPrepPage(courses, flatLessons);
+  buildBookmarksPage();
   buildSearchPage(courses, flatLessons.length);
   buildAboutPage(courses, flatLessons.length);
   build404Page();

@@ -287,7 +287,7 @@ function initHomePage() {
     const textEl = card.querySelector('[data-course-progress-text]');
     const pctEl = card.querySelector('[data-course-progress-pct]');
     const fillEl = card.querySelector('[data-course-progress-fill]');
-    if (textEl) textEl.textContent = `${done} of ${lessonIds.length} completed`;
+    if (textEl) textEl.textContent = `${done} / ${lessonIds.length}`;
     if (pctEl) pctEl.textContent = `${pct}%`;
     if (fillEl) fillEl.style.width = `${pct}%`;
   }
@@ -301,44 +301,45 @@ function initHomePage() {
   if (overallPctEl) overallPctEl.textContent = `${overallPct}%`;
   if (overallFillEl) overallFillEl.style.width = `${overallPct}%`;
 
-  // Continue where you left off + Saved Bookmarks
-  const utilityGrid = document.getElementById('homeUtilityGrid');
-  const continueCard = document.getElementById('continueCard');
-  const savedCard = document.getElementById('savedBookmarksCard');
+  // Compact single-row Continue bar
+  const continueBar = document.getElementById('continueBar');
   const last = getLastOpened();
-  let visiblePanels = 0;
-
-  if (continueCard && last && last.url) {
-    continueCard.hidden = false;
-    visiblePanels++;
+  if (continueBar && last && last.url) {
+    continueBar.hidden = false;
     const titleEl = document.getElementById('continueTitle');
-    const metaEl = document.getElementById('continueMeta');
+    const courseEl = document.getElementById('continueCourse');
     const linkEl = document.getElementById('continueLink');
     if (titleEl) titleEl.textContent = last.title;
-    if (metaEl) {
-      const when = last.timestamp ? new Date(last.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
-      metaEl.textContent = `${last.courseCode} · ${last.courseName}${when ? ` · Last opened ${when}` : ''}`;
-    }
+    if (courseEl) courseEl.textContent = last.courseCode || '';
     if (linkEl) linkEl.href = `${root}${last.url}`;
   }
 
-  const renderSavedBookmarks = () => {
-    const bookmarks = getBookmarks();
-    const listEl = document.getElementById('savedBookmarksList');
-    if (!savedCard || !listEl) return;
+  // Saved Bookmarks count badge on Study Tools doorway card
+  const bmCountEl = document.getElementById('homeBookmarkCount');
+  if (bmCountEl) {
+    bmCountEl.textContent = String(getBookmarks().length);
+  }
+}
 
+/* ---------- Dedicated Bookmarks Page Hydration ---------- */
+function initBookmarksPage() {
+  const root = document.documentElement.dataset.root || '../';
+  const listEl = document.getElementById('savedBookmarksList');
+  const emptyEl = document.getElementById('bookmarksEmptyState');
+  if (!listEl) return;
+
+  const render = () => {
+    const bookmarks = getBookmarks();
     if (!bookmarks.length) {
-      savedCard.hidden = true;
-      if (utilityGrid) {
-        const hasContinue = continueCard && !continueCard.hidden;
-        utilityGrid.hidden = !hasContinue;
-        utilityGrid.classList.remove('home-utility-grid--both');
-      }
+      listEl.hidden = true;
+      if (emptyEl) emptyEl.hidden = false;
       return;
     }
 
-    savedCard.hidden = false;
+    if (emptyEl) emptyEl.hidden = true;
+    listEl.hidden = false;
     listEl.innerHTML = '';
+
     for (const bm of bookmarks) {
       const li = document.createElement('li');
       li.className = 'saved-list__item';
@@ -362,7 +363,7 @@ function initHomePage() {
       delBtn.innerHTML = ICONS.trash;
       delBtn.addEventListener('click', () => {
         removeBookmark(bm.id);
-        renderSavedBookmarks();
+        render();
         showToast('Bookmark removed');
       });
 
@@ -370,122 +371,9 @@ function initHomePage() {
       li.appendChild(delBtn);
       listEl.appendChild(li);
     }
-
-    if (utilityGrid) {
-      utilityGrid.hidden = false;
-      const hasContinue = continueCard && !continueCard.hidden;
-      utilityGrid.classList.toggle('home-utility-grid--both', Boolean(hasContinue));
-    }
   };
 
-  renderSavedBookmarks();
-
-  if (utilityGrid) {
-    const hasSaved = savedCard && !savedCard.hidden;
-    utilityGrid.hidden = visiblePanels === 0 && !hasSaved;
-    utilityGrid.classList.toggle('home-utility-grid--both', visiblePanels > 0 && hasSaved);
-  }
-
-  // Hydrate Complete Lesson Catalog live completion icons & filters
-  const catalogItems = Array.from(document.querySelectorAll('[data-catalog-item]'));
-  for (const item of catalogItems) {
-    const status = getLessonStatus(item.dataset.lessonId);
-    item.dataset.status = status;
-    const iconSlot = item.querySelector('[data-catalog-status-icon]');
-    if (iconSlot) {
-      iconSlot.innerHTML =
-        status === 'completed' ? ICONS.checkCircle : status === 'in-progress' ? ICONS.clock : ICONS.circle;
-    }
-  }
-
-  const catalogGroups = Array.from(document.querySelectorAll('[data-catalog-group]'));
-  const toggleAllBtn = document.getElementById('catalogToggleAllBtn');
-  const syncToggleBtn = () => {
-    if (!toggleAllBtn) return;
-    const visibleGroups = catalogGroups.filter((g) => !g.hidden);
-    const anyOpen = visibleGroups.some((g) => g.open);
-    toggleAllBtn.dataset.expanded = anyOpen ? 'true' : 'false';
-    toggleAllBtn.textContent = anyOpen ? 'Collapse all' : 'Expand all';
-  };
-
-  if (toggleAllBtn) {
-    toggleAllBtn.addEventListener('click', () => {
-      const willOpen = toggleAllBtn.dataset.expanded !== 'true';
-      for (const g of catalogGroups) {
-        if (!g.hidden) g.open = willOpen;
-      }
-      syncToggleBtn();
-    });
-  }
-
-  for (const g of catalogGroups) {
-    g.addEventListener('toggle', syncToggleBtn);
-  }
-
-  const catalogFilterBar = document.getElementById('catalogFilterBar');
-  const applyCatalogFilter = (filterVal) => {
-    for (const group of catalogGroups) {
-      const code = group.dataset.catalogGroup;
-      const groupItems = Array.from(group.querySelectorAll('[data-catalog-item]'));
-      if (filterVal === 'all') {
-        group.hidden = false;
-        groupItems.forEach((it) => {
-          it.hidden = false;
-        });
-      } else if (filterVal === 'stars-3') {
-        let count = 0;
-        for (const it of groupItems) {
-          const show = it.dataset.stars === '3';
-          it.hidden = !show;
-          if (show) count++;
-        }
-        group.hidden = count === 0;
-        if (count > 0) group.open = true;
-      } else {
-        const matchCourse = code === filterVal;
-        group.hidden = !matchCourse;
-        if (matchCourse) {
-          group.open = true;
-          groupItems.forEach((it) => {
-            it.hidden = false;
-          });
-        }
-      }
-    }
-    syncToggleBtn();
-  };
-
-  if (catalogFilterBar) {
-    catalogFilterBar.addEventListener('click', (ev) => {
-      const chip = ev.target.closest('.filter-chip');
-      if (!chip) return;
-      catalogFilterBar.querySelectorAll('.filter-chip').forEach((c) => {
-        c.setAttribute('aria-pressed', c === chip ? 'true' : 'false');
-      });
-      applyCatalogFilter(chip.dataset.catalogFilter || 'all');
-    });
-  }
-
-  // Matrix table course-code jump links: unhide & open target catalog group before scrolling
-  document.querySelectorAll('.catalog-matrix__code').forEach((anchor) => {
-    anchor.addEventListener('click', () => {
-      if (catalogFilterBar) {
-        const allChip = catalogFilterBar.querySelector('[data-catalog-filter="all"]');
-        if (allChip) {
-          catalogFilterBar.querySelectorAll('.filter-chip').forEach((c) => {
-            c.setAttribute('aria-pressed', c === allChip ? 'true' : 'false');
-          });
-          applyCatalogFilter('all');
-        }
-      }
-      const targetId = (anchor.getAttribute('href') || '').slice(1);
-      const targetGroup = targetId ? document.getElementById(targetId) : null;
-      if (targetGroup && targetGroup.tagName.toLowerCase() === 'details') {
-        targetGroup.open = true;
-        syncToggleBtn();
-      }
-    });
-  });
+  render();
 }
 
 /* ---------- Course Page Hydration ---------- */
@@ -804,6 +692,8 @@ function boot() {
     initCoursePage();
   } else if (pageType === 'exam-prep') {
     initExamPrepPage();
+  } else if (pageType === 'bookmarks') {
+    initBookmarksPage();
   } else if (pageType === 'lesson') {
     lessonActions = initLessonPage();
   } else if (pageType === 'search') {
