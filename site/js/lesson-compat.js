@@ -168,8 +168,40 @@
       });
     });
 
+    // 2d. Ensure all Guided Worked Example steps & unlocked exam steppers display cleanly and re-render KaTeX on reveal
+    content.querySelectorAll('.example-card[data-ex] .step-item').forEach((step) => {
+      step.classList.add('visible');
+    });
+
+    content.querySelectorAll('.solution-stepper').forEach((stepper) => {
+      const steps = stepper.querySelectorAll('.step-item');
+      steps.forEach((s) => s.classList.add('visible'));
+      stepper.dataset.step = String(steps.length);
+    });
+
+    content.addEventListener('click', (e) => {
+      const trigger = e.target.closest('button, summary');
+      if (!trigger) return;
+      window.setTimeout(() => {
+        if (trigger.tagName === 'BUTTON') {
+          const label = trigger.textContent.trim();
+          if (label === 'Show Step-by-Step Exam Answer' || label === 'Hide Exam Answer') {
+            const onclickAttr = trigger.getAttribute('onclick') || '';
+            const m = onclickAttr.match(/(?:toggleBox|toggleVault|toggleSol)\(\s*['"]([^'"]+)['"]\s*\)/);
+            const targetId = (m && m[1]) || trigger.dataset.toggle || '';
+            const targetBox = targetId ? document.getElementById(targetId) : null;
+            if (targetBox) {
+              const isVisible = window.getComputedStyle(targetBox).display !== 'none';
+              trigger.textContent = isVisible ? 'Hide Exam Answer' : 'Show Step-by-Step Exam Answer';
+            }
+          }
+        }
+        renderLessonMath();
+      }, 40);
+    });
+
     content.querySelectorAll('svg').forEach((svg) => {
-      if (svg.closest('button, a, .heading-bookmark-btn')) return;
+      if (svg.closest('button, a, .heading-bookmark-btn, .katex')) return;
       const rect = svg.getBoundingClientRect();
       const vb = svg.getAttribute('viewBox');
       const vbWidth = vb ? parseFloat(vb.split(/[\s,]+/)[2] || '0') : 0;

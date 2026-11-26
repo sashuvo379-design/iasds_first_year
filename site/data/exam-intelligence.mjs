@@ -1086,13 +1086,26 @@ const LESSON_SUPPLEMENTS = {
     position: 'bottom',
     html: `
     <section class="exam-supplement" aria-labelledby="supp-ast101-l07">
-      <div class="exam-supplement__eyebrow">2025 FINAL EXAM UPDATE &middot; Q1(e) [3 MARKS]</div>
-      <h2 id="supp-ast101-l07">2025 Final Addition: Slope Interpretation &amp; Correlation Ratio Reconciliation</h2>
-      <p><strong>Exam Question (AST101 Final 2025, Q1e):</strong> For monthly income in thousand Taka (<code>Y</code>) and years of schooling (<code>X</code>), the fitted OLS line is <code>Ŷ = −43.68 + 8.66X</code>, with Pearson correlation <code>r = 0.64</code> and correlation ratio <code>η = 0.80</code>. (i) Interpret the slope; (ii) Should you revise a purely linear description?</p>
-      <ul>
-        <li><strong>Slope Interpretation (<code>β̂ = 8.66</code>):</strong> For each additional year of schooling, average predicted monthly income increases by <strong>Tk. 8.66 thousand (Tk. 8,660)</strong>. (Note: <code>α̂ = −43.68</code> at <code>X = 0</code> has no literal economic meaning because negative income is impossible and <code>X = 0</code> lies outside the observed schooling range.)</li>
-        <li><strong>Reconciling <code>r = 0.64</code> vs. <code>η = 0.80</code>:</strong> Since <code>η² − r² = 0.64 − 0.4096 = 0.2304 &gt; 0</code> (i.e., <code>|η| &gt; |r|</code> substantially), the true relationship between schooling and income exhibits noticeable <strong>curvilinearity</strong> (convex/accelerating returns to higher degrees), so a straight line understates the true strength of association.</li>
-      </ul>
+      <div class="exam-supplement__eyebrow">2025 FINAL EXAM ADDITION &middot; Q1(e) [3 MARKS]</div>
+      <h2 id="supp-ast101-l07">2025 Final Worked Problem: Slope Interpretation &amp; Correlation Ratio</h2>
+      <div class="exam-script-block">
+        <div class="exam-script-q">
+          <span class="exam-script-q__label">Exam Paper Question &middot; AST101 Year Final 2025, Q1(e) [3 Marks]</span>
+          For monthly income in thousand Taka ($Y$) and years of schooling ($X$), the fitted OLS regression line is $\\hat{Y} = -43.68 + 8.66X$, with Pearson's correlation coefficient $r = 0.64$ and correlation ratio $\\eta = 0.80$.<br>
+          <strong>(i)</strong> Interpret the estimated slope and intercept in context. [1.5]<br>
+          <strong>(ii)</strong> Comparing $r = 0.64$ and $\\eta = 0.80$, should you revise a purely linear description of the relationship? Justify mathematically. [1.5]
+        </div>
+        <div class="exam-script-ans">
+          <span class="exam-script-ans__label">Model Exam-Script Answer</span>
+          <p><strong>Answer to (i):</strong></p>
+          <p>&bull; <strong>Slope ($\\hat{\\beta} = +8.66$):</strong> Holding the linear model specification, for each additional $1$ year of schooling, an individual's predicted average monthly income increases by <strong>Tk. $8.66$ thousand (i.e., Tk. $8{,}660$)</strong>.</p>
+          <p>&bull; <strong>Intercept ($\\hat{\\alpha} = -43.68$):</strong> Mathematically, $\\hat{Y} = -43.68$ thousand Taka when $X = 0$ years of schooling. However, this intercept has <strong>no literal practical meaning</strong> because monthly income cannot be negative and $X = 0$ represents extrapolation outside the observed range of formal schooling.</p>
+          <p><strong>Answer to (ii):</strong></p>
+          <p><strong>Yes, a purely linear description must be revised.</strong> For any bivariate dataset, $0 \\le r^2 \\le \\eta^2 \\le 1$, where $\\eta^2 - r^2$ measures the departure from linearity:</p>
+          <p>$$r^2 = (0.64)^2 = 0.4096, \\qquad \\eta^2 = (0.80)^2 = 0.6400 \\implies \\eta^2 - r^2 = 0.6400 - 0.4096 = 0.2304 &gt; 0.$$</p>
+          <p>While a straight line explains $40.96\\%$ of the variance in monthly income, allowing for group-level curvature explains $64.00\\%$ (an additional $23.04\\%$ of variance). Because $\\eta = 0.80$ is substantially larger than $|r| = 0.64$, the true relationship between schooling and income is <strong>markedly curvilinear (nonlinear)</strong>, and a straight-line model understates the overall strength of association.</p>
+        </div>
+      </div>
     </section>`,
   },
 
@@ -1110,16 +1123,29 @@ const LESSON_SUPPLEMENTS = {
     html: `
     <section class="exam-supplement" aria-labelledby="supp-math103-l13">
       <div class="exam-supplement__eyebrow">GROUP C EXAM SUPPLEMENT &middot; 2024–2025 FINALS</div>
-      <h2 id="supp-math103-l13">Prim’s MST, Floyd–Warshall All-Pairs Shortest Path &amp; 2025 Final Contrasts</h2>
-      <p>Alongside Kruskal’s MST and Dijkstra’s single-source algorithm above, ISRT Group C questions test two companion graph algorithms and two crisp structural distinctions:</p>
-      <ul>
-        <li><strong>Prim’s Minimum Spanning Tree Algorithm (Vertex-Growing Greedy):</strong> Start from any seed vertex $v_0$ setting tree vertex set $T = \\{v_0\\}$. At each of $n - 1$ steps, pick the minimum-weight edge $(u, v)$ with $u \\in T$ and $v \\notin T$, add $v$ to $T$, and accumulate its weight. <em>Contrast with Kruskal:</em> Prim always maintains a <strong>single connected tree</strong> ($O(E \\log V)$), whereas Kruskal grows a <strong>forest of disjoint components</strong> sorted globally by edge weight and rejects cycles.</li>
-        <li><strong>Floyd–Warshall All-Pairs Shortest Path ($D^{(k)}$ Matrix Recurrence):</strong> Initialize $D^{(0)}_{ij} = w(i, j)$ ($0$ on diagonal, $\\infty$ if no direct edge). For intermediate vertex $k = 1, 2, \\dots, n$, update every pair $(i, j)$ via:
-          $$D^{(k)}_{ij} = \\min\\!\\left(D^{(k-1)}_{ij},\\; D^{(k-1)}_{ik} + D^{(k-1)}_{kj}\\right)$$
-          Runs in $O(V^3)$ time and handles negative edge weights (provided no negative-weight cycle exists, which is detected if $D^{(n)}_{ii} &lt; 0$).</li>
-        <li><strong>Final 2025 Q1(e) [2m] — Path vs. Trail:</strong> A <strong>trail</strong> is a walk with <em>no repeated edges</em> (vertices may repeat, e.g., $A \\to B \\to C \\to A \\to D$), whereas a <strong>path</strong> is a walk with <em>no repeated vertices</em> (and therefore automatically no repeated edges; every path is a trail, but not every trail is a path).</li>
-        <li><strong>Final 2025 Q7(c) [4m] — Eulerian vs. Hamiltonian Path:</strong> An <strong>Eulerian path</strong> traverses every <em>edge</em> exactly once (exists in a connected graph iff it has $0$ or $2$ vertices of odd degree — easy $O(V+E)$ check). A <strong>Hamiltonian path</strong> visits every <em>vertex</em> exactly once (no simple degree characterization; NP-complete in general, checked via sufficient conditions like Dirac’s $\\deg(v) \\ge n/2$ or Ore’s $\\deg(u)+\\deg(v) \\ge n$).</li>
-      </ul>
+      <h2 id="supp-math103-l13">Additional Past-Exam Algorithms: Prim’s MST &amp; Floyd–Warshall All-Pairs Shortest Path</h2>
+      <div class="exam-script-block">
+        <div class="exam-script-q">
+          <span class="exam-script-q__label">Exam Paper Question &middot; MATH103 Group C Algorithm Pair [6 Marks]</span>
+          <strong>(a)</strong> State Prim's Algorithm for finding a Minimum Spanning Tree (MST) of a connected weighted graph $G = (V, E)$, and distinguish it from Kruskal's Algorithm. [3]<br>
+          <strong>(b)</strong> State the dynamic-programming recurrence of the Floyd–Warshall All-Pairs Shortest Path Algorithm and explain how it detects negative-weight cycles. [3]
+        </div>
+        <div class="exam-script-ans">
+          <span class="exam-script-ans__label">Model Exam-Script Answer</span>
+          <p><strong>Answer to (a) — Prim's Algorithm &amp; Comparison with Kruskal's:</strong></p>
+          <p>Let $G = (V, E)$ be a connected, undirected, weighted graph with $|V| = n$ vertices.</p>
+          <p><strong>Step 1 (Initialization):</strong> Choose an arbitrary starting vertex $v_0 \\in V$. Set the visited tree vertex set $T = \\{v_0\\}$ and tree edge set $E_T = \\varnothing$.</p>
+          <p><strong>Step 2 (Greedy Expansion — repeat $n - 1$ times):</strong> Among all edges $(u, v) \\in E$ having one endpoint $u \\in T$ and the other endpoint $v \\in V \\setminus T$, select an edge $e^* = (u^*, v^*)$ of <strong>minimum weight</strong>. Update $T \\leftarrow T \\cup \\{v^*\\}$ and $E_T \\leftarrow E_T \\cup \\{e^*\\}$.</p>
+          <p><strong>Step 3 (Termination):</strong> When $|T| = n$, $(V, E_T)$ is a Minimum Spanning Tree with $n - 1$ edges.</p>
+          <p><strong>Distinction from Kruskal's Algorithm:</strong> Prim's algorithm is <em>vertex-based</em> and always maintains a <strong>single connected tree</strong> growing outward from $v_0$, whereas Kruskal's algorithm is <em>edge-based</em>, scanning all edges globally in non-decreasing order of weight and merging a <strong>forest of disconnected components</strong> whenever an edge does not form a cycle.</p>
+          <p><strong>Answer to (b) — Floyd–Warshall Algorithm:</strong></p>
+          <p>Label the vertices $V = \\{1, 2, \\dots, n\\}$. Let $D^{(k)}_{ij}$ denote the length of the shortest path from vertex $i$ to vertex $j$ using only intermediate vertices from $\\{1, 2, \\dots, k\\}$.</p>
+          <p><strong>Step 1 (Base Matrix $k = 0$):</strong> Set $D^{(0)}_{ii} = 0$, $D^{(0)}_{ij} = w(i, j)$ if edge $(i, j) \\in E$, and $D^{(0)}_{ij} = +\\infty$ if no direct edge exists.</p>
+          <p><strong>Step 2 (Iterative Relaxation for $k = 1, 2, \\dots, n$):</strong> For every ordered pair $(i, j) \\in V \\times V$, compute:</p>
+          <p>$$D^{(k)}_{ij} = \\min\\!\\left(D^{(k-1)}_{ij},\\; D^{(k-1)}_{ik} + D^{(k-1)}_{kj}\\right).$$</p>
+          <p><strong>Step 3 (Output &amp; Negative-Cycle Detection):</strong> After $k = n$ stages ($O(n^3)$ time), $D^{(n)}_{ij}$ gives the exact all-pairs shortest distance. If any diagonal entry satisfies $D^{(n)}_{ii} &lt; 0$ for some $i \\in \\{1, \\dots, n\\}$, then $G$ contains a <strong>negative-weight cycle</strong> reachable from vertex $i$.</p>
+        </div>
+      </div>
     </section>`,
   },
 
@@ -1127,12 +1153,30 @@ const LESSON_SUPPLEMENTS = {
     position: 'bottom',
     html: `
     <section class="exam-supplement" aria-labelledby="supp-math105-l05">
-      <div class="exam-supplement__eyebrow">ISRT EXAM CHECKLIST &middot; PIECEWISE &amp; RATIONAL TRIG</div>
-      <h2 id="supp-math105-l05">Piecewise Absolute-Value Splitting &amp; Weierstrass Bounds Check</h2>
-      <ul>
-        <li><strong>Absolute-Value Integrands (e.g., $\\int_1^4 \\frac{|2 - x|}{x}\\,dx$):</strong> Never integrate $|g(x)|$ directly. Locate interior sign-change roots ($2 - x = 0 \\Rightarrow x = 2$) and split the interval: $\\int_1^2 \\frac{2 - x}{x}\\,dx + \\int_2^4 \\frac{x - 2}{x}\\,dx = [2\\ln x - x]_1^2 + [x - 2\\ln x]_2^4 = (2\\ln 2 - 1) + (2 - 2\\ln 2) = 1$.</li>
-        <li><strong>Weierstrass Half-Angle Trap ($t = \\tan(x/2)$):</strong> Valid on intervals not crossing $x = \\pi$ (where $\\tan(\\pi/2) \\to \\infty$). With $\\cos x = \\frac{1 - t^2}{1 + t^2}$ and $dx = \\frac{2\\,dt}{1 + t^2}$, $\\int_0^{\\pi/2} \\frac{dx}{2 + \\cos x} = \\int_0^1 \\frac{2\\,dt}{3 + t^2} = \\frac{2}{\\sqrt{3}}\\tan^{-1}\\!\\left(\\frac{1}{\\sqrt{3}}\\right) = \\frac{\\pi}{3\\sqrt{3}}$.</li>
-      </ul>
+      <div class="exam-supplement__eyebrow">ISRT PAST-EXAM WORKED SUPPLEMENT &middot; PIECEWISE &amp; RATIONAL TRIG</div>
+      <h2 id="supp-math105-l05">Worked Exam Problems: Piecewise Absolute-Value &amp; Weierstrass Substitution</h2>
+      <div class="exam-script-block">
+        <div class="exam-script-q">
+          <span class="exam-script-q__label">Exam Paper Question &middot; MATH105 Integration Drill [3 + 4 = 7 Marks]</span>
+          Evaluate the following definite integrals showing all intermediate limits and substitutions:<br>
+          <strong>(a)</strong> $\\displaystyle \\int_1^4 \\frac{|2 - x|}{x}\\,dx$ [3 Marks] &emsp;&emsp;
+          <strong>(b)</strong> $\\displaystyle \\int_0^{\\pi/2} \\frac{dx}{2 + \\cos x}$ [4 Marks]
+        </div>
+        <div class="exam-script-ans">
+          <span class="exam-script-ans__label">Model Exam-Script Answer</span>
+          <p><strong>Solution to (a):</strong></p>
+          <p><strong>Step 1 (Split at the sign-change root):</strong> Inside $[1, 4]$, $2 - x = 0$ at $x = 2$. By definition of absolute value:</p>
+          <p>$$|2 - x| = \\begin{cases} 2 - x, &amp; 1 \\le x \\le 2 \\\\ x - 2, &amp; 2 \\le x \\le 4. \\end{cases}$$</p>
+          <p><strong>Step 2 (Apply Additivity &amp; Integrate):</strong></p>
+          <p>$$\\begin{aligned} \\int_1^4 \\frac{|2 - x|}{x}\\,dx &amp;= \\int_1^2 \\frac{2 - x}{x}\\,dx + \\int_2^4 \\frac{x - 2}{x}\\,dx = \\int_1^2 \\left(\\frac{2}{x} - 1\\right)dx + \\int_2^4 \\left(1 - \\frac{2}{x}\\right)dx \\\\ &amp;= \\Big[2\\ln x - x\\Big]_1^2 + \\Big[x - 2\\ln x\\Big]_2^4 \\\\ &amp;= \\big[(2\\ln 2 - 2) - (0 - 1)\\big] + \\big[(4 - 2\\ln 4) - (2 - 2\\ln 2)\\big] \\\\ &amp;= (2\\ln 2 - 1) + (2 - 4\\ln 2 + 2\\ln 2) = \\mathbf{1}. \\end{aligned}$$</p>
+          <p><strong>Solution to (b):</strong></p>
+          <p><strong>Step 1 (Weierstrass Tangent Half-Angle Substitution):</strong> Let $t = \\tan(x/2)$. Then:</p>
+          <p>$$\\cos x = \\frac{1 - t^2}{1 + t^2}, \\qquad dx = \\frac{2\\,dt}{1 + t^2}.$$</p>
+          <p><strong>Step 2 (Change Limits):</strong> When $x = 0$, $t = \\tan(0) = 0$; when $x = \\frac{\\pi}{2}$, $t = \\tan(\\frac{\\pi}{4}) = 1$.</p>
+          <p><strong>Step 3 (Substitute &amp; Evaluate):</strong></p>
+          <p>$$\\begin{aligned} \\int_0^{\\pi/2} \\frac{dx}{2 + \\cos x} &amp;= \\int_0^1 \\frac{\\dfrac{2\\,dt}{1 + t^2}}{2 + \\dfrac{1 - t^2}{1 + t^2}} = \\int_0^1 \\frac{2\\,dt}{2(1 + t^2) + (1 - t^2)} = \\int_0^1 \\frac{2\\,dt}{3 + t^2} \\\\ &amp;= 2 \\cdot \\frac{1}{\\sqrt{3}}\\left[\\tan^{-1}\\!\\left(\\frac{t}{\\sqrt{3}}\\right)\\right]_0^1 = \\frac{2}{\\sqrt{3}}\\left(\\frac{\\pi}{6} - 0\\right) = \\mathbf{\\frac{\\pi}{3\\sqrt{3}}}. \\end{aligned}$$</p>
+        </div>
+      </div>
     </section>`,
   },
 
@@ -1140,19 +1184,45 @@ const LESSON_SUPPLEMENTS = {
     position: 'bottom',
     html: `
     <section class="exam-supplement" aria-labelledby="supp-math106-l03">
-      <div class="exam-supplement__eyebrow">2025 FINAL EXAM UPDATE &middot; Q4(b) &amp; Q7(b) [9 MARKS]</div>
-      <h2 id="supp-math106-l03">2025 Final Worked Patterns: Nonlinear Trig Systems &amp; Parametric Bifurcation</h2>
-      <p><em>Exam Scope Note:</em> While $A = LU$ factorization above is marked <strong>★ Low-yield</strong> (0 Final appearances in 2021–2025), these two elimination patterns appeared for <strong>9 marks</strong> in Final 2025:</p>
-      <ul>
-        <li><strong>Pattern 1 — Parametric Bifurcation (Final 2025 Q7b [4m]):</strong> Given $x_1 + x_2 + x_3 = 4$, $x_3 = 2$, and $(a^2 - 4)x_3 = a - 2$. Substituting $x_3 = 2$ into the 3rd equation requires $2(a^2 - 4) = a - 2 \\iff (a - 2)(2a + 3) = 0$. Factor rather than dividing by $(a - 2)$:
-          <ul>
-            <li>If $a = 2$: the 3rd equation becomes $0 \\cdot x_3 = 0$, compatible with $x_3 = 2$ and $x_1 + x_2 = 2$ ($1$ free variable $x_2 = t$) $\\Rightarrow$ <strong>Infinitely many solutions</strong>!</li>
-            <li>If $a = -\\frac{3}{2}$: $(9/4 - 4)(2) = -7/2$ and $a - 2 = -7/2$, so $x_3 = 2$ IS ALSO satisfied, leaving $x_1 + x_2 = 2$ $\\Rightarrow$ <strong>Infinitely many solutions</strong> for both $a = 2$ and $a = -3/2$!</li>
-            <li>For all $a \\notin \\{2, -3/2\\}$: the 3rd equation gives $x_3 = \\frac{a - 2}{a^2 - 4} = \\frac{1}{a + 2} \\ne 2$, contradicting $x_3 = 2$ $\\Rightarrow$ <strong>Zero solutions</strong>; and because $x_1, x_2$ only appear as $x_1 + x_2$ (rank $\\le 2 &lt; 3$ unknowns), there is <strong>NO value of $a$ giving a unique solution</strong>! (Classic ISRT trap!)</li>
-          </ul>
-        </li>
-        <li><strong>Pattern 2 — Nonlinear Angle Substitution (Final 2025 Q4b [5m]):</strong> Substitute $u = \\sin\\alpha$, $v = \\cos\\beta$, $w = \\tan\\gamma$ to turn the system $2u - v + 3w = 3,\\; 4u + 2v - 2w = 2,\\; 6u - 3v + w = 9$ into a standard $3\\times 3$ linear system: $(3\\text{rd}) - 3\\times(1\\text{st}) \\Rightarrow -8w = 0 \\Rightarrow w = 0$, then $2u - v = 3$ and $2u + v = 1 \\Rightarrow u = 1, v = -1$. Finally invert on $0 \\le \\alpha, \\beta \\le 2\\pi,\\; 0 \\le \\gamma \\le \\pi$: $\\alpha = \\pi/2$, $\\beta = \\pi$, and $\\gamma = 0$ or $\\pi$ (check $\\tan\\pi = 0$).</li>
-      </ul>
+      <div class="exam-supplement__eyebrow">2025 FINAL EXAM ADDITIONS &middot; Q7(b) &amp; Q4(b) [9 MARKS]</div>
+      <h2 id="supp-math106-l03">2025 Final Worked Questions: Parametric Bifurcation &amp; Nonlinear Trig System</h2>
+      <div class="exam-script-block">
+        <div class="exam-script-q">
+          <span class="exam-script-q__label">Question 1 &middot; MATH106 Year Final 2025, Q7(b) [4 Marks]</span>
+          For which value(s) of the constant $a$ does the following linear system have <strong>(i)</strong> no solutions, <strong>(ii)</strong> exactly one solution, or <strong>(iii)</strong> infinitely many solutions?
+          $$\\begin{cases} x_1 + x_2 + x_3 = 4 \\\\ x_3 = 2 \\\\ (a^2 - 4)x_3 = a - 2 \\end{cases}$$
+        </div>
+        <div class="exam-script-ans">
+          <span class="exam-script-ans__label">Model Exam-Script Answer</span>
+          <p><strong>Step 1 (Compatibility Condition on $x_3$):</strong> Equation (2) fixes $x_3 = 2$. Substituting $x_3 = 2$ into Equation (3) requires:</p>
+          <p>$$2(a^2 - 4) = a - 2 \\implies 2a^2 - a - 6 = 0 \\implies (a - 2)(2a + 3) = 0 \\implies a = 2 \\text{ or } a = -\\frac{3}{2}.$$</p>
+          <p><strong>Step 2 (Case-by-Case Analysis):</strong></p>
+          <p>&bull; <strong>Case A ($a \\ne 2$ and $a \\ne -\\frac{3}{2}$):</strong> Equation (3) is incompatible with $x_3 = 2$ (specifically, for $a = -2$, Equation (3) gives $0 = -4$; for $a \\notin \\{\\pm 2, -\\frac{3}{2}\\}$, it gives $x_3 = \\frac{1}{a+2} \\ne 2$). Hence the system is <strong>inconsistent (no solution)</strong>.</p>
+          <p>&bull; <strong>Case B ($a = 2$ or $a = -\\frac{3}{2}$):</strong> Both Equations (2) and (3) are satisfied by $x_3 = 2$. Equation (1) then reduces to $x_1 + x_2 = 4 - 2 = 2$. Letting $x_2 = t \\in \\mathbb{R}$ (one free parameter), we obtain $(x_1, x_2, x_3) = (2 - t,\\; t,\\; 2)$, giving <strong>infinitely many solutions</strong>.</p>
+          <p>&bull; <strong>Unique Solution Check:</strong> Because $x_1$ and $x_2$ appear only in the first equation as $x_1 + x_2$, the coefficient matrix has at most $2$ pivots for $3$ unknowns ($\\text{rank}(A) \\le 2 &lt; 3$) for <em>every</em> $a \\in \\mathbb{R}$.</p>
+          <p><strong>Final Summary:</strong> <strong>(i) No solution:</strong> $a \\in \\mathbb{R} \\setminus \\{2, -\\frac{3}{2}\\}$; &nbsp;<strong>(ii) Exactly one solution:</strong> <strong>No value of $a$</strong>; &nbsp;<strong>(iii) Infinitely many solutions:</strong> $a = 2$ and $a = -\\frac{3}{2}$.</p>
+        </div>
+
+        <div class="exam-script-q" style="margin-top:0.5rem;">
+          <span class="exam-script-q__label">Question 2 &middot; MATH106 Year Final 2025, Q4(b) [5 Marks]</span>
+          Solve the nonlinear trigonometric system for $\\alpha, \\beta, \\gamma$ subject to $0 \\le \\alpha \\le 2\\pi$, $0 \\le \\beta \\le 2\\pi$, and $0 \\le \\gamma &lt; \\pi$:
+          $$\\begin{cases} 2\\sin\\alpha - \\cos\\beta + 3\\tan\\gamma = 3 \\\\ 4\\sin\\alpha + 2\\cos\\beta - 2\\tan\\gamma = 2 \\\\ 6\\sin\\alpha - 3\\cos\\beta + \\tan\\gamma = 9 \\end{cases}$$
+        </div>
+        <div class="exam-script-ans">
+          <span class="exam-script-ans__label">Model Exam-Script Answer</span>
+          <p><strong>Step 1 (Linearize by Substitution):</strong> Let $u = \\sin\\alpha$, $v = \\cos\\beta$, and $w = \\tan\\gamma$. The augmented matrix $[A \\mid \\mathbf{b}]$ is:</p>
+          <p>$$\\left[\\begin{array}{ccc|c} 2 &amp; -1 &amp; 3 &amp; 3 \\\\ 4 &amp; 2 &amp; -2 &amp; 2 \\\\ 6 &amp; -3 &amp; 1 &amp; 9 \\end{array}\\right] \\xrightarrow[R_3 \\leftarrow R_3 - 3R_1]{R_2 \\leftarrow R_2 - 2R_1} \\left[\\begin{array}{ccc|c} 2 &amp; -1 &amp; 3 &amp; 3 \\\\ 0 &amp; 4 &amp; -8 &amp; -4 \\\\ 0 &amp; 0 &amp; -8 &amp; 0 \\end{array}\\right].$$</p>
+          <p><strong>Step 2 (Back-Substitution for $u, v, w$):</strong></p>
+          <p>&bull; From Row 3: $-8w = 0 \\implies w = 0$.</p>
+          <p>&bull; From Row 2: $4v - 8(0) = -4 \\implies v = -1$.</p>
+          <p>&bull; From Row 1: $2u - (-1) + 3(0) = 3 \\implies 2u = 2 \\implies u = 1$.</p>
+          <p><strong>Step 3 (Solve for Angles on Given Domains):</strong></p>
+          <p>&bull; $\\sin\\alpha = 1$ on $[0, 2\\pi] \\implies \\mathbf{\\alpha = \\dfrac{\\pi}{2}}$.</p>
+          <p>&bull; $\\cos\\beta = -1$ on $[0, 2\\pi] \\implies \\mathbf{\\beta = \\pi}$.</p>
+          <p>&bull; $\\tan\\gamma = 0$ on $[0, \\pi) \\implies \\mathbf{\\gamma = 0}$ (note: if the domain includes $\\pi$, then $\\gamma = 0, \\pi$).</p>
+          <p><strong>Final Answer:</strong> $(\\alpha, \\beta, \\gamma) = \\left(\\dfrac{\\pi}{2},\\; \\pi,\\; 0\\right)$.</p>
+        </div>
+      </div>
     </section>`,
   },
 
@@ -1169,13 +1239,23 @@ const LESSON_SUPPLEMENTS = {
     position: 'bottom',
     html: `
     <section class="exam-supplement" aria-labelledby="supp-math106-l12">
-      <div class="exam-supplement__eyebrow">2025 FINAL EXAM UPDATE &middot; Q2(b) [3 MARKS]</div>
-      <h2 id="supp-math106-l12">2025 Final Fast Recipe: Singular Values of a $3 \\times 2$ Matrix</h2>
-      <p><strong>Exam Question (MATH106 Final 2025, Q2b):</strong> Find the singular values of $A = \\begin{bmatrix} 1 &amp; 0 \\\\ 1 &amp; 1 \\\\ -1 &amp; 1 \\end{bmatrix}$.</p>
-      <ul>
-        <li><strong>Time-Saving Exam Rule:</strong> For an $m \\times n$ matrix with $m &gt; n$, ALWAYS form the smaller $n \\times n$ Gram matrix $A^T A$ ($2 \\times 2$) rather than $A A^T$ ($3 \\times 3$)!</li>
-        <li><strong>Calculation:</strong> $A^T A = \\begin{bmatrix} 1 &amp; 1 &amp; -1 \\\\ 0 &amp; 1 &amp; 1 \\end{bmatrix} \\begin{bmatrix} 1 &amp; 0 \\\\ 1 &amp; 1 \\\\ -1 &amp; 1 \\end{bmatrix} = \\begin{bmatrix} 3 &amp; 0 \\\\ 0 &amp; 2 \\end{bmatrix}$. Since $A^T A$ is already diagonal, its eigenvalues are $\\lambda_1 = 3$ and $\\lambda_2 = 2$, giving singular values $\\sigma_1 = \\sqrt{3}$ and $\\sigma_2 = \\sqrt{2}$ in under 60 seconds!</li>
-      </ul>
+      <div class="exam-supplement__eyebrow">2025 FINAL EXAM ADDITION &middot; Q2(b) [3 MARKS]</div>
+      <h2 id="supp-math106-l12">2025 Final Worked Problem: Singular Values of a $3 \\times 2$ Matrix</h2>
+      <div class="exam-script-block">
+        <div class="exam-script-q">
+          <span class="exam-script-q__label">Exam Paper Question &middot; MATH106 Year Final 2025, Q2(b) [3 Marks]</span>
+          Find the singular values of the matrix $A = \\begin{bmatrix} 1 &amp; 0 \\\\ 1 &amp; 1 \\\\ -1 &amp; 1 \\end{bmatrix}$.
+        </div>
+        <div class="exam-script-ans">
+          <span class="exam-script-ans__label">Model Exam-Script Answer</span>
+          <p><strong>Step 1 (Compute the Symmetric Gram Matrix $A^T A$):</strong> Since $A$ is $3 \\times 2$, $A^T A$ is a $2 \\times 2$ symmetric positive semidefinite matrix:</p>
+          <p>$$A^T A = \\begin{bmatrix} 1 &amp; 1 &amp; -1 \\\\ 0 &amp; 1 &amp; 1 \\end{bmatrix} \\begin{bmatrix} 1 &amp; 0 \\\\ 1 &amp; 1 \\\\ -1 &amp; 1 \\end{bmatrix} = \\begin{bmatrix} 1^2 + 1^2 + (-1)^2 &amp; 0 + 1 - 1 \\\\ 0 + 1 - 1 &amp; 0^2 + 1^2 + 1^2 \\end{bmatrix} = \\begin{bmatrix} 3 &amp; 0 \\\\ 0 &amp; 2 \\end{bmatrix}.$$</p>
+          <p><strong>Step 2 (Find Eigenvalues of $A^T A$):</strong> Because $A^T A$ is diagonal, its characteristic equation is $\\det(\\lambda I_2 - A^T A) = (\\lambda - 3)(\\lambda - 2) = 0$, giving eigenvalues $\\lambda_1 = 3$ and $\\lambda_2 = 2$ (ordered $\\lambda_1 \\ge \\lambda_2 \\ge 0$).</p>
+          <p><strong>Step 3 (Extract Singular Values $\\sigma_i = \\sqrt{\\lambda_i}$):</strong></p>
+          <p>$$\\sigma_1 = \\sqrt{\\lambda_1} = \\mathbf{\\sqrt{3}}, \\qquad \\sigma_2 = \\sqrt{\\lambda_2} = \\mathbf{\\sqrt{2}}.$$</p>
+          <p><strong>Final Answer:</strong> The singular values of $A$ are $\\sigma_1 = \\sqrt{3}$ and $\\sigma_2 = \\sqrt{2}$.</p>
+        </div>
+      </div>
     </section>`,
   },
 };

@@ -16,6 +16,10 @@ import {
   enhanceLessonContent,
   rateUnitHeading,
 } from './data/exam-intelligence.mjs';
+import {
+  upgradeExamAnswersHtml,
+  upgradeExamAnswersJs,
+} from './data/exam-script-upgrades.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -286,37 +290,42 @@ function convertEconLatex(html) {
 
 /* ---------- Readable Plain-Text LaTeX Conversion (for titles, nav & cards) ---------- */
 function latexToReadableUnicode(str) {
+  const cleanExpr = (expr) =>
+    expr
+      .replace(/\\mathbb\{R\}\^n/g, 'ℝⁿ')
+      .replace(/\\mathbb\{R\}\^3/g, 'ℝ³')
+      .replace(/\\mathbb\{R\}\^2/g, 'ℝ²')
+      .replace(/\\mathbb\{R\}/g, 'ℝ')
+      .replace(/\\(?:text|mathrm|mathbf|operatorname|mathcal)\{([^}]+)\}/g, '$1')
+      .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+      .replace(/\\varepsilon/g, 'ε')
+      .replace(/\\epsilon/g, 'ε')
+      .replace(/\\Delta/g, 'Δ')
+      .replace(/\\delta/g, 'δ')
+      .replace(/\\sigma/g, 'σ')
+      .replace(/\\mu/g, 'μ')
+      .replace(/\\Omega/g, 'Ω')
+      .replace(/\\alpha/g, 'α')
+      .replace(/\\beta/g, 'β')
+      .replace(/\\chi/g, 'χ')
+      .replace(/\\lambda/g, 'λ')
+      .replace(/\\pi/g, 'π')
+      .replace(/\\theta/g, 'θ')
+      .replace(/\\infty/g, '∞')
+      .replace(/\\times/g, '×')
+      .replace(/\\cdot/g, '·')
+      .replace(/\\to/g, '→')
+      .replace(/\\le\b/g, '≤')
+      .replace(/\\ge\b/g, '≥')
+      .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+      .replace(/\\([a-zA-Z]+)/g, '$1')
+      .replace(/[{}]/g, '')
+      .trim();
+
   return String(str || '')
-    .replace(/\$([^$]+)\$/g, (_, expr) =>
-      expr
-        .replace(/\\mathbb\{R\}\^n/g, 'ℝⁿ')
-        .replace(/\\mathbb\{R\}\^3/g, 'ℝ³')
-        .replace(/\\mathbb\{R\}\^2/g, 'ℝ²')
-        .replace(/\\mathbb\{R\}/g, 'ℝ')
-        .replace(/\\(?:text|mathrm|mathbf|operatorname|mathcal)\{([^}]+)\}/g, '$1')
-        .replace(/\\varepsilon/g, 'ε')
-        .replace(/\\epsilon/g, 'ε')
-        .replace(/\\delta/g, 'δ')
-        .replace(/\\sigma/g, 'σ')
-        .replace(/\\mu/g, 'μ')
-        .replace(/\\Omega/g, 'Ω')
-        .replace(/\\alpha/g, 'α')
-        .replace(/\\beta/g, 'β')
-        .replace(/\\chi/g, 'χ')
-        .replace(/\\lambda/g, 'λ')
-        .replace(/\\pi/g, 'π')
-        .replace(/\\theta/g, 'θ')
-        .replace(/\\infty/g, '∞')
-        .replace(/\\times/g, '×')
-        .replace(/\\cdot/g, '·')
-        .replace(/\\to/g, '→')
-        .replace(/\\le\b/g, '≤')
-        .replace(/\\ge\b/g, '≥')
-        .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-        .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
-        .replace(/[{}]/g, '')
-        .trim()
-    )
+    .replace(/\$([^$]+)\$/g, (_, expr) => cleanExpr(expr))
+    .replace(/\\\(([\s\S]*?)\\\)/g, (_, expr) => cleanExpr(expr))
     .replace(/R\^n\b/g, 'ℝⁿ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -376,6 +385,11 @@ function sanitizeLessonScript(jsCode) {
   code = code.replace(
     /document\.documentElement\.classList\.(?:add|remove|toggle)\(\s*['"]dark['"]\s*\)/g,
     'void 0 /* managed by IASDS shell */'
+  );
+  // Guard removed standalone sidebar milestone links (e.g. MATH105 L1-L9 [data-section="..."])
+  code = code.replace(
+    /document\.querySelector\((\s*['"]\[data-section=[^)]+)\)\.classList/g,
+    'document.querySelector($1)?.classList'
   );
   return code;
 }
@@ -735,8 +749,9 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
   };
   const starMeta = STAR_META[examInfo.stars] || STAR_META[2];
   contentHtml = enhanceLessonContent(lesson.id, course.code, contentHtml);
+  contentHtml = upgradeExamAnswersHtml(lesson.id, course.code, contentHtml);
 
-  // Handle ECON107 raw LaTeX while protecting currency $ amounts
+  // Handle ECON107 raw LaTeX while protecting currency $ amounts, and auto-enable KaTeX whenever math delimiters exist
   let needsKatex = hasSourceKatex;
   let katexMode = hasSourceKatex ? 'standard' : '';
   if (isEcon) {
@@ -746,7 +761,15 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
       needsKatex = true;
       katexMode = 'econ';
     }
+  } else if (!needsKatex && /\$[^$\n]+\$|\\\(|\\\[|\$\$/.test(contentHtml)) {
+    needsKatex = true;
+    katexMode = 'standard';
   }
+
+  // Strip invalid SVG width="auto" / height="auto" attributes (valid in CSS, invalid SVG length attribute)
+  contentHtml = contentHtml.replace(/<svg\b[^>]*>/gi, (svgTag) =>
+    svgTag.replace(/\s+(?:width|height)=["']auto["']/gi, '')
+  );
 
   // Ensure lazy-loading on any <img>
   contentHtml = contentHtml.replace(/<img(?![^>]*\bloading=)/gi, '<img loading="lazy"');
@@ -777,7 +800,11 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
 
   let lessonJsUrl = '';
   if (inlineScripts.length) {
-    const combinedJs = sanitizeLessonScript(inlineScripts.join('\n;\n'));
+    const combinedJs = upgradeExamAnswersJs(
+      sanitizeLessonScript(inlineScripts.join('\n;\n')),
+      lesson.id,
+      course.code
+    );
     const jsFile = `${course.slug}-${lesson.slug}.js`;
     const jsOutPath = path.join(DIST_DIR, 'assets', 'lesson-scripts', jsFile);
     ensureDir(path.dirname(jsOutPath));

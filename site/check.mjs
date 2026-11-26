@@ -162,6 +162,27 @@ for (const filePath of distHtmlFiles) {
     if (/All 14 Lessons Built!|\uF393/.test(html)) {
       fail(`[${relFile}] Uncleaned builder artifact or broken entity found`);
     }
+    if (/<button(?![^>]*\bhidden\b)[^>]*>\s*(?:[^<]*\b(?:Show|Toggle)\s+Hint\b|Hint)\s*<\/button>/i.test(html)) {
+      fail(`[${relFile}] Unhidden Hint button found in lesson HTML`);
+    }
+    if (
+      /class=["'][^"']*solution-stepper[^"']*["'][^>]*\bdata-step=["']0["']/i.test(html) ||
+      /\bdata-step=["']0["'][^>]*class=["'][^"']*solution-stepper[^"']*["']/i.test(html)
+    ) {
+      fail(`[${relFile}] Locked solution-stepper (data-step="0") found in lesson HTML`);
+    }
+    if (/Model Solution Outline|Model Answer Outline|Past ISRT Exam Checklist|Theory Checklist/i.test(html)) {
+      fail(`[${relFile}] Unexpanded outline or checklist heading found in lesson HTML`);
+    }
+    if (/[\x08\x0b\x0c]/.test(html)) {
+      fail(`[${relFile}] Corrupted control character (unescaped \\b/\\v/\\f) found in lesson HTML`);
+    }
+    if (/<svg\b[^>]*\s+(?:width|height)=["']auto["']/i.test(html)) {
+      fail(`[${relFile}] Invalid SVG width/height="auto" attribute found in lesson HTML`);
+    }
+    if ((/\$\$[\s\S]+?\$\$|\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]/.test(html)) && !/katex\.min\.css/.test(html)) {
+      fail(`[${relFile}] Math delimiters present without KaTeX stylesheet loaded`);
+    }
   }
 
   // Strip <script> and <style> before checking href/src attributes so JS string templates aren't mistaken for HTML links
@@ -187,6 +208,16 @@ for (const filePath of distHtmlFiles) {
     if (!fs.existsSync(resolved)) {
       fail(`[${relFile}] Broken internal reference: "${raw}" -> ${path.relative(DIST_DIR, resolved)}`);
     }
+  }
+}
+
+/* 3b. Validate extracted lesson scripts for leftover hint buttons */
+const lessonScriptFiles = walkFiles(path.join(DIST_DIR, 'assets', 'lesson-scripts'), /\.js$/i);
+for (const scriptPath of lessonScriptFiles) {
+  const relScript = path.relative(DIST_DIR, scriptPath).replace(/\\/g, '/');
+  const js = fs.readFileSync(scriptPath, 'utf8');
+  if (/(?:Show|Toggle)\s+Hint\s*<\/button>|>\s*Hint\s*<\/button>/i.test(js)) {
+    fail(`[${relScript}] Leftover Hint button template found in extracted lesson script`);
   }
 }
 

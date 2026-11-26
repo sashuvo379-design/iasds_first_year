@@ -16,24 +16,49 @@ function slugify(text) {
     .slice(0, 64) || 'section';
 }
 
+function convertLatexExpr(expr) {
+  return expr
+    .replace(/\\mathbb\{R\}\^n/g, 'ℝⁿ')
+    .replace(/\\mathbb\{R\}\^3/g, 'ℝ³')
+    .replace(/\\mathbb\{R\}\^2/g, 'ℝ²')
+    .replace(/\\mathbb\{R\}/g, 'ℝ')
+    .replace(/\\(?:text|mathrm|mathbf|operatorname|mathcal)\{([^}]+)\}/g, '$1')
+    .replace(/\\sqrt\{([^}]+)\}/g, '√($1)')
+    .replace(/\\varepsilon|\\epsilon/g, 'ε')
+    .replace(/\\Delta/g, 'Δ')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\sigma/g, 'σ')
+    .replace(/\\mu/g, 'μ')
+    .replace(/\\Omega/g, 'Ω')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\nabla/g, '∇')
+    .replace(/\\partial/g, '∂')
+    .replace(/\\infty/g, '∞')
+    .replace(/\\times/g, '×')
+    .replace(/\\cdot/g, '·')
+    .replace(/\\to|\\rightarrow/g, '→')
+    .replace(/\\le\b/g, '≤')
+    .replace(/\\ge\b/g, '≥')
+    .replace(/\\ne\b|\\neq\b/g, '≠')
+    .replace(/\\int/g, '∫')
+    .replace(/\\sum/g, '∑')
+    .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}|\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1$3)/($2$4)')
+    .replace(/\\([a-zA-Z]+)/g, '$1')
+    .replace(/[{}]/g, '')
+    .trim();
+}
+
 function readableMathText(str) {
   return str
-    .replace(/\$([^$]+)\$/g, (_, expr) =>
-      expr
-        .replace(/\\mathbb\{R\}\^n/g, 'ℝⁿ')
-        .replace(/\\mathbb\{R\}\^3/g, 'ℝ³')
-        .replace(/\\mathbb\{R\}\^2/g, 'ℝ²')
-        .replace(/\\mathbb\{R\}/g, 'ℝ')
-        .replace(/\\(?:text|mathrm|mathbf|operatorname|mathcal)\{([^}]+)\}/g, '$1')
-        .replace(/\\varepsilon|\\epsilon/g, 'ε')
-        .replace(/\\delta/g, 'δ')
-        .replace(/\\sigma/g, 'σ')
-        .replace(/\\mu/g, 'μ')
-        .replace(/\\Omega/g, 'Ω')
-        .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}|\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1$3)/($2$4)')
-        .replace(/[{}]/g, '')
-        .trim()
-    )
+    .replace(/\$([^$]+)\$/g, (_, expr) => convertLatexExpr(expr))
+    .replace(/\\\(([\s\S]*?)\\\)/g, (_, expr) => convertLatexExpr(expr))
+    .replace(/\\times/g, '×')
+    .replace(/\\([a-zA-Z]+)/g, '$1')
     .replace(/\s+/g, ' ')
     .trim();
 }
