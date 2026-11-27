@@ -259,9 +259,35 @@ function enforceRateLimits(request, hasImage = false) {
   return {
     ok: true,
     remainingToday: Math.max(0, LIMITS.perStudentDay - updatedStudent.dayCount),
-    remaining10Min: Math.max(0, LIMITS.perStudent10Min - updatedStudent.tenMinCount),
+    remaining10Min: Math.max(0, LIMITS.perStudent10Min - updatedStudent.winCount),
     remainingImagesToday,
   };
+}
+
+function safeEqualStrings(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  if (!a || !b || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+function resolveAuthTier(request) {
+  const providedPasscode = (request.headers.get('x-developer-passcode') || '').trim();
+  const expectedPasscode = (process.env.DEVELOPER_PASSCODE || '').trim();
+  const devApiKey = (process.env.DEVELOPER_GEMINI_API_KEY || '').trim();
+  const sharedApiKey = (process.env.GEMINI_API_KEY || '').trim();
+
+  if (providedPasscode) {
+    if (expectedPasscode && devApiKey && safeEqualStrings(providedPasscode, expectedPasscode)) {
+      return { isDeveloper: true, invalidPasscode: false, apiKey: devApiKey };
+    }
+    return { isDeveloper: false, invalidPasscode: true, apiKey: '' };
+  }
+
+  return { isDeveloper: false, invalidPasscode: false, apiKey: sharedApiKey };
 }
 
 function isAllowedOrigin(origin) {
@@ -443,7 +469,7 @@ export async function OPTIONS() {
     headers: {
       'Access-Control-Allow-Origin': 'https://iasds-first-year.vercel.app',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, x-qmh-client',
+      'Access-Control-Allow-Headers': 'Content-Type, x-qmh-client, x-developer-passcode',
     },
   });
 }
@@ -466,18 +492,6 @@ export async function POST(request) {
       );
     }
 
-    const apiKey = (process.env.GEMINI_API_KEY || '').trim();
-    if (!apiKey) {
-      console.error('[QMHBot] Missing GEMINI_API_KEY environment variable');
-      return Response.json(
-        {
-          code: 'NOT_CONFIGURED',
-          error: 'QMHBot backend key is not configured yet on this deployment.',
-        },
-        { status: 503 }
-      );
-    }
-
     const rawBody = await request.text();
     if (Buffer.byteLength(rawBody, 'utf8') > MAX_REQUEST_BYTES) {
       return Response.json(
@@ -493,6 +507,40 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid JSON request body.' }, { status: 400 });
     }
 
+    const auth = resolveAuthTier(request);
+
+    if (body && body.action === 'verify-dev') {
+      if (auth.isDeveloper) {
+        return Response.json({ ok: true, developer: true });
+      }
+      return Response.json(
+        { ok: false, developer: false, error: 'Incorrect developer passcode.' },
+        { status: 401 }
+      );
+    }
+
+    if (auth.invalidPasscode) {
+      return Response.json(
+        {
+          code: 'INVALID_DEV_PASSCODE',
+          error: 'Invalid developer passcode. Please unlock Developer Mode again or switch to standard mode.',
+        },
+        { status: 401 }
+      );
+    }
+
+    const apiKey = auth.apiKey;
+    if (!apiKey) {
+      console.error('[QMHBot] Missing active Gemini API key environment variable');
+      return Response.json(
+        {
+          code: 'NOT_CONFIGURED',
+          error: 'QMHBot backend key is not configured yet on this deployment.',
+        },
+        { status: 503 }
+      );
+    }
+
     const attachments = Array.isArray(body.attachments) ? body.attachments.slice(0, 2) : [];
     const { contents, isMultimodal, hasImage } = buildContents(body.history, { text: body.message }, attachments);
 
@@ -503,20 +551,23 @@ export async function POST(request) {
       );
     }
 
-    // Enforce narrow fair-use rate limits before calling AI
-    const limitStatus = enforceRateLimits(request, hasImage);
-    if (!limitStatus.ok) {
-      return Response.json(
-        {
-          code: 'RATE_LIMITED',
-          retryAfterSec: limitStatus.retryAfterSec,
-          error: limitStatus.message,
-        },
-        {
-          status: 429,
-          headers: { 'Retry-After': String(limitStatus.retryAfterSec) },
-        }
-      );
+    // Enforce narrow fair-use rate limits ONLY for the shared student tier
+    let limitStatus = null;
+    if (!auth.isDeveloper) {
+      limitStatus = enforceRateLimits(request, hasImage);
+      if (!limitStatus.ok) {
+        return Response.json(
+          {
+            code: 'RATE_LIMITED',
+            retryAfterSec: limitStatus.retryAfterSec,
+            error: limitStatus.message,
+          },
+          {
+            status: 429,
+            headers: { 'Retry-After': String(limitStatus.retryAfterSec) },
+          }
+        );
+      }
     }
 
     const systemText = buildSystemInstruction(body.lessonContext);
@@ -527,11 +578,12 @@ export async function POST(request) {
       contents,
       generationConfig: {
         temperature: 0.45,
-        maxOutputTokens: 1400,
+        maxOutputTokens: auth.isDeveloper ? 2200 : 1400,
       },
     };
 
-    const candidateModels = isMultimodal ? MULTIMODAL_MODELS : TEXT_MODELS;
+    // Developer mode routes directly through flagship model tier; shared mode routes text to Lite first
+    const candidateModels = auth.isDeveloper || isMultimodal ? MULTIMODAL_MODELS : TEXT_MODELS;
     let result = { ok: false, status: 503, data: {} };
     for (const modelName of candidateModels) {
       result = await callModelEndpoint(apiKey, modelName, payload);
@@ -544,8 +596,9 @@ export async function POST(request) {
       if (result.status === 429 || result.status === 503) {
         return Response.json(
           {
-            error:
-              'QMHBot is temporarily busy because shared class quota is high right now. কিছুক্ষণ পর (৩০–৬০ সেকেন্ড) আবার চেষ্টা করো।',
+            error: auth.isDeveloper
+              ? 'Your private API rate limit was temporarily hit. Please wait a few seconds and retry.'
+              : 'QMHBot is temporarily busy because shared class quota is high right now. কিছুক্ষণ পর (৩০–৬০ সেকেন্ড) আবার চেষ্টা করো।',
           },
           { status: 429 }
         );
@@ -571,14 +624,17 @@ export async function POST(request) {
 
     return Response.json({
       assistant: 'QMHBot',
+      mode: auth.isDeveloper ? 'developer' : 'shared',
       reply: scrubIdentityLeaks(rawReply),
-      quota: {
-        remainingToday: limitStatus.remainingToday,
-        remaining10Min: limitStatus.remaining10Min,
-        remainingImagesToday: limitStatus.remainingImagesToday,
-        dailyLimit: LIMITS.perStudentDay,
-        imageDailyLimit: LIMITS.perStudentImgDay,
-      },
+      quota: auth.isDeveloper
+        ? { developer: true, unlimited: true }
+        : {
+            remainingToday: limitStatus.remainingToday,
+            remaining10Min: limitStatus.remaining10Min,
+            remainingImagesToday: limitStatus.remainingImagesToday,
+            dailyLimit: LIMITS.perStudentDay,
+            imageDailyLimit: LIMITS.perStudentImgDay,
+          },
     });
   } catch (err) {
     console.error('[QMHBot] Unexpected handler error:', err);

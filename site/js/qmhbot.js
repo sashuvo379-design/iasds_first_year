@@ -6,10 +6,33 @@
 const KATEX_CDN = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist';
 const CLIENT_ID_KEY = 'iasds_qmh_cid_v1';
 const QUOTA_KEY = 'iasds_qmh_quota_v1';
+const DEV_PASSCODE_KEY = 'iasds_qmh_dev_passcode_v1';
 const MAX_PER_10_MIN = 6;
 const MAX_PER_DAY = 20;
 const MAX_IMG_30_MIN = 2;
 const MAX_IMG_DAY = 4;
+
+function getDevPasscode() {
+  try {
+    return (window.localStorage.getItem(DEV_PASSCODE_KEY) || '').trim();
+  } catch {
+    return '';
+  }
+}
+
+function setDevPasscode(code) {
+  try {
+    const clean = String(code || '').trim();
+    if (clean) window.localStorage.setItem(DEV_PASSCODE_KEY, clean);
+    else window.localStorage.removeItem(DEV_PASSCODE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+function isDeveloperMode() {
+  return Boolean(getDevPasscode());
+}
 
 function getClientId() {
   try {
@@ -52,6 +75,9 @@ function writeLocalQuota(q) {
 }
 
 function checkLocalQuota(hasImage = false) {
+  if (isDeveloperMode()) {
+    return { ok: true, remainingDay: 999, remainingImgDay: 999, developer: true };
+  }
   const q = readLocalQuota();
   const remainingDay = Math.max(0, MAX_PER_DAY - q.dayCount);
   const remainingImgDay = Math.max(0, MAX_IMG_DAY - q.imgDayCount);
@@ -94,6 +120,7 @@ function checkLocalQuota(hasImage = false) {
 }
 
 function recordLocalUsage(serverQuota, usedImage = false) {
+  if (serverQuota?.developer || isDeveloperMode()) return;
   const q = readLocalQuota();
   q.recent.push(Date.now());
   if (serverQuota && typeof serverQuota.remainingToday === 'number') {
@@ -375,17 +402,27 @@ export function initQmhBot(lessonMeta, showToast) {
   drawer.innerHTML = `
     <div class="qmhbot-drawer__head">
       <div class="qmhbot-drawer__title-group">
-        <span class="qmhbot-avatar">${BOT_ICON}</span>
+        <span class="qmhbot-avatar" id="qmhbotAvatar">${BOT_ICON}</span>
         <div>
           <h2 class="qmhbot-title">QMHBot</h2>
           <div class="qmhbot-sub">${escapeHtml(lessonMeta.courseCode)}: ${escapeHtml(lessonMeta.title)}</div>
         </div>
       </div>
       <div class="qmhbot-drawer__head-actions">
+        <button type="button" id="qmhbotDevBadge" class="qmhbot-dev-badge" hidden title="Private Key active — click to switch back to Shared Mode">Dev</button>
         <button type="button" id="qmhbotClearBtn" class="btn btn--ghost btn--icon" title="Start fresh chat" aria-label="Clear chat">${TRASH_ICON}</button>
         <button type="button" id="qmhbotCloseBtn" class="btn btn--ghost btn--icon" title="Close QMHBot" aria-label="Close QMHBot">&times;</button>
       </div>
     </div>
+
+    <form id="qmhbotDevPanel" class="qmhbot-dev-panel" hidden>
+      <div class="qmhbot-dev-panel__row">
+        <input type="password" id="qmhbotDevInput" class="qmhbot-dev-panel__input" placeholder="Developer passcode…" autocomplete="off">
+        <button type="submit" id="qmhbotDevSubmitBtn" class="btn btn--primary btn--sm">Unlock</button>
+        <button type="button" id="qmhbotDevCancelBtn" class="btn btn--ghost btn--sm">Cancel</button>
+      </div>
+      <div id="qmhbotDevError" class="qmhbot-dev-panel__err" hidden></div>
+    </form>
 
     <div id="qmhbotMessages" class="qmhbot-messages" role="log" aria-live="polite"></div>
 
@@ -426,13 +463,152 @@ export function initQmhBot(lessonMeta, showToast) {
   const quotaNote = document.getElementById('qmhbotQuotaNote');
   const clearBtn = document.getElementById('qmhbotClearBtn');
   const closeBtn = document.getElementById('qmhbotCloseBtn');
+  const avatarBtn = document.getElementById('qmhbotAvatar');
+  const devBadge = document.getElementById('qmhbotDevBadge');
+  const devPanel = document.getElementById('qmhbotDevPanel');
+  const devInput = document.getElementById('qmhbotDevInput');
+  const devSubmitBtn = document.getElementById('qmhbotDevSubmitBtn');
+  const devCancelBtn = document.getElementById('qmhbotDevCancelBtn');
+  const devError = document.getElementById('qmhbotDevError');
+
+  const getApiUrl = () => {
+    const root = document.documentElement.dataset.root || '../../';
+    return root.startsWith('/') ? '/api/chat' : `${window.location.origin}/api/chat`;
+  };
+
+  const syncDevUi = () => {
+    const devActive = isDeveloperMode();
+    if (devBadge) devBadge.hidden = !devActive;
+    if (quotaNote) {
+      if (devActive) {
+        quotaNote.innerHTML = 'Private Key Active &middot; Unmetered &middot; <button type="button" id="qmhbotLockDevBtn" class="qmhbot-lock-link">Switch to Shared</button>';
+        document.getElementById('qmhbotLockDevBtn')?.addEventListener('click', () => {
+          setDevPasscode('');
+          syncDevUi();
+          if (showToast) showToast('Switched back to Shared Class Mode');
+        });
+      } else {
+        const status = checkLocalQuota(false);
+        quotaNote.textContent = `Today: ${status.remainingDay}/${MAX_PER_DAY} Q · ${status.remainingImgDay}/${MAX_IMG_DAY} photos left · Don’t send personal info`;
+      }
+    }
+  };
 
   const updateQuotaBadge = () => {
-    if (!quotaNote) return;
-    const status = checkLocalQuota(false);
-    quotaNote.textContent = `Today: ${status.remainingDay}/${MAX_PER_DAY} Q · ${status.remainingImgDay}/${MAX_IMG_DAY} photos left · Don’t send personal info`;
+    syncDevUi();
   };
-  updateQuotaBadge();
+  syncDevUi();
+
+  const openDevPanel = () => {
+    if (!devPanel) return;
+    devPanel.hidden = false;
+    if (devError) {
+      devError.hidden = true;
+      devError.textContent = '';
+    }
+    if (devInput) {
+      devInput.value = '';
+      window.setTimeout(() => devInput.focus(), 40);
+    }
+  };
+
+  const closeDevPanel = () => {
+    if (!devPanel) return;
+    devPanel.hidden = true;
+    if (devInput) devInput.value = '';
+    if (devError) {
+      devError.hidden = true;
+      devError.textContent = '';
+    }
+  };
+
+  // Discrete developer access: 5 taps/clicks on QMHBot icon within 2.5s (or Alt+Shift+D)
+  let avatarTapCount = 0;
+  let avatarTapTimer = null;
+  avatarBtn?.addEventListener('click', () => {
+    avatarTapCount += 1;
+    window.clearTimeout(avatarTapTimer);
+    if (avatarTapCount >= 5) {
+      avatarTapCount = 0;
+      if (isDeveloperMode()) {
+        setDevPasscode('');
+        syncDevUi();
+        if (showToast) showToast('Switched back to Shared Class Mode');
+      } else if (devPanel?.hidden) {
+        openDevPanel();
+      } else {
+        closeDevPanel();
+      }
+      return;
+    }
+    avatarTapTimer = window.setTimeout(() => {
+      avatarTapCount = 0;
+    }, 2500);
+  });
+
+  document.addEventListener('keydown', (ev) => {
+    if (!drawer.hidden && (ev.altKey || ev.ctrlKey) && ev.shiftKey && (ev.key === 'D' || ev.key === 'd')) {
+      ev.preventDefault();
+      if (isDeveloperMode()) {
+        setDevPasscode('');
+        syncDevUi();
+        if (showToast) showToast('Switched back to Shared Class Mode');
+      } else if (devPanel?.hidden) {
+        openDevPanel();
+      } else {
+        closeDevPanel();
+      }
+    }
+  });
+
+  devBadge?.addEventListener('click', () => {
+    setDevPasscode('');
+    syncDevUi();
+    if (showToast) showToast('Switched back to Shared Class Mode');
+  });
+
+  devCancelBtn?.addEventListener('click', closeDevPanel);
+
+  devPanel?.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const code = (devInput?.value || '').trim();
+    if (!code) return;
+    if (devSubmitBtn) devSubmitBtn.disabled = true;
+    if (devError) {
+      devError.hidden = true;
+      devError.textContent = '';
+    }
+    try {
+      const resp = await fetch(getApiUrl(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-qmh-client': getClientId(),
+          'x-developer-passcode': code,
+        },
+        body: JSON.stringify({ action: 'verify-dev' }),
+      });
+      const data = await resp.json().catch(() => null);
+      if (resp.ok && data?.developer) {
+        setDevPasscode(code);
+        closeDevPanel();
+        syncDevUi();
+        if (showToast) showToast('Developer Mode unlocked (Private Key Active)');
+      } else {
+        if (devError) {
+          devError.textContent = data?.error || 'Incorrect developer passcode.';
+          devError.hidden = false;
+        }
+      }
+    } catch {
+      if (devError) {
+        devError.textContent = 'Could not verify passcode right now.';
+        devError.hidden = false;
+      }
+    } finally {
+      if (devSubmitBtn) devSubmitBtn.disabled = false;
+    }
+  });
 
   const history = []; // { role: 'user'|'model', text }
   let pendingImage = null;
@@ -772,14 +948,16 @@ export function initQmhBot(lessonMeta, showToast) {
 
     try {
       await ensureKatexLoaded();
-      const root = document.documentElement.dataset.root || '../../';
-      const apiUrl = root.startsWith('/') ? '/api/chat' : `${window.location.origin}/api/chat`;
-      const resp = await fetch(apiUrl, {
+      const reqHeaders = {
+        'Content-Type': 'application/json',
+        'x-qmh-client': getClientId(),
+      };
+      const devCode = getDevPasscode();
+      if (devCode) reqHeaders['x-developer-passcode'] = devCode;
+
+      const resp = await fetch(getApiUrl(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-qmh-client': getClientId(),
-        },
+        headers: reqHeaders,
         body: JSON.stringify({
           message: text,
           attachments,
@@ -792,6 +970,10 @@ export function initQmhBot(lessonMeta, showToast) {
       typingRow.remove();
 
       if (!resp.ok || !data || !data.reply) {
+        if (data?.code === 'INVALID_DEV_PASSCODE') {
+          setDevPasscode('');
+          syncDevUi();
+        }
         const errMsg =
           data?.error ||
           'QMHBot service is currently unreachable. Please check your connection or try again shortly.';
