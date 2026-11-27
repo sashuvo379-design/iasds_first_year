@@ -1,17 +1,36 @@
 /* ==========================================================================
    QMHBot Serverless API Handler (/api/chat)
    Stateless, login-free academic tutor grounded in the active IASDS lesson.
-   Supports English, Bangla (বাংলা), Banglish, images, and recorded voice clips.
+   Protected with narrow per-student quotas (sized for ~55 classmates),
+   smart Lite/Flagship model routing, origin checks, and payload caps.
    ========================================================================== */
 
-const MODEL_CANDIDATES = [
+const TEXT_MODELS = [
+  process.env.QMHBOT_TEXT_MODEL,
+  'gemini-3.1-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-3-flash-preview',
+  'gemini-3.8-flash',
+].filter(Boolean);
+
+const MULTIMODAL_MODELS = [
   process.env.QMHBOT_MODEL,
   'gemini-3-flash-preview',
   'gemini-3.8-flash',
   'gemini-3.1-flash-lite',
   'gemini-flash-latest',
 ].filter(Boolean);
-const MAX_REQUEST_BYTES = 4.2 * 1024 * 1024;
+
+const LIMITS = {
+  perStudent10Min: 6,
+  perStudentDay: 20,
+  perIp10Min: 40,
+  perIpDay: 250,
+  sitePerMin: 14,
+  sitePerDay: 650,
+};
+
+const MAX_REQUEST_BYTES = 2.5 * 1024 * 1024;
 const ALLOWED_IMAGE_MIME = new Set([
   'image/jpeg',
   'image/jpg',
@@ -29,6 +48,159 @@ const ALLOWED_AUDIO_MIME = new Set([
   'audio/aac',
 ]);
 
+// Ephemeral warm-instance rate-limit store (effective on Fluid Compute concurrent instances)
+const studentBuckets = new Map();
+const ipBuckets = new Map();
+let siteMinuteBucket = { windowStart: 0, count: 0 };
+let siteDayBucket = { day: '', count: 0 };
+
+function getDayKey(now = Date.now()) {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
+function pruneMapIfLarge(map) {
+  if (map.size > 2000) {
+    const cutoff = Date.now() - 25 * 3600 * 1000;
+    for (const [k, v] of map.entries()) {
+      if (v.tenMinStart < cutoff && v.day !== getDayKey()) map.delete(k);
+    }
+  }
+}
+
+function checkDualBucket(map, key, max10Min, maxDay, now) {
+  const day = getDayKey(now);
+  let entry = map.get(key);
+  if (!entry) {
+    entry = { tenMinStart: now, tenMinCount: 0, day, dayCount: 0 };
+  }
+  if (now - entry.tenMinStart >= 10 * 60 * 1000) {
+    entry.tenMinStart = now;
+    entry.tenMinCount = 0;
+  }
+  if (entry.day !== day) {
+    entry.day = day;
+    entry.dayCount = 0;
+  }
+  if (entry.dayCount >= maxDay) {
+    const nextMidnight = Date.UTC(
+      new Date(now).getUTCFullYear(),
+      new Date(now).getUTCMonth(),
+      new Date(now).getUTCDate() + 1
+    );
+    return { allowed: false, scope: 'day', retryAfterSec: Math.max(60, Math.ceil((nextMidnight - now) / 1000)) };
+  }
+  if (entry.tenMinCount >= max10Min) {
+    const retryAfterSec = Math.max(10, Math.ceil((entry.tenMinStart + 10 * 60 * 1000 - now) / 1000));
+    return { allowed: false, scope: '10min', retryAfterSec };
+  }
+  return { allowed: true, entry };
+}
+
+function incrementDualBucket(map, key, now) {
+  const day = getDayKey(now);
+  let entry = map.get(key);
+  if (!entry) {
+    entry = { tenMinStart: now, tenMinCount: 0, day, dayCount: 0 };
+  }
+  if (now - entry.tenMinStart >= 10 * 60 * 1000) {
+    entry.tenMinStart = now;
+    entry.tenMinCount = 0;
+  }
+  if (entry.day !== day) {
+    entry.day = day;
+    entry.dayCount = 0;
+  }
+  entry.tenMinCount += 1;
+  entry.dayCount += 1;
+  map.set(key, entry);
+  pruneMapIfLarge(map);
+  return entry;
+}
+
+function enforceRateLimits(request) {
+  const now = Date.now();
+  const day = getDayKey(now);
+
+  // Sync global instance counters
+  if (now - siteMinuteBucket.windowStart >= 60 * 1000) {
+    siteMinuteBucket = { windowStart: now, count: 0 };
+  }
+  if (siteDayBucket.day !== day) {
+    siteDayBucket = { day, count: 0 };
+  }
+
+  if (siteDayBucket.count >= LIMITS.sitePerDay) {
+    return {
+      ok: false,
+      retryAfterSec: 3600,
+      message:
+        'QMHBot reached today’s shared class limit to keep the free service healthy. আজকের শেয়ার্ড লিমিট শেষ হয়েছে — অনুগ্রহ করে আগামীকাল আবার চেষ্টা করো।',
+    };
+  }
+  if (siteMinuteBucket.count >= LIMITS.sitePerMin) {
+    return {
+      ok: false,
+      retryAfterSec: 25,
+      message:
+        'Many classmates are asking at the same moment. অনেক শিক্ষার্থী একসাথে প্রশ্ন করছে — ২০–৩০ সেকেন্ড পরে আবার চেষ্টা করো।',
+    };
+  }
+
+  const forwarded = request.headers.get('x-forwarded-for') || '';
+  const ip = (forwarded.split(',')[0] || request.headers.get('x-real-ip') || 'local').trim().slice(0, 64);
+  const rawClient = (request.headers.get('x-qmh-client') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 48);
+  const studentKey = `${ip}:${rawClient || 'anon'}`;
+
+  const studentCheck = checkDualBucket(studentBuckets, studentKey, LIMITS.perStudent10Min, LIMITS.perStudentDay, now);
+  if (!studentCheck.allowed) {
+    const mins = Math.max(1, Math.ceil(studentCheck.retryAfterSec / 60));
+    return {
+      ok: false,
+      retryAfterSec: studentCheck.retryAfterSec,
+      message:
+        studentCheck.scope === 'day'
+          ? `You have reached today's personal limit (${LIMITS.perStudentDay} questions/day, shared fairly across ~55 classmates). আজকের তোমার ${LIMITS.perStudentDay}টি প্রশ্নের কোটা পূর্ণ হয়েছে — আগামীকাল আবার ব্যবহার করতে পারবে।`
+          : `Short cooldown (${LIMITS.perStudent10Min} questions per 10 min) so all classmates can use QMHBot smoothly. অনুগ্রহ করে প্রায় ${mins} মিনিট পর আবার প্রশ্ন করো।`,
+    };
+  }
+
+  const ipCheck = checkDualBucket(ipBuckets, ip, LIMITS.perIp10Min, LIMITS.perIpDay, now);
+  if (!ipCheck.allowed) {
+    return {
+      ok: false,
+      retryAfterSec: ipCheck.retryAfterSec,
+      message:
+        'Too many requests from this network right now. অনুগ্রহ করে কয়েক মিনিট পর আবার চেষ্টা করো।',
+    };
+  }
+
+  siteMinuteBucket.count += 1;
+  siteDayBucket.count += 1;
+  const updatedStudent = incrementDualBucket(studentBuckets, studentKey, now);
+  incrementDualBucket(ipBuckets, ip, now);
+
+  return {
+    ok: true,
+    remainingToday: Math.max(0, LIMITS.perStudentDay - updatedStudent.dayCount),
+    remaining10Min: Math.max(0, LIMITS.perStudent10Min - updatedStudent.tenMinCount),
+  };
+}
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  try {
+    const u = new URL(origin);
+    const host = u.hostname.toLowerCase();
+    if (host === 'localhost' || host === '127.0.0.1') return true;
+    if (host === 'iasds-first-year.vercel.app') return true;
+    if (host.endsWith('-sashuvo379-design.vercel.app')) return true;
+    if (host === 'sashuvo379-design.github.io') return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 function normalizeMime(mime, allowedSet) {
   if (!mime || typeof mime !== 'string') return '';
   const clean = mime.split(';')[0].trim().toLowerCase();
@@ -38,9 +210,8 @@ function normalizeMime(mime, allowedSet) {
 
 function scrubIdentityLeaks(text) {
   if (!text) return '';
-  // Ensure strict white-labeling as QMHBot even if an unexpected upstream mention slips through
   return String(text)
-    .replace(/\b(Google\s+Gemini|Gemini\s+\d+(?:\.\d+)?(?:\s+(?:Pro|Flash|Ultra))?|Gemini|Google\s+AI)\b/gi, 'QMHBot')
+    .replace(/\b(Google\s+Gemini|Gemini\s+\d+(?:\.\d+)?(?:\s+(?:Pro|Flash|Ultra|Lite))?|Gemini|Google\s+AI)\b/gi, 'QMHBot')
     .replace(/\b(trained|created|built|developed)\s+by\s+Google\b/gi, 'built for IASDS students as QMHBot')
     .trim();
 }
@@ -49,11 +220,11 @@ function buildSystemInstruction(lessonContext = {}) {
   const courseCode = String(lessonContext.courseCode || '').slice(0, 32);
   const courseName = String(lessonContext.courseName || '').slice(0, 140);
   const lessonTitle = String(lessonContext.lessonTitle || '').slice(0, 200);
-  const examNote = String(lessonContext.examNote || '').slice(0, 500);
+  const examNote = String(lessonContext.examNote || '').slice(0, 400);
   const headings = Array.isArray(lessonContext.headings)
-    ? lessonContext.headings.slice(0, 40).map((h) => `- ${String(h).slice(0, 140)}`).join('\n')
+    ? lessonContext.headings.slice(0, 30).map((h) => `- ${String(h).slice(0, 120)}`).join('\n')
     : '';
-  const excerpt = String(lessonContext.contentText || '').slice(0, 14000);
+  const excerpt = String(lessonContext.contentText || '').slice(0, 8500);
 
   return [
     'You are QMHBot, a friendly, sharp, exam-oriented academic study assistant for First-Year students of Applied Statistics and Data Science (ISRT, University of Dhaka).',
@@ -61,14 +232,14 @@ function buildSystemInstruction(lessonContext = {}) {
     'CRITICAL IDENTITY RULES:',
     '1. Your name is QMHBot. Always identify strictly as QMHBot.',
     '2. NEVER mention Google, Gemini, PaLM, Vertex, OpenAI, Claude, LLM providers, or any underlying model name or vendor in any answer. If asked what AI you are or who made you, respond simply that you are QMHBot, the built-in study assistant for this IASDS learning portal.',
-    '3. Keep answers clear, rigorous, encouraging, and directly helpful for university statistics, mathematics, and economics exams.',
+    '3. Keep answers clear, focused, concise, rigorous, and directly helpful for university statistics, mathematics, and economics exams.',
     '',
     'LANGUAGE & MULTIMODAL RULES:',
-    '- You are fluent in English, Bangla (বাংলা script), and Banglish (Bengla written in English/Latin letters, e.g. "ei formula ta bujhai dao", "variance er proof ki?").',
-    '- Reply in the same language/style the student writes or speaks in (e.g., if they ask in Bangla, reply in clear Bangla with standard English mathematical terms/LaTeX where natural; if they ask in Banglish, reply warmly in clean Bangla or easy Banglish+English clarity as fits best; if English, reply in crisp academic English).',
-    '- If the student attaches an image (handwritten math, printed question paper, graph, table, or diagram), carefully read every symbol, number, and label from the image and solve or explain it step by step.',
-    '- If the student sends a voice recording, listen carefully to the audio (English, Bangla, or Banglish) and answer their spoken question directly.',
-    '- Format mathematics cleanly using standard LaTeX ($...$ for inline math, $$...$$ for display equations) and clean Markdown bullet points or numbered steps.',
+    '- You are fluent in English, Bangla (বাংলা script), and Banglish (Bangla written in English/Latin letters, e.g. "ei formula ta bujhai dao").',
+    '- Reply in the same language/style the student writes or speaks in.',
+    '- If the student attaches an image, read every symbol, number, and label from the image and solve or explain it step by step.',
+    '- If the student sends a voice recording, listen carefully (English, Bangla, or Banglish) and answer directly.',
+    '- Format mathematics cleanly using LaTeX ($...$ for inline, $$...$$ for display) and concise bullet points.',
     '',
     'OPENED LESSON CONTEXT:',
     courseCode ? `Course: ${courseCode}${courseName ? ` — ${courseName}` : ''}` : 'Course: IASDS First-Year Curriculum',
@@ -77,7 +248,7 @@ function buildSystemInstruction(lessonContext = {}) {
     headings ? `Lesson Sections:\n${headings}` : '',
     excerpt ? `Lesson Content Reference:\n"""\n${excerpt}\n"""` : '',
     '',
-    'Ground your explanations in the opened lesson above whenever relevant, and feel free to explain prerequisite or related concepts needed for full understanding.',
+    'Ground your explanations in the opened lesson above whenever relevant, and clearly explain related concepts when helpful.',
   ]
     .filter(Boolean)
     .join('\n');
@@ -87,11 +258,11 @@ function buildContents(history = [], currentMessage = {}, attachments = []) {
   const contents = [];
 
   if (Array.isArray(history)) {
-    const recent = history.slice(-10);
+    const recent = history.slice(-6);
     for (const turn of recent) {
       if (!turn || typeof turn !== 'object') continue;
       const role = turn.role === 'model' ? 'model' : 'user';
-      const text = String(turn.text || '').trim().slice(0, 6000);
+      const text = String(turn.text || '').trim().slice(0, 1500);
       if (!text) continue;
       contents.push({
         role,
@@ -101,32 +272,34 @@ function buildContents(history = [], currentMessage = {}, attachments = []) {
   }
 
   const userParts = [];
-  const promptText = String(currentMessage.text || '').trim().slice(0, 8000);
+  const promptText = String(currentMessage.text || '').trim().slice(0, 3000);
   if (promptText) {
     userParts.push({ text: promptText });
   }
 
-  for (const att of attachments) {
+  let hasImage = false;
+  let hasAudio = false;
+  for (const att of attachments.slice(0, 2)) {
     if (!att || !att.data || !att.mimeType) continue;
     const base64Clean = String(att.data).replace(/^data:[^;]+;base64,/, '').trim();
     if (!base64Clean) continue;
 
-    if (att.kind === 'image') {
+    if (att.kind === 'image' && !hasImage) {
       const mime = normalizeMime(att.mimeType, ALLOWED_IMAGE_MIME);
       if (mime) {
         userParts.push({ inlineData: { mimeType: mime, data: base64Clean } });
+        hasImage = true;
       }
-    } else if (att.kind === 'audio') {
+    } else if (att.kind === 'audio' && !hasAudio) {
       const mime = normalizeMime(att.mimeType, ALLOWED_AUDIO_MIME);
       if (mime) {
         userParts.push({ inlineData: { mimeType: mime, data: base64Clean } });
+        hasAudio = true;
       }
     }
   }
 
   if (!promptText && userParts.length > 0) {
-    const hasAudio = attachments.some((a) => a && a.kind === 'audio');
-    const hasImage = attachments.some((a) => a && a.kind === 'image');
     if (hasAudio && hasImage) {
       userParts.unshift({
         text: 'Please listen to my voice question and examine the attached image carefully, then answer in detail.',
@@ -146,7 +319,7 @@ function buildContents(history = [], currentMessage = {}, attachments = []) {
     contents.push({ role: 'user', parts: userParts });
   }
 
-  return contents;
+  return { contents, isMultimodal: hasImage || hasAudio };
 }
 
 async function callModelEndpoint(apiKey, modelName, payload) {
@@ -164,23 +337,50 @@ async function callModelEndpoint(apiKey, modelName, payload) {
   return { ok: resp.ok, status: resp.status, data };
 }
 
+export async function GET() {
+  const now = Date.now();
+  const day = getDayKey(now);
+  const minuteCount = now - siteMinuteBucket.windowStart < 60 * 1000 ? siteMinuteBucket.count : 0;
+  const dailyCount = siteDayBucket.day === day ? siteDayBucket.count : 0;
+
+  return Response.json({
+    ok: Boolean((process.env.GEMINI_API_KEY || '').trim()),
+    assistant: 'QMHBot',
+    limits: LIMITS,
+    instanceUsage: {
+      day,
+      minuteCount,
+      dailyCount,
+      remainingSiteDayOnInstance: Math.max(0, LIMITS.sitePerDay - dailyCount),
+    },
+  });
+}
+
 export async function OPTIONS() {
   return new Response(null, {
     status: 204,
     headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Origin': 'https://iasds-first-year.vercel.app',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, x-qmh-client',
     },
   });
 }
 
 export async function POST(request) {
   try {
+    const origin = request.headers.get('origin') || '';
+    if (!isAllowedOrigin(origin)) {
+      return Response.json(
+        { error: 'Origin not allowed for QMHBot requests.' },
+        { status: 403 }
+      );
+    }
+
     const contentLength = Number(request.headers.get('content-length') || 0);
     if (contentLength > MAX_REQUEST_BYTES) {
       return Response.json(
-        { error: 'Your attachment is too large. Please use a smaller photo or shorter voice clip.' },
+        { error: 'Your attachment is too large (max 2.5 MB). Please use a smaller photo or shorter voice clip.' },
         { status: 413 }
       );
     }
@@ -200,7 +400,7 @@ export async function POST(request) {
     const rawBody = await request.text();
     if (Buffer.byteLength(rawBody, 'utf8') > MAX_REQUEST_BYTES) {
       return Response.json(
-        { error: 'Request payload exceeds size limit. Please compress your image or record a shorter audio clip.' },
+        { error: 'Request payload exceeds 2.5 MB limit. Please compress your photo or record a shorter voice clip.' },
         { status: 413 }
       );
     }
@@ -212,13 +412,29 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid JSON request body.' }, { status: 400 });
     }
 
-    const attachments = Array.isArray(body.attachments) ? body.attachments.slice(0, 3) : [];
-    const contents = buildContents(body.history, { text: body.message }, attachments);
+    const attachments = Array.isArray(body.attachments) ? body.attachments.slice(0, 2) : [];
+    const { contents, isMultimodal } = buildContents(body.history, { text: body.message }, attachments);
 
     if (contents.length === 0 || contents[contents.length - 1].role !== 'user') {
       return Response.json(
         { error: 'Please type a question, attach an image, or record a voice message.' },
         { status: 400 }
+      );
+    }
+
+    // Enforce narrow fair-use rate limits before calling AI
+    const limitStatus = enforceRateLimits(request);
+    if (!limitStatus.ok) {
+      return Response.json(
+        {
+          code: 'RATE_LIMITED',
+          retryAfterSec: limitStatus.retryAfterSec,
+          error: limitStatus.message,
+        },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(limitStatus.retryAfterSec) },
+        }
       );
     }
 
@@ -230,12 +446,13 @@ export async function POST(request) {
       contents,
       generationConfig: {
         temperature: 0.45,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 1400,
       },
     };
 
+    const candidateModels = isMultimodal ? MULTIMODAL_MODELS : TEXT_MODELS;
     let result = { ok: false, status: 503, data: {} };
-    for (const modelName of MODEL_CANDIDATES) {
+    for (const modelName of candidateModels) {
       result = await callModelEndpoint(apiKey, modelName, payload);
       if (result.ok) break;
       if (![400, 404, 429, 500, 503].includes(result.status)) break;
@@ -243,9 +460,12 @@ export async function POST(request) {
 
     if (!result.ok) {
       console.error('[QMHBot] Upstream AI response failed:', result.status, JSON.stringify(result.data?.error || {}));
-      if (result.status === 429) {
+      if (result.status === 429 || result.status === 503) {
         return Response.json(
-          { error: 'QMHBot is temporarily busy due to high demand. Please wait a few seconds and try again.' },
+          {
+            error:
+              'QMHBot is temporarily busy because shared class quota is high right now. কিছুক্ষণ পর (৩০–৬০ সেকেন্ড) আবার চেষ্টা করো।',
+          },
           { status: 429 }
         );
       }
@@ -271,6 +491,11 @@ export async function POST(request) {
     return Response.json({
       assistant: 'QMHBot',
       reply: scrubIdentityLeaks(rawReply),
+      quota: {
+        remainingToday: limitStatus.remainingToday,
+        remaining10Min: limitStatus.remaining10Min,
+        dailyLimit: LIMITS.perStudentDay,
+      },
     });
   } catch (err) {
     console.error('[QMHBot] Unexpected handler error:', err);

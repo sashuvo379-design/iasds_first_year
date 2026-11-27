@@ -4,6 +4,77 @@
    ========================================================================== */
 
 const KATEX_CDN = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist';
+const CLIENT_ID_KEY = 'iasds_qmh_cid_v1';
+const QUOTA_KEY = 'iasds_qmh_quota_v1';
+const MAX_PER_10_MIN = 6;
+const MAX_PER_DAY = 20;
+
+function getClientId() {
+  try {
+    let cid = window.localStorage.getItem(CLIENT_ID_KEY);
+    if (!cid) {
+      cid = (window.crypto?.randomUUID ? window.crypto.randomUUID() : `qmh_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`);
+      window.localStorage.setItem(CLIENT_ID_KEY, cid);
+    }
+    return cid;
+  } catch {
+    return `sess_${Math.random().toString(36).slice(2, 10)}`;
+  }
+}
+
+function readLocalQuota() {
+  const today = new Date().toISOString().slice(0, 10);
+  const now = Date.now();
+  try {
+    const raw = JSON.parse(window.localStorage.getItem(QUOTA_KEY) || '{}');
+    const dayCount = raw.day === today ? Number(raw.dayCount || 0) : 0;
+    const recent = Array.isArray(raw.recent)
+      ? raw.recent.filter((ts) => typeof ts === 'number' && now - ts < 10 * 60 * 1000)
+      : [];
+    return { day: today, dayCount, recent };
+  } catch {
+    return { day: today, dayCount: 0, recent: [] };
+  }
+}
+
+function writeLocalQuota(q) {
+  try {
+    window.localStorage.setItem(QUOTA_KEY, JSON.stringify(q));
+  } catch {
+    // ignore
+  }
+}
+
+function checkLocalQuota() {
+  const q = readLocalQuota();
+  if (q.dayCount >= MAX_PER_DAY) {
+    return {
+      ok: false,
+      remainingDay: 0,
+      message: `Daily limit reached (${MAX_PER_DAY}/${MAX_PER_DAY} questions today, shared fairly across classmates). আজকের কোটা পূর্ণ হয়েছে — আগামীকাল আবার ব্যবহার করতে পারবে।`,
+    };
+  }
+  if (q.recent.length >= MAX_PER_10_MIN) {
+    const waitMin = Math.max(1, Math.ceil((q.recent[0] + 10 * 60 * 1000 - Date.now()) / 60000));
+    return {
+      ok: false,
+      remainingDay: MAX_PER_DAY - q.dayCount,
+      message: `Short cooldown (${MAX_PER_10_MIN} questions / 10 min) for shared fair use. অনুগ্রহ করে প্রায় ${waitMin} মিনিট পর আবার চেষ্টা করো।`,
+    };
+  }
+  return { ok: true, remainingDay: MAX_PER_DAY - q.dayCount };
+}
+
+function recordLocalUsage(serverQuota) {
+  const q = readLocalQuota();
+  q.recent.push(Date.now());
+  if (serverQuota && typeof serverQuota.remainingToday === 'number') {
+    q.dayCount = Math.max(q.dayCount + 1, MAX_PER_DAY - serverQuota.remainingToday);
+  } else {
+    q.dayCount += 1;
+  }
+  writeLocalQuota(q);
+}
 
 const BOT_ICON =
   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>';
@@ -174,7 +245,7 @@ function extractLessonContext(lessonMeta) {
     const clone = article.cloneNode(true);
     // Keep clean TeX annotations if KaTeX rendered, strip redundant visual HTML spans
     clone.querySelectorAll('script, style, .katex-html, svg').forEach((n) => n.remove());
-    contentText = (clone.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 14000);
+    contentText = (clone.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 8500);
   }
 
   return {
@@ -196,7 +267,7 @@ function compressImageFile(file) {
       const img = new Image();
       img.onerror = () => reject(new Error('Unsupported image format'));
       img.onload = () => {
-        const maxDim = 1400;
+        const maxDim = 1150;
         let { width, height } = img;
         if (width > maxDim || height > maxDim) {
           const ratio = Math.min(maxDim / width, maxDim / height);
@@ -208,7 +279,7 @@ function compressImageFile(file) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        const outUrl = canvas.toDataURL('image/jpeg', 0.82);
+        const outUrl = canvas.toDataURL('image/jpeg', 0.78);
         resolve({
           kind: 'image',
           mimeType: 'image/jpeg',
@@ -283,6 +354,7 @@ export function initQmhBot(lessonMeta, showToast) {
     <div id="qmhbotMessages" class="qmhbot-messages" role="log" aria-live="polite"></div>
 
     <div class="qmhbot-composer">
+      <div id="qmhbotQuotaNote" class="qmhbot-quota-note"></div>
       <div id="qmhbotAttachBar" class="qmhbot-attach-bar" hidden></div>
       <div id="qmhbotRecordingBar" class="qmhbot-rec-bar" hidden>
         <span class="qmhbot-rec-dot"></span>
@@ -315,8 +387,16 @@ export function initQmhBot(lessonMeta, showToast) {
   const recStopBtn = document.getElementById('qmhbotRecStopBtn');
   const recCancelBtn = document.getElementById('qmhbotRecCancelBtn');
   const attachBar = document.getElementById('qmhbotAttachBar');
+  const quotaNote = document.getElementById('qmhbotQuotaNote');
   const clearBtn = document.getElementById('qmhbotClearBtn');
   const closeBtn = document.getElementById('qmhbotCloseBtn');
+
+  const updateQuotaBadge = () => {
+    if (!quotaNote) return;
+    const status = checkLocalQuota();
+    quotaNote.textContent = `Today: ${status.remainingDay}/${MAX_PER_DAY} questions left (6 / 10 min) · Shared fairly · Don’t send personal info`;
+  };
+  updateQuotaBadge();
 
   const history = []; // { role: 'user'|'model', text }
   let pendingImage = null;
@@ -618,6 +698,13 @@ export function initQmhBot(lessonMeta, showToast) {
     }
     if (!text && !attachments.length) return;
 
+    const localGate = checkLocalQuota();
+    if (!localGate.ok) {
+      appendBubble('model', { text: localGate.message });
+      updateQuotaBadge();
+      return;
+    }
+
     appendBubble('user', { text, imageUrl: previewImg, hasAudio });
     input.value = '';
     input.style.height = 'auto';
@@ -637,11 +724,14 @@ export function initQmhBot(lessonMeta, showToast) {
       const apiUrl = root.startsWith('/') ? '/api/chat' : `${window.location.origin}/api/chat`;
       const resp = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-qmh-client': getClientId(),
+        },
         body: JSON.stringify({
           message: text,
           attachments,
-          history: history.slice(-8),
+          history: history.slice(-6),
           lessonContext: extractLessonContext(lessonMeta),
         }),
       });
@@ -656,6 +746,9 @@ export function initQmhBot(lessonMeta, showToast) {
         appendBubble('model', { text: errMsg });
         return;
       }
+
+      recordLocalUsage(data.quota);
+      updateQuotaBadge();
 
       if (text) history.push({ role: 'user', text });
       else if (hasAudio) history.push({ role: 'user', text: '[Voice question]' });

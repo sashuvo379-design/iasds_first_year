@@ -58,6 +58,7 @@ const LIVE_RELOAD_SNIPPET = `
 buildSite();
 
 const clients = new Set();
+let cachedChatMod = null;
 
 const server = http.createServer(async (req, res) => {
   const reqUrl = new URL(req.url || '/', `http://localhost:${PORT}`);
@@ -65,7 +66,15 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname === '/api/chat') {
     try {
-      const chatMod = await import(`../api/chat.js?t=${Date.now()}`);
+      const chatMod = cachedChatMod || (cachedChatMod = await import('../api/chat.js'));
+      if (req.method === 'GET' && chatMod.GET) {
+        const resp = await chatMod.GET(new Request(reqUrl.toString(), { method: 'GET', headers: req.headers }));
+        res.writeHead(resp.status, {
+          'Content-Type': resp.headers.get('content-type') || 'application/json; charset=utf-8',
+        });
+        res.end(await resp.text());
+        return;
+      }
       if (req.method === 'OPTIONS' && chatMod.OPTIONS) {
         const resp = await chatMod.OPTIONS();
         res.writeHead(resp.status, Object.fromEntries(resp.headers.entries()));
