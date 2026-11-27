@@ -73,6 +73,7 @@ export function upgradeExamAnswersHtml(lessonId, courseCode, contentHtml) {
       ''
     );
     html = html.replace(/📝\s*Show Full Solution/g, 'Show Step-by-Step Exam Answer');
+    html = html.replace(/then reveal the Hint or Full Step-by-Step Solution independently\./gi, 'then open the Full Step-by-Step Exam Answer independently.');
   }
 
   if (courseCode === 'MATH104') {
@@ -89,7 +90,7 @@ export function upgradeExamAnswersHtml(lessonId, courseCode, contentHtml) {
     html = html.replace(/<div class="step-item">/g, '<div class="step-item visible">');
     // Standardize Exam Vault button text
     html = html.replace(
-      />\s*Toggle (?:Full (?:6-Step )?Solution|Model Answer|Solutions?|Full Proof|Complete Exam (?:Proof|Derivation))\s*</g,
+      />\s*Toggle (?:Full (?:6-Step )?Solution|Model Answer|Solutions?|Full Proof|Complete Exam (?:Proof|Derivation)|Complete Breakdown|Step-by-Step Elimination)\s*</g,
       '>Show Step-by-Step Exam Answer<'
     );
   }

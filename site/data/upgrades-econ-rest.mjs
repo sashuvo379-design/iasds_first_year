@@ -245,6 +245,27 @@ export const ECON_REST_UPGRADES = {
                 <div class="exam-script-ans">
                   <span class="exam-script-ans__label">Model Exam-Script Answer</span>
                   <p><strong>Answer to Q1(3):</strong> Individual <strong>labor supply</strong> bends backward at high wage rates. At low-to-moderate wages, a wage hike makes leisure costlier in forgone earnings, so the <em>substitution effect</em> dominates and workers supply more hours (upward-sloping segment). Above a high wage threshold, workers feel sufficiently affluent to purchase more leisure time with family; the <em>income effect</em> dominates the substitution effect, causing hours worked to decline as wages rise further.</p>
+                  <figure class="exam-svg-fig">
+                    <svg viewBox="0 0 380 185" width="380" height="185" role="img" aria-label="Side-by-side diagrams of Backward-Bending Labor Supply curve and Demand Movement versus Shift">
+                      <!-- Left: Labor supply -->
+                      <line x1="36" y1="156" x2="170" y2="156" stroke="currentColor" stroke-width="1.2"/>
+                      <line x1="36" y1="156" x2="36" y2="18" stroke="currentColor" stroke-width="1.2"/>
+                      <path d="M 52 145 C 122 122, 138 92, 128 68 C 118 46, 98 32, 82 22" fill="none" stroke="#0F5E59" stroke-width="2.4"/>
+                      <circle cx="131" cy="78" r="3.5" fill="#BE123C"/>
+                      <text x="138" y="82" font-size="9" font-weight="700" fill="#BE123C">W*</text>
+                      <text x="102" y="172" font-size="9.5" text-anchor="middle" fill="currentColor">Hours Worked (L)</text>
+                      <text x="14" y="88" font-size="9.5" text-anchor="middle" transform="rotate(-90 14 88)" fill="currentColor">Wage (W)</text>
+                      <!-- Right: Movement vs Shift -->
+                      <line x1="215" y1="156" x2="360" y2="156" stroke="currentColor" stroke-width="1.2"/>
+                      <line x1="215" y1="156" x2="215" y2="18" stroke="currentColor" stroke-width="1.2"/>
+                      <line x1="230" y1="34" x2="305" y2="144" stroke="#0F5E59" stroke-width="2.2"/>
+                      <line x1="268" y1="34" x2="343" y2="144" stroke="#C27803" stroke-width="2.2" stroke-dasharray="4,3"/>
+                      <circle cx="256" cy="72" r="3.5" fill="#0F5E59"/><circle cx="274" cy="98" r="3.5" fill="#0F5E59"/>
+                      <text x="292" y="138" font-size="9.5" font-weight="700" fill="#0F5E59">D₀</text>
+                      <text x="346" y="138" font-size="9.5" font-weight="700" fill="#C27803">D₁ (Shift)</text>
+                      <text x="288" y="172" font-size="9.5" text-anchor="middle" fill="currentColor">Ice Cream Qty (Q)</text>
+                    </svg>
+                  </figure>
                   <p><strong>Answer to Q1(4):</strong> Holding tea prices and consumer income constant, an increase in the price of coffee makes coffee relatively more expensive than close caffeine substitutes such as tea or hot chocolate. Rational consumers substitute lower-priced tea in place of coffee, causing the quantity demanded of coffee to fall as its price rises.</p>
                   <p><strong>Answer to Q2(a):</strong> A <strong>movement along</strong> the ice-cream demand curve (change in <em>quantity demanded</em>) is caused solely by a change in the <em>own price of ice cream</em> (e.g., price per cone rising from Tk. 80 to Tk. 100 reduces quantity bought along the fixed curve \\(D_0\\)). A <strong>shift</strong> of the entire demand curve (change in <em>demand</em>, \\(D_0 \\to D_1\\)) is caused by a change in a <em>non-price determinant</em>—such as a hot summer heatwave or rising household income—increasing ice-cream purchases at every possible price.</p>
                 </div>
@@ -405,6 +426,21 @@ export const ECON_REST_UPGRADES = {
                   <p>&bull; Near the <strong>vertical price intercept</strong> (\\(P \\to a/b,\\; Q \\to 0\\)): \\(P/Q \\to \\infty \\implies E_D \\to \\infty\\) (elastic upper half, \\(E_D &gt; 1\\)).<br>
                   &bull; At the <strong>exact geometric midpoint</strong> (\\(P = a/(2b),\\; Q = a/2\\)): \\(E_D = b \\cdot \\frac{a/(2b)}{a/2} = \\mathbf{1}\\) (unit-elastic).<br>
                   &bull; Near the <strong>horizontal quantity intercept</strong> (\\(P \\to 0,\\; Q \\to a\\)): \\(P/Q \\to 0 \\implies E_D \\to 0\\) (inelastic lower half, \\(E_D &lt; 1\\)).</p>
+                  <figure class="exam-svg-fig">
+                    <svg viewBox="0 0 340 190" width="340" height="190" role="img" aria-label="Linear demand curve showing upper elastic segment E_D > 1, midpoint E_D = 1, and lower inelastic segment E_D < 1">
+                      <line x1="50" y1="162" x2="310" y2="162" stroke="currentColor" stroke-width="1.3"/>
+                      <line x1="50" y1="162" x2="50" y2="18" stroke="currentColor" stroke-width="1.3"/>
+                      <line x1="50" y1="26" x2="290" y2="162" stroke="#0F5E59" stroke-width="2.4"/>
+                      <circle cx="170" cy="94" r="4.5" fill="#BE123C"/>
+                      <text x="178" y="90" font-size="10.5" font-weight="700" fill="#BE123C">Midpoint: E_D = 1</text>
+                      <text x="108" y="54" font-size="10.5" font-weight="700" fill="#0F5E59">E_D &gt; 1 (Elastic)</text>
+                      <text x="225" y="138" font-size="10.5" font-weight="700" fill="#C27803">E_D &lt; 1 (Inelastic)</text>
+                      <text x="42" y="28" font-size="10" text-anchor="end" fill="currentColor">a/b</text>
+                      <text x="290" y="176" font-size="10" text-anchor="middle" fill="currentColor">a</text>
+                      <text x="170" y="178" font-size="10.5" text-anchor="middle" fill="currentColor">Quantity (Q)</text>
+                      <text x="16" y="95" font-size="10.5" text-anchor="middle" transform="rotate(-90 16 95)" fill="currentColor">Price (P)</text>
+                    </svg>
+                  </figure>
                 </div>
               </div>
             </div>
@@ -541,6 +577,25 @@ export const ECON_REST_UPGRADES = {
                   &bull; <em>Total Willingness to Pay (\\(TU\\)):</em> \\(20 + 18 + 16 + 14 + 12 + 10 + 8 + 6 = 8 \\times \\frac{20 + 6}{2} = \\mathbf{104\\text{ Tk}}\\).<br>
                   &bull; <em>Total Market Expenditure:</em> \\(8 \\text{ pieces} \\times 5\\text{ Tk} = \\mathbf{40\\text{ Tk}}\\).<br>
                   &bull; <em>Discrete Consumer Surplus:</em> \\(CS = 104 - 40 = \\mathbf{64\\text{ Tk}}\\).</p>
+                  <figure class="exam-svg-fig">
+                    <svg viewBox="0 0 340 190" width="340" height="190" role="img" aria-label="Cake marginal willingness to pay bars 20 to 6 above market price line P = 5 showing shaded Consumer Surplus of 64 Tk">
+                      <line x1="48" y1="162" x2="310" y2="162" stroke="currentColor" stroke-width="1.3"/>
+                      <line x1="48" y1="162" x2="48" y2="16" stroke="currentColor" stroke-width="1.3"/>
+                      <!-- Price line P=5 -> y=162 - 5*6 = 132; max 20 -> 42 -->
+                      <!-- Step bars for pieces 1..8: x=54+28*(k-1), w=26 -->
+                      <rect x="54" y="42" width="26" height="90" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/><rect x="82" y="54" width="26" height="78" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/>
+                      <rect x="110" y="66" width="26" height="66" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/><rect x="138" y="78" width="26" height="54" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/>
+                      <rect x="166" y="90" width="26" height="42" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/><rect x="194" y="102" width="26" height="30" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/>
+                      <rect x="222" y="114" width="26" height="18" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/><rect x="250" y="126" width="26" height="6" fill="#15803D" fill-opacity="0.22" stroke="#15803D"/>
+                      <rect x="54" y="132" width="222" height="30" fill="#C27803" fill-opacity="0.18"/>
+                      <line x1="48" y1="132" x2="295" y2="132" stroke="#BE123C" stroke-width="2"/>
+                      <text x="155" y="112" font-size="10.5" font-weight="700" text-anchor="middle" fill="#14532D">CS = 64 Tk (Shaded Green)</text>
+                      <text x="165" y="150" font-size="9.5" font-weight="700" text-anchor="middle" fill="#7C4A03">Expenditure = 8 × 5 = 40 Tk</text>
+                      <text x="42" y="45" font-size="9.5" text-anchor="end" fill="currentColor">20</text>
+                      <text x="42" y="135" font-size="9.5" font-weight="700" text-anchor="end" fill="#BE123C">P=5</text>
+                      <text x="180" y="180" font-size="10.5" text-anchor="middle" fill="currentColor">Pieces of Cake (1 to 8)</text>
+                    </svg>
+                  </figure>
                   <p><strong>Answer to (c):</strong> Even though a free public children's park collects zero gate revenue (\\(P = 0\\)), neighborhood families derive substantial positive willingness to pay (health, safety, recreation), all of which accrues as <strong>Consumer Surplus</strong>. Under social cost-benefit analysis, the municipality should construct the park if and only if the <strong>aggregate Consumer Surplus across all residents exceeds the total opportunity cost</strong> of land, construction, and maintenance.</p>
                 </div>
               </div>

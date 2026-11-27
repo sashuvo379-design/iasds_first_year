@@ -102,6 +102,21 @@ export const ECON_UPGRADES = {
                   <p><strong>(i) Scarcity:</strong> Scarcity is the fundamental economic condition in which society's productive resources (arable land, skilled workers, steel, machinery) are finite whereas human desires for Rice and Cars are unlimited. Consequently, the economy cannot produce infinite quantities of both and must choose a trade-off.</p>
                   <p><strong>(ii) Production Possibility Frontier (PPF):</strong> The PPF is the boundary locus showing the maximum attainable combinations of Rice and Cars that the economy can produce in a given period using all available inputs and current technology (e.g., \\(100\\) thousand tons of Rice and \\(0\\) Cars, \\(80\\) thousand tons of Rice and \\(10{,}000\\) Cars, down to \\(0\\) Rice and \\(25{,}000\\) Cars).</p>
                   <p><strong>(iii) Productive Efficiency:</strong> An economy achieves productive efficiency when it operates <em>on</em> (rather than inside) its PPF—meaning it is impossible to manufacture one more Car without sacrificing some quantity of Rice (no idle factories or wasted agricultural labor).</p>
+                  <figure class="exam-svg-fig">
+                    <svg viewBox="0 0 340 195" width="340" height="195" role="img" aria-label="Rice and Cars PPF showing efficient points on frontier, inefficient interior point, and unattainable exterior point">
+                      <line x1="48" y1="164" x2="305" y2="164" stroke="currentColor" stroke-width="1.3"/>
+                      <line x1="48" y1="164" x2="48" y2="18" stroke="currentColor" stroke-width="1.3"/>
+                      <path d="M 48 34 Q 190 42, 268 164" fill="none" stroke="#0F5E59" stroke-width="2.4"/>
+                      <circle cx="152" cy="70" r="4" fill="#0F5E59"/><circle cx="194" cy="94" r="4" fill="#0F5E59"/>
+                      <circle cx="105" cy="118" r="4" fill="#C27803"/><circle cx="235" cy="54" r="4" fill="#BE123C"/>
+                      <text x="159" y="65" font-size="10" font-weight="700" fill="#0F5E59">A (80k Rice, 10k Cars)</text>
+                      <text x="200" y="96" font-size="10" font-weight="700" fill="#0F5E59">B (70k Rice, 12k Cars)</text>
+                      <text x="112" y="124" font-size="10" fill="#7C4A03">U (Inefficient)</text>
+                      <text x="242" y="56" font-size="10" fill="#BE123C">I (Unattainable)</text>
+                      <text x="176" y="182" font-size="10.5" text-anchor="middle" fill="currentColor">Cars (thousands)</text>
+                      <text x="16" y="94" font-size="10.5" text-anchor="middle" transform="rotate(-90 16 94)" fill="currentColor">Rice (k tons)</text>
+                    </svg>
+                  </figure>
                   <p><strong>(iv) Opportunity Cost:</strong> Opportunity cost is the quantity of the next-best alternative good forgone to obtain one more unit of a chosen good. For example, if moving along the PPF from \\((80\\text{k tons Rice}, 10\\text{k Cars})\\) to \\((70\\text{k tons Rice}, 12\\text{k Cars})\\) sacrifices \\(10{,}000\\) tons of Rice to gain \\(2{,}000\\) extra Cars, the opportunity cost of \\(1\\) additional Car is \\(5\\) tons of Rice.</p>
                 </div>
               </div>
@@ -475,6 +490,24 @@ export const ECON_UPGRADES = {
                 <div class="exam-script-ans">
                   <span class="exam-script-ans__label">Model Exam-Script Answer</span>
                   <p><strong>Answer to (a):</strong> Algebraically, \\(MU_n = TU_n - TU_{n-1}\\) (or \\(MU = d(TU)/dQ\\)), and \\(TU(Q) = \\sum_{k=1}^Q MU_k\\) (total utility equals the area under the marginal utility schedule). Geometrically, as long as \\(MU &gt; 0\\) and declining, \\(TU\\) increases at a decreasing rate; when \\(MU = 0\\) (satiation point), \\(TU\\) attains its peak; if \\(MU &lt; 0\\), \\(TU\\) slopes downward.</p>
+                  <figure class="exam-svg-fig">
+                    <svg viewBox="0 0 360 215" width="360" height="215" role="img" aria-label="Aligned TU and MU curves showing peak TU where MU crosses zero">
+                      <line x1="46" y1="95" x2="325" y2="95" stroke="currentColor" stroke-width="1.2"/>
+                      <line x1="46" y1="95" x2="46" y2="14" stroke="currentColor" stroke-width="1.2"/>
+                      <path d="M 46 95 Q 150 18, 225 22 Q 268 25, 305 55" fill="none" stroke="#0F5E59" stroke-width="2.3"/>
+                      <line x1="225" y1="22" x2="225" y2="195" stroke="currentColor" stroke-opacity="0.45" stroke-dasharray="4,3"/>
+                      <circle cx="225" cy="22" r="3.8" fill="#0F5E59"/>
+                      <text x="225" y="13" font-size="10" font-weight="700" text-anchor="middle" fill="#0F5E59">Peak TU (slope = 0)</text>
+                      <text x="22" y="55" font-size="10" text-anchor="middle" transform="rotate(-90 22 55)" fill="currentColor">TU</text>
+                      <line x1="46" y1="168" x2="325" y2="168" stroke="currentColor" stroke-width="1.2"/>
+                      <line x1="46" y1="196" x2="46" y2="115" stroke="currentColor" stroke-width="1.2"/>
+                      <line x1="65" y1="122" x2="298" y2="191" stroke="#C27803" stroke-width="2.3"/>
+                      <circle cx="225" cy="168" r="3.8" fill="#C27803"/>
+                      <text x="242" y="160" font-size="10" font-weight="700" fill="#C27803">MU = 0</text>
+                      <text x="22" y="155" font-size="10" text-anchor="middle" transform="rotate(-90 22 155)" fill="currentColor">MU</text>
+                      <text x="185" y="209" font-size="10.5" text-anchor="middle" fill="currentColor">Quantity Consumed (Q)</text>
+                    </svg>
+                  </figure>
                   <p><strong>Answer to (b):</strong> Cardinal utility assumes satisfaction can be measured in objective numerical &ldquo;utils&rdquo; (like weight in kg), which is scientifically unobservable and not comparable across individuals. <strong>Ordinal utility</strong> requires only that consumers consistently <em>rank</em> bundles (preferring \\(A\\) to \\(B\\), or being indifferent). Because indifference curves and budget constraints derive the entire downward-sloping demand curve under far weaker, empirically realistic assumptions, ordinal utility is strictly preferred.</p>
                   <p><strong>Answer to (c):</strong> Supply interdiction/prohibition raises supplier risk and shifts the drug supply curve sharply leftward, driving street prices up. <strong>Casual/experimental users</strong> have relatively <em>price-elastic</em> demand and cut consumption substantially. By contrast, <strong>habitual addicts</strong> have highly <em>price-inelastic</em> demand (\\(E_D \\ll 1\\)): they reduce quantity very little despite steep price hikes, causing their total expenditure (\\(P \\times Q\\)) on drugs—and associated property crime used to finance purchases—to surge unless supply enforcement is paired with demand-side medical treatment.</p>
                 </div>
@@ -878,8 +911,27 @@ export const ECON_UPGRADES = {
                 </div>
                 <div class="exam-script-ans">
                   <span class="exam-script-ans__label">Model Exam-Script Answer</span>
-                  <p><strong>Answer to (a):</strong> Draw the U-shaped \\(AC\\) and \\(AVC\\) curves pierced at their respective minimum points \\(M\\) and \\(M'\\) by the rising \\(MC\\) curve (as shown in the diagram in Q6d above):<br>
-                  &bull; <strong>Zero-Profit (Break-Even) Point \\(M\\):</strong> Occurs at \\(P_B = \\min AC\\), where \\(P = MC = AC\\). Here \\(TR = Pq = AC \\cdot q = TC\\), so economic profit \\(\\pi = 0\\) (the firm earns exact normal return on capital and management).<br>
+                  <p><strong>Answer to (a):</strong> Draw the U-shaped \\(AC\\) and \\(AVC\\) curves pierced at their respective minimum points \\(M\\) and \\(M'\\) by the rising \\(MC\\) curve:</p>
+                  <figure class="exam-svg-fig">
+                    <svg viewBox="0 0 380 205" width="380" height="205" role="img" aria-label="Zero-Profit Break-Even point M at min AC and Shutdown point M-prime at min AVC">
+                      <line x1="50" y1="175" x2="345" y2="175" stroke="currentColor" stroke-width="1.3"/>
+                      <line x1="50" y1="175" x2="50" y2="16" stroke="currentColor" stroke-width="1.3"/>
+                      <path d="M 75 120 Q 160 162, 295 70" fill="none" stroke="#C27803" stroke-width="2.1"/>
+                      <path d="M 75 50 Q 190 126, 310 40" fill="none" stroke="#0F5E59" stroke-width="2.2"/>
+                      <path d="M 82 146 Q 120 170, 255 20" fill="none" stroke="#BE123C" stroke-width="2.4"/>
+                      <line x1="50" y1="86" x2="330" y2="86" stroke="#0F5E59" stroke-dasharray="4,3"/>
+                      <line x1="50" y1="127" x2="330" y2="127" stroke="#C27803" stroke-dasharray="4,3"/>
+                      <circle cx="195" cy="86" r="4.5" fill="#0F5E59"/>
+                      <circle cx="163" cy="127" r="4.5" fill="#C27803"/>
+                      <text x="203" y="81" font-size="10.5" font-weight="700" fill="#0F5E59">M (Zero-Profit: P = min AC)</text>
+                      <text x="171" y="141" font-size="10.5" font-weight="700" fill="#C27803">M′ (Shutdown: P = min AVC)</text>
+                      <text x="260" y="24" font-size="11" font-weight="700" fill="#BE123C">MC</text>
+                      <text x="313" y="43" font-size="11" font-weight="700" fill="#0F5E59">AC</text>
+                      <text x="298" y="73" font-size="11" font-weight="700" fill="#C27803">AVC</text>
+                      <text x="198" y="193" font-size="11" text-anchor="middle" fill="currentColor">Firm Output (q)</text>
+                    </svg>
+                  </figure>
+                  <p>&bull; <strong>Zero-Profit (Break-Even) Point \\(M\\):</strong> Occurs at \\(P_B = \\min AC\\), where \\(P = MC = AC\\). Here \\(TR = Pq = AC \\cdot q = TC\\), so economic profit \\(\\pi = 0\\) (the firm earns exact normal return on capital and management).<br>
                   &bull; <strong>Shutdown Point \\(M'\\):</strong> Occurs at \\(P_S = \\min AVC\\), where \\(P = MC = AVC\\). Here \\(TR = VC\\) and \\(\\pi = -FC\\), so the firm is indifferent between operating and shutting down; for any \\(P &lt; P_S\\), the firm produces \\(q = 0\\).</p>
                   <p><strong>Answer to (b) — Parallel Tangents of \\(TR(q)\\) and \\(TC(q)\\):</strong> Total profit is the vertical gap \\(\\pi(q) = TR(q) - TC(q)\\). Maximizing vertical distance requires the first-order condition:</p>
                   <p>\\[\\frac{d\\pi}{dq} = \\frac{d(TR)}{dq} - \\frac{d(TC)}{dq} = 0 \\iff \\frac{d(TR)}{dq} = \\frac{d(TC)}{dq} \\;\\;(\\text{i.e., } MR = MC),\\]</p>
