@@ -19,6 +19,7 @@ import {
 } from './progress.js';
 import { initLessonToc, initReadingProgressBar } from './toc.js';
 import { initSearchPage } from './search.js';
+import { initGlobalTimer, initPlannerPage } from './timer-planner.js';
 
 const ICONS = {
   sun: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>',
@@ -682,6 +683,7 @@ function boot() {
   initReadingControls();
   initSidebar();
   initDialogs();
+  initGlobalTimer(showToast);
 
   const pageType = document.body ? document.body.dataset.page : '';
   let lessonActions = null;
@@ -694,8 +696,27 @@ function boot() {
     initExamPrepPage();
   } else if (pageType === 'bookmarks') {
     initBookmarksPage();
+  } else if (pageType === 'planner') {
+    initPlannerPage(showToast);
   } else if (pageType === 'lesson') {
     lessonActions = initLessonPage();
+    const metaEl = document.getElementById('lessonMetaData');
+    if (metaEl) {
+      import('./qmhbot.js')
+        .then(({ initQmhBot }) => {
+          initQmhBot(
+            {
+              id: metaEl.dataset.lessonId,
+              title: metaEl.dataset.lessonTitle,
+              courseCode: metaEl.dataset.courseCode,
+              courseName: metaEl.dataset.courseName,
+              url: metaEl.dataset.lessonUrl,
+            },
+            showToast
+          );
+        })
+        .catch(() => {});
+    }
   } else if (pageType === 'search') {
     initSearchPage();
   }

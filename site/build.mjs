@@ -27,7 +27,7 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const SITE_DIR = __dirname;
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 
-const IGNORED_DIRS = new Set(['site', 'dist', 'node_modules', '.git', '.github', '.vscode']);
+const IGNORED_DIRS = new Set(['site', 'dist', 'api', 'node_modules', '.git', '.github', '.vscode', '.vercel']);
 const KATEX_VERSION = '0.16.11';
 const SITE_NAME = 'IASDS First-Year Study Archive';
 const SITE_TAGLINE = 'Applied Statistics & Data Science — ISRT, University of Dhaka';
@@ -54,6 +54,8 @@ const SVG = {
   layers: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>',
   target: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
   sliders: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>',
+  calendarCheck: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>',
+  bot: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>',
 };
 
 /* ---------- Utilities ---------- */
@@ -517,6 +519,7 @@ function renderHeader({ root, activeNav, isLesson }) {
         <nav class="site-nav" aria-label="Primary">
           <a class="site-nav__link" href="${root}index.html"${activeNav === 'home' ? ' aria-current="page"' : ''}>Courses</a>
           <a class="site-nav__link" href="${root}exam-prep/index.html"${activeNav === 'exam-prep' ? ' aria-current="page"' : ''}>Exam Prep</a>
+          <a class="site-nav__link" href="${root}planner/index.html"${activeNav === 'planner' ? ' aria-current="page"' : ''}>Planner</a>
           <a class="site-nav__link" href="${root}bookmarks/index.html"${activeNav === 'bookmarks' ? ' aria-current="page"' : ''}>Bookmarks</a>
           <a class="site-nav__link" href="${root}about/index.html"${activeNav === 'about' ? ' aria-current="page"' : ''}>About &amp; Guide</a>
         </nav>
@@ -527,6 +530,14 @@ function renderHeader({ root, activeNav, isLesson }) {
           <span class="header-search-btn__label">Search</span>
           <kbd>/</kbd>
         </a>
+        <div class="timer-menu">
+          <button type="button" id="timerToggleBtn" class="timer-pill" aria-label="Study timer and alert settings" aria-expanded="false" aria-controls="timerPopover" title="Study Timer" data-timer-state="idle">
+            ${SVG.clock}
+            <span id="timerPillText" class="timer-pill__time">25:00</span>
+            <span id="timerPillDot" class="timer-pill__dot" hidden></span>
+          </button>
+          <div id="timerPopover" class="reading-popover timer-popover" role="region" aria-label="Study Timer" hidden></div>
+        </div>
         ${
           isLesson
             ? `<div class="reading-menu">
@@ -631,10 +642,11 @@ function renderFooter(root) {
   return `
   <footer class="site-footer">
     <div class="site-footer__inner">
-      <div>${SITE_NAME} &middot; ${SITE_TAGLINE}</div>
+      <div>${SITE_NAME} &middot; ${SITE_TAGLINE} &middot; <span class="site-footer__credit">Developed by Saad</span></div>
       <nav class="site-footer__links" aria-label="Footer">
         <a href="${root}index.html">Courses</a>
         <a href="${root}exam-prep/index.html">Exam Prep</a>
+        <a href="${root}planner/index.html">Planner</a>
         <a href="${root}bookmarks/index.html">Bookmarks</a>
         <a href="${root}search/index.html">Search</a>
         <a href="${root}about/index.html">About &amp; Shortcuts</a>
@@ -964,6 +976,9 @@ function processLesson(lesson, course, allCourses, flatIndex, flatLessons, sourc
             <button type="button" id="markCompleteBtn" class="btn btn--secondary" aria-pressed="false">
               ${SVG.circle}<span>Mark as complete</span>
             </button>
+            <button type="button" id="qmhbotHeaderBtn" class="btn btn--primary" aria-expanded="false" aria-controls="qmhbotDrawer">
+              ${SVG.bot}<span>Ask QMHBot</span>
+            </button>
             <button type="button" class="btn btn--ghost btn--sm" onclick="window.print()" aria-label="Print this lesson">
               ${SVG.printer}<span>Print lesson</span>
             </button>
@@ -1156,6 +1171,11 @@ function buildHomePage(courses, totalLessons) {
           <span class="portal-tile__title">Exam Prep &amp; Patterns</span>
           <span class="portal-tile__arrow" aria-hidden="true">${SVG.arrowRight}</span>
         </a>
+        <a class="portal-tile" href="planner/index.html">
+          <span class="portal-tile__icon">${SVG.calendarCheck}</span>
+          <span class="portal-tile__title">Daily Study Planner</span>
+          <span class="portal-tile__arrow" aria-hidden="true">${SVG.arrowRight}</span>
+        </a>
         <a class="portal-tile" href="search/index.html">
           <span class="portal-tile__icon">${SVG.search}</span>
           <span class="portal-tile__title">Search Lessons</span>
@@ -1224,6 +1244,116 @@ function buildBookmarksPage() {
   });
 
   const outPath = path.join(DIST_DIR, 'bookmarks', 'index.html');
+  ensureDir(path.dirname(outPath));
+  fs.writeFileSync(outPath, html, 'utf8');
+}
+
+/* ---------- Render Connected Daily Study Planner Page ---------- */
+function buildPlannerPage() {
+  const root = '../';
+  const bodyContent = `
+  <main id="main-content" class="page-container page-container--narrow">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="${root}index.html">Home</a>
+      <span class="breadcrumb__sep" aria-hidden="true">/</span>
+      <span class="breadcrumb__current" aria-current="page">Daily Study Planner</span>
+    </nav>
+
+    <header class="editorial-header">
+      <span id="plannerDateBadge" class="editorial-header__eyebrow">TODAY&rsquo;S STUDY PLAN</span>
+      <h1>Daily Study Planner &amp; Timer</h1>
+      <p class="editorial-header__lead">
+        Plan today&rsquo;s target topics cleanly, link any lesson, and click <strong>Start Timer</strong> to run the study countdown directly in the top bar while you read.
+      </p>
+    </header>
+
+    <section class="planner-stats" aria-label="Today's study metrics">
+      <div class="planner-stat-card">
+        <span class="planner-stat-card__label">Tasks Done</span>
+        <span id="plannerStatsDone" class="planner-stat-card__val">0 / 0</span>
+      </div>
+      <div class="planner-stat-card">
+        <span class="planner-stat-card__label">Planned Target</span>
+        <span id="plannerStatsPlanned" class="planner-stat-card__val">0m</span>
+      </div>
+      <div class="planner-stat-card">
+        <span class="planner-stat-card__label">Focused Today</span>
+        <span id="plannerStatsFocused" class="planner-stat-card__val">0m</span>
+      </div>
+    </section>
+
+    <section class="panel-card planner-compose" aria-labelledby="plannerAddHeading">
+      <h2 id="plannerAddHeading" class="planner-compose__title">Add to Today&rsquo;s Plan</h2>
+      <div class="planner-presets" aria-label="Quick study templates">
+        <button type="button" class="filter-chip" data-plan-preset="Revise High-Yield Formulas" data-mins="25">25m Formula Revision</button>
+        <button type="button" class="filter-chip" data-plan-preset="Solve Past Exam Script Questions" data-mins="45">45m Exam Drill</button>
+        <button type="button" class="filter-chip" data-plan-preset="Quick Concept Review" data-mins="15">15m Quick Review</button>
+      </div>
+      <form id="plannerAddForm" class="planner-form">
+        <div class="planner-form__row">
+          <div class="planner-field planner-field--grow">
+            <label for="plannerTaskTitle">Study goal or topic</label>
+            <input type="text" id="plannerTaskTitle" class="planner-input" placeholder="e.g. Master MGF proof + solve Exercise 2" required>
+          </div>
+        </div>
+        <div class="planner-form__row">
+          <div class="planner-field planner-field--grow">
+            <label for="plannerLessonSelect">Link a lesson (optional)</label>
+            <select id="plannerLessonSelect" class="planner-input">
+              <option value="">General study task (no specific lesson)</option>
+            </select>
+          </div>
+          <div class="planner-field planner-field--sm">
+            <label for="plannerTaskMins">Minutes</label>
+            <input type="number" id="plannerTaskMins" class="planner-input" min="5" max="180" value="25">
+          </div>
+          <div class="planner-field planner-field--sm">
+            <label for="plannerTaskPriority">Priority</label>
+            <select id="plannerTaskPriority" class="planner-input">
+              <option value="3">★★★ High</option>
+              <option value="2" selected>★★ Core</option>
+              <option value="1">★ Light</option>
+            </select>
+          </div>
+        </div>
+        <div class="planner-form__actions">
+          <button type="submit" class="btn btn--primary">Add Daily Task</button>
+          <span class="panel-card__meta">Tip: Adjust timer beep sounds anytime using the header clock button.</span>
+        </div>
+      </form>
+    </section>
+
+    <section aria-labelledby="plannerListHeading" style="margin-top:var(--space-5)">
+      <div class="section-heading">
+        <h2 id="plannerListHeading">Today&rsquo;s Schedule</h2>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div id="plannerFilterGroup" class="filter-bar" style="margin:0" role="group" aria-label="Filter daily tasks">
+            <button type="button" class="filter-chip" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="filter-chip" data-filter="pending" aria-pressed="false">Pending</button>
+            <button type="button" class="filter-chip" data-filter="done" aria-pressed="false">Completed</button>
+          </div>
+          <button type="button" id="plannerClearDoneBtn" class="btn btn--ghost btn--sm" hidden>Clear completed</button>
+        </div>
+      </div>
+
+      <div id="plannerEmptyState" class="panel-card">
+        <div class="panel-card__title">No daily study tasks yet</div>
+        <p class="panel-card__meta" style="margin:0">Add a goal above, link a lesson if you like, and hit <strong>▶ Start Timer</strong> to study with focus alerts.</p>
+      </div>
+      <ul id="plannerTaskList" class="planner-list" hidden></ul>
+    </section>
+  </main>`;
+
+  const html = renderPageShell({
+    root,
+    pageType: 'planner',
+    title: `Daily Study Planner — ${SITE_NAME}`,
+    description: 'Plan your daily IASDS study targets and launch synced countdown timers across every lesson.',
+    activeNav: 'planner',
+    bodyContent,
+  });
+
+  const outPath = path.join(DIST_DIR, 'planner', 'index.html');
   ensureDir(path.dirname(outPath));
   fs.writeFileSync(outPath, html, 'utf8');
 }
@@ -1663,8 +1793,15 @@ function buildAboutPage(courses, totalLessons) {
         <li><strong>Empirical ★ exam importance badges:</strong> Every lesson and every section heading is rated <strong>★★★</strong> (high-yield exam staple), <strong>★★</strong> (regular core topic), or <strong>★</strong> (low-yield supplementary unit) based on 2017–2025 ISRT Incourse and Year Final papers. Visit the <a href="${root}exam-prep/index.html">Exam Prep Hub</a> to filter topics by exam.</li>
         <li><strong>Reading controls:</strong> Click the typography button in the top bar on any lesson to adjust font size (3 steps), line spacing, or enter <em>Focus mode</em> to hide both sidebars.</li>
         <li><strong>Section bookmarks:</strong> Click the bookmark icon beside any lesson heading to pin key proofs, formulas, or exam questions to your <em>Saved sections</em> list on the Home page.</li>
+        <li><strong>Study Timer &amp; Daily Planner:</strong> Build your daily revision list in the <a href="${root}planner/index.html">Daily Planner</a> and start a persistent countdown timer right from the top header. Choose your preferred ending alert tone inside the header clock popover.</li>
+        <li><strong>QMHBot AI Study Assistant:</strong> Open any lesson and click <em>Ask QMHBot</em> to ask questions in English, Bangla (বাংলা), or Banglish, upload or paste math screenshots, or send a voice recording &mdash; no login required.</li>
         <li><strong>Print-ready lessons:</strong> Use your browser’s Print dialog or the <em>Print lesson</em> button; navigation bars drop out automatically for clean paper notes.</li>
       </ul>
+    </section>
+
+    <section aria-labelledby="developerHeading">
+      <h2 id="developerHeading">Archive Development</h2>
+      <p>This study portal was developed by <strong>Saad</strong> to bring together first-year Applied Statistics and Data Science coursework, examination guidance, and interactive study tools in one unified learning environment.</p>
     </section>
 
     <section aria-labelledby="shortcutsGuideHeading">
@@ -1767,10 +1904,11 @@ export function buildSite() {
     }
   }
 
-  // Build Home, Course, Exam Prep, Bookmarks, Search, About, and 404 pages
+  // Build Home, Course, Exam Prep, Planner, Bookmarks, Search, About, and 404 pages
   buildHomePage(courses, flatLessons.length);
   buildCoursePages(courses);
   buildExamPrepPage(courses, flatLessons);
+  buildPlannerPage();
   buildBookmarksPage();
   buildSearchPage(courses, flatLessons.length);
   buildAboutPage(courses, flatLessons.length);

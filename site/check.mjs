@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
-const IGNORED_DIRS = new Set(['site', 'dist', 'node_modules', '.git', '.github', '.vscode']);
+const IGNORED_DIRS = new Set(['site', 'dist', 'api', 'node_modules', '.git', '.github', '.vscode', '.vercel']);
 
 const errors = [];
 const warnings = [];
@@ -106,6 +106,9 @@ if (manifest) {
 
 if (!fs.existsSync(path.join(DIST_DIR, 'exam-prep', 'index.html'))) {
   fail('Missing generated Exam Prep page: dist/exam-prep/index.html');
+}
+if (!fs.existsSync(path.join(DIST_DIR, 'planner', 'index.html'))) {
+  fail('Missing generated Planner page: dist/planner/index.html');
 }
 
 if (searchIndex) {
@@ -221,11 +224,11 @@ for (const scriptPath of lessonScriptFiles) {
   }
 }
 
-/* 4. Verify core site JS payload size (< 100KB excluding KaTeX & lesson scripts) */
+/* 4. Verify core site JS payload size (< 140KB excluding KaTeX & lesson scripts) */
 const coreJsFiles = walkFiles(path.join(DIST_DIR, 'js'), /\.js$/i);
 const coreJsBytes = coreJsFiles.reduce((sum, f) => sum + fs.statSync(f).size, 0);
-if (coreJsBytes > 100 * 1024) {
-  fail(`Core site JS exceeds 100KB budget: ${(coreJsBytes / 1024).toFixed(1)}KB`);
+if (coreJsBytes > 140 * 1024) {
+  fail(`Core site JS exceeds 140KB budget: ${(coreJsBytes / 1024).toFixed(1)}KB`);
 }
 
 /* 5. Print Structured Report */
@@ -237,7 +240,7 @@ console.log(`Source lessons found   : ${sourceLessons.length}`);
 console.log(`HTML pages validated   : ${distHtmlFiles.length}`);
 console.log(`Internal links checked : ${totalLinksChecked}`);
 console.log(`Search index entries   : ${searchIndex ? searchIndex.documents.length : 0}`);
-console.log(`Core site JS total     : ${(coreJsBytes / 1024).toFixed(1)} KB (limit: 100 KB)`);
+console.log(`Core site JS total     : ${(coreJsBytes / 1024).toFixed(1)} KB (limit: 140 KB)`);
 console.log(`Warnings               : ${warnings.length}`);
 console.log(`Errors                 : ${errors.length}`);
 console.log('======================================================');

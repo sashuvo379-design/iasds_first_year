@@ -15,6 +15,20 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const PORT = Number(process.env.PORT || 4173);
 
+// Load local .env / .env.local if present for local API testing
+for (const envName of ['.env.local', '.env']) {
+  const envPath = path.join(ROOT_DIR, envName);
+  if (fs.existsSync(envPath)) {
+    const lines = fs.readFileSync(envPath, 'utf8').split(/\r?\n/);
+    for (const line of lines) {
+      const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
+      if (m && !(m[1] in process.env)) {
+        process.env[m[1]] = m[2].replace(/^['"]|['"]$/g, '');
+      }
+    }
+  }
+}
+
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -45,9 +59,45 @@ buildSite();
 
 const clients = new Set();
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const reqUrl = new URL(req.url || '/', `http://localhost:${PORT}`);
   const pathname = decodeURIComponent(reqUrl.pathname);
+
+  if (pathname === '/api/chat') {
+    try {
+      const chatMod = await import(`../api/chat.js?t=${Date.now()}`);
+      if (req.method === 'OPTIONS' && chatMod.OPTIONS) {
+        const resp = await chatMod.OPTIONS();
+        res.writeHead(resp.status, Object.fromEntries(resp.headers.entries()));
+        res.end();
+        return;
+      }
+      if (req.method === 'POST' && chatMod.POST) {
+        const chunks = [];
+        for await (const chunk of req) chunks.push(chunk);
+        const bodyBuf = Buffer.concat(chunks);
+        const webReq = new Request(reqUrl.toString(), {
+          method: 'POST',
+          headers: req.headers,
+          body: bodyBuf,
+        });
+        const webResp = await chatMod.POST(webReq);
+        const respText = await webResp.text();
+        res.writeHead(webResp.status, {
+          'Content-Type': webResp.headers.get('content-type') || 'application/json; charset=utf-8',
+        });
+        res.end(respText);
+        return;
+      }
+      res.writeHead(405, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Method not allowed' }));
+      return;
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message || 'API error' }));
+      return;
+    }
+  }
 
   if (pathname === '/__dev_events') {
     res.writeHead(200, {
@@ -119,7 +169,7 @@ try {
     if (
       entry.isDirectory() &&
       !entry.name.startsWith('.') &&
-      !['site', 'dist', 'node_modules'].includes(entry.name)
+      !['site', 'dist', 'api', 'node_modules'].includes(entry.name)
     ) {
       fs.watch(path.join(ROOT_DIR, entry.name), { recursive: true }, (_event, filename) => {
         if (filename) scheduleRebuild(`${entry.name}/${filename}`);
