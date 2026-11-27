@@ -4,8 +4,13 @@
    Supports English, Bangla (বাংলা), Banglish, images, and recorded voice clips.
    ========================================================================== */
 
-const DEFAULT_MODEL = process.env.QMHBOT_MODEL || 'gemini-2.5-flash';
-const FALLBACK_MODEL = 'gemini-2.0-flash';
+const MODEL_CANDIDATES = [
+  process.env.QMHBOT_MODEL,
+  'gemini-3-flash-preview',
+  'gemini-3.8-flash',
+  'gemini-3.1-flash-lite',
+  'gemini-flash-latest',
+].filter(Boolean);
 const MAX_REQUEST_BYTES = 4.2 * 1024 * 1024;
 const ALLOWED_IMAGE_MIME = new Set([
   'image/jpeg',
@@ -229,9 +234,11 @@ export async function POST(request) {
       },
     };
 
-    let result = await callModelEndpoint(apiKey, DEFAULT_MODEL, payload);
-    if (!result.ok && (result.status === 404 || result.status === 400) && DEFAULT_MODEL !== FALLBACK_MODEL) {
-      result = await callModelEndpoint(apiKey, FALLBACK_MODEL, payload);
+    let result = { ok: false, status: 503, data: {} };
+    for (const modelName of MODEL_CANDIDATES) {
+      result = await callModelEndpoint(apiKey, modelName, payload);
+      if (result.ok) break;
+      if (![400, 404, 429, 500, 503].includes(result.status)) break;
     }
 
     if (!result.ok) {
