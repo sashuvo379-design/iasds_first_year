@@ -490,14 +490,12 @@ export function initQmhBot(lessonMeta, showToast) {
   const renderWelcome = () => {
     msgContainer.innerHTML = `
       <div class="qmhbot-welcome">
-        <div class="qmhbot-welcome__badge">${BOT_ICON} QMHBot &middot; Ready (No Sign-in)</div>
         <p class="qmhbot-welcome__text">
-          Assalamu Alaikum! I’m <strong>QMHBot</strong>. I already read <strong>${escapeHtml(lessonMeta.courseCode)}: ${escapeHtml(lessonMeta.title)}</strong>. Ask anything in <strong>English</strong>, <strong>বাংলা</strong>, or <strong>Banglish</strong> &mdash; you can also snap/paste a question photo or send voice!
+          I’ve reviewed <strong>${escapeHtml(lessonMeta.courseCode)}: ${escapeHtml(lessonMeta.title)}</strong> and can help you with concepts, worked problems, or exam preparation.
         </p>
         <div class="qmhbot-chips">
           <button type="button" class="qmhbot-chip" data-quick="Summarize this lesson in easy Bangla with key formulas.">বাংলায় সহজ সারসংক্ষেপ</button>
           <button type="button" class="qmhbot-chip" data-quick="What are the highest-yield exam formulas & proofs in this lesson?">Key ★★★ formulas</button>
-          <button type="button" class="qmhbot-chip" data-quick="Ei lesson er main concept ta banglish e example shoho bujhai dao.">Banglish-এ বুঝিয়ে দাও</button>
           <button type="button" class="qmhbot-chip" data-quick="What classic exam traps or mistakes should I avoid here?">Common exam traps</button>
         </div>
       </div>`;

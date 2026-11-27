@@ -1112,7 +1112,7 @@ function buildHomePage(courses, totalLessons) {
   const bodyContent = `
   <main id="main-content" class="page-container">
     <header class="editorial-header editorial-header--dashboard">
-      <span class="editorial-header__eyebrow">ISRT &middot; UNIVERSITY OF DHAKA &middot; YEAR 1</span>
+      <span class="editorial-header__eyebrow">IASDS &middot; UNIVERSITY OF DHAKA &middot; YEAR 1</span>
       <h1>Applied Statistics &amp; Data Science</h1>
 
       <div class="progress-summary" aria-label="Archive summary and study progress">
