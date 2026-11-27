@@ -8,6 +8,8 @@ const CLIENT_ID_KEY = 'iasds_qmh_cid_v1';
 const QUOTA_KEY = 'iasds_qmh_quota_v1';
 const MAX_PER_10_MIN = 6;
 const MAX_PER_DAY = 20;
+const MAX_IMG_30_MIN = 2;
+const MAX_IMG_DAY = 4;
 
 function getClientId() {
   try {
@@ -28,12 +30,16 @@ function readLocalQuota() {
   try {
     const raw = JSON.parse(window.localStorage.getItem(QUOTA_KEY) || '{}');
     const dayCount = raw.day === today ? Number(raw.dayCount || 0) : 0;
+    const imgDayCount = raw.day === today ? Number(raw.imgDayCount || 0) : 0;
     const recent = Array.isArray(raw.recent)
       ? raw.recent.filter((ts) => typeof ts === 'number' && now - ts < 10 * 60 * 1000)
       : [];
-    return { day: today, dayCount, recent };
+    const imgRecent = Array.isArray(raw.imgRecent)
+      ? raw.imgRecent.filter((ts) => typeof ts === 'number' && now - ts < 30 * 60 * 1000)
+      : [];
+    return { day: today, dayCount, imgDayCount, recent, imgRecent };
   } catch {
-    return { day: today, dayCount: 0, recent: [] };
+    return { day: today, dayCount: 0, imgDayCount: 0, recent: [], imgRecent: [] };
   }
 }
 
@@ -45,12 +51,16 @@ function writeLocalQuota(q) {
   }
 }
 
-function checkLocalQuota() {
+function checkLocalQuota(hasImage = false) {
   const q = readLocalQuota();
+  const remainingDay = Math.max(0, MAX_PER_DAY - q.dayCount);
+  const remainingImgDay = Math.max(0, MAX_IMG_DAY - q.imgDayCount);
+
   if (q.dayCount >= MAX_PER_DAY) {
     return {
       ok: false,
       remainingDay: 0,
+      remainingImgDay,
       message: `Daily limit reached (${MAX_PER_DAY}/${MAX_PER_DAY} questions today, shared fairly across classmates). আজকের কোটা পূর্ণ হয়েছে — আগামীকাল আবার ব্যবহার করতে পারবে।`,
     };
   }
@@ -58,20 +68,46 @@ function checkLocalQuota() {
     const waitMin = Math.max(1, Math.ceil((q.recent[0] + 10 * 60 * 1000 - Date.now()) / 60000));
     return {
       ok: false,
-      remainingDay: MAX_PER_DAY - q.dayCount,
+      remainingDay,
+      remainingImgDay,
       message: `Short cooldown (${MAX_PER_10_MIN} questions / 10 min) for shared fair use. অনুগ্রহ করে প্রায় ${waitMin} মিনিট পর আবার চেষ্টা করো।`,
     };
   }
-  return { ok: true, remainingDay: MAX_PER_DAY - q.dayCount };
+  if (hasImage && q.imgDayCount >= MAX_IMG_DAY) {
+    return {
+      ok: false,
+      remainingDay,
+      remainingImgDay: 0,
+      message: `Daily photo limit reached (${MAX_IMG_DAY}/${MAX_IMG_DAY} photos today — text questions still work!). আজকের ছবির কোটা শেষ — তবে লিখে প্রশ্ন করতে পারবে।`,
+    };
+  }
+  if (hasImage && q.imgRecent.length >= MAX_IMG_30_MIN) {
+    const waitMin = Math.max(1, Math.ceil((q.imgRecent[0] + 30 * 60 * 1000 - Date.now()) / 60000));
+    return {
+      ok: false,
+      remainingDay,
+      remainingImgDay,
+      message: `Photo limit (${MAX_IMG_30_MIN} photos per 30 min) saves shared quota. প্রায় ${waitMin} মিনিট পর ছবি দাও অথবা লিখে প্রশ্ন করো।`,
+    };
+  }
+  return { ok: true, remainingDay, remainingImgDay };
 }
 
-function recordLocalUsage(serverQuota) {
+function recordLocalUsage(serverQuota, usedImage = false) {
   const q = readLocalQuota();
   q.recent.push(Date.now());
   if (serverQuota && typeof serverQuota.remainingToday === 'number') {
     q.dayCount = Math.max(q.dayCount + 1, MAX_PER_DAY - serverQuota.remainingToday);
   } else {
     q.dayCount += 1;
+  }
+  if (usedImage) {
+    q.imgRecent.push(Date.now());
+    if (serverQuota && typeof serverQuota.remainingImagesToday === 'number') {
+      q.imgDayCount = Math.max(q.imgDayCount + 1, MAX_IMG_DAY - serverQuota.remainingImagesToday);
+    } else {
+      q.imgDayCount += 1;
+    }
   }
   writeLocalQuota(q);
 }
@@ -267,7 +303,7 @@ function compressImageFile(file) {
       const img = new Image();
       img.onerror = () => reject(new Error('Unsupported image format'));
       img.onload = () => {
-        const maxDim = 1150;
+        const maxDim = 960;
         let { width, height } = img;
         if (width > maxDim || height > maxDim) {
           const ratio = Math.min(maxDim / width, maxDim / height);
@@ -279,7 +315,7 @@ function compressImageFile(file) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        const outUrl = canvas.toDataURL('image/jpeg', 0.78);
+        const outUrl = canvas.toDataURL('image/jpeg', 0.72);
         resolve({
           kind: 'image',
           mimeType: 'image/jpeg',
@@ -393,8 +429,8 @@ export function initQmhBot(lessonMeta, showToast) {
 
   const updateQuotaBadge = () => {
     if (!quotaNote) return;
-    const status = checkLocalQuota();
-    quotaNote.textContent = `Today: ${status.remainingDay}/${MAX_PER_DAY} questions left (6 / 10 min) · Shared fairly · Don’t send personal info`;
+    const status = checkLocalQuota(false);
+    quotaNote.textContent = `Today: ${status.remainingDay}/${MAX_PER_DAY} Q · ${status.remainingImgDay}/${MAX_IMG_DAY} photos left · Don’t send personal info`;
   };
   updateQuotaBadge();
 
@@ -569,6 +605,11 @@ export function initQmhBot(lessonMeta, showToast) {
     for (const item of items) {
       if (item.type.startsWith('image/')) {
         ev.preventDefault();
+        const imgGate = checkLocalQuota(true);
+        if (!imgGate.ok) {
+          if (showToast) showToast(imgGate.message);
+          break;
+        }
         const file = item.getAsFile();
         if (file) {
           try {
@@ -583,11 +624,23 @@ export function initQmhBot(lessonMeta, showToast) {
     }
   });
 
-  imgBtn?.addEventListener('click', () => fileInput?.click());
+  imgBtn?.addEventListener('click', () => {
+    const imgGate = checkLocalQuota(true);
+    if (!imgGate.ok) {
+      if (showToast) showToast(imgGate.message);
+      return;
+    }
+    fileInput?.click();
+  });
   fileInput?.addEventListener('change', async () => {
     const file = fileInput.files?.[0];
     fileInput.value = '';
     if (!file) return;
+    const imgGate = checkLocalQuota(true);
+    if (!imgGate.ok) {
+      if (showToast) showToast(imgGate.message);
+      return;
+    }
     try {
       pendingImage = await compressImageFile(file);
       renderAttachBar();
@@ -698,7 +751,8 @@ export function initQmhBot(lessonMeta, showToast) {
     }
     if (!text && !attachments.length) return;
 
-    const localGate = checkLocalQuota();
+    const hasImage = Boolean(previewImg);
+    const localGate = checkLocalQuota(hasImage);
     if (!localGate.ok) {
       appendBubble('model', { text: localGate.message });
       updateQuotaBadge();
@@ -747,7 +801,7 @@ export function initQmhBot(lessonMeta, showToast) {
         return;
       }
 
-      recordLocalUsage(data.quota);
+      recordLocalUsage(data.quota, hasImage);
       updateQuotaBadge();
 
       if (text) history.push({ role: 'user', text });

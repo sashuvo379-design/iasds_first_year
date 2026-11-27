@@ -24,10 +24,16 @@ const MULTIMODAL_MODELS = [
 const LIMITS = {
   perStudent10Min: 6,
   perStudentDay: 20,
+  perStudentImg30Min: 2,
+  perStudentImgDay: 4,
   perIp10Min: 40,
   perIpDay: 250,
+  perIpImg30Min: 12,
+  perIpImgDay: 60,
   sitePerMin: 14,
   sitePerDay: 650,
+  siteImgPerMin: 3,
+  siteImgPerDay: 90,
 };
 
 const MAX_REQUEST_BYTES = 2.5 * 1024 * 1024;
@@ -51,8 +57,12 @@ const ALLOWED_AUDIO_MIME = new Set([
 // Ephemeral warm-instance rate-limit store (effective on Fluid Compute concurrent instances)
 const studentBuckets = new Map();
 const ipBuckets = new Map();
+const studentImgBuckets = new Map();
+const ipImgBuckets = new Map();
 let siteMinuteBucket = { windowStart: 0, count: 0 };
 let siteDayBucket = { day: '', count: 0 };
+let siteImgMinBucket = { windowStart: 0, count: 0 };
+let siteImgDayBucket = { day: '', count: 0 };
 
 function getDayKey(now = Date.now()) {
   return new Date(now).toISOString().slice(0, 10);
@@ -62,20 +72,20 @@ function pruneMapIfLarge(map) {
   if (map.size > 2000) {
     const cutoff = Date.now() - 25 * 3600 * 1000;
     for (const [k, v] of map.entries()) {
-      if (v.tenMinStart < cutoff && v.day !== getDayKey()) map.delete(k);
+      if (v.winStart < cutoff && v.day !== getDayKey()) map.delete(k);
     }
   }
 }
 
-function checkDualBucket(map, key, max10Min, maxDay, now) {
+function checkDualBucket(map, key, maxWin, maxDay, windowMs, now) {
   const day = getDayKey(now);
   let entry = map.get(key);
   if (!entry) {
-    entry = { tenMinStart: now, tenMinCount: 0, day, dayCount: 0 };
+    entry = { winStart: now, winCount: 0, day, dayCount: 0 };
   }
-  if (now - entry.tenMinStart >= 10 * 60 * 1000) {
-    entry.tenMinStart = now;
-    entry.tenMinCount = 0;
+  if (now - entry.winStart >= windowMs) {
+    entry.winStart = now;
+    entry.winCount = 0;
   }
   if (entry.day !== day) {
     entry.day = day;
@@ -89,37 +99,39 @@ function checkDualBucket(map, key, max10Min, maxDay, now) {
     );
     return { allowed: false, scope: 'day', retryAfterSec: Math.max(60, Math.ceil((nextMidnight - now) / 1000)) };
   }
-  if (entry.tenMinCount >= max10Min) {
-    const retryAfterSec = Math.max(10, Math.ceil((entry.tenMinStart + 10 * 60 * 1000 - now) / 1000));
-    return { allowed: false, scope: '10min', retryAfterSec };
+  if (entry.winCount >= maxWin) {
+    const retryAfterSec = Math.max(10, Math.ceil((entry.winStart + windowMs - now) / 1000));
+    return { allowed: false, scope: 'window', retryAfterSec };
   }
   return { allowed: true, entry };
 }
 
-function incrementDualBucket(map, key, now) {
+function incrementDualBucket(map, key, windowMs, now) {
   const day = getDayKey(now);
   let entry = map.get(key);
   if (!entry) {
-    entry = { tenMinStart: now, tenMinCount: 0, day, dayCount: 0 };
+    entry = { winStart: now, winCount: 0, day, dayCount: 0 };
   }
-  if (now - entry.tenMinStart >= 10 * 60 * 1000) {
-    entry.tenMinStart = now;
-    entry.tenMinCount = 0;
+  if (now - entry.winStart >= windowMs) {
+    entry.winStart = now;
+    entry.winCount = 0;
   }
   if (entry.day !== day) {
     entry.day = day;
     entry.dayCount = 0;
   }
-  entry.tenMinCount += 1;
+  entry.winCount += 1;
   entry.dayCount += 1;
   map.set(key, entry);
   pruneMapIfLarge(map);
   return entry;
 }
 
-function enforceRateLimits(request) {
+function enforceRateLimits(request, hasImage = false) {
   const now = Date.now();
   const day = getDayKey(now);
+  const TEN_MIN = 10 * 60 * 1000;
+  const THIRTY_MIN = 30 * 60 * 1000;
 
   // Sync global instance counters
   if (now - siteMinuteBucket.windowStart >= 60 * 1000) {
@@ -127,6 +139,12 @@ function enforceRateLimits(request) {
   }
   if (siteDayBucket.day !== day) {
     siteDayBucket = { day, count: 0 };
+  }
+  if (now - siteImgMinBucket.windowStart >= 60 * 1000) {
+    siteImgMinBucket = { windowStart: now, count: 0 };
+  }
+  if (siteImgDayBucket.day !== day) {
+    siteImgDayBucket = { day, count: 0 };
   }
 
   if (siteDayBucket.count >= LIMITS.sitePerDay) {
@@ -146,12 +164,31 @@ function enforceRateLimits(request) {
     };
   }
 
+  if (hasImage) {
+    if (siteImgDayBucket.count >= LIMITS.siteImgPerDay) {
+      return {
+        ok: false,
+        retryAfterSec: 3600,
+        message:
+          'Shared daily photo quota is full for today (text questions still work!). আজকের শেয়ার্ড ছবি আপলোডের কোটা শেষ — তবে লিখে প্রশ্ন করতে পারবে।',
+      };
+    }
+    if (siteImgMinBucket.count >= LIMITS.siteImgPerMin) {
+      return {
+        ok: false,
+        retryAfterSec: 35,
+        message:
+          'Several photo questions are being solved right now. একটু অপেক্ষা করে (৩০–৪০ সেকেন্ড পর) আবার ছবি পাঠাও।',
+      };
+    }
+  }
+
   const forwarded = request.headers.get('x-forwarded-for') || '';
   const ip = (forwarded.split(',')[0] || request.headers.get('x-real-ip') || 'local').trim().slice(0, 64);
   const rawClient = (request.headers.get('x-qmh-client') || '').trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 48);
   const studentKey = `${ip}:${rawClient || 'anon'}`;
 
-  const studentCheck = checkDualBucket(studentBuckets, studentKey, LIMITS.perStudent10Min, LIMITS.perStudentDay, now);
+  const studentCheck = checkDualBucket(studentBuckets, studentKey, LIMITS.perStudent10Min, LIMITS.perStudentDay, TEN_MIN, now);
   if (!studentCheck.allowed) {
     const mins = Math.max(1, Math.ceil(studentCheck.retryAfterSec / 60));
     return {
@@ -164,7 +201,38 @@ function enforceRateLimits(request) {
     };
   }
 
-  const ipCheck = checkDualBucket(ipBuckets, ip, LIMITS.perIp10Min, LIMITS.perIpDay, now);
+  if (hasImage) {
+    const studentImgCheck = checkDualBucket(
+      studentImgBuckets,
+      studentKey,
+      LIMITS.perStudentImg30Min,
+      LIMITS.perStudentImgDay,
+      THIRTY_MIN,
+      now
+    );
+    if (!studentImgCheck.allowed) {
+      const mins = Math.max(1, Math.ceil(studentImgCheck.retryAfterSec / 60));
+      return {
+        ok: false,
+        retryAfterSec: studentImgCheck.retryAfterSec,
+        message:
+          studentImgCheck.scope === 'day'
+            ? `Daily photo limit reached (${LIMITS.perStudentImgDay} photos/day per student — text questions still work!). আজকের তোমার ${LIMITS.perStudentImgDay}টি ছবির কোটা শেষ — তবে টেক্সটে প্রশ্ন করতে পারবে।`
+            : `Photo limit (${LIMITS.perStudentImg30Min} photos per 30 min) helps save shared quota. অনুগ্রহ করে ${mins} মিনিট পর ছবি দাও অথবা প্রশ্নটি লিখে জিজ্ঞেস করো।`,
+      };
+    }
+
+    const ipImgCheck = checkDualBucket(ipImgBuckets, ip, LIMITS.perIpImg30Min, LIMITS.perIpImgDay, THIRTY_MIN, now);
+    if (!ipImgCheck.allowed) {
+      return {
+        ok: false,
+        retryAfterSec: ipImgCheck.retryAfterSec,
+        message: 'Network photo upload limit reached right now. অনুগ্রহ করে কিছুক্ষণ পর চেষ্টা করো অথবা লিখে প্রশ্ন করো।',
+      };
+    }
+  }
+
+  const ipCheck = checkDualBucket(ipBuckets, ip, LIMITS.perIp10Min, LIMITS.perIpDay, TEN_MIN, now);
   if (!ipCheck.allowed) {
     return {
       ok: false,
@@ -176,13 +244,23 @@ function enforceRateLimits(request) {
 
   siteMinuteBucket.count += 1;
   siteDayBucket.count += 1;
-  const updatedStudent = incrementDualBucket(studentBuckets, studentKey, now);
-  incrementDualBucket(ipBuckets, ip, now);
+  const updatedStudent = incrementDualBucket(studentBuckets, studentKey, TEN_MIN, now);
+  incrementDualBucket(ipBuckets, ip, TEN_MIN, now);
+
+  let remainingImagesToday = Math.max(0, LIMITS.perStudentImgDay - (studentImgBuckets.get(studentKey)?.dayCount || 0));
+  if (hasImage) {
+    siteImgMinBucket.count += 1;
+    siteImgDayBucket.count += 1;
+    const updatedImg = incrementDualBucket(studentImgBuckets, studentKey, THIRTY_MIN, now);
+    incrementDualBucket(ipImgBuckets, ip, THIRTY_MIN, now);
+    remainingImagesToday = Math.max(0, LIMITS.perStudentImgDay - updatedImg.dayCount);
+  }
 
   return {
     ok: true,
     remainingToday: Math.max(0, LIMITS.perStudentDay - updatedStudent.dayCount),
     remaining10Min: Math.max(0, LIMITS.perStudent10Min - updatedStudent.tenMinCount),
+    remainingImagesToday,
   };
 }
 
@@ -319,7 +397,7 @@ function buildContents(history = [], currentMessage = {}, attachments = []) {
     contents.push({ role: 'user', parts: userParts });
   }
 
-  return { contents, isMultimodal: hasImage || hasAudio };
+  return { contents, isMultimodal: hasImage || hasAudio, hasImage };
 }
 
 async function callModelEndpoint(apiKey, modelName, payload) {
@@ -342,6 +420,7 @@ export async function GET() {
   const day = getDayKey(now);
   const minuteCount = now - siteMinuteBucket.windowStart < 60 * 1000 ? siteMinuteBucket.count : 0;
   const dailyCount = siteDayBucket.day === day ? siteDayBucket.count : 0;
+  const imageDailyCount = siteImgDayBucket.day === day ? siteImgDayBucket.count : 0;
 
   return Response.json({
     ok: Boolean((process.env.GEMINI_API_KEY || '').trim()),
@@ -351,7 +430,9 @@ export async function GET() {
       day,
       minuteCount,
       dailyCount,
+      imageDailyCount,
       remainingSiteDayOnInstance: Math.max(0, LIMITS.sitePerDay - dailyCount),
+      remainingImageDayOnInstance: Math.max(0, LIMITS.siteImgPerDay - imageDailyCount),
     },
   });
 }
@@ -413,7 +494,7 @@ export async function POST(request) {
     }
 
     const attachments = Array.isArray(body.attachments) ? body.attachments.slice(0, 2) : [];
-    const { contents, isMultimodal } = buildContents(body.history, { text: body.message }, attachments);
+    const { contents, isMultimodal, hasImage } = buildContents(body.history, { text: body.message }, attachments);
 
     if (contents.length === 0 || contents[contents.length - 1].role !== 'user') {
       return Response.json(
@@ -423,7 +504,7 @@ export async function POST(request) {
     }
 
     // Enforce narrow fair-use rate limits before calling AI
-    const limitStatus = enforceRateLimits(request);
+    const limitStatus = enforceRateLimits(request, hasImage);
     if (!limitStatus.ok) {
       return Response.json(
         {
@@ -494,7 +575,9 @@ export async function POST(request) {
       quota: {
         remainingToday: limitStatus.remainingToday,
         remaining10Min: limitStatus.remaining10Min,
+        remainingImagesToday: limitStatus.remainingImagesToday,
         dailyLimit: LIMITS.perStudentDay,
+        imageDailyLimit: LIMITS.perStudentImgDay,
       },
     });
   } catch (err) {
