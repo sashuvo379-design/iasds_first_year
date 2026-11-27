@@ -443,6 +443,9 @@ export function initQmhBot(lessonMeta, showToast) {
         <textarea id="qmhbotInput" class="qmhbot-input" rows="1" placeholder="Ask English, বাংলা, Banglish…"></textarea>
         <button type="submit" id="qmhbotSendBtn" class="btn btn--primary btn--icon" aria-label="Send message" disabled>${SEND_ICON}</button>
       </form>
+      <div class="qmhbot-composer__foot">
+        <button type="button" id="qmhbotSpecialBtn" class="qmhbot-special-link">QMHBot (Special)</button>
+      </div>
     </div>`;
 
   document.body.appendChild(backdrop);
@@ -470,6 +473,7 @@ export function initQmhBot(lessonMeta, showToast) {
   const devSubmitBtn = document.getElementById('qmhbotDevSubmitBtn');
   const devCancelBtn = document.getElementById('qmhbotDevCancelBtn');
   const devError = document.getElementById('qmhbotDevError');
+  const specialBtn = document.getElementById('qmhbotSpecialBtn');
 
   const getApiUrl = () => {
     const root = document.documentElement.dataset.root || '../../';
@@ -479,6 +483,10 @@ export function initQmhBot(lessonMeta, showToast) {
   const syncDevUi = () => {
     const devActive = isDeveloperMode();
     if (devBadge) devBadge.hidden = !devActive;
+    if (specialBtn) {
+      specialBtn.textContent = devActive ? 'QMHBot (Special) · Active (Switch back)' : 'QMHBot (Special)';
+      specialBtn.classList.toggle('is-active', devActive);
+    }
     if (quotaNote) {
       if (devActive) {
         quotaNote.innerHTML = 'Private Key Active &middot; Unmetered &middot; <button type="button" id="qmhbotLockDevBtn" class="qmhbot-lock-link">Switch to Shared</button>';
@@ -565,6 +573,18 @@ export function initQmhBot(lessonMeta, showToast) {
     setDevPasscode('');
     syncDevUi();
     if (showToast) showToast('Switched back to Shared Class Mode');
+  });
+
+  specialBtn?.addEventListener('click', () => {
+    if (isDeveloperMode()) {
+      setDevPasscode('');
+      syncDevUi();
+      if (showToast) showToast('Switched back to Shared Class Mode');
+    } else if (devPanel?.hidden) {
+      openDevPanel();
+    } else {
+      closeDevPanel();
+    }
   });
 
   devCancelBtn?.addEventListener('click', closeDevPanel);
